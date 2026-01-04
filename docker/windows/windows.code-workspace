@@ -1,0 +1,14 @@
+{
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "/opt/pokerth-windows"
+    },
+    {
+      "path": "/opt/pokerth-windows/pokerth"
+    }
+  ],
+  "settings": {}
+}
