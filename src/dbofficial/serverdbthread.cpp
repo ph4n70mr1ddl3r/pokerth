@@ -239,8 +239,6 @@ ServerDBThread::SetGamePlayerPlace(unsigned requestId, DB_id playerId, unsigned 
 void
 ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, std::vector<long> last_games, std::string playerIp)
 {
-	LOG_ERROR("ServerDBThread::SetPlayerLastGames() entered.");
-
 	std::ostringstream oss;
     std::copy(last_games.begin(), last_games.end(), std::ostream_iterator<int>(oss, ","));
     std::string last_gamesFieldValue( oss.str() );
@@ -259,7 +257,6 @@ ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, std::vect
 		boost::mutex::scoped_lock lock(m_asyncQueueMutex);
 		m_asyncQueue.push(asyncQuery);
 	}
-	LOG_ERROR("Query posted.");
 	m_semaphore.post();
 }
 

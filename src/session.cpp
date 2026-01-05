@@ -271,14 +271,16 @@ void Session::startNetworkClientForLocalServer(const GameData &gameData)
 void Session::terminateNetworkClient()
 {
 	if (!myNetClient)
-		return; // already terminated
+		return;
 	myNetClient->SignalTermination();
-	// Give the threads some time to terminate.
-	if (myNetClient->Join(NET_CLIENT_TERMINATE_TIMEOUT_MSEC))
+	if (myNetClient->Join(NET_CLIENT_TERMINATE_TIMEOUT_MSEC)) {
 		myNetClient.reset();
-
-	// If termination fails, leave a memory leak to prevent a crash.
-	myGameType = GAME_TYPE_NONE;
+		myGameType = GAME_TYPE_NONE;
+	} else {
+		LOG_ERROR("Network client termination timed out - forcing cleanup");
+		myNetClient.reset();
+		myGameType = GAME_TYPE_NONE;
+	}
 }
 
 void Session::clientCreateGame(const GameData &gameData, const string &name, const string &password)
@@ -362,12 +364,14 @@ void Session::terminateNetworkServer()
 {
 #ifdef POKERTH_DEDICATED_SERVER	
 	if (!myNetServer)
-		return; // already terminated
+		return;
 	myNetServer->SignalTerminationAll();
-	// Give the thread some time to terminate.
-	if (myNetServer->JoinAll(true))
+	if (myNetServer->JoinAll(true)) {
 		myNetServer.reset();
-	// If termination fails, leave a memory leak to prevent a crash.
+	} else {
+		LOG_ERROR("Network server termination timed out - forcing cleanup");
+		myNetServer.reset();
+	}
 #endif
 }
 

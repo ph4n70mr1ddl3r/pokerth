@@ -39,39 +39,37 @@
 #include <core/loghelper.h>
 #include <core/openssl_wrapper.h>
 #include <random>
-
-#include <boost/thread.hpp>
-#include <boost/nondet_random.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/random/variate_generator.hpp>
+#include <memory>
+#include <algorithm>
 
 
 using namespace std;
 
-boost::thread_specific_ptr<boost::random_device> g_rand_state;
+static const unsigned int DEFAULT_SEED = 5489u;
+
+thread_local std::unique_ptr<std::random_device> g_rand_state;
 
 static inline void InitRandState()
 {
-	if (!g_rand_state.get()) {
-		g_rand_state.reset(new boost::random_device);
+	if (!g_rand_state) {
+		g_rand_state = std::make_unique<std::random_device>();
 	}
 }
 
 void Tools::ShuffleArrayNonDeterministic(int *inout, unsigned count)
 {
 	InitRandState();
-	mt19937 rand(*g_rand_state);
+	std::mt19937 rand((*g_rand_state)());
 	shuffle(&inout[0], &inout[count], rand);
 }
 
 void Tools::GetRand(int minValue, int maxValue, unsigned count, int *out)
 {
 	InitRandState();
-	boost::uniform_int<> dist(minValue, maxValue);
-	boost::variate_generator<boost::random_device&, boost::uniform_int<> > gen(*g_rand_state, dist);
+	std::uniform_int_distribution<> dist(minValue, maxValue);
 	int *startPtr = out;
 	for (unsigned i = 0; i < count; i++) {
-		*startPtr++ = gen();
+		*startPtr++ = dist(*g_rand_state);
 	}
 }
 
