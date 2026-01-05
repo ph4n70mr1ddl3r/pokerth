@@ -1036,16 +1036,10 @@ ClientThread::CreateContextSession()
         std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sslStream(
             new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(*m_ioService, *sslCtx));
 
-        if (context.GetAddrFamily() == AF_INET6) {
-            sslStream->lowest_layer().open(boost::asio::ip::tcp::v6());
-        }
         std::shared_ptr<SessionData> session(new SessionData(sslStream, SESSION_ID_GENERIC, *this, *m_ioService, 0));
         context.SetSessionData(session);
     } else {
         std::shared_ptr<boost::asio::ip::tcp::socket> sock(new boost::asio::ip::tcp::socket(*m_ioService));
-        if (context.GetAddrFamily() == AF_INET6) {
-            sock->open(boost::asio::ip::tcp::v6());
-        }
         std::shared_ptr<SessionData> session(new SessionData(sock, SESSION_ID_GENERIC, *this, *m_ioService));
         context.SetSessionData(session);
     }
