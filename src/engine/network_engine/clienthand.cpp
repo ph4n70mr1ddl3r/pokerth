@@ -32,9 +32,7 @@
 #include "clienthand.h"
 #include <game_defs.h>
 
-using namespace std;
-
-ClientHand::ClientHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost::shared_ptr<BoardInterface> b, Log *l, PlayerList sl, PlayerList apl, PlayerList rpl, int id, int sP, int dP, int sB,int sC)
+ClientHand::ClientHand(std::shared_ptr<EngineFactory> f, std::shared_ptr<GuiInterface> g, std::shared_ptr<BoardInterface> b, Log *l, PlayerList sl, PlayerList apl, PlayerList rpl, int id, int sP, int dP, int sB,int sC)
 	: myFactory(f), myGui(g),  myBoard(b), myLog(l), seatsList(sl), activePlayerList(apl), runningPlayerList(rpl), myID(id), startQuantityPlayers(sP), dealerPosition(dP), currentRound(GAME_STATE_PREFLOP), roundBeforePostRiver(GAME_STATE_PREFLOP),
 	  smallBlind(sB), startCash(sC), previousPlayerID(-1), allInCondition(0),
 	  cardsShown(false)
@@ -52,7 +50,7 @@ ClientHand::ClientHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boos
 	// remove all buttons
 	for(it=activePlayerList->begin(); it!=activePlayerList->end(); ++it) {
 
-		boost::shared_ptr<PlayerInterface> tmpPlayer = *it;
+		std::shared_ptr<PlayerInterface> tmpPlayer = *it;
 
 		tmpPlayer->setMyRoundStartCash(tmpPlayer->getMyCash());
 		tmpPlayer->setMyCardsValueInt(0);
@@ -144,44 +142,44 @@ ClientHand::getRunningPlayerIt(unsigned uniqueId) const
 	return it;
 }
 
-boost::shared_ptr<BoardInterface>
+std::shared_ptr<BoardInterface>
 ClientHand::getBoard() const
 {
 	return myBoard;
 }
 
-boost::shared_ptr<BeRoInterface>
+std::shared_ptr<BeRoInterface>
 ClientHand::getPreflop() const
 {
 	return myBeRo[GAME_STATE_PREFLOP];
 }
 
-boost::shared_ptr<BeRoInterface>
+std::shared_ptr<BeRoInterface>
 ClientHand::getFlop() const
 {
 	return myBeRo[GAME_STATE_FLOP];
 }
 
-boost::shared_ptr<BeRoInterface>
+std::shared_ptr<BeRoInterface>
 ClientHand::getTurn() const
 {
 	return myBeRo[GAME_STATE_TURN];
 }
 
-boost::shared_ptr<BeRoInterface>
+std::shared_ptr<BeRoInterface>
 ClientHand::getRiver() const
 {
 	return myBeRo[GAME_STATE_RIVER];
 }
 
-boost::shared_ptr<BeRoInterface>
+std::shared_ptr<BeRoInterface>
 ClientHand::getCurrentBeRo() const
 {
 	return myBeRo[currentRound];
 }
 
 
-GuiInterface*
+std::shared_ptr<GuiInterface>
 ClientHand::getGuiInterface() const
 {
 	return myGui;

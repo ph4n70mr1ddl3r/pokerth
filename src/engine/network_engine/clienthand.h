@@ -117,16 +117,16 @@ protected:
 private:
 	mutable boost::recursive_mutex m_syncMutex;
 
-	boost::shared_ptr<EngineFactory> myFactory;
-	GuiInterface *myGui;
-	boost::shared_ptr<BoardInterface> myBoard;
+	std::shared_ptr<EngineFactory> myFactory;
+	std::shared_ptr<GuiInterface> myGui;
+	std::shared_ptr<BoardInterface> myBoard;
 	Log *myLog;
 
 	PlayerList seatsList;
 	PlayerList activePlayerList;
 	PlayerList runningPlayerList;
 
-	std::vector<boost::shared_ptr<BeRoInterface> > myBeRo;
+	std::vector<std::shared_ptr<BeRoInterface> > myBeRo;
 
 	int myID;
 	int startQuantityPlayers;
