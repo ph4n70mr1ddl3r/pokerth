@@ -133,8 +133,41 @@ int joinNetworkGameDialogImpl::exec()
 
 void joinNetworkGameDialogImpl::startClient()
 {
+	if (!validateInput()) {
+		return;
+	}
+}
 
-	// TODO: Check input values!
+bool joinNetworkGameDialogImpl::validateInput()
+{
+	QString ipAddress = lineEdit_ipAddress->text().trimmed();
+	QString profileName = lineEdit_profileName->text().trimmed();
+	int port = spinBox_port->value();
+
+	if (ipAddress.isEmpty()) {
+		MyMessageBox::warning(this, tr("Input Validation Error"),
+							  tr("Please enter a valid IP address or hostname."),
+							  QMessageBox::Ok);
+		lineEdit_ipAddress->setFocus();
+		return false;
+	}
+
+	if (port <= 0 || port > 65535) {
+		MyMessageBox::warning(this, tr("Input Validation Error"),
+							  tr("Port must be between 1 and 65535."),
+							  QMessageBox::Ok);
+		return false;
+	}
+
+	if (!profileName.isEmpty() && !profileName.contains(QRegularExpression("[A-Za-z]"))) {
+		MyMessageBox::warning(this, tr("Input Validation Error"),
+							  tr("Profile name must start with a letter."),
+							  QMessageBox::Ok);
+		lineEdit_profileName->setFocus();
+		return false;
+	}
+
+	return true;
 }
 
 void joinNetworkGameDialogImpl::fillServerProfileList()

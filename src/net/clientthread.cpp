@@ -76,14 +76,17 @@ using namespace boost::chrono;
 #endif
 
 ClientThread::ClientThread(GuiInterface &gui, AvatarManager &avatarManager, Log *myLog)
-	: m_ioService(new boost::asio::io_context), m_clientLog(myLog), m_curState(NULL), m_gui(gui),
+	: m_ioService(std::make_shared<boost::asio::io_context>()), m_clientLog(myLog), m_curState(nullptr), m_gui(gui),
 	  m_avatarManager(avatarManager), m_isServerSelected(false),
 	  m_curGameId(0), m_curGameNum(1), m_guiPlayerId(0), m_sessionEstablished(false),
 	  m_stateTimer(*m_ioService), m_avatarTimer(*m_ioService)
 {
-	m_context.reset(new ClientContext);
-	myQtToolsInterface.reset(CreateQtToolsWrapper());
-	m_senderHelper.reset(new SenderHelper(m_ioService));
+	m_context = std::make_shared<ClientContext>();
+	myQtToolsInterface = CreateQtToolsWrapper();
+	if (!myQtToolsInterface) {
+		throw std::runtime_error("Failed to create QtToolsInterface");
+	}
+	m_senderHelper = std::make_shared<SenderHelper>(m_ioService);
 }
 
 ClientThread::~ClientThread()
@@ -132,7 +135,7 @@ ClientThread::SignalTermination()
 void
 ClientThread::SendKickPlayer(unsigned playerId)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(std::make_shared<NetPacket>());
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_KickPlayerRequestMessage);
 	KickPlayerRequestMessage *netKick = packet->GetMsg()->mutable_kickplayerrequestmessage();
 	netKick->set_gameid(GetGameId());
@@ -143,7 +146,7 @@ ClientThread::SendKickPlayer(unsigned playerId)
 void
 ClientThread::SendLeaveCurrentGame()
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(std::make_shared<NetPacket>());
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_LeaveGameRequestMessage);
 	LeaveGameRequestMessage *netLeave = packet->GetMsg()->mutable_leavegamerequestmessage();
 	netLeave->set_gameid(GetGameId());
@@ -155,7 +158,7 @@ ClientThread::SendStartEvent(bool fillUpWithCpuPlayers)
 {
 	// Warning: This function is called in the context of the GUI thread.
 	// Create a network packet for the server start event.
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(std::make_shared<NetPacket>());
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_StartEventMessage);
 	StartEventMessage *netStartEvent = packet->GetMsg()->mutable_starteventmessage();
 	netStartEvent->set_starteventtype(StartEventMessage::startEvent);
@@ -173,11 +176,11 @@ ClientThread::SendPlayerAction()
 		boost::mutex::scoped_lock lock(m_pingDataMutex);
 		m_pingData.StartPing();
 	}
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(std::make_shared<NetPacket>());
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_MyActionRequestMessage);
 	MyActionRequestMessage *netMyAction = packet->GetMsg()->mutable_myactionrequestmessage();
 	netMyAction->set_gameid(GetGameId());
-	boost::shared_ptr<PlayerInterface> myPlayer = GetGame()->getSeatsList()->front();
+	std::shared_ptr<PlayerInterface> myPlayer = GetGame()->getSeatsList()->front();
 	netMyAction->set_handnum(GetGame()->getCurrentHandID());
 	netMyAction->set_gamestate(static_cast<NetGameState>(GetGame()->getCurrentHand()->getCurrentRound()));
 	netMyAction->set_myaction(static_cast<NetPlayerAction>(myPlayer->getMyAction()));
@@ -195,7 +198,7 @@ ClientThread::SendGameChatMessage(const std::string &msg)
 {
 	// Warning: This function is called in the context of the GUI thread.
 	// Create a network packet containing the chat message.
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(std::make_shared<NetPacket>());
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatRequestMessage);
 	ChatRequestMessage *netChat = packet->GetMsg()->mutable_chatrequestmessage();
 	netChat->set_targetgameid(GetGameId());

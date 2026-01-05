@@ -57,6 +57,9 @@ Session::Session(GuiInterface *g, ConfigFile *c, Log *l)
 	: currentGameNum(0), myGui(g), myConfig(c), myLog(l), myGameType(GAME_TYPE_NONE)
 {
 	myQtToolsInterface = CreateQtToolsWrapper();
+	if (!myQtToolsInterface) {
+		throw std::runtime_error("Failed to create QtToolsInterface");
+	}
 }
 
 
@@ -65,9 +68,9 @@ Session::~Session()
 	terminateNetworkClient();
 	terminateNetworkServer();
 	delete myQtToolsInterface;
-	myQtToolsInterface = 0;
+	myQtToolsInterface = nullptr;
 	delete myLog;
-	myLog = 0;
+	myLog = nullptr;
 }
 
 bool Session::init()
@@ -88,7 +91,7 @@ bool Session::init()
 	return retVal;
 }
 
-void Session::init(boost::shared_ptr<AvatarManager> manager)
+void Session::init(std::shared_ptr<AvatarManager> manager)
 {
 	myAvatarManager = manager;
 }
@@ -128,7 +131,7 @@ void Session::startLocalGame(const GameData &gameData, const StartData &startDat
 
 		//PlayerData erzeugen
 		// UniqueId = PlayerNumber for local games.
-		boost::shared_ptr<PlayerData> playerData(new PlayerData(
+		std::shared_ptr<PlayerData> playerData(new PlayerData(
 					i,
 					i,
 					i == 0 ? PLAYER_TYPE_HUMAN : PLAYER_TYPE_COMPUTER,
@@ -140,7 +143,7 @@ void Session::startLocalGame(const GameData &gameData, const StartData &startDat
 		playerDataList.push_back(playerData);
 	}
 	// EngineFactory erstellen
-	boost::shared_ptr<EngineFactory> factory(new LocalEngineFactory(myConfig)); // LocalEngine erstellen
+	std::shared_ptr<EngineFactory> factory(new LocalEngineFactory(myConfig)); // LocalEngine erstellen
 
 	currentGame.reset(new Game(myGui, factory, playerDataList, gameData, startData, currentGameNum, myLog));
 
@@ -150,14 +153,14 @@ void Session::startLocalGame(const GameData &gameData, const StartData &startDat
 	// SPIEL-SCHLEIFE
 }
 
-void Session::startClientGame(boost::shared_ptr<Game> game)
+void Session::startClientGame(std::shared_ptr<Game> game)
 {
 	currentGameNum++;
 
 	currentGame = game;
 }
 
-boost::shared_ptr<Game> Session::getCurrentGame()
+std::shared_ptr<Game> Session::getCurrentGame()
 {
 	return currentGame;
 }
@@ -172,7 +175,7 @@ Session::GameType Session::getGameType()
 	return myGameType;
 }
 
-boost::shared_ptr<AvatarManager> Session::getAvatarManager()
+std::shared_ptr<AvatarManager> Session::getAvatarManager()
 {
 	return myAvatarManager;
 }

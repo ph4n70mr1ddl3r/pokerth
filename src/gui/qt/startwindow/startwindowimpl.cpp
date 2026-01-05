@@ -75,7 +75,12 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 	myGuiInterface.reset(new GuiWrapper(myConfig, this));
 	{
 		mySession.reset(new Session(myGuiInterface.get(), myConfig, myLog));
-		mySession->init(); // TODO handle error
+		if (!mySession->init()) {
+			MyMessageBox::critical(this, tr("Initialization Error"),
+								  tr("Failed to initialize session. Please check your configuration."),
+								  QMessageBox::Ok);
+			throw std::runtime_error("Session initialization failed");
+		}
 		myLog->init();
 		// 		myGuiInterface->setSession(session);
 	}

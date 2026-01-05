@@ -44,6 +44,7 @@
 #include <fstream>
 #include <csignal>
 #include <QtCore/QCoreApplication>
+#include <memory>
 
 #ifdef _MSC_VER
 #ifdef _DEBUG
@@ -75,7 +76,7 @@ TerminateHandler(int /*signal*/)
 	g_pokerthTerminate = 1;
 }
 
-// TODO: Hack
+// Platform-specific daemon initialization
 #ifdef _WIN32
 #include <process.h>
 #else
@@ -132,20 +133,20 @@ main(int argc, char *argv[])
 			readonlyConfig = true;
 	}
 
-	boost::shared_ptr<QtToolsInterface> myQtToolsInterface(CreateQtToolsWrapper());
+	std::shared_ptr<QtToolsInterface> myQtToolsInterface(CreateQtToolsWrapper());
 
 	// Some Qt classes used by the DB wrapper (QSqlDatabase) require a QCoreApplication
 	// to be instantiated before use. Create a minimal QCoreApplication for the server.
 	QCoreApplication qtCoreApp(argc, argv);
 	//create defaultconfig
-	boost::shared_ptr<ConfigFile> myConfig(new ConfigFile(argv[0], readonlyConfig));
+	std::shared_ptr<ConfigFile> myConfig(new ConfigFile(argv[0], readonlyConfig));
 	loghelper_init(myQtToolsInterface->stringFromUtf8(myConfig->readConfigString("LogDir")), logLevel);
 
-	// TODO: Hack
+	// Daemonize on non-Windows platforms in release builds
 #ifndef _WIN32
 #ifdef QT_NO_DEBUG
 	if (daemon(0, 0) != 0) {
-		cout << "Failed to start daemon." << endl;
+		std::cout << "Failed to start daemon." << std::endl;
 		return 1;
 	}
 #endif
@@ -174,8 +175,8 @@ main(int argc, char *argv[])
 	}
 
 	// Create pseudo Gui Wrapper for the server.
-	boost::shared_ptr<GuiInterface> myServerGuiInterface(new ServerGuiWrapper(myConfig.get(), NULL, NULL));
-	boost::shared_ptr<Session> session(new Session(myServerGuiInterface.get(), myConfig.get(), NULL));
+	std::shared_ptr<GuiInterface> myServerGuiInterface(std::make_shared<ServerGuiWrapper>(myConfig.get(), nullptr, nullptr));
+	std::shared_ptr<Session> session(std::make_shared<Session>(myServerGuiInterface.get(), myConfig.get(), nullptr));
 	if (!session->init())
 		LOG_ERROR("Missing files - please check your directory settings!");
 	myServerGuiInterface->setSession(session);

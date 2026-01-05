@@ -40,9 +40,7 @@
 
 #include <iostream>
 
-using namespace std;
-
-Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
+Game::Game(std::shared_ptr<GuiInterface> gui, std::shared_ptr<EngineFactory> factory,
 		   const PlayerDataList &playerDataList, const GameData &gameData,
 		   const StartData &startData, int gameId, Log* log)
 	: myFactory(factory), myGui(gui), myLog(log), startQuantityPlayers(startData.numberOfPlayers),
@@ -80,18 +78,18 @@ Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
 	currentBoard = myFactory->createBoard();
 
 	// create player lists
-	seatsList.reset(new std::list<boost::shared_ptr<PlayerInterface> >);
-	activePlayerList.reset(new std::list<boost::shared_ptr<PlayerInterface> >);
-	runningPlayerList.reset(new std::list<boost::shared_ptr<PlayerInterface> >);
+	seatsList.reset(new std::list<std::shared_ptr<PlayerInterface> >);
+	activePlayerList.reset(new std::list<std::shared_ptr<PlayerInterface> >);
+	runningPlayerList.reset(new std::list<std::shared_ptr<PlayerInterface> >);
 
 	// create player
 	player_i = playerDataList.begin();
 	player_end = playerDataList.end();
 	for(i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 
-		string myName;
-		string myAvatarFile;
-		string myGuid;
+		std::string myName;
+		std::string myAvatarFile;
+		std::string myGuid;
 		unsigned uniqueId = 0;
 		PlayerType type = PLAYER_TYPE_COMPUTER;
 		int myStartCash = startCash;
@@ -110,7 +108,7 @@ Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
 		}
 
 		// create player objects
-		boost::shared_ptr<PlayerInterface> tmpPlayer = myFactory->createPlayer(i, uniqueId, type, myName, myAvatarFile, myStartCash, startQuantityPlayers > i, myStayOnTableStatus, 0);
+		std::shared_ptr<PlayerInterface> tmpPlayer = myFactory->createPlayer(i, uniqueId, type, myName, myAvatarFile, myStartCash, startQuantityPlayers > i, myStayOnTableStatus, 0);
 		tmpPlayer->setIsSessionActive(true);
 		tmpPlayer->setMyGuid(myGuid);
 
@@ -137,12 +135,12 @@ Game::~Game()
 {
 }
 
-boost::shared_ptr<HandInterface> Game::getCurrentHand()
+std::shared_ptr<HandInterface> Game::getCurrentHand()
 {
 	return currentHand;
 }
 
-const boost::shared_ptr<HandInterface> Game::getCurrentHand() const
+const std::shared_ptr<HandInterface> Game::getCurrentHand() const
 {
 	return currentHand;
 }
@@ -217,9 +215,9 @@ void Game::startHand()
 	currentHand->start();
 }
 
-boost::shared_ptr<PlayerInterface> Game::getPlayerByUniqueId(unsigned id)
+std::shared_ptr<PlayerInterface> Game::getPlayerByUniqueId(unsigned id)
 {
-	boost::shared_ptr<PlayerInterface> tmpPlayer;
+	std::shared_ptr<PlayerInterface> tmpPlayer;
 	PlayerList tmpList = getSeatsList();
 	PlayerListIterator i = tmpList->begin();
 	PlayerListIterator end = tmpList->end();
@@ -233,9 +231,9 @@ boost::shared_ptr<PlayerInterface> Game::getPlayerByUniqueId(unsigned id)
 	return tmpPlayer;
 }
 
-boost::shared_ptr<PlayerInterface> Game::getPlayerByNumber(int number)
+std::shared_ptr<PlayerInterface> Game::getPlayerByNumber(int number)
 {
-	boost::shared_ptr<PlayerInterface> tmpPlayer;
+	std::shared_ptr<PlayerInterface> tmpPlayer;
 	PlayerList tmpList = getSeatsList();
 	PlayerListIterator i = tmpList->begin();
 	PlayerListIterator end = tmpList->end();
@@ -249,17 +247,17 @@ boost::shared_ptr<PlayerInterface> Game::getPlayerByNumber(int number)
 	return tmpPlayer;
 }
 
-boost::shared_ptr<PlayerInterface> Game::getCurrentPlayer()
+std::shared_ptr<PlayerInterface> Game::getCurrentPlayer()
 {
-	boost::shared_ptr<PlayerInterface> tmpPlayer = getPlayerByUniqueId(getCurrentHand()->getCurrentBeRo()->getCurrentPlayersTurnId());
+	std::shared_ptr<PlayerInterface> tmpPlayer = getPlayerByUniqueId(getCurrentHand()->getCurrentBeRo()->getCurrentPlayersTurnId());
 	if (!tmpPlayer.get())
 		throw LocalException(__FILE__, __LINE__, ERR_CURRENT_PLAYER_NOT_FOUND);
 	return tmpPlayer;
 }
 
-boost::shared_ptr<PlayerInterface> Game::getPlayerByName(const std::string &name)
+std::shared_ptr<PlayerInterface> Game::getPlayerByName(const std::string &name)
 {
-	boost::shared_ptr<PlayerInterface> tmpPlayer;
+	std::shared_ptr<PlayerInterface> tmpPlayer;
 	PlayerList tmpList = getSeatsList();
 	PlayerListIterator i = tmpList->begin();
 	PlayerListIterator end = tmpList->end();
@@ -309,6 +307,6 @@ void Game::raiseBlinds()
 				}
 			}
 		}
-		currentSmallBlind = min(currentSmallBlind,startQuantityPlayers*startCash/2);
+		currentSmallBlind = std::min(currentSmallBlind,startQuantityPlayers*startCash/2);
 	}
 }

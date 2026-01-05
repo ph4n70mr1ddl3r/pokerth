@@ -31,7 +31,7 @@
 #ifndef STDSESSION_H
 #define STDSESSION_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <string>
 
 #include "serverdata.h"
@@ -63,14 +63,14 @@ public:
 
 	// Only one of the two inits should be called.
 	bool init();
-	void init(boost::shared_ptr<AvatarManager> manager);
+	void init(std::shared_ptr<AvatarManager> manager);
 
 	void addOwnAvatar(const std::string &avatarFile);
 
 	void startLocalGame(const GameData &gameData, const StartData &startData);
-	void startClientGame(boost::shared_ptr<Game> game);
+	void startClientGame(std::shared_ptr<Game> game);
 
-	boost::shared_ptr<Game> getCurrentGame();
+	std::shared_ptr<Game> getCurrentGame();
 
 	GuiInterface *getGui();
 	Log* getMyLog()
@@ -79,7 +79,7 @@ public:
 	}
 	GameType getGameType();
 
-	boost::shared_ptr<AvatarManager> getAvatarManager();
+	std::shared_ptr<AvatarManager> getAvatarManager();
 
 	void startInternetClient();
 	void startNetworkClient(const std::string &serverAddress, unsigned serverPort, bool ipv6, bool sctp);
@@ -139,14 +139,14 @@ private:
 
 	std::string myIrcNick;
 
-	boost::shared_ptr<ClientThread> myNetClient;
+	std::shared_ptr<ClientThread> myNetClient;
 #ifdef POKERTH_DEDICATED_SERVER	
-	boost::shared_ptr<ServerManager> myNetServer;
+	std::shared_ptr<ServerManager> myNetServer;
 #endif
 
-	boost::shared_ptr<AvatarManager> myAvatarManager;
+	std::shared_ptr<AvatarManager> myAvatarManager;
 
-	boost::shared_ptr<Game> currentGame;
+	std::shared_ptr<Game> currentGame;
 	GuiInterface *myGui;
 	ConfigFile *myConfig;
 	Log *myLog;

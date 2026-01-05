@@ -35,7 +35,7 @@
 #include <net/servercallback.h>
 #include <game_defs.h>
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class guiLog;
 class Session;
@@ -48,8 +48,8 @@ public:
 
 	virtual void initGui(int speed) =0;
 
-	virtual boost::shared_ptr<Session> getSession() =0;
-	virtual void setSession(boost::shared_ptr<Session> session) =0;
+	virtual std::shared_ptr<Session> getSession() =0;
+	virtual void setSession(std::shared_ptr<Session> session) =0;
 
 	virtual gameTableImpl *getMyW() const=0;
 	virtual guiLog* getMyGuiLog() const=0;

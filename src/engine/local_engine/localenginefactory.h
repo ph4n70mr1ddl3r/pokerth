@@ -38,7 +38,7 @@
 #include <boardinterface.h>
 #include <playerinterface.h>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <vector>
 
 class ConfigFile;
@@ -49,10 +49,10 @@ public:
 	LocalEngineFactory(ConfigFile*);
 	~LocalEngineFactory();
 
-	virtual boost::shared_ptr<HandInterface> createHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost::shared_ptr<BoardInterface> b, Log *l, PlayerList sl, PlayerList apl, PlayerList rpl, int id, int sP, int dP, int sB,int sC);
-	virtual boost::shared_ptr<BoardInterface> createBoard();
-	virtual boost::shared_ptr<PlayerInterface> createPlayer(int id, unsigned uniqueId, PlayerType type, std::string name, std::string avatar, int sC, bool aS, bool sotS, int mB);
-	virtual std::vector<boost::shared_ptr<BeRoInterface> > createBeRo(HandInterface *hi, unsigned dP, int sB);
+	virtual std::shared_ptr<HandInterface> createHand(std::shared_ptr<EngineFactory> f, std::shared_ptr<GuiInterface> g, std::shared_ptr<BoardInterface> b, Log *l, PlayerList sl, PlayerList apl, PlayerList rpl, int id, int sP, int dP, int sB,int sC);
+	virtual std::shared_ptr<BoardInterface> createBoard();
+	virtual std::shared_ptr<PlayerInterface> createPlayer(int id, unsigned uniqueId, PlayerType type, std::string name, std::string avatar, int sC, bool aS, bool sotS, int mB);
+	virtual std::vector<std::shared_ptr<BeRoInterface> > createBeRo(HandInterface *hi, unsigned dP, int sB);
 
 private:
 	ConfigFile *myConfig;
