@@ -110,9 +110,10 @@ ClientThread::Init(
 
 	ClientContext &context = GetContext();
 
+	(void)ipv6;  // IPv6 disabled - always use IPv4
 	context.SetSctp(sctp);
 	context.SetTls(tls);
-	context.SetAddrFamily(ipv6 ? AF_INET6 : AF_INET);
+	context.SetAddrFamily(AF_INET);  // Always use IPv4 for better compatibility
 	context.SetServerAddr(serverAddress);
 	context.SetServerListUrl(serverListUrl);
 	context.SetServerPassword(serverPassword);
