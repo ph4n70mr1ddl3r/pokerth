@@ -474,7 +474,26 @@ ClientStateStartConnect::Enter(std::shared_ptr<ClientThread> client)
         boost::bind(
             &ClientStateStartConnect::TimerTimeout, this, boost::asio::placeholders::error, client));
 
-    boost::asio::ip::tcp::endpoint endpoint = m_remoteEndpointIterator->endpoint();
+    int targetFamily = client->GetContext().GetAddrFamily();
+
+    boost::asio::ip::tcp::endpoint endpoint;
+    bool found = false;
+    for (auto it = m_remoteEndpointIterator; it != m_remoteEndpoint.end(); ++it) {
+        if (it->endpoint().address().is_v6() == (targetFamily == AF_INET6)) {
+            endpoint = it->endpoint();
+            m_remoteEndpointIterator = it;
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        if (targetFamily == AF_INET6) {
+            throw ClientException(__FILE__, __LINE__, ERR_SOCK_CONNECT_IPV6_FAILED, 0);
+        } else {
+            throw ClientException(__FILE__, __LINE__, ERR_SOCK_CONNECT_FAILED, 0);
+        }
+    }
 
     if (client->GetContext().GetSessionData()->IsSsl()) {
         client->GetContext().GetSessionData()->GetSslStream()->lowest_layer().async_connect(
@@ -526,29 +545,49 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
                 client->SetState(ClientStateStartSession::Instance());
             }
         } else if (endpoint_iterator != m_remoteEndpoint.end()) {
-            // Try next resolve entry.
             ClientContext &context = client->GetContext();
             boost::system::error_code closeEc;
-            boost::asio::ip::tcp::endpoint endpoint = endpoint_iterator->endpoint();
+            int targetFamily = context.GetAddrFamily();
 
-            if (context.GetSessionData()->IsSsl()) {
-                context.GetSessionData()->GetSslStream()->lowest_layer().close(closeEc);
-                context.GetSessionData()->GetSslStream()->lowest_layer().async_connect(
-                    endpoint,
-                    boost::bind(&ClientStateStartConnect::HandleConnect,
-                                this,
-                                boost::asio::placeholders::error,
-                                ++m_remoteEndpointIterator,
-                                client));
+            boost::asio::ip::tcp::endpoint endpoint;
+            bool found = false;
+            for (auto it = endpoint_iterator; it != m_remoteEndpoint.end(); ++it) {
+                if (it->endpoint().address().is_v6() == (targetFamily == AF_INET6)) {
+                    endpoint = it->endpoint();
+                    endpoint_iterator = it;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) {
+                if (context.GetSessionData()->IsSsl()) {
+                    context.GetSessionData()->GetSslStream()->lowest_layer().close(closeEc);
+                    context.GetSessionData()->GetSslStream()->lowest_layer().async_connect(
+                        endpoint,
+                        boost::bind(&ClientStateStartConnect::HandleConnect,
+                                    this,
+                                    boost::asio::placeholders::error,
+                                    ++endpoint_iterator,
+                                    client));
+                } else {
+                    context.GetSessionData()->GetAsioSocket()->close(closeEc);
+                    context.GetSessionData()->GetAsioSocket()->async_connect(
+                        endpoint,
+                        boost::bind(&ClientStateStartConnect::HandleConnect,
+                                    this,
+                                    boost::asio::placeholders::error,
+                                    ++endpoint_iterator,
+                                    client));
+                }
             } else {
-                context.GetSessionData()->GetAsioSocket()->close(closeEc);
-                context.GetSessionData()->GetAsioSocket()->async_connect(
-                    endpoint,
-                    boost::bind(&ClientStateStartConnect::HandleConnect,
-                                this,
-                                boost::asio::placeholders::error,
-                                ++m_remoteEndpointIterator,
-                                client));
+                if (ec != boost::asio::error::operation_aborted) {
+                    if (targetFamily == AF_INET6) {
+                        throw ClientException(__FILE__, __LINE__, ERR_SOCK_CONNECT_IPV6_FAILED, ec.value());
+                    } else {
+                        throw ClientException(__FILE__, __LINE__, ERR_SOCK_CONNECT_FAILED, ec.value());
+                    }
+                }
             }
         } else {
             if (ec != boost::asio::error::operation_aborted) {
