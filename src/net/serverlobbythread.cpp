@@ -253,6 +253,7 @@ ServerLobbyThread::ServerLobbyThread(GuiInterface &gui, ServerMode mode, ConfigF
 	  m_mode(mode), m_serverConfig(serverConfig), m_curGameId(0), m_curUniquePlayerId(0), m_curSessionId(INVALID_SESSION + 1),
 	  m_statDataChanged(false), m_removeGameTimer(*ioService),
 	  m_saveStatisticsTimer(*ioService), m_loginLockTimer(*ioService),
+	  m_chatRateLimiter(5, 1),  // Allow 5 messages per second max
 	  m_startTime(boost::posix_time::second_clock::local_time())
 {
 	m_internalServerCallback.reset(new InternalServerCallback(*this));
@@ -263,7 +264,7 @@ ServerLobbyThread::ServerLobbyThread(GuiInterface &gui, ServerMode mode, ConfigF
 	m_database = dbFactory.CreateServerDBObject(*m_internalServerCallback, m_ioService);
 }
 
-ServerLobbyThread::~ServerLobbyThread()
+ServerLobbyThread::~ServerLobbyThread() noexcept
 {
 }
 
@@ -1421,6 +1422,14 @@ void
 ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> session, const ChatRequestMessage &chatRequest)
 {
 	bool chatSent = false;
+
+	// Check rate limiting (non-guests only)
+	unsigned playerId = session->GetPlayerData() ? session->GetPlayerData()->GetUniqueId() : 0;
+	if (playerId > 0 && !m_chatRateLimiter.IsAllowed(playerId)) {
+		LOG_ERROR("Player " << playerId << " exceeded chat rate limit");
+		return;  // Silently drop message on rate limit
+	}
+
 	// Guests are not allowed to chat.
 	if (session->GetPlayerData() && session->GetPlayerData()->GetRights() != PLAYER_RIGHTS_GUEST) {
 		if (!chatRequest.has_targetgameid() && !chatRequest.has_targetplayerid()) {

@@ -94,4 +94,30 @@ private:
 	friend class ThreadStarter;
 };
 
+// RAII wrapper for timed mutex locks to prevent indefinite blocking
+template<typename MutexType>
+class TimedLock {
+public:
+	TimedLock(MutexType &mutex, unsigned timeoutMsec = 5000)
+		: m_mutex(mutex), m_locked(false) {
+		m_locked = m_mutex.timed_lock(boost::posix_time::milliseconds(timeoutMsec));
+	}
+
+	~TimedLock() {
+		if (m_locked) {
+			m_mutex.unlock();
+		}
+	}
+
+	bool IsLocked() const { return m_locked; }
+
+	// Prevent copying
+	TimedLock(const TimedLock&) = delete;
+	TimedLock& operator=(const TimedLock&) = delete;
+
+private:
+	MutexType &m_mutex;
+	bool m_locked;
+};
+
 #endif

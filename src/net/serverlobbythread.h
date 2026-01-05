@@ -165,7 +165,6 @@ protected:
 	void HandleNetPacketReportGame(boost::shared_ptr<SessionData> session, const ReportGameMessage &report);
 	void HandleNetPacketAdminRemoveGame(boost::shared_ptr<SessionData> session, const AdminRemoveGameMessage &removeGame);
 	void HandleNetPacketAdminBanPlayer(boost::shared_ptr<SessionData> session, const AdminBanPlayerMessage &banPlayer);
-	// TODO would be better to use state pattern here.
 	void AuthChallenge(boost::shared_ptr<SessionData> session, const std::string &secret);
 	void CheckAvatarBlacklist(boost::shared_ptr<SessionData> session);
 	void AvatarBlacklisted(unsigned playerId);
@@ -223,6 +222,41 @@ protected:
 
 	u_int32_t GetRejoinGameIdForPlayer(const std::string &playerName, const std::string &guid, unsigned &outPlayerUniqueId);
 
+	// Rate limiter for chat messages to prevent spam
+	class ChatRateLimiter {
+	public:
+		ChatRateLimiter(unsigned maxMessages = 5, unsigned windowSec = 1)
+			: m_maxMessages(maxMessages), m_windowSec(windowSec) {}
+
+		bool IsAllowed(unsigned playerId) {
+			boost::mutex::scoped_lock lock(m_mutex);
+			auto now = boost::posix_time::microsec_clock::universal_time();
+			auto &entry = m_playerMap[playerId];
+
+			// Remove old entries outside the window
+			auto windowStart = now - boost::posix_time::seconds(m_windowSec);
+			auto it = entry.begin();
+			while (it != entry.end() && *it < windowStart) {
+				it = entry.erase(it);
+			}
+
+			// Check if under limit
+			if (entry.size() >= m_maxMessages) {
+				return false;
+			}
+
+			// Record this message
+			entry.push_back(now);
+			return true;
+		}
+
+	private:
+		unsigned m_maxMessages;
+		unsigned m_windowSec;
+		std::map<unsigned, std::list<boost::posix_time::ptime>> m_playerMap;
+		boost::mutex m_mutex;
+	};
+
 private:
 
 	boost::shared_ptr<boost::asio::io_context> m_ioService;
@@ -265,6 +299,8 @@ private:
 	boost::shared_ptr<ServerBanManager> m_banManager;
 	boost::shared_ptr<ChatCleanerManager> m_chatCleanerManager;
 	boost::shared_ptr<ServerDBInterface> m_database;
+
+	ChatRateLimiter m_chatRateLimiter;
 
 	boost::asio::steady_timer m_removeGameTimer;
 	boost::asio::steady_timer m_saveStatisticsTimer;
