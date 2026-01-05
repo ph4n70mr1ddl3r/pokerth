@@ -96,7 +96,7 @@ ClientStateInit::~ClientStateInit()
 }
 
 void
-ClientStateInit::Enter(boost::shared_ptr<ClientThread> client)
+ClientStateInit::Enter(std::shared_ptr<ClientThread> client)
 {
 	ClientContext &context = client->GetContext();
 
@@ -116,7 +116,7 @@ ClientStateInit::Enter(boost::shared_ptr<ClientThread> client)
 }
 
 void
-ClientStateInit::Exit(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateInit::Exit(std::shared_ptr<ClientThread> /*client*/)
 {
 	// Nothing to do.
 }
@@ -139,7 +139,7 @@ ClientStateStartResolve::~ClientStateStartResolve()
 }
 
 void
-ClientStateStartResolve::Enter(boost::shared_ptr<ClientThread> client)
+ClientStateStartResolve::Enter(std::shared_ptr<ClientThread> client)
 {
 	ClientContext &context = client->GetContext();
 	ostringstream portStr;
@@ -156,14 +156,14 @@ ClientStateStartResolve::Enter(boost::shared_ptr<ClientThread> client)
 }
 
 void
-ClientStateStartResolve::Exit(boost::shared_ptr<ClientThread> client)
+ClientStateStartResolve::Exit(std::shared_ptr<ClientThread> client)
 {
 	client->GetContext().GetResolver()->cancel();
 }
 
 void
 ClientStateStartResolve::HandleResolve(const boost::system::error_code& ec, boost::asio::ip::tcp::resolver::results_type endpoint_iterator,
-									   boost::shared_ptr<ClientThread> client)
+									   std::shared_ptr<ClientThread> client)
 {
 	if (!ec && &client->GetState() == this) {
 		client->GetCallback().SignalNetClientConnect(MSG_SOCK_RESOLVE_DONE);
@@ -194,7 +194,7 @@ ClientStateStartServerListDownload::~ClientStateStartServerListDownload()
 }
 
 void
-ClientStateStartServerListDownload::Enter(boost::shared_ptr<ClientThread> client)
+ClientStateStartServerListDownload::Enter(std::shared_ptr<ClientThread> client)
 {
 	path tmpServerListPath(client->GetCacheServerListFileName());
 	if (tmpServerListPath.empty())
@@ -214,7 +214,7 @@ ClientStateStartServerListDownload::Enter(boost::shared_ptr<ClientThread> client
 		client->SetState(ClientStateReadingServerList::Instance());
 	} else {
 		// Download the server list.
-		boost::shared_ptr<DownloadHelper> downloader(new DownloadHelper);
+		std::shared_ptr<DownloadHelper> downloader(new DownloadHelper);
 		downloader->Init(client->GetContext().GetServerListUrl(), tmpServerListPath.string());
 		ClientStateDownloadingServerList::Instance().SetDownloadHelper(downloader);
 		client->SetState(ClientStateDownloadingServerList::Instance());
@@ -222,7 +222,7 @@ ClientStateStartServerListDownload::Enter(boost::shared_ptr<ClientThread> client
 }
 
 void
-ClientStateStartServerListDownload::Exit(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateStartServerListDownload::Exit(std::shared_ptr<ClientThread> /*client*/)
 {
 	// Nothing to do.
 }
@@ -245,7 +245,7 @@ ClientStateDownloadingServerList::~ClientStateDownloadingServerList()
 }
 
 void
-ClientStateDownloadingServerList::Enter(boost::shared_ptr<ClientThread> client)
+ClientStateDownloadingServerList::Enter(std::shared_ptr<ClientThread> client)
 {
 	client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
 	client->GetStateTimer().async_wait(
@@ -254,19 +254,19 @@ ClientStateDownloadingServerList::Enter(boost::shared_ptr<ClientThread> client)
 }
 
 void
-ClientStateDownloadingServerList::Exit(boost::shared_ptr<ClientThread> client)
+ClientStateDownloadingServerList::Exit(std::shared_ptr<ClientThread> client)
 {
 	client->GetStateTimer().cancel();
 }
 
 void
-ClientStateDownloadingServerList::SetDownloadHelper(boost::shared_ptr<DownloadHelper> helper)
+ClientStateDownloadingServerList::SetDownloadHelper(std::shared_ptr<DownloadHelper> helper)
 {
 	m_downloadHelper = helper;
 }
 
 void
-ClientStateDownloadingServerList::TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client)
+ClientStateDownloadingServerList::TimerLoop(const boost::system::error_code& ec, std::shared_ptr<ClientThread> client)
 {
 	if (!ec && &client->GetState() == this) {
 		if (m_downloadHelper->Process()) {
@@ -299,7 +299,7 @@ ClientStateReadingServerList::~ClientStateReadingServerList()
 }
 
 void
-ClientStateReadingServerList::Enter(boost::shared_ptr<ClientThread> client)
+ClientStateReadingServerList::Enter(std::shared_ptr<ClientThread> client)
 {
 	ClientContext &context = client->GetContext();
 	path zippedServerListPath(context.GetCacheDir());
@@ -394,7 +394,7 @@ ClientStateReadingServerList::Enter(boost::shared_ptr<ClientThread> client)
 }
 
 void
-ClientStateReadingServerList::Exit(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateReadingServerList::Exit(std::shared_ptr<ClientThread> /*client*/)
 {
 	// Nothing to do.
 }
@@ -417,7 +417,7 @@ ClientStateWaitChooseServer::~ClientStateWaitChooseServer()
 }
 
 void
-ClientStateWaitChooseServer::Enter(boost::shared_ptr<ClientThread> client)
+ClientStateWaitChooseServer::Enter(std::shared_ptr<ClientThread> client)
 {
 	client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
 	client->GetStateTimer().async_wait(
@@ -426,13 +426,13 @@ ClientStateWaitChooseServer::Enter(boost::shared_ptr<ClientThread> client)
 }
 
 void
-ClientStateWaitChooseServer::Exit(boost::shared_ptr<ClientThread> client)
+ClientStateWaitChooseServer::Exit(std::shared_ptr<ClientThread> client)
 {
 	client->GetStateTimer().cancel();
 }
 
 void
-ClientStateWaitChooseServer::TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client)
+ClientStateWaitChooseServer::TimerLoop(const boost::system::error_code& ec, std::shared_ptr<ClientThread> client)
 {
 	if (!ec && &client->GetState() == this) {
 		unsigned serverId;
@@ -467,7 +467,7 @@ ClientStateStartConnect::~ClientStateStartConnect()
 }
 
 void
-ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
+ClientStateStartConnect::Enter(std::shared_ptr<ClientThread> client)
 {
     client->GetStateTimer().expires_after(seconds(CLIENT_CONNECT_TIMEOUT_SEC));
     client->GetStateTimer().async_wait(
@@ -496,7 +496,7 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
 }
 
 void
-ClientStateStartConnect::Exit(boost::shared_ptr<ClientThread> client)
+ClientStateStartConnect::Exit(std::shared_ptr<ClientThread> client)
 {
 	client->GetStateTimer().cancel();
 }
@@ -510,7 +510,7 @@ ClientStateStartConnect::SetRemoteEndpoint(boost::asio::ip::tcp::resolver::resul
 
 void
 ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boost::asio::ip::basic_resolver_iterator<boost::asio::ip::tcp> endpoint_iterator,
-                                       boost::shared_ptr<ClientThread> client)
+                                       std::shared_ptr<ClientThread> client)
 {
     if (&client->GetState() == this) {
         if (!ec) {
@@ -563,7 +563,7 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
 }
 
 void
-ClientStateStartConnect::HandleSslHandshake(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client)
+ClientStateStartConnect::HandleSslHandshake(const boost::system::error_code& ec, std::shared_ptr<ClientThread> client)
 {
     if (&client->GetState() == this) {
         if (!ec) {
@@ -581,7 +581,7 @@ ClientStateStartConnect::HandleSslHandshake(const boost::system::error_code& ec,
 }
 
 void
-ClientStateStartConnect::TimerTimeout(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client)
+ClientStateStartConnect::TimerTimeout(const boost::system::error_code& ec, std::shared_ptr<ClientThread> client)
 {
     if (!ec && &client->GetState() == this) {
         ClientContext &context = client->GetContext();
@@ -611,7 +611,7 @@ AbstractClientStateReceiving::~AbstractClientStateReceiving()
 }
 
 void
-AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
+AbstractClientStateReceiving::HandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket)
 {
 	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_PlayerInfoReplyMessage) {
 		const PlayerInfoReplyMessage &infoReply = tmpPacket->GetMsg()->playerinforeplymessage();
@@ -676,7 +676,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		const GamePlayerLeftMessage &netLeft = tmpPacket->GetMsg()->gameplayerleftmessage();
 
 		if (client->GetGame()) {
-			boost::shared_ptr<PlayerInterface> tmpPlayer = client->GetGame()->getPlayerByUniqueId(netLeft.playerid());
+			std::shared_ptr<PlayerInterface> tmpPlayer = client->GetGame()->getPlayerByUniqueId(netLeft.playerid());
 			if (tmpPlayer) {
 				tmpPlayer->setIsKicked(netLeft.gameplayerleftreason() == GamePlayerLeftMessage::leftKicked);
 			}
@@ -702,7 +702,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		// Another player joined the network game.
 		const GamePlayerJoinedMessage &netPlayerJoined = tmpPacket->GetMsg()->gameplayerjoinedmessage();
 
-		boost::shared_ptr<PlayerData> playerData = client->CreatePlayerData(netPlayerJoined.playerid(), netPlayerJoined.isgameadmin());
+		std::shared_ptr<PlayerData> playerData = client->CreatePlayerData(netPlayerJoined.playerid(), netPlayerJoined.isgameadmin());
 		client->AddPlayerData(playerData);
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_GameSpectatorJoinedMessage) {
 		// Another spectator joined the network game.
@@ -743,7 +743,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 			client->GetCallback().SignalNetClientLobbyChatMsg("(chat bot)", netMessage.chattext());
 		} else if (netMessage.chattype() == ChatMessage::chatTypeGame) {
 			unsigned playerId = netMessage.playerid();
-			boost::shared_ptr<PlayerData> tmpPlayer = client->GetPlayerDataByUniqueId(playerId);
+			std::shared_ptr<PlayerData> tmpPlayer = client->GetPlayerDataByUniqueId(playerId);
 			if (tmpPlayer.get())
 				playerName = tmpPlayer->GetName();
 			if (!playerName.empty())
@@ -976,19 +976,19 @@ ClientStateStartSession::~ClientStateStartSession()
 }
 
 void
-ClientStateStartSession::Enter(boost::shared_ptr<ClientThread> client)
+ClientStateStartSession::Enter(std::shared_ptr<ClientThread> client)
 {
 	// Now we finally start receiving data.
 	client->StartAsyncRead();
 }
 
 void
-ClientStateStartSession::Exit(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateStartSession::Exit(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateStartSession::InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
+ClientStateStartSession::InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket)
 {
 	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_AnnounceMessage) {
 		// Server has send announcement - check data.
@@ -1010,7 +1010,7 @@ ClientStateStartSession::InternalHandlePacket(boost::shared_ptr<ClientThread> cl
 		// CASE 2: Unauthenticated login (network game or dedicated server without auth backend).
 		else if (netAnnounce.servertype() == AnnounceMessage::serverTypeInternetNoAuth
 				 || netAnnounce.servertype() == AnnounceMessage::serverTypeLAN) {
-			boost::shared_ptr<NetPacket> init(new NetPacket);
+			std::shared_ptr<NetPacket> init(new NetPacket);
 			init->GetMsg()->set_messagetype(PokerTHMessage::Type_InitMessage);
 			InitMessage *netInit = init->GetMsg()->mutable_initmessage();
 			netInit->mutable_requestedversion()->set_majorversion(NET_VERSION_MAJOR);
@@ -1056,7 +1056,7 @@ ClientStateWaitEnterLogin::~ClientStateWaitEnterLogin()
 }
 
 void
-ClientStateWaitEnterLogin::Enter(boost::shared_ptr<ClientThread> client)
+ClientStateWaitEnterLogin::Enter(std::shared_ptr<ClientThread> client)
 {
 	qDebug() << "[AUTH DEBUG] ClientStateWaitEnterLogin::Enter - Entering login state";
 	client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
@@ -1066,14 +1066,14 @@ ClientStateWaitEnterLogin::Enter(boost::shared_ptr<ClientThread> client)
 }
 
 void
-ClientStateWaitEnterLogin::Exit(boost::shared_ptr<ClientThread> client)
+ClientStateWaitEnterLogin::Exit(std::shared_ptr<ClientThread> client)
 {
 	qDebug() << "[AUTH DEBUG] ClientStateWaitEnterLogin::Exit - Exiting login state";
 	client->GetStateTimer().cancel();
 }
 
 void
-ClientStateWaitEnterLogin::HandlePacket(boost::shared_ptr<ClientThread> /*client*/, boost::shared_ptr<NetPacket> tmpPacket)
+ClientStateWaitEnterLogin::HandlePacket(std::shared_ptr<ClientThread> /*client*/, std::shared_ptr<NetPacket> tmpPacket)
 {
 	qDebug() << "[AUTH DEBUG] ClientStateWaitEnterLogin::HandlePacket - Message type:" << tmpPacket->GetMsg()->messagetype();
 	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_ErrorMessage) {
@@ -1086,14 +1086,14 @@ ClientStateWaitEnterLogin::HandlePacket(boost::shared_ptr<ClientThread> /*client
 }
 
 void
-ClientStateWaitEnterLogin::TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client)
+ClientStateWaitEnterLogin::TimerLoop(const boost::system::error_code& ec, std::shared_ptr<ClientThread> client)
 {
     if (!ec && &client->GetState() == this) {
         ClientThread::LoginData loginData;
         if (client->GetLoginData(loginData)) {
             qDebug() << "[AUTH DEBUG] TimerLoop - Got login data, preparing InitMessage";
             ClientContext &context = client->GetContext();
-            boost::shared_ptr<NetPacket> init(new NetPacket);
+            std::shared_ptr<NetPacket> init(new NetPacket);
             init->GetMsg()->set_messagetype(PokerTHMessage::Type_InitMessage);
             InitMessage *netInit = init->GetMsg()->mutable_initmessage();
             netInit->mutable_requestedversion()->set_majorversion(NET_VERSION_MAJOR);
@@ -1164,27 +1164,27 @@ ClientStateWaitAuthChallenge::~ClientStateWaitAuthChallenge()
 }
 
 void
-ClientStateWaitAuthChallenge::Enter(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitAuthChallenge::Enter(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateWaitAuthChallenge::Exit(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitAuthChallenge::Exit(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateWaitAuthChallenge::InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
+ClientStateWaitAuthChallenge::InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket)
 {
 	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_AuthServerChallengeMessage) {
 		const AuthServerChallengeMessage &netAuth = tmpPacket->GetMsg()->authserverchallengemessage();
 		string challengeStr(netAuth.serverchallenge());
-		boost::shared_ptr<SessionData> tmpSession = client->GetContext().GetSessionData();
+		std::shared_ptr<SessionData> tmpSession = client->GetContext().GetSessionData();
 		if (!tmpSession->AuthStep(2, challengeStr.c_str()))
 			throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_PASSWORD, 0);
 		string outUserData(tmpSession->AuthGetNextOutMsg());
 
-		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		std::shared_ptr<NetPacket> packet(new NetPacket);
 		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AuthClientResponseMessage);
 		AuthClientResponseMessage *outAuth = packet->GetMsg()->mutable_authclientresponsemessage();
 		outAuth->set_clientresponse(outUserData);
@@ -1211,23 +1211,23 @@ ClientStateWaitAuthVerify::~ClientStateWaitAuthVerify()
 }
 
 void
-ClientStateWaitAuthVerify::Enter(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitAuthVerify::Enter(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateWaitAuthVerify::Exit(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitAuthVerify::Exit(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateWaitAuthVerify::InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
+ClientStateWaitAuthVerify::InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket)
 {
 	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_AuthServerVerificationMessage) {
 		// Check subtype.
 		const AuthServerVerificationMessage &netAuth = tmpPacket->GetMsg()->authserververificationmessage();
 		string verificationStr(netAuth.serververification());
-		boost::shared_ptr<SessionData> tmpSession = client->GetContext().GetSessionData();
+		std::shared_ptr<SessionData> tmpSession = client->GetContext().GetSessionData();
 		if (!tmpSession->AuthStep(3, verificationStr.c_str()))
 			throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_PASSWORD, 0);
 
@@ -1253,19 +1253,19 @@ ClientStateWaitSession::~ClientStateWaitSession()
 }
 
 void
-ClientStateWaitSession::Enter(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitSession::Enter(std::shared_ptr<ClientThread> /*client*/)
 {
 	qDebug() << "[AUTH DEBUG] ClientStateWaitSession::Enter - Waiting for server session response (InitAck or AvatarRequest)";
 }
 
 void
-ClientStateWaitSession::Exit(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitSession::Exit(std::shared_ptr<ClientThread> /*client*/)
 {
 	qDebug() << "[AUTH DEBUG] ClientStateWaitSession::Exit - Exiting session wait state";
 }
 
 void
-ClientStateWaitSession::InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
+ClientStateWaitSession::InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket)
 {
 	qDebug() << "[AUTH DEBUG] ClientStateWaitSession::InternalHandlePacket - Received message type:" << tmpPacket->GetMsg()->messagetype();
 	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_InitAckMessage) {
@@ -1328,17 +1328,17 @@ ClientStateWaitJoin::~ClientStateWaitJoin()
 }
 
 void
-ClientStateWaitJoin::Enter(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitJoin::Enter(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateWaitJoin::Exit(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitJoin::Exit(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateWaitJoin::InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
+ClientStateWaitJoin::InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket)
 {
 	ClientContext &context = client->GetContext();
 
@@ -1352,7 +1352,7 @@ ClientStateWaitJoin::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		client->ModifyGameInfoClearSpectatorsDuringGame();
 
 		// Player number is 0 on init. Will be set when the game starts.
-		boost::shared_ptr<PlayerData> playerData(
+		std::shared_ptr<PlayerData> playerData(
 			new PlayerData(client->GetGuiPlayerId(), 0, PLAYER_TYPE_HUMAN,
 						   context.GetPlayerRights(), netJoinAck.areyougameadmin()));
 		playerData->SetName(context.GetPlayerName());
@@ -1432,17 +1432,17 @@ ClientStateWaitGame::~ClientStateWaitGame()
 }
 
 void
-ClientStateWaitGame::Enter(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitGame::Enter(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateWaitGame::Exit(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitGame::Exit(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateWaitGame::InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
+ClientStateWaitGame::InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket)
 {
 	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_StartEventMessage) {
 		const StartEventMessage &netStartEvent = tmpPacket->GetMsg()->starteventmessage();
@@ -1485,7 +1485,7 @@ ClientStateSynchronizeStart::~ClientStateSynchronizeStart()
 }
 
 void
-ClientStateSynchronizeStart::Enter(boost::shared_ptr<ClientThread> client)
+ClientStateSynchronizeStart::Enter(std::shared_ptr<ClientThread> client)
 {
 	client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
 	client->GetStateTimer().async_wait(
@@ -1494,18 +1494,18 @@ ClientStateSynchronizeStart::Enter(boost::shared_ptr<ClientThread> client)
 }
 
 void
-ClientStateSynchronizeStart::Exit(boost::shared_ptr<ClientThread> client)
+ClientStateSynchronizeStart::Exit(std::shared_ptr<ClientThread> client)
 {
 	client->GetStateTimer().cancel();
 }
 
 void
-ClientStateSynchronizeStart::TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client)
+ClientStateSynchronizeStart::TimerLoop(const boost::system::error_code& ec, std::shared_ptr<ClientThread> client)
 {
 	if (!ec && &client->GetState() == this) {
 		if (client->IsSynchronized()) {
 			// Acknowledge start.
-			boost::shared_ptr<NetPacket> startAck(new NetPacket);
+			std::shared_ptr<NetPacket> startAck(new NetPacket);
 			startAck->GetMsg()->set_messagetype(PokerTHMessage::Type_StartEventAckMessage);
 			StartEventAckMessage *netStartAck = startAck->GetMsg()->mutable_starteventackmessage();
 			netStartAck->set_gameid(client->GetGameId());
@@ -1525,7 +1525,7 @@ ClientStateSynchronizeStart::TimerLoop(const boost::system::error_code& ec, boos
 }
 
 void
-ClientStateSynchronizeStart::InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
+ClientStateSynchronizeStart::InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket)
 {
 	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_GameStartInitialMessage) {
 		// Try to start anyway. Terminating here is very bad because rejoin is not possible then.
@@ -1555,17 +1555,17 @@ ClientStateWaitStart::~ClientStateWaitStart()
 }
 
 void
-ClientStateWaitStart::Enter(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitStart::Enter(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateWaitStart::Exit(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitStart::Exit(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateWaitStart::InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
+ClientStateWaitStart::InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket)
 {
 	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_GameStartInitialMessage
 			|| tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_GameStartRejoinMessage) {
@@ -1587,7 +1587,7 @@ ClientStateWaitStart::InternalHandlePacket(boost::shared_ptr<ClientThread> clien
 			if (numPlayers) {
 				for (unsigned i = 0; i < numPlayers; i++) {
 					unsigned playerId = netStartModeInitial.playerseats(i);
-					boost::shared_ptr<PlayerData> tmpPlayer = client->GetPlayerDataByUniqueId(playerId);
+					std::shared_ptr<PlayerData> tmpPlayer = client->GetPlayerDataByUniqueId(playerId);
 					if (!tmpPlayer)
 						throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 					tmpPlayer->SetNumber(i);
@@ -1610,7 +1610,7 @@ ClientStateWaitStart::InternalHandlePacket(boost::shared_ptr<ClientThread> clien
 			if (numPlayers) {
 				for (unsigned i = 0; i < numPlayers; i++) {
 					const GameStartRejoinMessage::RejoinPlayerData &playerData = netStartModeRejoin.rejoinplayerdata(i);
-					boost::shared_ptr<PlayerData> tmpPlayer = client->GetPlayerDataByUniqueId(playerData.playerid());
+					std::shared_ptr<PlayerData> tmpPlayer = client->GetPlayerDataByUniqueId(playerData.playerid());
 					if (!tmpPlayer) {
 						// If the player is not found: The corresponding session left. We need to create a generic player object.
 						// In order to have a complete seat list, we need all players, even those who left.
@@ -1653,17 +1653,17 @@ ClientStateWaitHand::~ClientStateWaitHand()
 }
 
 void
-ClientStateWaitHand::Enter(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitHand::Enter(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateWaitHand::Exit(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateWaitHand::Exit(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
+ClientStateWaitHand::InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket)
 {
 	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_HandStartMessage) {
 		// Hand was started.
@@ -1705,7 +1705,7 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		for (int i = 0; i < (int)numPlayers; i++) {
 			NetPlayerState seatState = netHandStart.seatstates(i);
 			int numberDiff = client->GetStartData().numberOfPlayers - client->GetOrigGuiPlayerNum();
-			boost::shared_ptr<PlayerInterface> tmpPlayer = client->GetGame()->getPlayerByNumber((i + numberDiff) % client->GetStartData().numberOfPlayers);
+			std::shared_ptr<PlayerInterface> tmpPlayer = client->GetGame()->getPlayerByNumber((i + numberDiff) % client->GetStartData().numberOfPlayers);
 			if (!tmpPlayer)
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 			switch (seatState) {
@@ -1737,11 +1737,11 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		client->GetCallback().SignalNetClientGameInfo(MSG_NET_GAME_CLIENT_HAND_START);
 		client->SetState(ClientStateRunHand::Instance());
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_EndOfGameMessage) {
-		boost::shared_ptr<Game> curGame = client->GetGame();
+		std::shared_ptr<Game> curGame = client->GetGame();
 		if (curGame) {
 			const EndOfGameMessage &netEndOfGame = tmpPacket->GetMsg()->endofgamemessage();
 
-			boost::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(netEndOfGame.winnerplayerid());
+			std::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(netEndOfGame.winnerplayerid());
 			if (!tmpPlayer)
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 			client->GetGui().logPlayerWinGame(tmpPlayer->getMyName(), curGame->getMyGameID());
@@ -1756,7 +1756,7 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		const AfterHandShowCardsMessage &showCards = tmpPacket->GetMsg()->afterhandshowcardsmessage();
 		const PlayerResult &r = showCards.playerresult();
 
-		boost::shared_ptr<PlayerInterface> tmpPlayer = client->GetGame()->getPlayerByUniqueId(r.playerid());
+		std::shared_ptr<PlayerInterface> tmpPlayer = client->GetGame()->getPlayerByUniqueId(r.playerid());
 		if (!tmpPlayer)
 			throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 
@@ -1778,11 +1778,11 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		client->GetCallback().SignalNetClientPostRiverShowCards(r.playerid());
 		client->GetClientLog()->logHoleCardsHandName(client->GetGame()->getActivePlayerList(), tmpPlayer, true);
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_PlayerIdChangedMessage) {
-		boost::shared_ptr<Game> curGame = client->GetGame();
+		std::shared_ptr<Game> curGame = client->GetGame();
 		if (curGame) {
 			// Perform Id change.
 			const PlayerIdChangedMessage &idChanged = tmpPacket->GetMsg()->playeridchangedmessage();
-			boost::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(idChanged.oldplayerid());
+			std::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(idChanged.oldplayerid());
 			if (!tmpPlayer)
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 			tmpPlayer->setMyUniqueID(idChanged.newplayerid());
@@ -1817,23 +1817,23 @@ ClientStateRunHand::~ClientStateRunHand()
 }
 
 void
-ClientStateRunHand::Enter(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateRunHand::Enter(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateRunHand::Exit(boost::shared_ptr<ClientThread> /*client*/)
+ClientStateRunHand::Exit(std::shared_ptr<ClientThread> /*client*/)
 {
 }
 
 void
-ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
+ClientStateRunHand::InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket)
 {
-	boost::shared_ptr<Game> curGame = client->GetGame();
+	std::shared_ptr<Game> curGame = client->GetGame();
 	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_PlayersActionDoneMessage) {
 		const PlayersActionDoneMessage &netActionDone = tmpPacket->GetMsg()->playersactiondonemessage();
 
-		boost::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(netActionDone.playerid());
+		std::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(netActionDone.playerid());
 		if (!tmpPlayer)
 			throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 
@@ -1911,7 +1911,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_PlayersTurnMessage) {
 		const PlayersTurnMessage &netPlayersTurn = tmpPacket->GetMsg()->playersturnmessage();
 
-		boost::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(netPlayersTurn.playerid());
+		std::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(netPlayersTurn.playerid());
 		if (!tmpPlayer)
 			throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 
@@ -2006,7 +2006,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		for (unsigned i = 0; i < numPlayers; i++) {
 			const AllInShowCardsMessage::PlayerAllIn &p = netAllInShow.playersallin(i);
 
-			boost::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(p.playerid());
+			std::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(p.playerid());
 			if (!tmpPlayer)
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 
@@ -2032,7 +2032,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		client->GetGui().waitForGuiUpdateDone();
 
 		// End of Hand, but keep cards hidden.
-		boost::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(hideCards.playerid());
+		std::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(hideCards.playerid());
 		if (!tmpPlayer)
 			throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 
@@ -2077,7 +2077,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		for (unsigned i = 0; i < numResults; i++) {
 			const PlayerResult &r = showCards.playerresults(i);
 
-			boost::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(r.playerid());
+			std::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(r.playerid());
 			if (!tmpPlayer)
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 

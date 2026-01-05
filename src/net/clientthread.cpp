@@ -82,10 +82,11 @@ ClientThread::ClientThread(GuiInterface &gui, AvatarManager &avatarManager, Log 
 	  m_stateTimer(*m_ioService), m_avatarTimer(*m_ioService)
 {
 	m_context = std::make_shared<ClientContext>();
-	myQtToolsInterface = CreateQtToolsWrapper();
-	if (!myQtToolsInterface) {
+	QtToolsInterface* rawQtTools = CreateQtToolsWrapper();
+	if (!rawQtTools) {
 		throw std::runtime_error("Failed to create QtToolsInterface");
 	}
+	myQtToolsInterface.reset(rawQtTools);
 	m_senderHelper = std::make_shared<SenderHelper>(m_ioService);
 }
 
@@ -213,7 +214,7 @@ ClientThread::SendLobbyChatMessage(const std::string &msg)
 {
 	// Warning: This function is called in the context of the GUI thread.
 	// Create a network packet containing the chat message.
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatRequestMessage);
 	ChatRequestMessage *netChat = packet->GetMsg()->mutable_chatrequestmessage();
 	netChat->set_chattext(msg);
@@ -227,7 +228,7 @@ ClientThread::SendPrivateChatMessage(unsigned targetPlayerId, const std::string 
 {
 	// Warning: This function is called in the context of the GUI thread.
 	// Create a network packet containing the chat message.
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatRequestMessage);
 	ChatRequestMessage *netChat = packet->GetMsg()->mutable_chatrequestmessage();
 	netChat->set_targetplayerid(targetPlayerId);
@@ -242,7 +243,7 @@ ClientThread::SendJoinFirstGame(const std::string &password, bool autoLeave)
 {
 	// Warning: This function is called in the context of the GUI thread.
 	// Create a network packet to request joining a game.
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_JoinExistingGameMessage);
 	JoinExistingGameMessage *netJoinGame = packet->GetMsg()->mutable_joinexistinggamemessage();
 	netJoinGame->set_gameid(1);
@@ -259,7 +260,7 @@ ClientThread::SendJoinGame(unsigned gameId, const std::string &password, bool au
 {
 	// Warning: This function is called in the context of the GUI thread.
 	// Create a network packet to request joining a game.
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_JoinExistingGameMessage);
 	JoinExistingGameMessage *netJoinGame = packet->GetMsg()->mutable_joinexistinggamemessage();
 	netJoinGame->set_gameid(gameId);
@@ -276,7 +277,7 @@ ClientThread::SendRejoinGame(unsigned gameId, bool autoLeave)
 {
 	// Warning: This function is called in the context of the GUI thread.
 	// Create a network packet to request rejoining a running game.
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_RejoinExistingGameMessage);
 	RejoinExistingGameMessage *netJoinGame = packet->GetMsg()->mutable_rejoinexistinggamemessage();
 	netJoinGame->set_gameid(gameId);
@@ -290,7 +291,7 @@ ClientThread::SendCreateGame(const GameData &gameData, const std::string &name, 
 {
 	// Warning: This function is called in the context of the GUI thread.
 	// Create a network packet to request creating a new game.
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_JoinNewGameMessage);
 	JoinNewGameMessage *netJoinGame = packet->GetMsg()->mutable_joinnewgamemessage();
 	netJoinGame->set_autoleave(autoLeave);
@@ -307,7 +308,7 @@ ClientThread::SendCreateGame(const GameData &gameData, const std::string &name, 
 void
 ClientThread::SendResetTimeout()
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ResetTimeoutMessage);
 	packet->GetMsg()->mutable_resettimeoutmessage();
 	boost::asio::post(*m_ioService, boost::bind(&ClientThread::SendSessionPacket, shared_from_this(), packet));
@@ -316,7 +317,7 @@ ClientThread::SendResetTimeout()
 void
 ClientThread::SendAskKickPlayer(unsigned playerId)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AskKickPlayerMessage);
 	AskKickPlayerMessage *netAsk = packet->GetMsg()->mutable_askkickplayermessage();
 	netAsk->set_gameid(GetGameId());
@@ -327,7 +328,7 @@ ClientThread::SendAskKickPlayer(unsigned playerId)
 void
 ClientThread::SendVoteKick(bool doKick)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_VoteKickRequestMessage);
 	VoteKickRequestMessage *netVote = packet->GetMsg()->mutable_votekickrequestmessage();
 	netVote->set_gameid(GetGameId());
@@ -342,7 +343,7 @@ ClientThread::SendVoteKick(bool doKick)
 void
 ClientThread::SendShowMyCards()
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ShowMyCardsRequestMessage);
 	packet->GetMsg()->mutable_showmycardsrequestmessage();
 	boost::asio::post(*m_ioService, boost::bind(&ClientThread::SendSessionPacket, shared_from_this(), packet));
@@ -351,7 +352,7 @@ ClientThread::SendShowMyCards()
 void
 ClientThread::SendInvitePlayerToCurrentGame(unsigned playerId)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_InvitePlayerToGameMessage);
 	InvitePlayerToGameMessage *netInvite = packet->GetMsg()->mutable_inviteplayertogamemessage();
 	netInvite->set_gameid(GetGameId());
@@ -362,7 +363,7 @@ ClientThread::SendInvitePlayerToCurrentGame(unsigned playerId)
 void
 ClientThread::SendRejectGameInvitation(unsigned gameId, DenyGameInvitationReason reason)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_RejectGameInvitationMessage);
 	RejectGameInvitationMessage *netReject = packet->GetMsg()->mutable_rejectgameinvitationmessage();
 	netReject->set_gameid(gameId);
@@ -373,7 +374,7 @@ ClientThread::SendRejectGameInvitation(unsigned gameId, DenyGameInvitationReason
 void
 ClientThread::SendReportAvatar(unsigned reportedPlayerId, const std::string &avatarHash)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ReportAvatarMessage);
 	ReportAvatarMessage *netReport = packet->GetMsg()->mutable_reportavatarmessage();
 	netReport->set_reportedplayerid(reportedPlayerId);
@@ -388,7 +389,7 @@ ClientThread::SendReportAvatar(unsigned reportedPlayerId, const std::string &ava
 void
 ClientThread::SendReportGameName(unsigned reportedGameId)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ReportGameMessage);
 	ReportGameMessage *netReport = packet->GetMsg()->mutable_reportgamemessage();
 	netReport->set_reportedgameid(reportedGameId);
@@ -398,7 +399,7 @@ ClientThread::SendReportGameName(unsigned reportedGameId)
 void
 ClientThread::SendAdminRemoveGame(unsigned removeGameId)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AdminRemoveGameMessage);
 	AdminRemoveGameMessage *netRemove = packet->GetMsg()->mutable_adminremovegamemessage();
 	netRemove->set_removegameid(removeGameId);
@@ -408,7 +409,7 @@ ClientThread::SendAdminRemoveGame(unsigned removeGameId)
 void
 ClientThread::SendAdminBanPlayer(unsigned playerId)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AdminBanPlayerMessage);
 	AdminBanPlayerMessage *netBan = packet->GetMsg()->mutable_adminbanplayermessage();
 	netBan->set_banplayerid(playerId);
@@ -422,13 +423,13 @@ ClientThread::StartAsyncRead()
 }
 
 void
-ClientThread::CloseSession(boost::shared_ptr<SessionData> /*session*/)
+ClientThread::CloseSession(std::shared_ptr<SessionData> /*session*/)
 {
 	throw NetException(__FILE__, __LINE__, ERR_SOCK_CONN_RESET, 0);
 }
 
 void
-ClientThread::HandlePacket(boost::shared_ptr<SessionData> /*session*/, boost::shared_ptr<NetPacket> packet)
+ClientThread::HandlePacket(std::shared_ptr<SessionData> /*session*/, std::shared_ptr<NetPacket> packet)
 {
 	GetState().HandlePacket(shared_from_this(), packet);
 }
@@ -545,7 +546,7 @@ ClientThread::GetGui()
 	return m_gui;
 }
 
-boost::shared_ptr<Log>
+std::shared_ptr<Log>
 ClientThread::GetClientLog()
 {
 	return m_clientLog;
@@ -630,7 +631,7 @@ ClientThread::InitGame()
 	WriteSessionGuidToFile();
 
 	// EngineFactory erstellen
-	boost::shared_ptr<EngineFactory> factory(new ClientEngineFactory); // LocalEngine erstellen
+	std::shared_ptr<EngineFactory> factory(new ClientEngineFactory); // LocalEngine erstellen
 
 	MapPlayerDataList();
 	// TODO
@@ -649,7 +650,7 @@ ClientThread::InitGame()
 }
 
 void
-ClientThread::SendSessionPacket(boost::shared_ptr<NetPacket> packet)
+ClientThread::SendSessionPacket(std::shared_ptr<NetPacket> packet)
 {
 	// Put packets in a buffer until the session is established.
 	if (IsSessionEstablished())
@@ -698,7 +699,7 @@ ClientThread::RequestPlayerInfo(unsigned id, bool requestAvatar)
 void
 ClientThread::RequestPlayerInfo(const list<unsigned> &idList, bool requestAvatar)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayerInfoRequestMessage);
 	PlayerInfoRequestMessage *netPlayerInfo = packet->GetMsg()->mutable_playerinforequestmessage();
 	BOOST_FOREACH(unsigned playerId, idList) {
@@ -741,7 +742,7 @@ ClientThread::SetPlayerInfo(unsigned id, const PlayerInfo &info)
 	}
 
 	// Update player data for current game.
-	boost::shared_ptr<PlayerData> playerData(GetPlayerDataByUniqueId(id));
+	std::shared_ptr<PlayerData> playerData(GetPlayerDataByUniqueId(id));
 	if (playerData) {
 		playerData->SetName(info.playerName);
 		playerData->SetType(info.ptype);
@@ -753,7 +754,7 @@ ClientThread::SetPlayerInfo(unsigned id, const PlayerInfo &info)
 		}
 	}
 	if (GetGame()) {
-		boost::shared_ptr<PlayerInterface> clientPlayer(GetGame()->getPlayerByUniqueId(id));
+		std::shared_ptr<PlayerInterface> clientPlayer(GetGame()->getPlayerByUniqueId(id));
 		if (clientPlayer)
 			clientPlayer->setMyName(info.playerName);
 		// Skip avatar here, the game is already running.
@@ -786,7 +787,7 @@ void
 ClientThread::SetNewGameAdmin(unsigned id)
 {
 	// Update player data for current game.
-	boost::shared_ptr<PlayerData> playerData = GetPlayerDataByUniqueId(id);
+	std::shared_ptr<PlayerData> playerData = GetPlayerDataByUniqueId(id);
 	if (playerData.get()) {
 		playerData->SetGameAdmin(true);
 		GetCallback().SignalNetClientNewGameAdmin(id, playerData->GetName());
@@ -810,7 +811,7 @@ ClientThread::RetrieveAvatarIfNeeded(unsigned id, const PlayerInfo &info)
 				m_avatarDownloader->QueueDownload(
 					id, avatarServerAddress + serverFileName, GetContext().GetCacheDir() + TEMP_AVATAR_FILENAME);
 			} else {
-				boost::shared_ptr<NetPacket> packet(new NetPacket);
+				std::shared_ptr<NetPacket> packet(new NetPacket);
 				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AvatarRequestMessage);
 				AvatarRequestMessage *netAvatar = packet->GetMsg()->mutable_avatarrequestmessage();
 				netAvatar->set_requestid(id);
@@ -843,7 +844,7 @@ ClientThread::AddTempAvatarFile(unsigned playerId, unsigned avatarSize, AvatarFi
 		LOG_ERROR("Invalid avatar size: " << avatarSize);
 		return;
 	}
-	boost::shared_ptr<AvatarFile> tmpAvatar(new AvatarFile);
+	std::shared_ptr<AvatarFile> tmpAvatar(new AvatarFile);
 	tmpAvatar->fileData.reserve(avatarSize);
 	tmpAvatar->fileType = type;
 	tmpAvatar->reportedSize = avatarSize;
@@ -867,7 +868,7 @@ ClientThread::CompleteTempAvatarFile(unsigned playerId)
 	AvatarFileMap::iterator pos = m_tempAvatarMap.find(playerId);
 	if (pos == m_tempAvatarMap.end())
 		throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_REQUEST_ID, 0);
-	boost::shared_ptr<AvatarFile> tmpAvatar = pos->second;
+	std::shared_ptr<AvatarFile> tmpAvatar = pos->second;
 	unsigned avatarSize = (unsigned)tmpAvatar->fileData.size();
 	if (avatarSize != tmpAvatar->reportedSize)
 		LOG_ERROR("Client received invalid avatar file size!");
@@ -879,7 +880,7 @@ ClientThread::CompleteTempAvatarFile(unsigned playerId)
 }
 
 void
-ClientThread::PassAvatarFileToManager(unsigned playerId, boost::shared_ptr<AvatarFile> AvatarFile)
+ClientThread::PassAvatarFileToManager(unsigned playerId, std::shared_ptr<AvatarFile> AvatarFile)
 {
 	PlayerInfo tmpPlayerInfo;
 	if (!GetCachedPlayerInfo(playerId, tmpPlayerInfo))
@@ -914,7 +915,7 @@ ClientThread::TimerCheckAvatarDownloads(const boost::system::error_code& ec)
 	if (!ec) {
 		if (m_avatarDownloader && m_avatarDownloader->HasDownloadResult()) {
 			unsigned playerId;
-			boost::shared_ptr<AvatarFile> tmpAvatar(new AvatarFile);
+			std::shared_ptr<AvatarFile> tmpAvatar(new AvatarFile);
 			m_avatarDownloader->GetDownloadResult(playerId, tmpAvatar->fileData);
 			tmpAvatar->reportedSize = tmpAvatar->fileData.size();
 			PassAvatarFileToManager(playerId, tmpAvatar);
@@ -931,7 +932,7 @@ ClientThread::UnsubscribeLobbyMsg()
 {
 	if (GetContext().GetSubscribeLobbyMsg()) {
 		// Send unsubscribe request.
-		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		std::shared_ptr<NetPacket> packet(new NetPacket);
 		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_SubscriptionRequestMessage);
 		SubscriptionRequestMessage *netRequest = packet->GetMsg()->mutable_subscriptionrequestmessage();
 		netRequest->set_subscriptionaction(SubscriptionRequestMessage::unsubscribeGameList);
@@ -947,7 +948,7 @@ ClientThread::ResubscribeLobbyMsg()
 		// Clear game info map as it is outdated.
 		ClearGameInfoMap();
 		// Send resubscribe request.
-		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		std::shared_ptr<NetPacket> packet(new NetPacket);
 		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_SubscriptionRequestMessage);
 		SubscriptionRequestMessage *netRequest = packet->GetMsg()->mutable_subscriptionrequestmessage();
 		netRequest->set_subscriptionaction(SubscriptionRequestMessage::resubscribeGameList);
@@ -1021,24 +1022,24 @@ ClientThread::CreateContextSession()
 {
     ClientContext &context = GetContext();
 
-    boost::shared_ptr<boost::asio::ip::tcp::resolver> resolver(new boost::asio::ip::tcp::resolver(*m_ioService));
+    std::shared_ptr<boost::asio::ip::tcp::resolver> resolver(new boost::asio::ip::tcp::resolver(*m_ioService));
     context.SetResolver(resolver);
 
     if (context.GetTls()) {
-        boost::shared_ptr<boost::asio::ssl::context> sslCtx(
+        std::shared_ptr<boost::asio::ssl::context> sslCtx(
             new boost::asio::ssl::context(boost::asio::ssl::context::sslv23_client));
         
         sslCtx->set_verify_mode(boost::asio::ssl::verify_peer | boost::asio::ssl::verify_fail_if_no_peer_cert);
         sslCtx->set_default_verify_paths();
 
-        boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sslStream(
+        std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sslStream(
             new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(*m_ioService, *sslCtx));
 
-        boost::shared_ptr<SessionData> session(new SessionData(sslStream, SESSION_ID_GENERIC, *this, *m_ioService, 0));
+        std::shared_ptr<SessionData> session(new SessionData(sslStream, SESSION_ID_GENERIC, *this, *m_ioService, 0));
         context.SetSessionData(session);
     } else {
-        boost::shared_ptr<boost::asio::ip::tcp::socket> sock(new boost::asio::ip::tcp::socket(*m_ioService));
-        boost::shared_ptr<SessionData> session(new SessionData(sock, SESSION_ID_GENERIC, *this, *m_ioService));
+        std::shared_ptr<boost::asio::ip::tcp::socket> sock(new boost::asio::ip::tcp::socket(*m_ioService));
+        std::shared_ptr<SessionData> session(new SessionData(sock, SESSION_ID_GENERIC, *this, *m_ioService));
         context.SetSessionData(session);
     }
 }
@@ -1140,7 +1141,7 @@ ClientThread::SetGuiPlayerId(unsigned guiPlayerId)
 	m_guiPlayerId = guiPlayerId;
 }
 
-boost::shared_ptr<Game>
+std::shared_ptr<Game>
 ClientThread::GetGame()
 {
 	return m_game;
@@ -1153,10 +1154,10 @@ ClientThread::GetQtToolsInterface()
 	return *myQtToolsInterface;
 }
 
-boost::shared_ptr<PlayerData>
+std::shared_ptr<PlayerData>
 ClientThread::CreatePlayerData(unsigned playerId, bool isGameAdmin)
 {
-	boost::shared_ptr<PlayerData> playerData;
+	std::shared_ptr<PlayerData> playerData;
 	PlayerInfo info;
 	if (GetCachedPlayerInfo(playerId, info)) {
 		playerData.reset(
@@ -1185,7 +1186,7 @@ ClientThread::CreatePlayerData(unsigned playerId, bool isGameAdmin)
 }
 
 void
-ClientThread::AddPlayerData(boost::shared_ptr<PlayerData> playerData)
+ClientThread::AddPlayerData(std::shared_ptr<PlayerData> playerData)
 {
 	if (playerData.get() && !playerData->GetName().empty()) {
 		m_playerDataList.push_back(playerData);
@@ -1203,7 +1204,7 @@ ClientThread::AddPlayerData(boost::shared_ptr<PlayerData> playerData)
 void
 ClientThread::RemovePlayerData(unsigned playerId, int removeReason)
 {
-	boost::shared_ptr<PlayerData> tmpData;
+	std::shared_ptr<PlayerData> tmpData;
 
 	PlayerDataList::iterator i = m_playerDataList.begin();
 	PlayerDataList::iterator end = m_playerDataList.end();
@@ -1219,7 +1220,7 @@ ClientThread::RemovePlayerData(unsigned playerId, int removeReason)
 	if (tmpData.get()) {
 		// Remove player from gui.
 		if (GetGame()) {
-			boost::shared_ptr<PlayerInterface> tmpPlayer(GetGame()->getPlayerByUniqueId(tmpData->GetUniqueId()));
+			std::shared_ptr<PlayerInterface> tmpPlayer(GetGame()->getPlayerByUniqueId(tmpData->GetUniqueId()));
 			if (tmpPlayer) {
 				tmpPlayer->setMyStayOnTableStatus(false);
 			}
@@ -1247,7 +1248,7 @@ void
 ClientThread::MapPlayerDataList()
 {
 	// Retrieve the GUI player.
-	boost::shared_ptr<PlayerData> guiPlayer = GetPlayerDataByUniqueId(GetGuiPlayerId());
+	std::shared_ptr<PlayerData> guiPlayer = GetPlayerDataByUniqueId(GetGuiPlayerId());
 	assert(guiPlayer.get());
 	m_origGuiPlayerNum = guiPlayer->GetNumber();
 
@@ -1260,7 +1261,7 @@ ClientThread::MapPlayerDataList()
 	int numPlayers = GetStartData().numberOfPlayers;
 
 	while (i != end) {
-		boost::shared_ptr<PlayerData> tmpData(new PlayerData(*(*i)));
+		std::shared_ptr<PlayerData> tmpData(new PlayerData(*(*i)));
 		int numberDiff = numPlayers - m_origGuiPlayerNum;
 		tmpData->SetNumber((tmpData->GetNumber() + numberDiff) % numPlayers);
 		mappedList.push_back(tmpData);
@@ -1279,10 +1280,10 @@ ClientThread::GetPlayerDataList() const
 	return m_playerDataList;
 }
 
-boost::shared_ptr<PlayerData>
+std::shared_ptr<PlayerData>
 ClientThread::GetPlayerDataByUniqueId(unsigned id)
 {
-	boost::shared_ptr<PlayerData> tmpPlayer;
+	std::shared_ptr<PlayerData> tmpPlayer;
 
 	PlayerDataList::const_iterator i = m_playerDataList.begin();
 	PlayerDataList::const_iterator end = m_playerDataList.end();
@@ -1297,10 +1298,10 @@ ClientThread::GetPlayerDataByUniqueId(unsigned id)
 	return tmpPlayer;
 }
 
-boost::shared_ptr<PlayerData>
+std::shared_ptr<PlayerData>
 ClientThread::GetPlayerDataByName(const std::string &name)
 {
-	boost::shared_ptr<PlayerData> tmpPlayer;
+	std::shared_ptr<PlayerData> tmpPlayer;
 
 	if (!name.empty()) {
 		PlayerDataList::const_iterator i = m_playerDataList.begin();

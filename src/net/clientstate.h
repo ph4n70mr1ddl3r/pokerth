@@ -52,10 +52,10 @@ class ClientState
 public:
 	virtual ~ClientState();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client) = 0;
-	virtual void Exit(boost::shared_ptr<ClientThread> client) = 0;
+	virtual void Enter(std::shared_ptr<ClientThread> client) = 0;
+	virtual void Exit(std::shared_ptr<ClientThread> client) = 0;
 
-	virtual void HandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) = 0;
+	virtual void HandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket) = 0;
 };
 
 // State: Initialization.
@@ -67,10 +67,10 @@ public:
 	virtual ~ClientStateInit();
 
 	// Some basic initialization (socket creation, basic checks).
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
-	virtual void HandlePacket(boost::shared_ptr<ClientThread> /*client*/, boost::shared_ptr<NetPacket> /*tmpPacket*/) {}
+	virtual void HandlePacket(std::shared_ptr<ClientThread> /*client*/, std::shared_ptr<NetPacket> /*tmpPacket*/) {}
 
 protected:
 	// Protected constructor - this is a singleton.
@@ -86,10 +86,10 @@ public:
 	virtual ~ClientStateStartResolve();
 
 	// Initiate the name resolution.
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
-	virtual void HandlePacket(boost::shared_ptr<ClientThread> /*client*/, boost::shared_ptr<NetPacket> /*tmpPacket*/) {}
+	virtual void HandlePacket(std::shared_ptr<ClientThread> /*client*/, std::shared_ptr<NetPacket> /*tmpPacket*/) {}
 
 protected:
 
@@ -98,7 +98,7 @@ protected:
 
 	void HandleResolve(
 		const boost::system::error_code& ec, boost::asio::ip::tcp::resolver::results_type endpoint_iterator,
-		boost::shared_ptr<ClientThread> client);
+		std::shared_ptr<ClientThread> client);
 };
 
 // State: Start download of the server list.
@@ -110,10 +110,10 @@ public:
 	virtual ~ClientStateStartServerListDownload();
 
 	// Initiate the name resolution.
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
-	virtual void HandlePacket(boost::shared_ptr<ClientThread> /*client*/, boost::shared_ptr<NetPacket> /*tmpPacket*/) {}
+	virtual void HandlePacket(std::shared_ptr<ClientThread> /*client*/, std::shared_ptr<NetPacket> /*tmpPacket*/) {}
 
 protected:
 
@@ -129,12 +129,12 @@ public:
 	static ClientStateDownloadingServerList &Instance();
 	virtual ~ClientStateDownloadingServerList();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
-	virtual void HandlePacket(boost::shared_ptr<ClientThread> /*client*/, boost::shared_ptr<NetPacket> /*tmpPacket*/) {}
+	virtual void HandlePacket(std::shared_ptr<ClientThread> /*client*/, std::shared_ptr<NetPacket> /*tmpPacket*/) {}
 
-	void SetDownloadHelper(boost::shared_ptr<DownloadHelper> helper);
+	void SetDownloadHelper(std::shared_ptr<DownloadHelper> helper);
 
 protected:
 
@@ -142,11 +142,11 @@ protected:
 	ClientStateDownloadingServerList();
 
 	// Poll for the completion of the download.
-	void TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client);
+	void TimerLoop(const boost::system::error_code& ec, std::shared_ptr<ClientThread> client);
 
 private:
 
-	boost::shared_ptr<DownloadHelper> m_downloadHelper;
+	std::shared_ptr<DownloadHelper> m_downloadHelper;
 };
 
 // State: Reading the server list.
@@ -156,10 +156,10 @@ public:
 	static ClientStateReadingServerList &Instance();
 	virtual ~ClientStateReadingServerList();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
-	virtual void HandlePacket(boost::shared_ptr<ClientThread> /*client*/, boost::shared_ptr<NetPacket> /*tmpPacket*/) {}
+	virtual void HandlePacket(std::shared_ptr<ClientThread> /*client*/, std::shared_ptr<NetPacket> /*tmpPacket*/) {}
 
 protected:
 
@@ -174,17 +174,17 @@ public:
 	static ClientStateWaitChooseServer &Instance();
 	virtual ~ClientStateWaitChooseServer();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
-	virtual void HandlePacket(boost::shared_ptr<ClientThread> /*client*/, boost::shared_ptr<NetPacket> /*tmpPacket*/) {}
+	virtual void HandlePacket(std::shared_ptr<ClientThread> /*client*/, std::shared_ptr<NetPacket> /*tmpPacket*/) {}
 
 protected:
 
 	// Protected constructor - this is a singleton.
 	ClientStateWaitChooseServer();
 
-	void TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client);
+	void TimerLoop(const boost::system::error_code& ec, std::shared_ptr<ClientThread> client);
 };
 
 // State: Initiate server connection.
@@ -196,10 +196,10 @@ public:
 	virtual ~ClientStateStartConnect();
 
 	// Call connect.
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
-	virtual void HandlePacket(boost::shared_ptr<ClientThread> /*client*/, boost::shared_ptr<NetPacket> /*tmpPacket*/) {}
+	virtual void HandlePacket(std::shared_ptr<ClientThread> /*client*/, std::shared_ptr<NetPacket> /*tmpPacket*/) {}
 
 	void SetRemoteEndpoint(boost::asio::ip::tcp::resolver::results_type endpointIterator);
 
@@ -210,11 +210,11 @@ protected:
 
 	void HandleConnect(const boost::system::error_code& ec,
 					   boost::asio::ip::basic_resolver_iterator<boost::asio::ip::tcp> endpoint_iterator,
-					   boost::shared_ptr<ClientThread> client);
+					   std::shared_ptr<ClientThread> client);
 
-	void TimerTimeout(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client);
+	void TimerTimeout(const boost::system::error_code& ec, std::shared_ptr<ClientThread> client);
 
-    void HandleSslHandshake(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client);
+    void HandleSslHandshake(const boost::system::error_code& ec, std::shared_ptr<ClientThread> client);
 
 private:
 	boost::asio::ip::tcp::resolver::results_type m_remoteEndpoint;
@@ -227,12 +227,12 @@ class AbstractClientStateReceiving : public ClientState
 public:
 	virtual ~AbstractClientStateReceiving();
 
-	virtual void HandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void HandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket);
 
 protected:
 	AbstractClientStateReceiving();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) = 0;
+	virtual void InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket) = 0;
 };
 
 // State: Session init.
@@ -243,14 +243,14 @@ public:
 	static ClientStateStartSession &Instance();
 	virtual ~ClientStateStartSession();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
 protected:
 	// Protected constructor - this is a singleton.
 	ClientStateStartSession();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket);
 };
 
 // State: Waiting for the user to enter login data.
@@ -260,17 +260,17 @@ public:
 	static ClientStateWaitEnterLogin &Instance();
 	virtual ~ClientStateWaitEnterLogin();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
-	virtual void HandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void HandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket);
 
 protected:
 
 	// Protected constructor - this is a singleton.
 	ClientStateWaitEnterLogin();
 
-	void TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client);
+	void TimerLoop(const boost::system::error_code& ec, std::shared_ptr<ClientThread> client);
 };
 
 // State: Wait for Authentication Challenge.
@@ -281,14 +281,14 @@ public:
 	static ClientStateWaitAuthChallenge &Instance();
 	virtual ~ClientStateWaitAuthChallenge();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
 protected:
 	// Protected constructor - this is a singleton.
 	ClientStateWaitAuthChallenge();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket);
 };
 
 // State: Wait for Authentication Verification.
@@ -299,14 +299,14 @@ public:
 	static ClientStateWaitAuthVerify &Instance();
 	virtual ~ClientStateWaitAuthVerify();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
 protected:
 	// Protected constructor - this is a singleton.
 	ClientStateWaitAuthVerify();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket);
 };
 
 // State: Wait for Session ACK.
@@ -317,14 +317,14 @@ public:
 	static ClientStateWaitSession &Instance();
 	virtual ~ClientStateWaitSession();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
 protected:
 	// Protected constructor - this is a singleton.
 	ClientStateWaitSession();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket);
 };
 
 // State: Wait for Join.
@@ -335,15 +335,15 @@ public:
 	static ClientStateWaitJoin &Instance();
 	virtual ~ClientStateWaitJoin();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
 protected:
 
 	// Protected constructor - this is a singleton.
 	ClientStateWaitJoin();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket);
 };
 
 // State: Wait for start of the game or start info.
@@ -354,15 +354,15 @@ public:
 	static ClientStateWaitGame &Instance();
 	virtual ~ClientStateWaitGame();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
 protected:
 
 	// Protected constructor - this is a singleton.
 	ClientStateWaitGame();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket);
 };
 
 // State: Synchronize on game start.
@@ -373,16 +373,16 @@ public:
 	static ClientStateSynchronizeStart &Instance();
 	virtual ~ClientStateSynchronizeStart();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
 protected:
 
 	// Protected constructor - this is a singleton.
 	ClientStateSynchronizeStart();
 
-	void TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client);
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	void TimerLoop(const boost::system::error_code& ec, std::shared_ptr<ClientThread> client);
+	virtual void InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket);
 };
 
 // State: Wait for game start.
@@ -393,15 +393,15 @@ public:
 	static ClientStateWaitStart &Instance();
 	virtual ~ClientStateWaitStart();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
 protected:
 
 	// Protected constructor - this is a singleton.
 	ClientStateWaitStart();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket);
 };
 
 // State: Wait for start of the next hand.
@@ -412,15 +412,15 @@ public:
 	static ClientStateWaitHand &Instance();
 	virtual ~ClientStateWaitHand();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
 protected:
 
 	// Protected constructor - this is a singleton.
 	ClientStateWaitHand();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket);
 };
 
 // State: Hand Loop.
@@ -431,15 +431,15 @@ public:
 	static ClientStateRunHand &Instance();
 	virtual ~ClientStateRunHand();
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(std::shared_ptr<ClientThread> client);
+	virtual void Exit(std::shared_ptr<ClientThread> client);
 
 protected:
 
 	// Protected constructor - this is a singleton.
 	ClientStateRunHand();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(std::shared_ptr<ClientThread> client, std::shared_ptr<NetPacket> tmpPacket);
 
 	static void ResetPlayerActions(Game &curGame);
 	static void ResetPlayerSets(Game &curGame);
@@ -451,10 +451,10 @@ public:
 	static ClientStateFinal &Instance();
 	virtual ~ClientStateFinal() {}
 
-	virtual void Enter(boost::shared_ptr<ClientThread> /*client*/) {}
-	virtual void Exit(boost::shared_ptr<ClientThread> /*client*/) {}
+	virtual void Enter(std::shared_ptr<ClientThread> /*client*/) {}
+	virtual void Exit(std::shared_ptr<ClientThread> /*client*/) {}
 
-	virtual void HandlePacket(boost::shared_ptr<ClientThread> /*client*/, boost::shared_ptr<NetPacket> /*tmpPacket*/) {}
+	virtual void HandlePacket(std::shared_ptr<ClientThread> /*client*/, std::shared_ptr<NetPacket> /*tmpPacket*/) {}
 
 protected:
 	// Protected constructor - this is a singleton.
