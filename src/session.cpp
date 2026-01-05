@@ -199,7 +199,7 @@ void Session::startInternetClient()
 		myConfig->readConfigInt("InternetServerConfigMode") == 0,
 //		true,
 		myConfig->readConfigInt("InternetServerPort"),
-		myConfig->readConfigInt("InternetServerUseIpv6") == 1,
+		false,  // Always use IPv4 for better compatibility
 		myConfig->readConfigInt("InternetServerUseSctp") == 1,
 		myConfig->readConfigInt("InternetServerUseTls") == 1,
 		useAvatarServer ? myConfig->readConfigString("AvatarServerAddress") : "",
@@ -247,15 +247,15 @@ void Session::startNetworkClientForLocalServer(const GameData &gameData)
 	myGameType = GAME_TYPE_NETWORK;
 
 	myNetClient.reset(new ClientThread(*myGui, *myAvatarManager, myLog));
-	bool useIpv6 = myConfig->readConfigInt("ServerUseIpv6") == 1;
-	const char *loopbackAddr = useIpv6 ? "::1" : "127.0.0.1";
+	// Always use IPv4 for better compatibility
+	const char *loopbackAddr = "127.0.0.1";
 	myNetClient->Init(
 		loopbackAddr,
 		"",
 		myConfig->readConfigString("ServerPassword"),
 		false,
 		myConfig->readConfigInt("ServerPort"),
-		useIpv6,
+		false,  // Always use IPv4
 		myConfig->readConfigInt("ServerUseSctp") == 1,
 		false,
 		"", // no avatar server
