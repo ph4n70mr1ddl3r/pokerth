@@ -6,6 +6,7 @@
 #define LOG_H
 
 #include <string>
+#include <memory>
 #include <boost/filesystem.hpp>
 
 #include "engine_defs.h"
@@ -32,7 +33,7 @@ public:
     PlayerActionLog transformPlayerActionLog(PlayerAction action);
     void logBoardCards(int boardCards[5]);
     void logHoleCardsHandName(PlayerList activePlayerList);
-    void logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerInterface> player, bool forceExecLog = 0);
+    void logHoleCardsHandName(PlayerList activePlayerList, std::shared_ptr<PlayerInterface> player, bool forceExecLog = 0);
     void logHandWinner(PlayerList activePlayerList, int highestCardsValue, std::list<unsigned> winners);
     void logGameWinner(PlayerList activePlayerList);
     void logPlayerSitsOut(PlayerList activePlayerList);

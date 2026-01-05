@@ -41,12 +41,13 @@
 #include <log.h>
 #include <boost/thread.hpp>
 
+#include <memory>
 #include <vector>
 
 class ClientHand : public HandInterface
 {
 public:
-	ClientHand ( boost::shared_ptr<EngineFactory> f, GuiInterface*, boost::shared_ptr<BoardInterface>, Log*, PlayerList, PlayerList, PlayerList , int, int, int, int, int );
+	ClientHand ( std::shared_ptr<EngineFactory> f, std::shared_ptr<GuiInterface>, std::shared_ptr<BoardInterface>, Log*, PlayerList, PlayerList, PlayerList , int, int, int, int, int );
 	~ClientHand();
 
 	void start();
@@ -55,13 +56,13 @@ public:
 	PlayerList getActivePlayerList() const;
 	PlayerList getRunningPlayerList() const;
 
-	boost::shared_ptr<BoardInterface> getBoard() const;
-	boost::shared_ptr<BeRoInterface> getPreflop() const;
-	boost::shared_ptr<BeRoInterface> getFlop() const;
-	boost::shared_ptr<BeRoInterface> getTurn() const;
-	boost::shared_ptr<BeRoInterface> getRiver() const;
-	GuiInterface* getGuiInterface() const;
-	boost::shared_ptr<BeRoInterface> getCurrentBeRo() const;
+	std::shared_ptr<BoardInterface> getBoard() const;
+	std::shared_ptr<BeRoInterface> getPreflop() const;
+	std::shared_ptr<BeRoInterface> getFlop() const;
+	std::shared_ptr<BeRoInterface> getTurn() const;
+	std::shared_ptr<BeRoInterface> getRiver() const;
+	std::shared_ptr<GuiInterface> getGuiInterface() const;
+	std::shared_ptr<BeRoInterface> getCurrentBeRo() const;
 
 	Log* getLog() const
 	{

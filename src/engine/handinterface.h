@@ -37,6 +37,7 @@
 #include "playerinterface.h"
 #include "berointerface.h"
 #include "log.h"
+#include <memory>
 
 class HandInterface
 {
@@ -50,13 +51,13 @@ public:
 	virtual PlayerList getActivePlayerList() const =0;
 	virtual PlayerList getRunningPlayerList() const =0;
 
-	virtual boost::shared_ptr<BoardInterface> getBoard() const =0;
-	virtual boost::shared_ptr<BeRoInterface> getPreflop() const =0;
-	virtual boost::shared_ptr<BeRoInterface> getFlop() const =0;
-	virtual boost::shared_ptr<BeRoInterface> getTurn() const =0;
-	virtual boost::shared_ptr<BeRoInterface> getRiver() const =0;
-	virtual GuiInterface* getGuiInterface() const =0;
-	virtual boost::shared_ptr<BeRoInterface> getCurrentBeRo() const =0;
+	virtual std::shared_ptr<BoardInterface> getBoard() const =0;
+	virtual std::shared_ptr<BeRoInterface> getPreflop() const =0;
+	virtual std::shared_ptr<BeRoInterface> getFlop() const =0;
+	virtual std::shared_ptr<BeRoInterface> getTurn() const =0;
+	virtual std::shared_ptr<BeRoInterface> getRiver() const =0;
+	virtual std::shared_ptr<GuiInterface> getGuiInterface() const =0;
+	virtual std::shared_ptr<BeRoInterface> getCurrentBeRo() const =0;
 	virtual Log* getLog() const =0;
 
 	virtual void setMyID(int theValue) =0;
