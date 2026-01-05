@@ -34,7 +34,7 @@
 #define _CHATCLEANERMANAGER_H_
 
 #include <boost/asio.hpp>
-#include <boost/enable_shared_from_this.hpp>
+#include <memory>
 #include <string>
 #include <net/chatcleanercallback.h>
 
@@ -45,10 +45,10 @@
 class AsioSendBuffer;
 class ChatCleanerMessage;
 
-class ChatCleanerManager : public boost::enable_shared_from_this<ChatCleanerManager>
+class ChatCleanerManager : public std::enable_shared_from_this<ChatCleanerManager>
 {
 public:
-	ChatCleanerManager(ChatCleanerCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService);
+	ChatCleanerManager(ChatCleanerCallback &cb, std::shared_ptr<boost::asio::io_context> ioService);
 	virtual ~ChatCleanerManager();
 
 	void Init(const std::string &serverAddr, int port, bool ipv6,
@@ -70,10 +70,10 @@ protected:
 private:
 
 	ChatCleanerCallback &m_callback;
-	boost::shared_ptr<boost::asio::io_context> m_ioService;
-	boost::shared_ptr<boost::asio::ip::tcp::resolver> m_resolver;
-	boost::shared_ptr<boost::asio::ip::tcp::socket> m_socket;
-	boost::shared_ptr<AsioSendBuffer> m_sendManager;
+	std::shared_ptr<boost::asio::io_context> m_ioService;
+	std::shared_ptr<boost::asio::ip::tcp::resolver> m_resolver;
+	std::shared_ptr<boost::asio::ip::tcp::socket> m_socket;
+	std::shared_ptr<AsioSendBuffer> m_sendManager;
 
 	bool m_connected;
 	unsigned m_curRequestId;

@@ -65,7 +65,7 @@ AsioSendBuffer::SetCloseAfterSend()
 }
 
 void
-AsioSendBuffer::HandleWrite(boost::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code &error)
+AsioSendBuffer::HandleWrite(std::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code &error)
 {
 	if (!error) {
 		// Successfully sent the data.
@@ -78,7 +78,7 @@ AsioSendBuffer::HandleWrite(boost::shared_ptr<boost::asio::ip::tcp::socket> sock
 
 // Implementierung mit exakt passender Signatur (any_io_executor)
 void
-AsioSendBuffer::HandleWriteSsl(boost::shared_ptr<boost::asio::ssl::stream<boost::asio::basic_stream_socket<boost::asio::ip::tcp, boost::asio::any_io_executor>>> sslStream, const boost::system::error_code &error)
+AsioSendBuffer::HandleWriteSsl(std::shared_ptr<boost::asio::ssl::stream<boost::asio::basic_stream_socket<boost::asio::ip::tcp, boost::asio::any_io_executor>>> sslStream, const boost::system::error_code &error)
 {
     if (!error) {
         boost::mutex::scoped_lock lock(dataMutex);
@@ -89,7 +89,7 @@ AsioSendBuffer::HandleWriteSsl(boost::shared_ptr<boost::asio::ssl::stream<boost:
 }
 
 void
-AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<SessionData> session)
+AsioSendBuffer::AsyncSendNextPacket(std::shared_ptr<SessionData> session)
 {
     if (session->IsSsl()) {
         AsyncSendNextPacketSsl(session->GetSslStream());
@@ -99,7 +99,7 @@ AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<SessionData> session)
 }
 
 void
-AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<boost::asio::ip::tcp::socket> socket)
+AsioSendBuffer::AsyncSendNextPacket(std::shared_ptr<boost::asio::ip::tcp::socket> socket)
 {
     if (!curWriteBufUsed) {
         // Swap buffers and send data.
@@ -128,7 +128,7 @@ AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<boost::asio::ip::tcp::sock
 
 // AsyncSendNextPacketSsl (angepasste Signatur, falls noch nicht exakt so vorhanden)
 void
-AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::stream<boost::asio::basic_stream_socket<boost::asio::ip::tcp, boost::asio::any_io_executor>>> sslStream)
+AsioSendBuffer::AsyncSendNextPacketSsl(std::shared_ptr<boost::asio::ssl::stream<boost::asio::basic_stream_socket<boost::asio::ip::tcp, boost::asio::any_io_executor>>> sslStream)
 {
     if (!curWriteBufUsed) {
 #if BOOST_VERSION >= 108400
@@ -155,7 +155,7 @@ AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::strea
 }
 
 void
-AsioSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> /*session*/, boost::shared_ptr<NetPacket> packet)
+AsioSendBuffer::InternalStorePacket(std::shared_ptr<SessionData> /*session*/, std::shared_ptr<NetPacket> packet)
 {
 	uint32_t packetSize = packet->GetMsg()->ByteSizeLong();
 	google::protobuf::uint8 *buf = new google::protobuf::uint8[packetSize + NET_HEADER_SIZE];

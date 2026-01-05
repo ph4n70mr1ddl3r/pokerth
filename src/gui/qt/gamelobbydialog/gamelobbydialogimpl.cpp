@@ -298,7 +298,7 @@ gameLobbyDialogImpl::~gameLobbyDialogImpl()
 	inviteOnlyInfoMsgBox = NULL;
 }
 
-void gameLobbyDialogImpl::setSession(boost::shared_ptr<Session> session)
+void gameLobbyDialogImpl::setSession(std::shared_ptr<Session> session)
 {
 	mySession = session;
 	myChat->setSession(mySession);

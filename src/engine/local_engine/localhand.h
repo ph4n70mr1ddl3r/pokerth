@@ -47,7 +47,7 @@ class Log;
 class LocalHand : public HandInterface
 {
 public:
-	LocalHand(std::shared_ptr<EngineFactory> f, std::shared_ptr<GuiInterface>, std::shared_ptr<BoardInterface>, Log*, PlayerList, PlayerList, PlayerList, int, int, unsigned, int, int);
+	LocalHand(std::shared_ptr<EngineFactory> f, GuiInterface *g, std::shared_ptr<BoardInterface>, Log*, PlayerList, PlayerList, PlayerList, int, int, unsigned, int, int);
 	~LocalHand();
 
 	void start();
@@ -85,7 +85,7 @@ public:
 	{
 		return myBeRo[GAME_STATE_RIVER];
 	}
-	std::shared_ptr<GuiInterface> getGuiInterface() const
+	GuiInterface* getGuiInterface() const
 	{
 		return myGui;
 	}
@@ -204,7 +204,7 @@ protected:
 private:
 
 	std::shared_ptr<EngineFactory> myFactory;
-	std::shared_ptr<GuiInterface> myGui;
+	GuiInterface* myGui;
 	std::shared_ptr<BoardInterface> myBoard;
 	Log *myLog;
 

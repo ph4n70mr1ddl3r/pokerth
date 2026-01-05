@@ -106,14 +106,14 @@ PlayerData::SetAvatarMD5(const MD5Buf &avatarMD5)
 	m_avatarMD5 = avatarMD5;
 }
 
-boost::shared_ptr<AvatarFile>
+std::shared_ptr<AvatarFile>
 PlayerData::GetNetAvatarFile() const
 {
 	return m_netAvatarFile;
 }
 
 void
-PlayerData::SetNetAvatarFile(boost::shared_ptr<AvatarFile> AvatarFile)
+PlayerData::SetNetAvatarFile(std::shared_ptr<AvatarFile> AvatarFile)
 {
 	m_netAvatarFile = AvatarFile;
 }

@@ -56,7 +56,7 @@ public:
 	virtual std::shared_ptr<BeRoInterface> getFlop() const =0;
 	virtual std::shared_ptr<BeRoInterface> getTurn() const =0;
 	virtual std::shared_ptr<BeRoInterface> getRiver() const =0;
-	virtual std::shared_ptr<GuiInterface> getGuiInterface() const =0;
+	virtual GuiInterface* getGuiInterface() const =0;
 	virtual std::shared_ptr<BeRoInterface> getCurrentBeRo() const =0;
 	virtual Log* getLog() const =0;
 

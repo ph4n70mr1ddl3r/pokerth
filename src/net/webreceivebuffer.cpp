@@ -41,21 +41,21 @@ WebReceiveBuffer::WebReceiveBuffer()
 }
 
 void
-WebReceiveBuffer::StartAsyncRead(boost::shared_ptr<SessionData> /*session*/)
+WebReceiveBuffer::StartAsyncRead(std::shared_ptr<SessionData> /*session*/)
 {
 	// Nothing to do. This is handled internally by websocketpp.
 }
 
 void
-WebReceiveBuffer::HandleRead(boost::shared_ptr<SessionData> /*session*/, const boost::system::error_code &/*error*/, size_t /*bytesRead*/)
+WebReceiveBuffer::HandleRead(std::shared_ptr<SessionData> /*session*/, const boost::system::error_code &/*error*/, size_t /*bytesRead*/)
 {
 	LOG_ERROR("WebReceiveBuffer::HandleRead should never be called because Websocket I/O is message based.");
 }
 
 void
-WebReceiveBuffer::HandleMessage(boost::shared_ptr<SessionData> session, const string &msg)
+WebReceiveBuffer::HandleMessage(std::shared_ptr<SessionData> session, const string &msg)
 {
-	boost::shared_ptr<NetPacket> tmpPacket;
+	std::shared_ptr<NetPacket> tmpPacket;
 	try {
 		tmpPacket = NetPacket::Create(msg.c_str(), msg.size());
 		if (!validator.IsValidPacket(*tmpPacket)) {

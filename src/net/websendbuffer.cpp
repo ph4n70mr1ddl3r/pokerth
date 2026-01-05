@@ -49,15 +49,15 @@ WebSendBuffer::SetCloseAfterSend()
 }
 
 void
-WebSendBuffer::HandleWrite(boost::shared_ptr<boost::asio::ip::tcp::socket> /*socket*/, const boost::system::error_code &/*error*/)
+WebSendBuffer::HandleWrite(std::shared_ptr<boost::asio::ip::tcp::socket> /*socket*/, const boost::system::error_code &/*error*/)
 {
 }
 
 void
-WebSendBuffer::AsyncSendNextPacket(boost::shared_ptr<SessionData> session)
+WebSendBuffer::AsyncSendNextPacket(std::shared_ptr<SessionData> session)
 {
 	if (closeAfterSend) {
-		boost::shared_ptr<WebSocketData> webData = session->GetWebData();
+		std::shared_ptr<WebSocketData> webData = session->GetWebData();
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)
 		std::error_code std_ec;
 		webData->webSocketServer->close(webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", std_ec);
@@ -69,13 +69,13 @@ WebSendBuffer::AsyncSendNextPacket(boost::shared_ptr<SessionData> session)
 }
 
 void
-WebSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet)
+WebSendBuffer::InternalStorePacket(std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet)
 {
 	uint32_t packetSize = packet->GetMsg()->ByteSizeLong();
 	google::protobuf::uint8 *buf = new google::protobuf::uint8[packetSize];
 	packet->GetMsg()->SerializeWithCachedSizesToArray(buf);
 
-	boost::shared_ptr<WebSocketData> webData = session->GetWebData();
+	std::shared_ptr<WebSocketData> webData = session->GetWebData();
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)
 	std::error_code std_ec;
 	webData->webSocketServer->send(webData->webHandle, string((const char *)buf, packetSize), websocketpp::frame::opcode::BINARY, std_ec);

@@ -53,7 +53,7 @@ public:
 
 	~ChatTools();
 
-	void setSession(boost::shared_ptr<Session> session)
+	void setSession(std::shared_ptr<Session> session)
 	{
 		mySession = session;
 	}
@@ -111,7 +111,7 @@ private:
 	QStandardItemModel *myNickListModel;
 	QStringList myNickStringList;
 	QTextBrowser *myTextBrowser;
-	boost::shared_ptr<Session> mySession;
+	std::shared_ptr<Session> mySession;
 	ChatType myChatType;
 	ConfigFile *myConfig;
 

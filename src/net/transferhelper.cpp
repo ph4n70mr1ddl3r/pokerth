@@ -168,7 +168,7 @@ TransferHelper::ResetLastMessage()
 	return retVal;
 }
 
-boost::shared_ptr<TransferData>
+std::shared_ptr<TransferData>
 TransferHelper::GetData()
 {
 	return m_data;

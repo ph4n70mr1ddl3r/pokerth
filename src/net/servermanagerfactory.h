@@ -38,7 +38,7 @@
 class ServerManagerFactory
 {
 public:
-	static boost::shared_ptr<ServerManager> CreateServerManager(ConfigFile &config, GuiInterface &gui, ServerMode mode, AvatarManager &avatarManager);
+	static std::shared_ptr<ServerManager> CreateServerManager(ConfigFile &config, GuiInterface &gui, ServerMode mode, AvatarManager &avatarManager);
 };
 
 #endif // SERVERMANAGERFACTORY_H

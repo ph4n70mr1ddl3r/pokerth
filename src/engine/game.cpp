@@ -40,7 +40,7 @@
 
 #include <iostream>
 
-Game::Game(std::shared_ptr<GuiInterface> gui, std::shared_ptr<EngineFactory> factory,
+Game::Game(GuiInterface *gui, std::shared_ptr<EngineFactory> factory,
 		   const PlayerDataList &playerDataList, const GameData &gameData,
 		   const StartData &startData, int gameId, Log* log)
 	: myFactory(factory), myGui(gui), myLog(log), startQuantityPlayers(startData.numberOfPlayers),

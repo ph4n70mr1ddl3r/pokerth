@@ -45,7 +45,7 @@ public:
 
 	virtual ~EngineFactory();
 
-	virtual std::shared_ptr<HandInterface> createHand(std::shared_ptr<EngineFactory> f, std::shared_ptr<GuiInterface> g, std::shared_ptr<BoardInterface> b, Log *l, PlayerList sl, PlayerList apl, PlayerList rpl, int id, int sP, int dP, int sB,int sC) =0;
+	virtual std::shared_ptr<HandInterface> createHand(std::shared_ptr<EngineFactory> f, GuiInterface *g, std::shared_ptr<BoardInterface> b, Log *l, PlayerList sl, PlayerList apl, PlayerList rpl, int id, int sP, int dP, int sB,int sC) =0;
 	virtual std::shared_ptr<BoardInterface> createBoard() =0;
 	virtual std::shared_ptr<PlayerInterface> createPlayer(int id, unsigned uniqueId, PlayerType type, std::string name, std::string avatar, int sC, bool aS, bool sotS, int mB) =0;
 	virtual std::vector<std::shared_ptr<BeRoInterface> > createBeRo(HandInterface *hi, unsigned dP, int sB) =0;

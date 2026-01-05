@@ -52,7 +52,7 @@ class Game
 {
 
 public:
-	Game(std::shared_ptr<GuiInterface> gui, std::shared_ptr<EngineFactory> factory,
+	Game(GuiInterface *gui, std::shared_ptr<EngineFactory> factory,
 		 const PlayerDataList &playerDataList, const GameData &gameData,
 		 const StartData &startData, int gameId, Log *myLog);
 
@@ -148,7 +148,7 @@ public:
 private:
 	std::shared_ptr<EngineFactory> myFactory;
 
-	std::shared_ptr<GuiInterface> myGui;
+	GuiInterface *myGui;
 	Log *myLog;
 	std::shared_ptr<HandInterface> currentHand;
 	std::shared_ptr<BoardInterface> currentBoard;

@@ -39,9 +39,7 @@
 #include <cstring>
 #include <cassert>
 
-using namespace std;
-
-SenderHelper::SenderHelper(boost::shared_ptr<boost::asio::io_context> ioService)
+SenderHelper::SenderHelper(std::shared_ptr<boost::asio::io_context> ioService)
 	: m_ioService(ioService)
 {
 }
@@ -51,7 +49,7 @@ SenderHelper::~SenderHelper()
 }
 
 void
-SenderHelper::Send(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet)
+SenderHelper::Send(std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet)
 {
 	if (packet && session) {
 		qDebug() << "[AUTH DEBUG] SenderHelper::Send - Sending packet, message type:" << packet->GetMsg()->messagetype();
@@ -65,7 +63,7 @@ SenderHelper::Send(boost::shared_ptr<SessionData> session, boost::shared_ptr<Net
 }
 
 void
-SenderHelper::Send(boost::shared_ptr<SessionData> session, const NetPacketList &packetList)
+SenderHelper::Send(std::shared_ptr<SessionData> session, const NetPacketList &packetList)
 {
 	if (!packetList.empty() && session) {
 		SendBuffer &tmpBuffer = session->GetSendBuffer();
@@ -84,7 +82,7 @@ SenderHelper::Send(boost::shared_ptr<SessionData> session, const NetPacketList &
 }
 
 void
-SenderHelper::SetCloseAfterSend(boost::shared_ptr<SessionData> session)
+SenderHelper::SetCloseAfterSend(std::shared_ptr<SessionData> session)
 {
 	SendBuffer &tmpBuffer = session->GetSendBuffer();
 	// Add packet to specific queue.

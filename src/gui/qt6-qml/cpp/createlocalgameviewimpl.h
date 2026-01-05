@@ -16,7 +16,7 @@ public:
     Q_INVOKABLE void readConfigValues();
     Q_INVOKABLE void startGame();
 
-    CreateLocalGameViewImpl(QObject *parent, QQmlApplicationEngine *engine, boost::shared_ptr<ConfigFile>, StartViewImpl*);
+    CreateLocalGameViewImpl(QObject *parent, QQmlApplicationEngine *engine, std::shared_ptr<ConfigFile>, StartViewImpl*);
     ~CreateLocalGameViewImpl();
 
     MyListViewItemData* listItem(QString id);
@@ -27,7 +27,7 @@ public slots:
 private:
     QQmlApplicationEngine *myQmlEngine;
     QList<QObject*> myListData;
-    boost::shared_ptr<ConfigFile> myConfig;
+    std::shared_ptr<ConfigFile> myConfig;
     StartViewImpl *myStartView;
 };
 

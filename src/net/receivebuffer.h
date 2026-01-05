@@ -33,6 +33,7 @@
 #ifndef _RECEIVEBUFFER_H_
 #define _RECEIVEBUFFER_H_
 
+#include <memory>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/system/error_code.hpp>
 #include <net/netpacket.h>
@@ -40,14 +41,14 @@
 
 class SessionData;
 
-class ReceiveBuffer : public boost::enable_shared_from_this<ReceiveBuffer>
+class ReceiveBuffer : public std::enable_shared_from_this<ReceiveBuffer>
 {
 public:
 	virtual ~ReceiveBuffer();
 
-	virtual void StartAsyncRead(boost::shared_ptr<SessionData> session) = 0;
-	virtual void HandleRead(boost::shared_ptr<SessionData> session, const boost::system::error_code &error, size_t bytesRead) = 0;
-	virtual void HandleMessage(boost::shared_ptr<SessionData> session, const std::string &msg) = 0;
+	virtual void StartAsyncRead(std::shared_ptr<SessionData> session) = 0;
+	virtual void HandleRead(std::shared_ptr<SessionData> session, const boost::system::error_code &error, size_t bytesRead) = 0;
+	virtual void HandleMessage(std::shared_ptr<SessionData> session, const std::string &msg) = 0;
 
 protected:
 

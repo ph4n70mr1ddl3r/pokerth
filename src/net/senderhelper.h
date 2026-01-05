@@ -33,6 +33,7 @@
 #ifndef _SENDERHELPER_H_
 #define _SENDERHELPER_H_
 
+#include <memory>
 #include <boost/asio.hpp>
 #include <net/netpacket.h>
 
@@ -42,17 +43,17 @@ class SendBuffer;
 class SenderHelper
 {
 public:
-	SenderHelper(boost::shared_ptr<boost::asio::io_context> ioService);
+	SenderHelper(std::shared_ptr<boost::asio::io_context> ioService);
 	~SenderHelper();
 
-	void Send(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
-	void Send(boost::shared_ptr<SessionData> session, const NetPacketList &packetList);
+	void Send(std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet);
+	void Send(std::shared_ptr<SessionData> session, const NetPacketList &packetList);
 
-	void SetCloseAfterSend(boost::shared_ptr<SessionData> session);
+	void SetCloseAfterSend(std::shared_ptr<SessionData> session);
 
 private:
 
-	boost::shared_ptr<boost::asio::io_context> m_ioService;
+	std::shared_ptr<boost::asio::io_context> m_ioService;
 };
 
 #endif

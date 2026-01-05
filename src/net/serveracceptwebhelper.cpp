@@ -37,7 +37,7 @@
 
 using namespace std;
 
-ServerAcceptWebHelper::ServerAcceptWebHelper(ServerCallback &serverCallback, boost::shared_ptr<boost::asio::io_context> ioService,
+ServerAcceptWebHelper::ServerAcceptWebHelper(ServerCallback &serverCallback, std::shared_ptr<boost::asio::io_context> ioService,
 		const string &webSocketResource, const string &webSocketOrigin, const bool &websocketTls)
 	: m_ioService(ioService), m_serverCallback(serverCallback),
 	  m_webSocketResource(webSocketResource), m_webSocketOrigin(webSocketOrigin)
@@ -52,7 +52,7 @@ ServerAcceptWebHelper::ServerAcceptWebHelper(ServerCallback &serverCallback, boo
 }
 
 void
-ServerAcceptWebHelper::Listen(unsigned serverPort, bool /*ipv6*/, const std::string &/*logDir*/, boost::shared_ptr<ServerLobbyThread> lobbyThread)
+ServerAcceptWebHelper::Listen(unsigned serverPort, bool /*ipv6*/, const std::string &/*logDir*/, std::shared_ptr<ServerLobbyThread> lobbyThread)
 {
 	m_lobbyThread = lobbyThread;
 
@@ -118,10 +118,10 @@ ServerAcceptWebHelper::validate(websocketpp::connection_hdl hdl)
 void
 ServerAcceptWebHelper::on_open(websocketpp::connection_hdl hdl)
 {
-	boost::shared_ptr<WebSocketData> webData(new WebSocketData);
+	std::shared_ptr<WebSocketData> webData(new WebSocketData);
 	webData->webSocketServer = m_webSocketServer;
 	webData->webHandle = hdl;
-	boost::shared_ptr<SessionData> sessionData(new SessionData(webData, m_lobbyThread->GetNextSessionId(), m_lobbyThread->GetSessionDataCallback(), *m_ioService, 0));
+	std::shared_ptr<SessionData> sessionData(new SessionData(webData, m_lobbyThread->GetNextSessionId(), m_lobbyThread->GetSessionDataCallback(), *m_ioService, 0));
 	m_sessionMap.insert(make_pair(hdl, sessionData));
 	m_lobbyThread->AddConnection(sessionData);
 }
@@ -131,7 +131,7 @@ ServerAcceptWebHelper::on_close(websocketpp::connection_hdl hdl)
 {
 	SessionMap::iterator pos = m_sessionMap.find(hdl);
 	if (pos != m_sessionMap.end()) {
-		boost::shared_ptr<SessionData> tmpSession = pos->second.lock();
+		std::shared_ptr<SessionData> tmpSession = pos->second.lock();
 		if (tmpSession) {
 			tmpSession->Close();
 		}
@@ -145,7 +145,7 @@ ServerAcceptWebHelper::on_message(websocketpp::connection_hdl hdl, server::messa
 	if (msg->get_opcode() == websocketpp::frame::opcode::BINARY) {
 		SessionMap::iterator pos = m_sessionMap.find(hdl);
 		if (pos != m_sessionMap.end()) {
-			boost::shared_ptr<SessionData> tmpSession = pos->second.lock();
+			std::shared_ptr<SessionData> tmpSession = pos->second.lock();
 			if (tmpSession) {
 				tmpSession->GetReceiveBuffer().HandleMessage(tmpSession, msg->get_payload());
 			}

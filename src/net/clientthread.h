@@ -36,7 +36,6 @@
 #include <memory>
 #include <boost/asio.hpp>
 #include <boost/asio/steady_timer.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <string>
 #include <algorithm>
 #include <numeric>
@@ -102,7 +101,7 @@ private:
 	boost::timers::portable::microsec_timer pingTimer;
 };
 
-class ClientThread : public Thread, public boost::enable_shared_from_this<ClientThread>, public SessionDataCallback
+class ClientThread : public Thread, public std::enable_shared_from_this<ClientThread>, public SessionDataCallback
 {
 public:
 	ClientThread(GuiInterface &gui, AvatarManager &avatarManager, Log *myLog);

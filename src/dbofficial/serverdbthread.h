@@ -49,7 +49,7 @@ class AsyncDBQuery;
 class ServerDBThread : public ServerDBInterface, public Thread, public boost::enable_shared_from_this<ServerDBThread>
 {
 public:
-	ServerDBThread(ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService);
+	ServerDBThread(ServerDBCallback &cb, std::shared_ptr<boost::asio::io_context> ioService);
 	virtual ~ServerDBThread();
 
 	virtual void SignalTermination();
@@ -79,7 +79,7 @@ public:
 	bool IsConnected() const;
 
 protected:
-	typedef std::queue<boost::shared_ptr<AsyncDBQuery> > AsyncDBQueryQueue;
+	typedef std::queue<std::shared_ptr<AsyncDBQuery> > AsyncDBQueryQueue;
 
 	// Main function of the thread.
 	virtual void Main();
@@ -92,10 +92,10 @@ protected:
 	void SetConnected(bool isConnected);
 private:
 
-	boost::shared_ptr<boost::asio::io_context> m_ioService;
+	std::shared_ptr<boost::asio::io_context> m_ioService;
 	boost::interprocess::interprocess_semaphore m_semaphore;
 	ServerDBCallback &m_callback;
-	boost::shared_ptr<DBConnectionData> m_connData;
+	std::shared_ptr<DBConnectionData> m_connData;
 	mutable boost::mutex m_asyncQueueMutex;
 	AsyncDBQueryQueue m_asyncQueue;
 	DBIdManager m_dbIdManager;

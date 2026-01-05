@@ -118,7 +118,7 @@ AvatarManager::AddSingleAvatar(const std::string &fileName)
 	if (!fileName.empty() && !tmpFileName.empty()) {
 		unsigned outFileSize = 0;
 		AvatarFileType outFileType;
-		boost::shared_ptr<AvatarFileState> tmpFileState = OpenAvatarFileForChunkRead(tmpFileName, outFileSize, outFileType);
+		std::shared_ptr<AvatarFileState> tmpFileState = OpenAvatarFileForChunkRead(tmpFileName, outFileSize, outFileType);
 
 		// Check whether the avatar file is valid.
 		if (tmpFileState.get()) {
@@ -135,14 +135,14 @@ AvatarManager::AddSingleAvatar(const std::string &fileName)
 	return retVal;
 }
 
-boost::shared_ptr<AvatarFileState>
+std::shared_ptr<AvatarFileState>
 AvatarManager::OpenAvatarFileForChunkRead(const std::string &fileName, unsigned &outFileSize, AvatarFileType &outFileType)
 {
 	outFileSize = 0;
-	boost::shared_ptr<AvatarFileState> retVal;
+	std::shared_ptr<AvatarFileState> retVal;
 	try {
 		outFileType = GetAvatarFileType(fileName);
-		boost::shared_ptr<AvatarFileState> fileState(new AvatarFileState);
+		std::shared_ptr<AvatarFileState> fileState(new AvatarFileState);
 		fileState->inputStream.open(fileName.c_str(), ios_base::in | ios_base::binary);
 		if (!fileState->inputStream.fail()) {
 			// Find out file size.
@@ -171,7 +171,7 @@ AvatarManager::OpenAvatarFileForChunkRead(const std::string &fileName, unsigned 
 }
 
 unsigned
-AvatarManager::ChunkReadAvatarFile(boost::shared_ptr<AvatarFileState> fileState, unsigned char *data, unsigned chunkSize)
+AvatarManager::ChunkReadAvatarFile(std::shared_ptr<AvatarFileState> fileState, unsigned char *data, unsigned chunkSize)
 {
 	unsigned retVal = 0;
 	if (fileState.get()) {
@@ -193,9 +193,9 @@ AvatarManager::AvatarFileToNetPackets(const string &fileName, unsigned requestId
 	int retVal = ERR_NET_INVALID_AVATAR_FILE;
 	unsigned fileSize = 0;
 	AvatarFileType fileType;
-	boost::shared_ptr<AvatarFileState> tmpState = OpenAvatarFileForChunkRead(fileName, fileSize, fileType);
+	std::shared_ptr<AvatarFileState> tmpState = OpenAvatarFileForChunkRead(fileName, fileSize, fileType);
 	if (tmpState.get() && fileSize && fileType != AVATAR_FILE_TYPE_UNKNOWN) {
-		boost::shared_ptr<NetPacket> avatarHeader(new NetPacket);
+		std::shared_ptr<NetPacket> avatarHeader(new NetPacket);
 		avatarHeader->GetMsg()->set_messagetype(PokerTHMessage::Type_AvatarHeaderMessage);
 		AvatarHeaderMessage *netHeader = avatarHeader->GetMsg()->mutable_avatarheadermessage();
 		netHeader->set_requestid(requestId);
@@ -211,7 +211,7 @@ AvatarManager::AvatarFileToNetPackets(const string &fileName, unsigned requestId
 			if (numBytes) {
 				totalBytesRead += numBytes;
 
-				boost::shared_ptr<NetPacket> avatarFile(new NetPacket);
+			std::shared_ptr<NetPacket> avatarFile(new NetPacket);
 				avatarFile->GetMsg()->set_messagetype(PokerTHMessage::Type_AvatarDataMessage);
 				AvatarDataMessage *netFile = avatarFile->GetMsg()->mutable_avatardatamessage();
 				netFile->set_requestid(requestId);
@@ -223,7 +223,7 @@ AvatarManager::AvatarFileToNetPackets(const string &fileName, unsigned requestId
 		if (fileSize != totalBytesRead)
 			retVal = ERR_NET_WRONG_AVATAR_SIZE;
 		else {
-			boost::shared_ptr<NetPacket> avatarEnd(new NetPacket);
+			std::shared_ptr<NetPacket> avatarEnd(new NetPacket);
 			avatarEnd->GetMsg()->set_messagetype(PokerTHMessage::Type_AvatarEndMessage);
 			AvatarEndMessage *netEnd = avatarEnd->GetMsg()->mutable_avatarendmessage();
 			netEnd->set_requestid(requestId);

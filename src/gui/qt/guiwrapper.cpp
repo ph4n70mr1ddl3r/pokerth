@@ -66,11 +66,11 @@ void GuiWrapper::initGui(int speed)
 	myW->signalInitGui(speed);
 }
 
-boost::shared_ptr<Session> GuiWrapper::getSession()
+std::shared_ptr<Session> GuiWrapper::getSession()
 {
 	return myStartWindow->getSession();
 }
-void GuiWrapper::setSession(boost::shared_ptr<Session> /*session*/)
+void GuiWrapper::setSession(std::shared_ptr<Session> /*session*/)
 {
 	/*myStartWindow->setSession(session);*/
 }
@@ -435,7 +435,7 @@ void GuiWrapper::SignalNetClientGameListSpectatorLeft(unsigned gameId, unsigned 
 {
 	myStartWindow->signalNetClientGameListSpectatorLeft(gameId, playerId);
 }
-void GuiWrapper::SignalNetClientGameStart(boost::shared_ptr<Game> game)
+void GuiWrapper::SignalNetClientGameStart(std::shared_ptr<Game> game)
 {
 	myStartWindow->signalNetClientGameStart(game);
 }

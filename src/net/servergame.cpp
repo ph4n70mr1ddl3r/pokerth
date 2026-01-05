@@ -60,13 +60,13 @@ using namespace std::chrono;
 using namespace boost::chrono;
 #endif
 
-static bool LessThanPlayerHandStartMoney(const boost::shared_ptr<PlayerInterface> p1, const boost::shared_ptr<PlayerInterface> p2)
+static bool LessThanPlayerHandStartMoney(const std::shared_ptr<PlayerInterface> p1, const std::shared_ptr<PlayerInterface> p2)
 {
 	return p1->getMyRoundStartCash() < p2->getMyRoundStartCash();
 }
 
 
-ServerGame::ServerGame(boost::shared_ptr<ServerLobbyThread> lobbyThread, u_int32_t id, const string &name, const string &pwd, const GameData &gameData,
+ServerGame::ServerGame(std::shared_ptr<ServerLobbyThread> lobbyThread, u_int32_t id, const string &name, const string &pwd, const GameData &gameData,
 					   unsigned adminPlayerId, unsigned creatorPlayerDBId, GuiInterface &gui, ConfigFile &playerConfig)
 	: m_adminPlayerId(adminPlayerId), m_lobbyThread(lobbyThread), m_gui(gui),
 	  m_gameData(gameData), m_curState(NULL), m_id(id), m_name(name),
@@ -115,7 +115,7 @@ ServerGame::GetCreatorDBId() const
 }
 
 void
-ServerGame::AddSession(boost::shared_ptr<SessionData> session, bool spectateOnly)
+ServerGame::AddSession(std::shared_ptr<SessionData> session, bool spectateOnly)
 {
 	if (session) {
 		if (spectateOnly) {
@@ -129,7 +129,7 @@ ServerGame::AddSession(boost::shared_ptr<SessionData> session, bool spectateOnly
 void
 ServerGame::RemovePlayer(unsigned playerId, unsigned errorCode)
 {
-	boost::shared_ptr<SessionData> tmpSession = GetSessionManager().GetSessionByUniquePlayerId(playerId);
+	std::shared_ptr<SessionData> tmpSession = GetSessionManager().GetSessionByUniquePlayerId(playerId);
 	// Only kick if the player was found.
 	if (tmpSession)
 		SessionError(tmpSession, errorCode);
@@ -139,7 +139,7 @@ void
 ServerGame::MutePlayer(unsigned playerId, bool mute)
 {
 	if (m_game) {
-		boost::shared_ptr<PlayerInterface> tmpPlayer(m_game->getPlayerByUniqueId(playerId));
+		std::shared_ptr<PlayerInterface> tmpPlayer(m_game->getPlayerByUniqueId(playerId));
 		if (tmpPlayer) {
 			tmpPlayer->setIsMuted(mute);
 		}
@@ -150,7 +150,7 @@ void
 ServerGame::MarkPlayerAsInactive(unsigned playerId)
 {
 	if (m_game) {
-		boost::shared_ptr<PlayerInterface> tmpPlayer(m_game->getPlayerByUniqueId(playerId));
+		std::shared_ptr<PlayerInterface> tmpPlayer(m_game->getPlayerByUniqueId(playerId));
 		if (tmpPlayer) {
 			tmpPlayer->setIsSessionActive(false);
 		}
@@ -162,7 +162,7 @@ ServerGame::MarkPlayerAsKicked(unsigned playerId)
 {
 	// Mark the player as kicked in the engine.
 	if (m_game) {
-		boost::shared_ptr<PlayerInterface> tmpPlayer(m_game->getPlayerByUniqueId(playerId));
+		std::shared_ptr<PlayerInterface> tmpPlayer(m_game->getPlayerByUniqueId(playerId));
 		if (tmpPlayer) {
 			// Player was kicked, so he is not allowed to rejoin.
 			tmpPlayer->setIsKicked(true);
@@ -172,7 +172,7 @@ ServerGame::MarkPlayerAsKicked(unsigned playerId)
 }
 
 void
-ServerGame::HandlePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet)
+ServerGame::HandlePacket(std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet)
 {
 	if (session && packet)
 		GetState().ProcessPacket(shared_from_this(), session, packet);
@@ -185,13 +185,13 @@ ServerGame::GetCurRound() const
 }
 
 void
-ServerGame::SendToAllPlayers(boost::shared_ptr<NetPacket> packet, int state)
+ServerGame::SendToAllPlayers(std::shared_ptr<NetPacket> packet, int state)
 {
 	GetSessionManager().SendToAllSessions(GetLobbyThread().GetSender(), packet, state);
 }
 
 void
-ServerGame::SendToAllButOnePlayers(boost::shared_ptr<NetPacket> packet, SessionId except, int state)
+ServerGame::SendToAllButOnePlayers(std::shared_ptr<NetPacket> packet, SessionId except, int state)
 {
 	GetSessionManager().SendToAllButOneSessions(GetLobbyThread().GetSender(), packet, except, state);
 }
@@ -212,7 +212,7 @@ ServerGame::MoveSpectatorsToLobby()
 	PlayerIdList::const_iterator i = spectatorList.begin();
 	PlayerIdList::const_iterator end = spectatorList.end();
 	while (i != end) {
-		boost::shared_ptr<SessionData> tmpSession = GetSessionManager().GetSessionByUniquePlayerId(*i);
+		std::shared_ptr<SessionData> tmpSession = GetSessionManager().GetSessionByUniquePlayerId(*i);
 		// Only remove if the spectator was found.
 		if (tmpSession)
 			MoveSessionToLobby(tmpSession, NTF_NET_REMOVED_GAME_CLOSED);
@@ -265,7 +265,7 @@ ServerGame::TimerVoteKick(const boost::system::error_code &ec)
 				abortPetition = true;
 			}
 			if (abortPetition) {
-				boost::shared_ptr<NetPacket> packet(new NetPacket);
+				std::shared_ptr<NetPacket> packet(new NetPacket);
 				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_EndKickPetitionMessage);
 				EndKickPetitionMessage *netEndPetition = packet->GetMsg()->mutable_endkickpetitionmessage();
 				netEndPetition->set_gameid(GetId());
@@ -308,7 +308,7 @@ ServerGame::InternalStartGame()
 		// Randomize player list.
 		// Note: This does not use a cryptographically strong
 		// random number generator.
-		vector<boost::shared_ptr<PlayerData> > tmpData(playerData.begin(), playerData.end());
+		vector<std::shared_ptr<PlayerData> > tmpData(playerData.begin(), playerData.end());
 		std::random_device rd;
 		mt19937 rng(rd());
 		shuffle(tmpData.begin(), tmpData.end(), rng);
@@ -318,7 +318,7 @@ ServerGame::InternalStartGame()
 		AssignPlayerNumbers(playerData);
 
 		// Create EngineFactory
-		boost::shared_ptr<EngineFactory> factory(new LocalEngineFactory(&m_playerConfig)); // LocalEngine erstellen
+		std::shared_ptr<EngineFactory> factory(new LocalEngineFactory(&m_playerConfig)); // LocalEngine erstellen
 
 		// Set start data.
 		StartData startData;
@@ -366,7 +366,7 @@ ServerGame::InitRankingMap(const PlayerDataList &playerDataList)
 	PlayerDataList::const_iterator i = playerDataList.begin();
 	PlayerDataList::const_iterator end = playerDataList.end();
 	while (i != end) {
-		boost::shared_ptr<PlayerData> tmpPlayer(*i);
+		std::shared_ptr<PlayerData> tmpPlayer(*i);
 		RankingData tmpData(tmpPlayer->GetDBId());
 		m_rankingMap[tmpPlayer->GetUniqueId()] = tmpData;
 		++i;
@@ -376,9 +376,9 @@ ServerGame::InitRankingMap(const PlayerDataList &playerDataList)
 void
 ServerGame::UpdateRankingMap()
 {
-	list<boost::shared_ptr<PlayerInterface> > activePlayers = *m_game->getActivePlayerList();
+	list<std::shared_ptr<PlayerInterface> > activePlayers = *m_game->getActivePlayerList();
 	int currentRank = static_cast<int>(activePlayers.size());
-	list<boost::shared_ptr<PlayerInterface> > tmpRemovedPlayers;
+	list<std::shared_ptr<PlayerInterface> > tmpRemovedPlayers;
 	PlayerListIterator active_i = activePlayers.begin();
 	PlayerListIterator active_end = activePlayers.end();
 	PlayerListIterator next_active_i = active_i;
@@ -459,7 +459,7 @@ ServerGame::StoreLastGames(const PlayerDataList &playerDataList)
 	PlayerDataList::const_iterator i = playerDataList.begin();
 	PlayerDataList::const_iterator end = playerDataList.end();
 	while (i != end) {
-		boost::shared_ptr<PlayerData> tmpPlayer(*i);
+		std::shared_ptr<PlayerData> tmpPlayer(*i);
 		// tmpPlayer->GetUniqueId()
 		tmpPlayer->AddPlayerLastGame((long)time(NULL));
 		LOG_ERROR("TimeStamp stored: " << tmpPlayer->GetPlayerLastGames().back());
@@ -479,7 +479,7 @@ ServerGame::RemoveAutoLeavePlayers()
 	PlayerIdList::const_iterator i = m_autoLeavePlayerList.begin();
 	PlayerIdList::const_iterator end = m_autoLeavePlayerList.end();
 	while (i != end) {
-		boost::shared_ptr<SessionData> tmpSession = GetSessionManager().GetSessionByUniquePlayerId(*i);
+		std::shared_ptr<SessionData> tmpSession = GetSessionManager().GetSessionByUniquePlayerId(*i);
 		// Only remove if the player was found.
 		if (tmpSession)
 			MoveSessionToLobby(tmpSession, NTF_NET_REMOVED_ON_REQUEST);
@@ -502,7 +502,7 @@ ServerGame::KickPlayer(unsigned playerId)
 	MarkPlayerAsKicked(playerId);
 
 	// Kick the network session from this game.
-	boost::shared_ptr<SessionData> tmpSession(GetSessionManager().GetSessionByUniquePlayerId(playerId));
+	std::shared_ptr<SessionData> tmpSession(GetSessionManager().GetSessionByUniquePlayerId(playerId));
 	// Only kick if the player was found.
 	if (tmpSession) {
 		MoveSessionToLobby(tmpSession, NTF_NET_REMOVED_KICKED);
@@ -511,14 +511,14 @@ ServerGame::KickPlayer(unsigned playerId)
 	// Disabled for now.
 	//else
 	//{
-	//	boost::shared_ptr<PlayerData> tmpData(RemoveComputerPlayer(playerId));
+	//	std::shared_ptr<PlayerData> tmpData(RemoveComputerPlayer(playerId));
 	//	if (tmpData)
 	//		RemovePlayerData(tmpData, NTF_NET_REMOVED_KICKED);
 	//}
 }
 
 void
-ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned playerIdWho, unsigned timeoutSec)
+ServerGame::InternalAskVoteKick(std::shared_ptr<SessionData> byWhom, unsigned playerIdWho, unsigned timeoutSec)
 {
 	if (IsRunning() && byWhom->GetPlayerData()) {
 		// Retrieve only the number of human players.
@@ -539,7 +539,7 @@ ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned 
 					m_voteKickData->numVotesInFavourOfKicking = 1;
 					m_voteKickData->votedPlayerIds.push_back(playerIdByWhom);
 
-					boost::shared_ptr<NetPacket> packet(new NetPacket);
+					std::shared_ptr<NetPacket> packet(new NetPacket);
 					packet->GetMsg()->set_messagetype(PokerTHMessage::Type_StartKickPetitionMessage);
 					StartKickPetitionMessage *netStartPetition = packet->GetMsg()->mutable_startkickpetitionmessage();
 					netStartPetition->set_gameid(GetId());
@@ -566,9 +566,9 @@ ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned 
 }
 
 void
-ServerGame::InternalDenyAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned playerIdWho, DenyKickPlayerReason reason)
+ServerGame::InternalDenyAskVoteKick(std::shared_ptr<SessionData> byWhom, unsigned playerIdWho, DenyKickPlayerReason reason)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AskKickDeniedMessage);
 	AskKickDeniedMessage *netKickDenied = packet->GetMsg()->mutable_askkickdeniedmessage();
 	netKickDenied->set_gameid(GetId());
@@ -578,7 +578,7 @@ ServerGame::InternalDenyAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsig
 }
 
 void
-ServerGame::InternalVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned petitionId, KickVote vote)
+ServerGame::InternalVoteKick(std::shared_ptr<SessionData> byWhom, unsigned petitionId, KickVote vote)
 {
 	if (IsRunning() && byWhom->GetPlayerData()) {
 		// Check whether this is the valid petition id.
@@ -592,7 +592,7 @@ ServerGame::InternalVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned pet
 				else
 					m_voteKickData->numVotesAgainstKicking++;
 				// Send update notification.
-				boost::shared_ptr<NetPacket> packet(new NetPacket);
+				std::shared_ptr<NetPacket> packet(new NetPacket);
 				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_KickPetitionUpdateMessage);
 				KickPetitionUpdateMessage *netKickUpdate = packet->GetMsg()->mutable_kickpetitionupdatemessage();
 				netKickUpdate->set_gameid(GetId());
@@ -610,9 +610,9 @@ ServerGame::InternalVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned pet
 }
 
 void
-ServerGame::InternalDenyVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned petitionId, DenyVoteReason reason)
+ServerGame::InternalDenyVoteKick(std::shared_ptr<SessionData> byWhom, unsigned petitionId, DenyVoteReason reason)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	std::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_VoteKickReplyMessage);
 	VoteKickReplyMessage *netVoteReply = packet->GetMsg()->mutable_votekickreplymessage();
 	netVoteReply->set_gameid(GetId());
@@ -638,11 +638,11 @@ ServerGame::GetFullPlayerDataList() const
 	return playerList;
 }
 
-boost::shared_ptr<PlayerData>
+std::shared_ptr<PlayerData>
 ServerGame::GetPlayerDataByUniqueId(unsigned playerId) const
 {
-	boost::shared_ptr<PlayerData> tmpPlayer;
-	boost::shared_ptr<SessionData> session = GetSessionManager().GetSessionByUniquePlayerId(playerId);
+	std::shared_ptr<PlayerData> tmpPlayer;
+	std::shared_ptr<SessionData> session = GetSessionManager().GetSessionByUniquePlayerId(playerId);
 	if (session) {
 		tmpPlayer = session->GetPlayerData();
 	}
@@ -700,20 +700,20 @@ ServerGame::IsClientAddressConnected(const std::string &clientAddress) const
 	return GetSessionManager().IsClientAddressConnected(clientAddress);
 }
 
-boost::shared_ptr<PlayerInterface>
+std::shared_ptr<PlayerInterface>
 ServerGame::GetPlayerInterfaceFromGame(const std::string &playerName)
 {
-	boost::shared_ptr<PlayerInterface> tmpPlayer;
+	std::shared_ptr<PlayerInterface> tmpPlayer;
 	if (m_game) {
 		tmpPlayer = m_game->getPlayerByName(playerName);
 	}
 	return tmpPlayer;
 }
 
-boost::shared_ptr<PlayerInterface>
+std::shared_ptr<PlayerInterface>
 ServerGame::GetPlayerInterfaceFromGame(unsigned playerId)
 {
-	boost::shared_ptr<PlayerInterface> tmpPlayer;
+	std::shared_ptr<PlayerInterface> tmpPlayer;
 	if (m_game) {
 		tmpPlayer = m_game->getPlayerByUniqueId(playerId);
 	}
@@ -833,7 +833,7 @@ ServerGame::IsNameReported() const
 }
 
 void
-ServerGame::AddComputerPlayer(boost::shared_ptr<PlayerData> player)
+ServerGame::AddComputerPlayer(std::shared_ptr<PlayerData> player)
 {
 	{
 		boost::mutex::scoped_lock lock(m_computerPlayerListMutex);
@@ -842,10 +842,10 @@ ServerGame::AddComputerPlayer(boost::shared_ptr<PlayerData> player)
 	GetLobbyThread().AddComputerPlayer(player);
 }
 
-boost::shared_ptr<PlayerData>
+std::shared_ptr<PlayerData>
 ServerGame::RemoveComputerPlayer(unsigned playerId)
 {
-	boost::shared_ptr<PlayerData> tmpPlayer;
+	std::shared_ptr<PlayerData> tmpPlayer;
 	{
 		boost::mutex::scoped_lock lock(m_computerPlayerListMutex);
 		PlayerDataList::iterator i = m_computerPlayerList.begin();
@@ -896,13 +896,13 @@ ServerGame::ResetComputerPlayerList()
 }
 
 void
-ServerGame::RemoveSession(boost::shared_ptr<SessionData> session, int reason)
+ServerGame::RemoveSession(std::shared_ptr<SessionData> session, int reason)
 {
 	if (!session)
 		throw ServerException(__FILE__, __LINE__, ERR_NET_INVALID_SESSION, 0);
 
 	if (GetSessionManager().RemoveSession(session->GetId())) {
-		boost::shared_ptr<PlayerData> tmpPlayerData = session->GetPlayerData();
+		std::shared_ptr<PlayerData> tmpPlayerData = session->GetPlayerData();
 		if (tmpPlayerData && !tmpPlayerData->GetName().empty()) {
 			RemovePlayerData(tmpPlayerData, reason, session->GetState() == SessionData::Spectating || session->GetState() == SessionData::SpectatorWaiting);
 		}
@@ -910,19 +910,19 @@ ServerGame::RemoveSession(boost::shared_ptr<SessionData> session, int reason)
 }
 
 void
-ServerGame::RemovePlayerData(boost::shared_ptr<PlayerData> player, int reason, bool spectateOnly)
+ServerGame::RemovePlayerData(std::shared_ptr<PlayerData> player, int reason, bool spectateOnly)
 {
 	if (player->IsGameAdmin()) {
 		// Find new admin for the game
 		PlayerDataList playerList(GetSessionManager().GetPlayerDataList());
 		if (!playerList.empty()) {
-			boost::shared_ptr<PlayerData> newAdmin = playerList.front();
+			std::shared_ptr<PlayerData> newAdmin = playerList.front();
 			SetAdminPlayerId(newAdmin->GetUniqueId());
 			newAdmin->SetGameAdmin(true);
 			// Notify game state on admin change
 			GetState().NotifyGameAdminChanged(shared_from_this());
 			// Send "Game Admin Changed" to clients.
-			boost::shared_ptr<NetPacket> adminChanged(new NetPacket);
+			std::shared_ptr<NetPacket> adminChanged(new NetPacket);
 			adminChanged->GetMsg()->set_messagetype(PokerTHMessage::Type_GameAdminChangedMessage);
 			GameAdminChangedMessage *netGameAdmin = adminChanged->GetMsg()->mutable_gameadminchangedmessage();
 			netGameAdmin->set_gameid(GetId());
@@ -936,7 +936,7 @@ ServerGame::RemovePlayerData(boost::shared_ptr<PlayerData> player, int reason, b
 	player->SetGameAdmin(false);
 
 	// Send "Player Left" to clients.
-	boost::shared_ptr<NetPacket> thisPlayerLeft(new NetPacket);
+	std::shared_ptr<NetPacket> thisPlayerLeft(new NetPacket);
 	GamePlayerLeftMessage::GamePlayerLeftReason netReason = GamePlayerLeftMessage::leftError;
 	switch (reason) {
 	case NTF_NET_REMOVED_ON_REQUEST :
@@ -971,7 +971,7 @@ ServerGame::RemovePlayerData(boost::shared_ptr<PlayerData> player, int reason, b
 }
 
 void
-ServerGame::SessionError(boost::shared_ptr<SessionData> session, int errorCode)
+ServerGame::SessionError(std::shared_ptr<SessionData> session, int errorCode)
 {
 	if (!session)
 		throw ServerException(__FILE__, __LINE__, ERR_NET_INVALID_SESSION, 0);
@@ -980,7 +980,7 @@ ServerGame::SessionError(boost::shared_ptr<SessionData> session, int errorCode)
 }
 
 void
-ServerGame::MoveSessionToLobby(boost::shared_ptr<SessionData> session, int reason)
+ServerGame::MoveSessionToLobby(std::shared_ptr<SessionData> session, int reason)
 {
 	RemoveSession(session, reason);
 	// Reset ready flag - just in case it is set, player may leave at any time.
@@ -997,7 +997,7 @@ ServerGame::RemoveDisconnectedPlayers()
 		PlayerListIterator i = tmpList->begin();
 		PlayerListIterator end = tmpList->end();
 		while (i != end) {
-			boost::shared_ptr<PlayerInterface> tmpPlayer = *i;
+			std::shared_ptr<PlayerInterface> tmpPlayer = *i;
 			if ((tmpPlayer->getMyType() == PLAYER_TYPE_HUMAN && !GetSessionManager().IsPlayerConnected(tmpPlayer->getMyUniqueID()))
 					|| (tmpPlayer->getMyType() == PLAYER_TYPE_COMPUTER && !IsComputerPlayerActive(tmpPlayer->getMyUniqueID()))) {
 				// Setting player cash to 0 will deactivate the player.

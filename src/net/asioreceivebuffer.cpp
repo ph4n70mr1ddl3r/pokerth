@@ -45,7 +45,7 @@ AsioReceiveBuffer::AsioReceiveBuffer()
 }
 
 void
-AsioReceiveBuffer::StartAsyncRead(boost::shared_ptr<SessionData> session)
+AsioReceiveBuffer::StartAsyncRead(std::shared_ptr<SessionData> session)
 {
     if (session->IsSsl()) {
         session->GetSslStream()->async_read_some(
@@ -69,7 +69,7 @@ AsioReceiveBuffer::StartAsyncRead(boost::shared_ptr<SessionData> session)
 }
 
 void
-AsioReceiveBuffer::HandleRead(boost::shared_ptr<SessionData> session, const boost::system::error_code &error, size_t bytesRead)
+AsioReceiveBuffer::HandleRead(std::shared_ptr<SessionData> session, const boost::system::error_code &error, size_t bytesRead)
 {
     // unchanged behavior; both TCP and SSL report through error/bytesRead
     if (error != boost::asio::error::operation_aborted) {
@@ -94,17 +94,17 @@ AsioReceiveBuffer::HandleRead(boost::shared_ptr<SessionData> session, const boos
 }
 
 void
-AsioReceiveBuffer::HandleMessage(boost::shared_ptr<SessionData> /*session*/, const string &/*msg*/)
+AsioReceiveBuffer::HandleMessage(std::shared_ptr<SessionData> /*session*/, const string &/*msg*/)
 {
 	LOG_ERROR("AsioReceiveBuffer::HandleMessage should never be called because TCP I/O is not message based.");
 }
 
 void
-AsioReceiveBuffer::ScanPackets(boost::shared_ptr<SessionData> session)
+AsioReceiveBuffer::ScanPackets(std::shared_ptr<SessionData> session)
 {
 	bool dataAvailable = true;
 	do {
-		boost::shared_ptr<NetPacket> tmpPacket;
+		std::shared_ptr<NetPacket> tmpPacket;
 		// This is necessary, because we use TCP.
 		// Packets may be received in multiple chunks or
 		// several packets may be received at once.
@@ -145,10 +145,10 @@ AsioReceiveBuffer::ScanPackets(boost::shared_ptr<SessionData> session)
 }
 
 void
-AsioReceiveBuffer::ProcessPackets(boost::shared_ptr<SessionData> session)
+AsioReceiveBuffer::ProcessPackets(std::shared_ptr<SessionData> session)
 {
 	while (!receivedPackets.empty()) {
-		boost::shared_ptr<NetPacket> p = receivedPackets.front();
+		std::shared_ptr<NetPacket> p = receivedPackets.front();
 		receivedPackets.pop_front();
 		session->HandlePacket(p);
 	}

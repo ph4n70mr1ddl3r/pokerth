@@ -75,11 +75,11 @@ void MyAvatarLabel::contextMenuEvent ( QContextMenuEvent *event )
 	assert(myW->getSession()->getCurrentGame());
 	if (myW->getSession()->isNetworkClientRunning()) {
 
-		boost::shared_ptr<PlayerInterface> humanPlayer = myW->getSession()->getCurrentGame()->getSeatsList()->front();
+		std::shared_ptr<PlayerInterface> humanPlayer = myW->getSession()->getCurrentGame()->getSeatsList()->front();
 		//only active players are allowed to start a vote
 		if(humanPlayer->getMyActiveStatus()) {
 
-			boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
+			std::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 			PlayerListConstIterator it_c;
 			int activePlayerCounter=0;
 			PlayerList seatList = currentGame->getSeatsList();
@@ -150,7 +150,7 @@ void MyAvatarLabel::setPlayerRating(QString playerInfo)
 {
 	int found=0;
 	QStringList playerInfoList=playerInfo.split("\"", Qt::KeepEmptyParts, Qt::CaseSensitive), tipInfo;
-	boost::shared_ptr<Game> currentGame = myW->myStartWindow->getSession()->getCurrentGame();
+	std::shared_ptr<Game> currentGame = myW->myStartWindow->getSession()->getCurrentGame();
 	PlayerList seatsList = currentGame->getSeatsList();
 	std::list<std::string> tipsList = myW->getMyConfig()->readConfigStringList("PlayerTooltips");
 	std::list<std::string> result;
@@ -217,7 +217,7 @@ void MyAvatarLabel::refreshStars()
 #endif
 #endif
 
-	boost::shared_ptr<Game> curGame = myW->myStartWindow->getSession()->getCurrentGame();
+	std::shared_ptr<Game> curGame = myW->myStartWindow->getSession()->getCurrentGame();
 	PlayerListConstIterator it_c;
 	int seatPlace;
 	PlayerList seatsList = curGame->getSeatsList();
@@ -244,7 +244,7 @@ void MyAvatarLabel::refreshStars()
 
 void MyAvatarLabel::refreshTooltips()
 {
-	boost::shared_ptr<Game> currentGame = myW->myStartWindow->getSession()->getCurrentGame();
+	std::shared_ptr<Game> currentGame = myW->myStartWindow->getSession()->getCurrentGame();
 	PlayerListConstIterator it_c;
 	int seatPlace;
 	PlayerList seatsList = currentGame->getSeatsList();
@@ -410,7 +410,7 @@ void MyAvatarLabel::paintEvent(QPaintEvent*)
 		painter.setOpacity(1.0);
 
 	//hide avatar if player is on ignore list
-	boost::shared_ptr<Session> mySession = myW->myStartWindow->getSession();
+	std::shared_ptr<Session> mySession = myW->myStartWindow->getSession();
 	if(!playerIsOnIgnoreList(QString::fromUtf8(mySession->getClientPlayerInfo(myUniqueId).playerName.c_str()))) {
 		painter.drawPixmap(0,0,myPixmap);
 	} else if(myW->getMyConfig()->readConfigInt("DontHideAvatarsOfIgnored")) {
@@ -531,7 +531,7 @@ void MyAvatarLabel::removePlayerFromIgnoreList()
 void MyAvatarLabel::reportBadAvatar()
 {
 
-	boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
+	std::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 	int j=0;
 	PlayerListConstIterator it_c;
 	PlayerList seatList = currentGame->getSeatsList();
@@ -560,7 +560,7 @@ void MyAvatarLabel::reportBadAvatar()
 
 void MyAvatarLabel::startEditTip()
 {
-	boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
+	std::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 	int j=0;
 	PlayerListConstIterator it_c;
 	PlayerList seatList = currentGame->getSeatsList();

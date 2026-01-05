@@ -5,7 +5,7 @@
 #include "gamedata.h"
 #include <QtQml>
 
-CreateLocalGameViewImpl::CreateLocalGameViewImpl(QObject *parent, QQmlApplicationEngine *e, boost::shared_ptr<ConfigFile> c, StartViewImpl *s )
+CreateLocalGameViewImpl::CreateLocalGameViewImpl(QObject *parent, QQmlApplicationEngine *e, std::shared_ptr<ConfigFile> c, StartViewImpl *s )
     : QObject(parent) ,myQmlEngine(e), myConfig(c), myStartView(s)
 {
     //Build the listView data structure

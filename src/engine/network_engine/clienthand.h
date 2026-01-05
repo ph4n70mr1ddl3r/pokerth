@@ -47,7 +47,7 @@
 class ClientHand : public HandInterface
 {
 public:
-	ClientHand ( std::shared_ptr<EngineFactory> f, std::shared_ptr<GuiInterface>, std::shared_ptr<BoardInterface>, Log*, PlayerList, PlayerList, PlayerList , int, int, int, int, int );
+	ClientHand ( std::shared_ptr<EngineFactory> f, GuiInterface *g, std::shared_ptr<BoardInterface>, Log*, PlayerList, PlayerList, PlayerList , int, int, int, int, int );
 	~ClientHand();
 
 	void start();
@@ -61,7 +61,7 @@ public:
 	std::shared_ptr<BeRoInterface> getFlop() const;
 	std::shared_ptr<BeRoInterface> getTurn() const;
 	std::shared_ptr<BeRoInterface> getRiver() const;
-	std::shared_ptr<GuiInterface> getGuiInterface() const;
+	GuiInterface* getGuiInterface() const;
 	std::shared_ptr<BeRoInterface> getCurrentBeRo() const;
 
 	Log* getLog() const
@@ -118,7 +118,7 @@ private:
 	mutable boost::recursive_mutex m_syncMutex;
 
 	std::shared_ptr<EngineFactory> myFactory;
-	std::shared_ptr<GuiInterface> myGui;
+	GuiInterface* myGui;
 	std::shared_ptr<BoardInterface> myBoard;
 	Log *myLog;
 

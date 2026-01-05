@@ -34,8 +34,8 @@
 #define _AVATARMANAGER_H_
 
 #include <boost/thread.hpp>
-#include <boost/shared_ptr.hpp>
 
+#include <memory>
 #include <map>
 #include <list>
 
@@ -61,8 +61,8 @@ public:
 
 	bool AddSingleAvatar(const std::string &fileName);
 
-	static boost::shared_ptr<AvatarFileState> OpenAvatarFileForChunkRead(const std::string &fileName, unsigned &outFileSize, AvatarFileType &outFileType);
-	static unsigned ChunkReadAvatarFile(boost::shared_ptr<AvatarFileState> fileState, unsigned char *data, unsigned chunkSize);
+	static std::shared_ptr<AvatarFileState> OpenAvatarFileForChunkRead(const std::string &fileName, unsigned &outFileSize, AvatarFileType &outFileType);
+	static unsigned ChunkReadAvatarFile(std::shared_ptr<AvatarFileState> fileState, unsigned char *data, unsigned chunkSize);
 
 	static int AvatarFileToNetPackets(const std::string &fileName, unsigned requestId, NetPacketList &packets);
 	static AvatarFileType GetAvatarFileType(const std::string &fileName);
@@ -99,7 +99,7 @@ private:
 	const std::string		m_externalServerUser;
 	const std::string		m_externalServerPassword;
 
-	boost::shared_ptr<UploaderThread> m_uploader;
+	std::shared_ptr<UploaderThread> m_uploader;
 };
 
 #endif

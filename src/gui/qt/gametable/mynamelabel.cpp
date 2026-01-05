@@ -79,7 +79,7 @@ void MyNameLabel::setText ( const QString &t, bool trans, bool guest, bool compu
 				//build nick string list
 				if(myW->getSession()->getCurrentGame()) {
 
-					boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
+					std::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 					PlayerListConstIterator it_c;
 					PlayerList seatsList = currentGame->getSeatsList();
 					int playerCounter = 0;

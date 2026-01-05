@@ -44,8 +44,8 @@ public:
 	ServerDBFactoryInternal();
 	virtual ~ServerDBFactoryInternal();
 
-	virtual boost::shared_ptr<ServerDBInterface> CreateServerDBObject(
-		ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService);
+	virtual std::shared_ptr<ServerDBInterface> CreateServerDBObject(
+		ServerDBCallback &cb, std::shared_ptr<boost::asio::io_context> ioService);
 };
 
 typedef ServerDBFactoryInternal DBFactory;

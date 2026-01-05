@@ -34,23 +34,24 @@
 #define _SENDBUFFER_H_
 
 #include <net/websocket_defs.h>
+#include <memory>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/thread.hpp>
 
 class SessionData;
 class NetPacket;
 
-class SendBuffer : public boost::enable_shared_from_this<SendBuffer>
+class SendBuffer : public std::enable_shared_from_this<SendBuffer>
 {
 public:
 	virtual ~SendBuffer();
 
 	virtual void SetCloseAfterSend() = 0;
 
-	virtual void AsyncSendNextPacket(boost::shared_ptr<SessionData> session) = 0;
-	virtual void InternalStorePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) = 0;
+	virtual void AsyncSendNextPacket(std::shared_ptr<SessionData> session) = 0;
+	virtual void InternalStorePacket(std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet) = 0;
 
-	virtual void HandleWrite(boost::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code &error) = 0;
+	virtual void HandleWrite(std::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code &error) = 0;
 
 	mutable boost::mutex dataMutex;
 };

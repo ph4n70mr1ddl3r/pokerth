@@ -49,7 +49,7 @@ ClientEngineFactory::~ClientEngineFactory()
 
 
 std::shared_ptr<HandInterface>
-ClientEngineFactory::createHand(std::shared_ptr<EngineFactory> f, std::shared_ptr<GuiInterface> g, std::shared_ptr<BoardInterface> b, Log *l, PlayerList sl, PlayerList apl, PlayerList rpl, int id, int sP, int dP, int sB,int sC)
+ClientEngineFactory::createHand(std::shared_ptr<EngineFactory> f, GuiInterface *g, std::shared_ptr<BoardInterface> b, Log *l, PlayerList sl, PlayerList apl, PlayerList rpl, int id, int sP, int dP, int sB,int sC)
 {
 	return std::make_shared<ClientHand>(f, g, b, l, sl, apl, rpl, id, sP, dP, sB, sC);
 }

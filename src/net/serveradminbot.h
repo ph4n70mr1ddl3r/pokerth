@@ -54,10 +54,10 @@ class IrcThread;
 class ServerAdminBot : public IrcCallback, public boost::enable_shared_from_this<ServerAdminBot>
 {
 public:
-	ServerAdminBot(boost::shared_ptr<boost::asio::io_context> ioService);
+	ServerAdminBot(std::shared_ptr<boost::asio::io_context> ioService);
 	virtual ~ServerAdminBot();
 
-	void Init(boost::shared_ptr<ServerLobbyThread> lobbyThread, boost::shared_ptr<IrcThread> ircAdminThread, const std::string &cacheDir);
+	void Init(std::shared_ptr<ServerLobbyThread> lobbyThread, std::shared_ptr<IrcThread> ircAdminThread, const std::string &cacheDir);
 
 	// Main start function.
 	void Run();
@@ -93,8 +93,8 @@ private:
 	int m_notifyIntervalMinutes;
 	int m_notifyCounter;
 
-	boost::shared_ptr<ServerLobbyThread> m_lobbyThread;
-	boost::shared_ptr<IrcThread> m_ircAdminThread;
+	std::shared_ptr<ServerLobbyThread> m_lobbyThread;
+	std::shared_ptr<IrcThread> m_ircAdminThread;
 	boost::timers::portable::second_timer m_notifyTimer;
 
 	boost::asio::steady_timer m_reconnectTimer;

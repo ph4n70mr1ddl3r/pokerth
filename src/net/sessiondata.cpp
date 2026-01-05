@@ -48,7 +48,7 @@ using namespace std::chrono;
 using namespace boost::chrono;
 #endif
 
-SessionData::SessionData(boost::shared_ptr<boost::asio::ip::tcp::socket> sock, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService)
+SessionData::SessionData(std::shared_ptr<boost::asio::ip::tcp::socket> sock, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService)
 	: m_socket(sock), m_id(id), m_state(SessionData::Init), m_readyFlag(false), m_wantsLobbyMsg(true),
 	  m_activityTimeoutSec(0), m_activityWarningRemainingSec(0), m_initTimeoutTimer(ioService), m_globalTimeoutTimer(ioService),
 	  m_activityTimeoutTimer(ioService), m_callback(cb), m_authSession(NULL), m_curAuthStep(0)
@@ -57,7 +57,7 @@ SessionData::SessionData(boost::shared_ptr<boost::asio::ip::tcp::socket> sock, S
 	m_sendBuffer.reset(new AsioSendBuffer);
 }
 
-SessionData::SessionData(boost::shared_ptr<WebSocketData> webData, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int /*filler*/)
+SessionData::SessionData(std::shared_ptr<WebSocketData> webData, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int /*filler*/)
 	: m_webData(webData), m_id(id), m_state(SessionData::Init), m_readyFlag(false), m_wantsLobbyMsg(true),
 	  m_activityTimeoutSec(0), m_activityWarningRemainingSec(0), m_initTimeoutTimer(ioService), m_globalTimeoutTimer(ioService),
 	  m_activityTimeoutTimer(ioService), m_callback(cb), m_authSession(NULL), m_curAuthStep(0)
@@ -66,7 +66,7 @@ SessionData::SessionData(boost::shared_ptr<WebSocketData> webData, SessionId id,
 	m_sendBuffer.reset(new WebSendBuffer);
 }
 
-SessionData::SessionData(boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sslStream, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int /*filler*/)
+SessionData::SessionData(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sslStream, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int /*filler*/)
     : m_socket(), m_webData(), m_id(id), m_game(), m_state(SessionData::Init), m_clientAddr(),
       m_receiveBuffer(), m_sendBuffer(), m_readyFlag(false), m_wantsLobbyMsg(true),
       m_activityTimeoutSec(0), m_activityWarningRemainingSec(0),
@@ -91,7 +91,7 @@ SessionData::GetId() const
 	return m_id;
 }
 
-boost::shared_ptr<ServerGame>
+std::shared_ptr<ServerGame>
 SessionData::GetGame() const
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);
@@ -99,7 +99,7 @@ SessionData::GetGame() const
 }
 
 void
-SessionData::SetGame(boost::shared_ptr<ServerGame> game)
+SessionData::SetGame(std::shared_ptr<ServerGame> game)
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);
 	m_game = game;
@@ -119,19 +119,19 @@ SessionData::SetState(SessionData::State state)
 	m_state = state;
 }
 
-boost::shared_ptr<boost::asio::ip::tcp::socket>
+std::shared_ptr<boost::asio::ip::tcp::socket>
 SessionData::GetAsioSocket()
 {
 	return m_socket;
 }
 
-boost::shared_ptr<WebSocketData>
+std::shared_ptr<WebSocketData>
 SessionData::GetWebData()
 {
 	return m_webData;
 }
 
-boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> SessionData::GetSslStream()
+std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> SessionData::GetSslStream()
 {
     boost::mutex::scoped_lock lock(m_dataMutex);
     return m_sslStream;
@@ -384,13 +384,13 @@ SessionData::CancelTimers()
 }
 
 void
-SessionData::SetPlayerData(boost::shared_ptr<PlayerData> player)
+SessionData::SetPlayerData(std::shared_ptr<PlayerData> player)
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);
 	m_playerData = player;
 }
 
-boost::shared_ptr<PlayerData>
+std::shared_ptr<PlayerData>
 SessionData::GetPlayerData()
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);

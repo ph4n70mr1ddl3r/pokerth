@@ -72,6 +72,10 @@ joinNetworkGameDialogImpl::joinNetworkGameDialogImpl(QWidget *parent, ConfigFile
 
 }
 
+joinNetworkGameDialogImpl::~joinNetworkGameDialogImpl()
+{
+}
+
 int joinNetworkGameDialogImpl::exec()
 {
 

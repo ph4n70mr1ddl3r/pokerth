@@ -258,7 +258,7 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 	connect(this, SIGNAL(signalNetClientNotification(int)), this, SLOT(networkNotification(int)));
 	connect(this, SIGNAL(signalNetServerError(int, int)), this, SLOT(networkError(int, int)));
 	connect(this, SIGNAL(signalNetClientRemovedFromGame(int)), this, SLOT(networkNotification(int)));
-	connect(this, SIGNAL(signalNetClientGameStart(boost::shared_ptr<Game>)), this, SLOT(networkStart(boost::shared_ptr<Game>)));
+	connect(this, SIGNAL(signalNetClientGameStart(std::shared_ptr<Game>)), this, SLOT(networkStart(std::shared_ptr<Game>)));
 
 	connect(this, SIGNAL(signalSelfGameInvitation(unsigned, unsigned)), myGameLobbyDialog, SLOT(showInvitationDialog(unsigned, unsigned)));
 	connect(this, SIGNAL(signalPlayerGameInvitation(unsigned, unsigned, unsigned)), myGameLobbyDialog, SLOT(chatInfoPlayerInvitation(unsigned, unsigned, unsigned)));
@@ -515,7 +515,7 @@ void startWindowImpl::callCreateNetworkGameDialog()
 			// Create pseudo Gui Wrapper for the server.
 			myServerGuiInterface.reset(new ServerGuiWrapper(myConfig, mySession->getGui(), mySession->getGui()));
 			{
-				boost::shared_ptr<Session> session(new Session(myServerGuiInterface.get(), myConfig, 0));
+				std::shared_ptr<Session> session(new Session(myServerGuiInterface.get(), myConfig, 0));
 				session->init(mySession->getAvatarManager());
 				myServerGuiInterface->setSession(session);
 			}
@@ -1228,7 +1228,7 @@ void startWindowImpl::networkMessage(unsigned msgId)
 }
 
 
-void startWindowImpl::networkStart(boost::shared_ptr<Game> game)
+void startWindowImpl::networkStart(std::shared_ptr<Game> game)
 {
 	mySession->startClientGame(game);
 

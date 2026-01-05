@@ -40,7 +40,7 @@
 class CompositeAsyncDBQuery : public AsyncDBQuery, public QueryContext
 {
 public:
-	typedef std::list<boost::shared_ptr<AsyncDBQuery> > AsyncQueryList;
+	typedef std::list<std::shared_ptr<AsyncDBQuery> > AsyncQueryList;
 	// Note: This list must contain at least one query.
 	CompositeAsyncDBQuery(const AsyncQueryList &queries);
 	virtual ~CompositeAsyncDBQuery();

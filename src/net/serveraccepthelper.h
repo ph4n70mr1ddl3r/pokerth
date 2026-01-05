@@ -57,7 +57,7 @@ public:
     typedef typename P::endpoint P_endpoint;
     typedef typename P::socket P_socket;
 
-    ServerAcceptHelper(ServerCallback &serverCallback, boost::shared_ptr<boost::asio::io_context> ioService, bool tls)
+    ServerAcceptHelper(ServerCallback &serverCallback, std::shared_ptr<boost::asio::io_context> ioService, bool tls)
         : m_ioService(ioService), m_serverCallback(serverCallback)
     {
         m_tls = tls;
@@ -97,7 +97,7 @@ public:
 
     // Set the parameters.
     virtual void Listen(unsigned serverPort, bool ipv6, const std::string &/*logDir*/,
-                        boost::shared_ptr<ServerLobbyThread> lobbyThread)
+                        std::shared_ptr<ServerLobbyThread> lobbyThread)
     {
         m_lobbyThread = lobbyThread;
 
@@ -144,7 +144,7 @@ protected:
         m_acceptor->listen();
 
         if(m_tls){
-            boost::shared_ptr<P_socket> newSocket(new P_socket(*m_ioService));
+            std::shared_ptr<P_socket> newSocket(new P_socket(*m_ioService));
             m_acceptor->async_accept(
                 *newSocket,
                 boost::bind(&ServerAcceptHelper::HandleAccept, this, newSocket,
@@ -152,7 +152,7 @@ protected:
             );
         }else{
             // Start first asynchronous Accept.
-            boost::shared_ptr<P_socket> newSocket(new P_socket(*m_ioService));
+            std::shared_ptr<P_socket> newSocket(new P_socket(*m_ioService));
             m_acceptor->async_accept(
                 *newSocket,
                 boost::bind(&ServerAcceptHelper::HandleAccept, this, newSocket,
@@ -161,7 +161,7 @@ protected:
         }
     }
 
-    void HandleAccept(boost::shared_ptr<P_socket> acceptedSocket,
+    void HandleAccept(std::shared_ptr<P_socket> acceptedSocket,
                       const boost::system::error_code &error)
     {
         if (!error) {
@@ -171,7 +171,7 @@ protected:
 
             if (m_tls) {
                 typedef boost::asio::ssl::stream<P_socket> ssl_stream_t;
-                boost::shared_ptr<ssl_stream_t> sslStream(new ssl_stream_t(*m_ioService, *m_sslContext));
+                std::shared_ptr<ssl_stream_t> sslStream(new ssl_stream_t(*m_ioService, *m_sslContext));
                 sslStream->next_layer() = std::move(*acceptedSocket);
 
                 // SSL_set_info_callback(sslStream->native_handle(), &SslServerInfoCallback);
@@ -183,10 +183,10 @@ protected:
                                 boost::asio::placeholders::error)
                 );
             } else {
-                boost::shared_ptr<SessionData> sessionData(new SessionData(acceptedSocket, m_lobbyThread->GetNextSessionId(), m_lobbyThread->GetSessionDataCallback(), *m_ioService));
+                std::shared_ptr<SessionData> sessionData(new SessionData(acceptedSocket, m_lobbyThread->GetNextSessionId(), m_lobbyThread->GetSessionDataCallback(), *m_ioService));
                 GetLobbyThread().AddConnection(sessionData);
 
-                boost::shared_ptr<P_socket> newSocket(new P_socket(*m_ioService));
+                std::shared_ptr<P_socket> newSocket(new P_socket(*m_ioService));
                 m_acceptor->async_accept(
                     *newSocket,
                     boost::bind(&ServerAcceptHelper::HandleAccept, this, newSocket,
@@ -199,18 +199,18 @@ protected:
         }
     }
 
-    void HandleHandshake(boost::shared_ptr<boost::asio::ssl::stream<P_socket>> sslStream,
+    void HandleHandshake(std::shared_ptr<boost::asio::ssl::stream<P_socket>> sslStream,
                          const boost::system::error_code &error)
     {
         if (!error) {
             LOG_MSG("TLS handshake succeeded.");
-            boost::shared_ptr<SessionData> sessionData(new SessionData(sslStream, m_lobbyThread->GetNextSessionId(), m_lobbyThread->GetSessionDataCallback(), *m_ioService, 0));
+            std::shared_ptr<SessionData> sessionData(new SessionData(sslStream, m_lobbyThread->GetNextSessionId(), m_lobbyThread->GetSessionDataCallback(), *m_ioService, 0));
             GetLobbyThread().AddConnection(sessionData);
         } else {
             LOG_ERROR("TLS handshake failed: " << error.message());
         }
 
-        boost::shared_ptr<P_socket> newSocket(new P_socket(*m_ioService));
+        std::shared_ptr<P_socket> newSocket(new P_socket(*m_ioService));
         m_acceptor->async_accept(
             *newSocket,
             boost::bind(&ServerAcceptHelper::HandleAccept, this, newSocket,
@@ -275,14 +275,14 @@ protected:
     }
 
 private:
-    boost::shared_ptr<boost::asio::io_context> m_ioService;
-    boost::shared_ptr<P_acceptor> m_acceptor;
-    boost::shared_ptr<P_endpoint> m_endpoint;
-    boost::shared_ptr<boost::asio::ssl::context> m_sslContext;
+    std::shared_ptr<boost::asio::io_context> m_ioService;
+    std::shared_ptr<P_acceptor> m_acceptor;
+    std::shared_ptr<P_endpoint> m_endpoint;
+    std::shared_ptr<boost::asio::ssl::context> m_sslContext;
     ServerCallback &m_serverCallback;
     bool m_tls;
 
-    boost::shared_ptr<ServerLobbyThread> m_lobbyThread;
+    std::shared_ptr<ServerLobbyThread> m_lobbyThread;
 };
 
 #endif

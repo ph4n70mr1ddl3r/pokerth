@@ -55,7 +55,7 @@ using namespace std::chrono;
 using namespace boost::chrono;
 #endif
 
-ServerAdminBot::ServerAdminBot(boost::shared_ptr<boost::asio::io_context> ioService)
+ServerAdminBot::ServerAdminBot(std::shared_ptr<boost::asio::io_context> ioService)
 	: m_notifyTimeoutMinutes(0), m_notifyIntervalMinutes(0), m_notifyCounter(0),
 	  m_notifyTimer(boost::posix_time::time_duration(0, 0, 0), boost::timers::portable::second_timer::manual_start),
 	  m_reconnectTimer(*ioService), m_notifyLoopTimer(*ioService), m_checkFileTimer(*ioService)
@@ -67,7 +67,7 @@ ServerAdminBot::~ServerAdminBot()
 }
 
 void
-ServerAdminBot::Init(boost::shared_ptr<ServerLobbyThread> lobbyThread, boost::shared_ptr<IrcThread> ircAdminThread, const std::string &cacheDir)
+ServerAdminBot::Init(std::shared_ptr<ServerLobbyThread> lobbyThread, std::shared_ptr<IrcThread> ircAdminThread, const std::string &cacheDir)
 {
 	m_lobbyThread = lobbyThread;
 	m_ircAdminThread = ircAdminThread;
@@ -313,7 +313,7 @@ ServerAdminBot::Reconnect()
 	if (m_ircAdminThread) {
 		m_ircAdminThread->SignalTermination();
 		if (m_ircAdminThread->Join(NET_ADMIN_IRC_TERMINATE_TIMEOUT_MSEC)) {
-			boost::shared_ptr<IrcThread> tmpIrcThread(new IrcThread(*m_ircAdminThread));
+			std::shared_ptr<IrcThread> tmpIrcThread(new IrcThread(*m_ircAdminThread));
 			tmpIrcThread->Run();
 			m_ircAdminThread = tmpIrcThread;
 		}

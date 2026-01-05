@@ -34,6 +34,7 @@
 #define _SERVERMANAGER_H_
 
 #include <boost/asio.hpp>
+#include <memory>
 #include <string>
 #include <list>
 
@@ -64,7 +65,7 @@ public:
 	virtual bool JoinAll(bool wait);
 
 protected:
-	typedef std::list<boost::shared_ptr<ServerAcceptInterface> > AcceptHelperList;
+	typedef std::list<std::shared_ptr<ServerAcceptInterface> > AcceptHelperList;
 
 	ServerLobbyThread &GetLobbyThread();
 	ConfigFile &GetConfig()
@@ -75,8 +76,8 @@ protected:
 	{
 		return m_gui;
 	}
-	boost::shared_ptr<boost::asio::io_context> m_ioService;
-	boost::shared_ptr<ServerLobbyThread> m_lobbyThread;
+	std::shared_ptr<boost::asio::io_context> m_ioService;
+	std::shared_ptr<ServerLobbyThread> m_lobbyThread;
 
 private:
 	ConfigFile &m_playerConfig;

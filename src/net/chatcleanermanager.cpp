@@ -41,7 +41,7 @@ using namespace std;
 using boost::asio::ip::tcp;
 
 
-ChatCleanerManager::ChatCleanerManager(ChatCleanerCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService)
+ChatCleanerManager::ChatCleanerManager(ChatCleanerCallback &cb, std::shared_ptr<boost::asio::io_context> ioService)
 	: m_callback(cb), m_ioService(ioService), m_connected(false), m_curRequestId(0), m_serverPort(0), m_useIpv6(false),
 	  m_recvBufUsed(0)
 {
@@ -98,7 +98,7 @@ void
 ChatCleanerManager::HandleGameChatText(unsigned gameId, unsigned playerId, const std::string &name, const std::string &text)
 {
 	if (m_connected) {
-		boost::shared_ptr<ChatCleanerMessage> tmpChat(ChatCleanerMessage::default_instance().New());
+		std::shared_ptr<ChatCleanerMessage> tmpChat(ChatCleanerMessage::default_instance().New());
 		tmpChat->set_messagetype(ChatCleanerMessage::Type_CleanerChatRequestMessage);
 		CleanerChatRequestMessage *netRequest = tmpChat->mutable_cleanerchatrequestmessage();
 		netRequest->set_requestid(GetNextRequestId());
@@ -140,7 +140,7 @@ ChatCleanerManager::HandleConnect(const boost::system::error_code& ec,
 								  boost::asio::ip::tcp::resolver::results_type endpoint_range)
 {
 	if (!ec) {
-		boost::shared_ptr<ChatCleanerMessage> tmpInit(ChatCleanerMessage::default_instance().New());
+		std::shared_ptr<ChatCleanerMessage> tmpInit(ChatCleanerMessage::default_instance().New());
 		tmpInit->set_messagetype(ChatCleanerMessage::Type_CleanerInitMessage);
 		CleanerInitMessage *netInit = tmpInit->mutable_cleanerinitmessage();
 		netInit->set_requestedversion(CLEANER_PROTOCOL_VERSION);
@@ -192,7 +192,7 @@ ChatCleanerManager::HandleRead(const boost::system::error_code &ec, size_t bytes
 				} else if (m_recvBufUsed >= packetSize + CLEANER_NET_HEADER_SIZE) {
 					try {
 						// Try to decode the packet.
-						boost::shared_ptr<ChatCleanerMessage> recvMsg(ChatCleanerMessage::default_instance().New());
+						std::shared_ptr<ChatCleanerMessage> recvMsg(ChatCleanerMessage::default_instance().New());
 						if (recvMsg->ParseFromArray(&m_recvBuf[CLEANER_NET_HEADER_SIZE], static_cast<int>(packetSize))) {
 							m_recvBufUsed -= (packetSize + CLEANER_NET_HEADER_SIZE);
 							if (m_recvBufUsed) {

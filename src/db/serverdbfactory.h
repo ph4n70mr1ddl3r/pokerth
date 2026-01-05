@@ -43,8 +43,8 @@ class ServerDBFactory
 public:
 	virtual ~ServerDBFactory();
 
-	virtual boost::shared_ptr<ServerDBInterface> CreateServerDBObject(
-		ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService) = 0;
+	virtual std::shared_ptr<ServerDBInterface> CreateServerDBObject(
+		ServerDBCallback &cb, std::shared_ptr<boost::asio::io_context> ioService) = 0;
 };
 
 #endif
