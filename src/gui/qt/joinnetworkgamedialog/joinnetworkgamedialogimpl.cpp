@@ -127,6 +127,7 @@ int joinNetworkGameDialogImpl::exec()
 	}
 
 	checkBox_ipv6->setEnabled(socket_has_ipv6());
+	checkBox_ipv6->setChecked(false);  // Default to IPv4 for better compatibility
 	checkBox_sctp->setEnabled(socket_has_sctp());
 
 	connectButtonTest();
@@ -239,8 +240,17 @@ void joinNetworkGameDialogImpl::itemFillForm (QTreeWidgetItem* item, int /*colum
 		if ( !profile.isNull()) {
 			lineEdit_profileName->setText(profile.attribute("Name"));
 			lineEdit_ipAddress->setText(profile.attribute("Address"));
-			spinBox_port->setValue(profile.attribute("Port").toInt(&toIntTrue, 10));
-			checkBox_ipv6->setChecked(profile.attribute("IsIpv6").toInt(&toIntTrue, 10));
+			int portValue = profile.attribute("Port").toInt(&toIntTrue, 10);
+			if (toIntTrue) {
+				spinBox_port->setValue(portValue);
+			}
+			// Default to IPv4 unless explicitly saved as IPv6
+			int savedIpv6 = profile.attribute("IsIpv6").toInt(&toIntTrue, 10);
+			if (savedIpv6 == 1 && socket_has_ipv6()) {
+				checkBox_ipv6->setChecked(true);
+			} else {
+				checkBox_ipv6->setChecked(false);
+			}
 			checkBox_sctp->setChecked(profile.attribute("IsSctp").toInt(&toIntTrue, 10));
 		}
 
