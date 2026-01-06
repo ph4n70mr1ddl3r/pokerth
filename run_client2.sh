@@ -13,10 +13,21 @@ export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_CACHE_HOME="${HOME}/.cache"
 export TMPDIR="${HOME}/.tmp"
 
-# Ensure required directories exist
+# Ensure required directories exist (must be done before copying config)
+mkdir -p "${XDG_CONFIG_HOME}"
 mkdir -p "${XDG_CONFIG_HOME}/.pokerth"
 mkdir -p "${XDG_CACHE_HOME}/.pokerth"
 mkdir -p "${TMPDIR}"
+
+# Copy config if it doesn't exist (optional - ConfigFile will create defaults if not found)
+SOURCE_CONFIG="${SCRIPT_DIR}/../.pokerth/config.xml"
+DEST_CONFIG="${XDG_CONFIG_HOME}/.pokerth/config.xml"
+if [ ! -f "${DEST_CONFIG}" ] && [ -f "$SOURCE_CONFIG" ]; then
+    cp "$SOURCE_CONFIG" "${DEST_CONFIG}"
+    # Set demo2 credentials
+    sed -i 's|<MyName value="demo1"/>|<MyName value="demo2"/>|g' "${DEST_CONFIG}"
+    sed -i 's|<InternetLoginPassword value="ZGVtbzE="/>|<InternetLoginPassword value="ZGVtbzI="/g' "${DEST_CONFIG}"
+fi
 
 # Copy/symlink data files
 mkdir -p "${XDG_CONFIG_HOME}/.pokerth/data"
