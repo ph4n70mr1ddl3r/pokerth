@@ -1771,10 +1771,15 @@ void gameTableImpl::provideMyActions(int mode)
 			if( humanPlayer->getMyAction() != PLAYER_ACTION_FOLD ) {
 				pushButtonBetRaiseString = BetString+"\n$"+QString("%L1").arg(getMyBetAmount());
 				pushButtonCallCheckString = CheckString;
-				if( activePlayerList->size() > 2 && humanPlayer->getMyButton() == BUTTON_SMALL_BLIND ) {
-					pushButtonFoldString = FoldString;
-				} else {
+				// FIX: Handle headsup games correctly
+				// In headsup (2 players), dealer (BUTTON_SMALL_BLIND) acts first post-flop
+				// The small blind in >2 player games also acts first
+				// Both should get "Check/Fold" when no bet exists
+				if( (activePlayerList->size() > 2 && humanPlayer->getMyButton() == BUTTON_SMALL_BLIND) ||
+					(activePlayerList->size() <= 2 && humanPlayer->getMyButton() == BUTTON_SMALL_BLIND) ) {
 					pushButtonFoldString = CheckString+" /\n"+FoldString;
+				} else {
+					pushButtonFoldString = FoldString;
 				}
 
 				pushButtonAllInString = AllInString;
