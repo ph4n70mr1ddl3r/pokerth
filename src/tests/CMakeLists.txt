@@ -4,6 +4,7 @@ set(POKERTH_TEST_SRC
     pokerth_tests.cpp
     pokerth_heads_up_tests.cpp
     pokerth_heads_up_simulation.cpp
+    pokerth_bet_display_bug_tests.cpp
     pokerth_unittest.cpp
     pokerth_test_framework.h
 )
