@@ -131,11 +131,11 @@ EXIT;
 
 **Verify database:**
 ```bash
-mysql -u pokerth -p pokerth -e "SELECT id, playername FROM players;"
+mysql -u pokerth -p pokerth -e "SELECT player_id, username, blocked, active FROM player WHERE username IN ('demo1', 'demo2');"
 # Password: (press enter, empty password)
 ```
 
-## 2. Clone Repository
+## 3. Clone Repository
 
 ```bash
 cd ~
@@ -143,14 +143,14 @@ git clone https://github.com/ph4n70mr1ddl3r/pokerth.git
 cd pokerth
 ```
 
-## 3. Build with CMake
+## 4. Build with CMake
 
 ```bash
 cmake -DCMAKE_BUILD_TYPE:STRING=Release -S. -B./build -G Ninja
 cmake --build ./build --config Release --target all --
 ```
 
-## 4. Setup Data Files
+## 5. Setup Data Files
 
 ```bash
 mkdir -p ./build/share/pokerth
@@ -162,7 +162,7 @@ mkdir -p ./build/bin
 ln -s ./build/share/pokerth/data ./build/bin/data
 ```
 
-## 5. Run the Official Server
+## 6. Run the Official Server
 
 **Terminal 1 - Start and monitor server:**
 ```bash
@@ -185,7 +185,7 @@ MSG: Starting PokerTH dedicated server.
 MSG: Successfully connected to database.
 ```
 
-## 6. Run Clients
+## 7. Run Clients
 
 **Terminal 3 - First Client (demo1/demo):**
 ```bash
@@ -211,7 +211,7 @@ Then in the PokerTH GUI:
 3. Login: `demo2` / `demo2`
 4. Click "Connect"
 
-## 7. Server Management
+## 8. Server Management
 
 ```bash
 # Stop server
@@ -224,7 +224,7 @@ pkill -f pokerth_official_server
 ./restart_server.sh
 ```
 
-## 8. Monitoring Commands
+## 9. Monitoring Commands
 
 **Watch server messages:**
 ```bash
@@ -241,7 +241,7 @@ tail -f ~/.pokerth/log-files/server_statistics.log
 tail -50 ~/.pokerth/log-files/server_messages.log
 ```
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 
 ### "Avatar directory does not exist"
 Verify the data symlink was created:
