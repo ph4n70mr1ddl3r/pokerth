@@ -155,11 +155,12 @@ ln -s ./build/share/pokerth/data ./build/bin/data
 
 ## 6. Run the Official Server
 
-**Terminal 1 - Start and monitor server:**
+**Terminal 1 - Start PokerTH server:**
+
 ```bash
 cd ~/pokerth
 
-# Start the server
+# Start the PokerTH server
 ./restart_server.sh
 
 # Monitor logs in another terminal (see below)
@@ -245,12 +246,38 @@ mkdir -p ~/pokerth/build/bin
 ln -sf ~/pokerth/build/share/pokerth/data ~/pokerth/build/bin/data
 ```
 
-### Connection refused
-Check if server is running:
+### "Cannot bind/listen on port"
+This usually means a previous server run left a stale PID file. Force kill and restart:
 ```bash
-ps aux | grep pokerth_official_server
-netstat -tlnp | grep 7234
+pkill -f pokerth_official_server
+sleep 1
+./restart_server.sh
 ```
+
+If the port still appears in use:
+```bash
+# Check what's using port 7234
+netstat -tlnp | grep 7234
+# Kill any remaining process
+sudo kill -9 <PID>
+./restart_server.sh
+```
+
+### "Could not download the PokerTH internet server list"
+Make sure the HTTP server is running to serve the serverlist.xml:
+```bash
+# Check if serverlist.xml exists
+ls -la ~/pokerth/build/share/pokerth/data/serverlist.xml
+
+# Start the HTTP server (in a separate terminal)
+./serve_serverlist.sh
+
+# Or manually serve it
+cd ~/pokerth/build/share/pokerth/data
+python3 -m http.server 8000
+```
+
+Then restart the client. The client downloads from `http://127.0.0.1:8000/serverlist.xml`.
 
 ### Check server logs:
 ```bash

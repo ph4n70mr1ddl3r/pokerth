@@ -19,16 +19,6 @@ mkdir -p "${XDG_CONFIG_HOME}/.pokerth"
 mkdir -p "${XDG_CACHE_HOME}/.pokerth"
 mkdir -p "${TMPDIR}"
 
-# Copy config if it doesn't exist (optional - ConfigFile will create defaults if not found)
-SOURCE_CONFIG="${SCRIPT_DIR}/../.pokerth/config.xml"
-DEST_CONFIG="${XDG_CONFIG_HOME}/.pokerth/config.xml"
-if [ ! -f "${DEST_CONFIG}" ] && [ -f "$SOURCE_CONFIG" ]; then
-    cp "$SOURCE_CONFIG" "${DEST_CONFIG}"
-    # Set demo2 credentials
-    sed -i 's|<MyName value="demo1"/>|<MyName value="demo2"/>|g' "${DEST_CONFIG}"
-    sed -i 's|<InternetLoginPassword value="ZGVtbzE="/>|<InternetLoginPassword value="ZGVtbzI="/g' "${DEST_CONFIG}"
-fi
-
 # Copy/symlink data files
 mkdir -p "${XDG_CONFIG_HOME}/.pokerth/data"
 if [ ! -e "${XDG_CONFIG_HOME}/.pokerth/data/gfx" ]; then
