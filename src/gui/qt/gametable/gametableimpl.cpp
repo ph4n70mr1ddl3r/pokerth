@@ -1756,7 +1756,7 @@ void gameTableImpl::provideMyActions(int mode)
 				pushButtonCallCheckString = CheckString;
 				pushButtonBetRaiseString = BetString+"\n$"+QString("%L1").arg(getMyBetAmount());
 			}
-			if (currentHand->getCurrentBeRo()->getHighestSet() > 0 && currentHand->getCurrentBeRo()->getHighestSet() > humanPlayer->getMySet()) {
+			if (currentHand->getCurrentBeRo()->getHighestSet() > 0 && currentHand->getCurrentBeRo()->getHighestSet() >= humanPlayer->getMySet()) {
 				pushButtonCallCheckString = CallString+"\n$"+QString("%L1").arg(getMyCallAmount());
 				if (humanPlayer->getMyCash()+humanPlayer->getMySet() > currentHand->getCurrentBeRo()->getHighestSet() && !currentHand->getCurrentBeRo()->getFullBetRule()) {
 					pushButtonBetRaiseString = RaiseString+"\n$"+QString("%L1").arg(getMyBetAmount());
