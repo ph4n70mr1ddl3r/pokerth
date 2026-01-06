@@ -2,6 +2,7 @@
 
 set(POKERTH_TEST_SRC
     pokerth_tests.cpp
+    pokerth_heads_up_tests.cpp
     pokerth_unittest.cpp
     pokerth_test_framework.h
 )
