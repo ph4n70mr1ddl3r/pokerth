@@ -1771,7 +1771,7 @@ void gameTableImpl::provideMyActions(int mode)
 			if( humanPlayer->getMyAction() != PLAYER_ACTION_FOLD ) {
 				pushButtonBetRaiseString = BetString+"\n$"+QString("%L1").arg(getMyBetAmount());
 				pushButtonCallCheckString = CheckString;
-				if( (activePlayerList->size() > 2 && humanPlayer->getMyButton() == BUTTON_SMALL_BLIND ) || ( activePlayerList->size() <= 2 && humanPlayer->getMyButton() == BUTTON_BIG_BLIND)) {
+				if( activePlayerList->size() > 2 && humanPlayer->getMyButton() == BUTTON_SMALL_BLIND ) {
 					pushButtonFoldString = FoldString;
 				} else {
 					pushButtonFoldString = CheckString+" /\n"+FoldString;
