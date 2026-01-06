@@ -37,3 +37,7 @@ tests/*
 .DS_Store
 *.log
 *lldb*
+
+# Client runtime directories (created by run_client*.sh scripts)
+.pokerth_client1/
+.pokerth_client2/
