@@ -51,7 +51,7 @@ USE pokerth;
 CREATE TABLE player (
     player_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    password BLOB NOT NULL,
     blocked TINYINT DEFAULT 0,
     country_iso VARCHAR(2),
     last_login DATETIME,
@@ -109,10 +109,10 @@ CREATE TABLE admin_player (
     FOREIGN KEY (admin_idplayer) REFERENCES player(player_id)
 );
 
--- Create demo accounts (passwords are stored as MD5)
+-- Create demo accounts (passwords are stored as AES_ENCRYPT with empty key)
 INSERT INTO player (username, password, blocked, active) VALUES 
-    ('demo1', MD5('demo1'), 0, 1),
-    ('demo2', MD5('demo2'), 0, 1);
+    ('demo1', AES_ENCRYPT('demo1', ''), 0, 1),
+    ('demo2', AES_ENCRYPT('demo2', ''), 0, 1);
 
 -- Verify
 SELECT player_id, username, blocked, active FROM player WHERE username IN ('demo1', 'demo2');
