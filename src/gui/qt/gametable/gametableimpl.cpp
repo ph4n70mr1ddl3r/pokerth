@@ -2066,11 +2066,33 @@ int gameTableImpl::getMyCallAmount()
 	std::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 	int tempHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 
-	if (humanPlayer->getMyCash() + humanPlayer->getMySet() <= tempHighestSet) {
+	qDebug() << "DEBUG getMyCallAmount():";
+	qDebug() << "  - humanPlayer (from front):" << QString::fromStdString(humanPlayer->getMyName());
+	qDebug() << "  - humanPlayer->getMySet():" << humanPlayer->getMySet();
+	qDebug() << "  - humanPlayer->getMyCash():" << humanPlayer->getMyCash();
+	qDebug() << "  - tempHighestSet:" << tempHighestSet;
 
+	// Find the actual human player by unique ID
+	unsigned humanPlayerId = myStartWindow->getSession()->getClientUniquePlayerId();
+	PlayerList seatsList = currentHand->getSeatsList();
+	for (auto it = seatsList->begin(); it != seatsList->end(); ++it) {
+		if ((*it)->getMyUniqueID() == humanPlayerId) {
+			humanPlayer = *it;
+			break;
+		}
+	}
+
+	qDebug() << "  - humanPlayer (after search):" << QString::fromStdString(humanPlayer->getMyName());
+	qDebug() << "  - humanPlayer->getMySet():" << humanPlayer->getMySet();
+	qDebug() << "  - humanPlayer->getMyCash():" << humanPlayer->getMyCash();
+
+	if (humanPlayer->getMyCash() + humanPlayer->getMySet() <= tempHighestSet) {
+		qDebug() << "  - Returning cash:" << humanPlayer->getMyCash();
 		return humanPlayer->getMyCash();
 	} else {
-		return tempHighestSet - humanPlayer->getMySet();
+		int callAmount = tempHighestSet - humanPlayer->getMySet();
+		qDebug() << "  - Returning callAmount:" << callAmount;
+		return callAmount;
 	}
 }
 

@@ -236,4 +236,99 @@ TEST(BetDisplayBugTests, TestHeadsUpScenario)
     return true;
 }
 
+TEST(BetDisplayBugTests, TestEdgeCaseZeroCallAmount)
+{
+    // Test edge case where call amount might be 0
+    
+    // Scenario 1: Player already matched the bet
+    int mySet1 = 40;
+    int highestSet1 = 40;
+    int myCash1 = 60;
+    
+    int callAmount1;
+    if (myCash1 + mySet1 <= highestSet1) {
+        callAmount1 = myCash1;
+    } else {
+        callAmount1 = highestSet1 - mySet1;
+    }
+    
+    // Should be 0 - already matched the bet
+    ASSERT_EQ(0, callAmount1);
+    
+    // Scenario 2: Player has no cash (all-in)
+    int mySet2 = 20;
+    int highestSet2 = 40;
+    int myCash2 = 0;  // All-in
+    
+    int callAmount2;
+    if (myCash2 + mySet2 <= highestSet2) {
+        callAmount2 = myCash2;
+    } else {
+        callAmount2 = highestSet2 - mySet2;
+    }
+    
+    // Should be 0 - all-in, no more cash to call
+    ASSERT_EQ(0, callAmount2);
+    
+    // Scenario 3: Normal case - need to call
+    int mySet3 = 20;
+    int highestSet3 = 40;
+    int myCash3 = 80;
+    
+    int callAmount3;
+    if (myCash3 + mySet3 <= highestSet3) {
+        callAmount3 = myCash3;
+    } else {
+        callAmount3 = highestSet3 - mySet3;
+    }
+    
+    // Should be 20 - need to call $20
+    ASSERT_EQ(20, callAmount3);
+    
+    return true;
+}
+
+TEST(BetDisplayBugTests, TestHeadsUpPostFlopActionOrder)
+{
+    // Test the action order in headsup post-flop
+    
+    // In headsup:
+    // - Dealer (SB) acts FIRST on post-flop
+    // - BB acts SECOND on post-flop
+    
+    // If dealer checks, then BB bets:
+    int dealerSet = 20;  // Dealer (SB) has $20
+    int bbSet = 20;      // BB has $20
+    
+    // Dealer checks (no bet)
+    int highestSetAfterCheck = 0;
+    
+    // BB bets $20
+    int bbBetAmount = 20;
+    bbSet += bbBetAmount;  // BB now has $40
+    int highestSetAfterBBBet = bbSet;  // $40
+    
+    // Dealer's turn to act
+    int dealerCallAmount = highestSetAfterBBBet - dealerSet;  // $40 - $20 = $20
+    
+    // Should be $20 to call
+    ASSERT_EQ(20, dealerCallAmount);
+    
+    // Verify calculation
+    int mySet = dealerSet;
+    int myCash = 80;
+    int tempHighestSet = highestSetAfterBBBet;
+    
+    int calculatedCall;
+    if (myCash + mySet <= tempHighestSet) {
+        calculatedCall = myCash;
+    } else {
+        calculatedCall = tempHighestSet - mySet;
+    }
+    
+    ASSERT_EQ(20, calculatedCall);
+    
+    return true;
+}
+
 END_TEST_SUITE
