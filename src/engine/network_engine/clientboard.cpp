@@ -32,6 +32,7 @@
 #include "clientboard.h"
 
 #include <handinterface.h>
+#include <playerinterface.h>
 #include <game_defs.h>
 
 using namespace std;
@@ -131,6 +132,11 @@ ClientBoard::collectPot()
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
 	pot += sets;
 	sets = 0;
+
+	PlayerListIterator it;
+	for(it=seatsList->begin(); it!=seatsList->end(); ++it) {
+		(*it)->setMySetNull();
+	}
 }
 
 void

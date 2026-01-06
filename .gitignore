@@ -41,3 +41,30 @@ tests/*
 # Client runtime directories (created by run_client*.sh scripts)
 .pokerth_client1/
 .pokerth_client2/
+
+# CMake build artifacts
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CMakeFiles/
+*.cmake
+.cmake/
+
+# CMake autogen files
+*_autogen/
+*_autogen/
+*_autogen/
+
+# Qt build metadata
+.qt/
+.lupdate/
+*.depends
+
+# Generated libraries
+*.a
+libpokerth_protocol.a
+
+# IDE and OS files
+*.swp
+*.swo
+*~

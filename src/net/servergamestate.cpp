@@ -1013,6 +1013,8 @@ ServerGameStateHand::EngineLoop(std::shared_ptr<ServerGame> server)
 				boost::bind(
 					&ServerGameStateHand::TimerShowCards, this, boost::asio::placeholders::error, server));
 		} else {
+			curGame.getCurrentHand()->getBoard()->collectPot();
+			curGame.getCurrentHand()->getCurrentBeRo()->setHighestSet(0);
 			SendNewRoundCards(*server, curGame, newRound);
 
 			server->GetStateTimer1().expires_after(seconds(GetDealCardsDelaySec(*server)));
