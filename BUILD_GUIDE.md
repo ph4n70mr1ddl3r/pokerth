@@ -13,16 +13,7 @@ sudo apt install -y \
     qt6-base-dev-tools \
     libqt6xml6 \
     libqt6sql6 \
-    libboost-dev \
-    libboost-thread-dev \
-    libboost-filesystem-dev \
-    libboost-datetime-dev \
-    libboost-program-options-dev \
-    libboost-iostreams-dev \
-    libboost-asio-dev \
-    libboost-regex-dev \
-    libboost-random-dev \
-    libboost-uuid-dev \
+    libboost-all-dev \
     libcurl4-openssl-dev \
     libprotobuf-dev \
     protobuf-compiler \
