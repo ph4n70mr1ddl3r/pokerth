@@ -222,7 +222,7 @@ void MyAvatarLabel::refreshStars()
 	int seatPlace;
 	PlayerList seatsList = curGame->getSeatsList();
 	for (seatPlace=0,it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
-		for(int i=1; i<=5; i++)myW->playerStarsArray[i][seatPlace]->setText("");
+		for(int i=1; i<=5; i++) if (myW->playerStarsArray[i][seatPlace]) myW->playerStarsArray[i][seatPlace]->setText("");
 		if(myW->myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_INTERNET && !myW->getSession()->getClientPlayerInfo((*it_c)->getMyUniqueID()).isGuest && (*it_c)->getMyType() != PLAYER_TYPE_COMPUTER) {
 			if((*it_c)->getMyStayOnTableStatus() == true && (*it_c)->getMyName()!="" && seatPlace!=0) {
 
@@ -254,19 +254,19 @@ void MyAvatarLabel::refreshTooltips()
 			if((*it_c)->getMyType() == PLAYER_TYPE_COMPUTER) {
 				computerPlayer = true;
 			}
-			if(!computerPlayer && getPlayerTip(QString::fromUtf8((*it_c)->getMyName().c_str()))!="" && seatPlace!=0) {
-				myW->playerTipLabelArray[(*it_c)->getMyID()]->setText(QString("<a style='text-decoration: none; color: #"+myW->getMyGameTableStyle()->getPlayerInfoHintTextColor()+"; font-size: 14px; font-weight: bold; font-family:serif;' href=\'")+QString::fromUtf8((*it_c)->getMyName().c_str())+"\'>i</a>");
-				myW->playerTipLabelArray[(*it_c)->getMyID()]->setToolTip( getPlayerTip(QString::fromUtf8((*it_c)->getMyName().c_str())) );
-				myW->playerAvatarLabelArray[(*it_c)->getMyID()]->setToolTip( getPlayerTip(QString::fromUtf8((*it_c)->getMyName().c_str())) );
-			} else {
-				myW->playerTipLabelArray[(*it_c)->getMyID()]->setText("");
-				myW->playerTipLabelArray[(*it_c)->getMyID()]->setToolTip("");
-				myW->playerAvatarLabelArray[(*it_c)->getMyID()]->setToolTip("");
+			if(seatPlace < MAX_NUMBER_OF_PLAYERS && !computerPlayer && getPlayerTip(QString::fromUtf8((*it_c)->getMyName().c_str()))!="" && seatPlace!=0) {
+				myW->playerTipLabelArray[seatPlace]->setText(QString("<a style='text-decoration: none; color: #"+myW->getMyGameTableStyle()->getPlayerInfoHintTextColor()+"; font-size: 14px; font-weight: bold; font-family:serif;' href=\'")+QString::fromUtf8((*it_c)->getMyName().c_str())+"\'>i</a>");
+				myW->playerTipLabelArray[seatPlace]->setToolTip( getPlayerTip(QString::fromUtf8((*it_c)->getMyName().c_str())) );
+				myW->playerAvatarLabelArray[seatPlace]->setToolTip( getPlayerTip(QString::fromUtf8((*it_c)->getMyName().c_str())) );
+			} else if (seatPlace < MAX_NUMBER_OF_PLAYERS) {
+				myW->playerTipLabelArray[seatPlace]->setText("");
+				myW->playerTipLabelArray[seatPlace]->setToolTip("");
+				myW->playerAvatarLabelArray[seatPlace]->setToolTip("");
 			}
-		} else {
-			myW->playerTipLabelArray[(*it_c)->getMyID()]->setText("");
-			myW->playerTipLabelArray[(*it_c)->getMyID()]->setToolTip("");
-			myW->playerAvatarLabelArray[(*it_c)->getMyID()]->setToolTip("");
+		} else if (seatPlace < MAX_NUMBER_OF_PLAYERS) {
+			myW->playerTipLabelArray[seatPlace]->setText("");
+			myW->playerTipLabelArray[seatPlace]->setToolTip("");
+			myW->playerAvatarLabelArray[seatPlace]->setToolTip("");
 
 		}
 

@@ -80,7 +80,7 @@ using namespace std;
 gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	: QMainWindow(parent), myChat(NULL), myConfig(c), gameSpeed(0), myActionIsBet(0), myActionIsRaise(0), pushButtonBetRaiseIsChecked(false), pushButtonCallCheckIsChecked(false), pushButtonFoldIsChecked(false), pushButtonAllInIsChecked(false), myButtonsAreCheckable(false), breakAfterCurrentHand(false), currentGameOver(false), betSliderChangedByInput(false), guestMode(false), myLastPreActionBetValue(0)
 {
-	int i;
+	int i, j;
 
 	//	this->setStyle(new QPlastiqueStyle);
 
@@ -236,102 +236,46 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 
 	enableCallCheckPushButtonTimer->setSingleShot(true);
 
-	playerStarsArray[1][0]=label_Star10;
-	playerStarsArray[2][0]=label_Star20;
-	playerStarsArray[3][0]=label_Star30;
-	playerStarsArray[4][0]=label_Star40;
-	playerStarsArray[5][0]=label_Star50;
-	playerStarsArray[1][1]=label_Star11;
-	playerStarsArray[2][1]=label_Star21;
-	playerStarsArray[3][1]=label_Star31;
-	playerStarsArray[4][1]=label_Star41;
-	playerStarsArray[5][1]=label_Star51;
-	playerStarsArray[1][2]=label_Star12;
-	playerStarsArray[2][2]=label_Star22;
-	playerStarsArray[3][2]=label_Star32;
-	playerStarsArray[4][2]=label_Star42;
-	playerStarsArray[5][2]=label_Star52;
-	playerStarsArray[1][3]=label_Star13;
-	playerStarsArray[2][3]=label_Star23;
-	playerStarsArray[3][3]=label_Star33;
-	playerStarsArray[4][3]=label_Star43;
-	playerStarsArray[5][3]=label_Star53;
-	playerStarsArray[1][4]=label_Star14;
-	playerStarsArray[2][4]=label_Star24;
-	playerStarsArray[3][4]=label_Star34;
-	playerStarsArray[4][4]=label_Star44;
-	playerStarsArray[5][4]=label_Star54;
-	playerStarsArray[1][5]=label_Star15;
-	playerStarsArray[2][5]=label_Star25;
-	playerStarsArray[3][5]=label_Star35;
-	playerStarsArray[4][5]=label_Star45;
-	playerStarsArray[5][5]=label_Star55;
-	playerStarsArray[1][6]=label_Star16;
-	playerStarsArray[2][6]=label_Star26;
-	playerStarsArray[3][6]=label_Star36;
-	playerStarsArray[4][6]=label_Star46;
-	playerStarsArray[5][6]=label_Star56;
-	playerStarsArray[1][7]=label_Star17;
-	playerStarsArray[2][7]=label_Star27;
-	playerStarsArray[3][7]=label_Star37;
-	playerStarsArray[4][7]=label_Star47;
-	playerStarsArray[5][7]=label_Star57;
-	playerStarsArray[1][8]=label_Star18;
-	playerStarsArray[2][8]=label_Star28;
-	playerStarsArray[3][8]=label_Star38;
-	playerStarsArray[4][8]=label_Star48;
-	playerStarsArray[5][8]=label_Star58;
-	playerStarsArray[1][9]=label_Star19;
-	playerStarsArray[2][9]=label_Star29;
-	playerStarsArray[3][9]=label_Star39;
-	playerStarsArray[4][9]=label_Star49;
-	playerStarsArray[5][9]=label_Star59;
+	// playerStarsArray init - only for MAX_NUMBER_OF_PLAYERS
+	for (i = 0; i < MAX_NUMBER_OF_PLAYERS; i++) {
+		for (j = 1; j <= 5; j++) {
+			playerStarsArray[j][i] = NULL;
+		}
+	}
 
 	// buttonLabelArray init
 	buttonLabelArray[0] = textLabel_Button0;
 	buttonLabelArray[1] = textLabel_Button1;
-	buttonLabelArray[2] = textLabel_Button2;
-	buttonLabelArray[3] = textLabel_Button3;
-	buttonLabelArray[4] = textLabel_Button4;
-	buttonLabelArray[5] = textLabel_Button5;
-	buttonLabelArray[6] = textLabel_Button6;
-	buttonLabelArray[7] = textLabel_Button7;
-	buttonLabelArray[8] = textLabel_Button8;
-	buttonLabelArray[9] = textLabel_Button9;
+	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
+		buttonLabelArray[i] = NULL;
+	}
 
 	// cashLabelArray init
 	cashLabelArray[0] = textLabel_Cash0;
 	cashLabelArray[1] = textLabel_Cash1;
-	cashLabelArray[2] = textLabel_Cash2;
-	cashLabelArray[3] = textLabel_Cash3;
-	cashLabelArray[4] = textLabel_Cash4;
-	cashLabelArray[5] = textLabel_Cash5;
-	cashLabelArray[6] = textLabel_Cash6;
-	cashLabelArray[7] = textLabel_Cash7;
-	cashLabelArray[8] = textLabel_Cash8;
-	cashLabelArray[9] = textLabel_Cash9;
+	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
+		cashLabelArray[i] = NULL;
+	}
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 		cashLabelArray[i]->setMyW(this);
 	}
 
 	playerTipLabelArray[0] = label_playerTip0;
 	playerTipLabelArray[1] = label_playerTip1;
-	playerTipLabelArray[2] = label_playerTip2;
-	playerTipLabelArray[3] = label_playerTip3;
-	playerTipLabelArray[4] = label_playerTip4;
-	playerTipLabelArray[5] = label_playerTip5;
-	playerTipLabelArray[6] = label_playerTip6;
-	playerTipLabelArray[7] = label_playerTip7;
-	playerTipLabelArray[8] = label_playerTip8;
-	playerTipLabelArray[9] = label_playerTip9;
+	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
+		playerTipLabelArray[i] = NULL;
+	}
 
 #ifdef GUI_800x480
-	int j;
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; ++i) {
 		for (j=1; j<=5; ++j) {
-			playerStarsArray[j][i]->hide();
+			if (playerStarsArray[j][i]) {
+				playerStarsArray[j][i]->hide();
+			}
 		}
-		playerTipLabelArray[i]->hide();
+		if (playerTipLabelArray[i]) {
+			playerTipLabelArray[i]->hide();
+		}
 	}
 
 #endif
@@ -339,14 +283,9 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// playerNameLabelArray init
 	playerNameLabelArray[0] = label_PlayerName0;
 	playerNameLabelArray[1] = label_PlayerName1;
-	playerNameLabelArray[2] = label_PlayerName2;
-	playerNameLabelArray[3] = label_PlayerName3;
-	playerNameLabelArray[4] = label_PlayerName4;
-	playerNameLabelArray[5] = label_PlayerName5;
-	playerNameLabelArray[6] = label_PlayerName6;
-	playerNameLabelArray[7] = label_PlayerName7;
-	playerNameLabelArray[8] = label_PlayerName8;
-	playerNameLabelArray[9] = label_PlayerName9;
+	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
+		playerNameLabelArray[i] = NULL;
+	}
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 		playerNameLabelArray[i]->setMyW(this);
 	}
@@ -354,14 +293,9 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// playerAvatarLabelArray init
 	playerAvatarLabelArray[0] = label_Avatar0;
 	playerAvatarLabelArray[1] = label_Avatar1;
-	playerAvatarLabelArray[2] = label_Avatar2;
-	playerAvatarLabelArray[3] = label_Avatar3;
-	playerAvatarLabelArray[4] = label_Avatar4;
-	playerAvatarLabelArray[5] = label_Avatar5;
-	playerAvatarLabelArray[6] = label_Avatar6;
-	playerAvatarLabelArray[7] = label_Avatar7;
-	playerAvatarLabelArray[8] = label_Avatar8;
-	playerAvatarLabelArray[9] = label_Avatar9;
+	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
+		playerAvatarLabelArray[i] = NULL;
+	}
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 		playerAvatarLabelArray[i]->setMyW(this);
 		playerAvatarLabelArray[i]->setMyId(i);
@@ -370,14 +304,9 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// timeoutLabelArray init
 	timeoutLabelArray[0] = label_Timeout0;
 	timeoutLabelArray[1] = label_Timeout1;
-	timeoutLabelArray[2] = label_Timeout2;
-	timeoutLabelArray[3] = label_Timeout3;
-	timeoutLabelArray[4] = label_Timeout4;
-	timeoutLabelArray[5] = label_Timeout5;
-	timeoutLabelArray[6] = label_Timeout6;
-	timeoutLabelArray[7] = label_Timeout7;
-	timeoutLabelArray[8] = label_Timeout8;
-	timeoutLabelArray[9] = label_Timeout9;
+	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
+		timeoutLabelArray[i] = NULL;
+	}
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 		timeoutLabelArray[i]->setMyW(this);
 	}
@@ -385,14 +314,9 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// setLabelArray init
 	setLabelArray[0] = textLabel_Set0;
 	setLabelArray[1] = textLabel_Set1;
-	setLabelArray[2] = textLabel_Set2;
-	setLabelArray[3] = textLabel_Set3;
-	setLabelArray[4] = textLabel_Set4;
-	setLabelArray[5] = textLabel_Set5;
-	setLabelArray[6] = textLabel_Set6;
-	setLabelArray[7] = textLabel_Set7;
-	setLabelArray[8] = textLabel_Set8;
-	setLabelArray[9] = textLabel_Set9;
+	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
+		setLabelArray[i] = NULL;
+	}
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 		setLabelArray[i]->setMyW(this);
 	}
@@ -401,14 +325,9 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// statusLabelArray init
 	actionLabelArray[0] = textLabel_Status0;
 	actionLabelArray[1] = textLabel_Status1;
-	actionLabelArray[2] = textLabel_Status2;
-	actionLabelArray[3] = textLabel_Status3;
-	actionLabelArray[4] = textLabel_Status4;
-	actionLabelArray[5] = textLabel_Status5;
-	actionLabelArray[6] = textLabel_Status6;
-	actionLabelArray[7] = textLabel_Status7;
-	actionLabelArray[8] = textLabel_Status8;
-	actionLabelArray[9] = textLabel_Status9;
+	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
+		actionLabelArray[i] = NULL;
+	}
 
 	textLabel_Status0->setMyW(this);
 
@@ -419,14 +338,9 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// GroupBoxArray init
 	groupBoxArray[0] = groupBox0;
 	groupBoxArray[1] = groupBox1;
-	groupBoxArray[2] = groupBox2;
-	groupBoxArray[3] = groupBox3;
-	groupBoxArray[4] = groupBox4;
-	groupBoxArray[5] = groupBox5;
-	groupBoxArray[6] = groupBox6;
-	groupBoxArray[7] = groupBox7;
-	groupBoxArray[8] = groupBox8;
-	groupBoxArray[9] = groupBox9;
+	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
+		groupBoxArray[i] = NULL;
+	}
 
 	// boardCardsArray init
 	boardCardsArray[0] = pixmapLabel_cardBoard0;
@@ -440,22 +354,10 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	holeCardsArray[0][1] = pixmapLabel_card0b;
 	holeCardsArray[1][0] = pixmapLabel_card1a;
 	holeCardsArray[1][1] = pixmapLabel_card1b;
-	holeCardsArray[2][0] = pixmapLabel_card2a;
-	holeCardsArray[2][1] = pixmapLabel_card2b;
-	holeCardsArray[3][0] = pixmapLabel_card3a;
-	holeCardsArray[3][1] = pixmapLabel_card3b;
-	holeCardsArray[4][0] = pixmapLabel_card4a;
-	holeCardsArray[4][1] = pixmapLabel_card4b;
-	holeCardsArray[5][0] = pixmapLabel_card5a;
-	holeCardsArray[5][1] = pixmapLabel_card5b;
-	holeCardsArray[6][0] = pixmapLabel_card6a;
-	holeCardsArray[6][1] = pixmapLabel_card6b;
-	holeCardsArray[7][0] = pixmapLabel_card7a;
-	holeCardsArray[7][1] = pixmapLabel_card7b;
-	holeCardsArray[8][0] = pixmapLabel_card8a;
-	holeCardsArray[8][1] = pixmapLabel_card8b;
-	holeCardsArray[9][0] = pixmapLabel_card9a;
-	holeCardsArray[9][1] = pixmapLabel_card9b;
+	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
+		holeCardsArray[i][0] = NULL;
+		holeCardsArray[i][1] = NULL;
+	}
 
 	pushButton_showMyCards->hide();
 
@@ -640,10 +542,16 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 #endif
 
 	connect( pushButton_showMyCards, SIGNAL( clicked() ), this, SLOT( sendShowMyCardsSignal() ) );
-	for(i=0; i<=9; i++)connect( playerTipLabelArray[i], SIGNAL( linkActivated(QString) ), playerAvatarLabelArray[i], SLOT(startChangePlayerTip(QString) ) );
-	for(i=0; i<=9; i++) {
+	for(i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
+		if (playerTipLabelArray[i] && playerAvatarLabelArray[i]) {
+			connect( playerTipLabelArray[i], SIGNAL( linkActivated(QString) ), playerAvatarLabelArray[i], SLOT(startChangePlayerTip(QString) ) );
+		}
+	}
+	for(i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 		for(int j=1; j<=5; j++) {
-			connect( playerStarsArray[j][i], SIGNAL( linkActivated(QString) ), playerAvatarLabelArray[i], SLOT(setPlayerRating(QString) ) );
+			if (playerStarsArray[j][i] && playerAvatarLabelArray[i]) {
+				connect( playerStarsArray[j][i], SIGNAL( linkActivated(QString) ), playerAvatarLabelArray[i], SLOT(setPlayerRating(QString) ) );
+			}
 		}
 	}
 	//Nachrichten Thread-Save
