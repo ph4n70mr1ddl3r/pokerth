@@ -62,7 +62,6 @@ int newGameDialogImpl::exec()
 		savedPlayers = 2;
 		myConfig->writeConfigInt("NumberOfPlayers", 2);
 	}
-	myConfig->syncConfig();
  spinBox_quantityPlayers->setValue(savedPlayers);
  spinBox_startCash->setValue(myConfig->readConfigInt("StartCash"));
  spinBox_gameSpeed->setValue(myConfig->readConfigInt("GameSpeed"));
