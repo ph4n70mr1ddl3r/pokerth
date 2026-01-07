@@ -105,19 +105,19 @@
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QSpinBox" name="spinBox_quantityPlayers">
-            <property name="minimum">
-             <number>2</number>
-            </property>
-            <property name="maximum">
-             <number>10</number>
-            </property>
-            <property name="value">
-             <number>10</number>
-            </property>
-           </widget>
-          </item>
+           <item>
+            <widget class="QSpinBox" name="spinBox_quantityPlayers">
+             <property name="minimum">
+              <number>2</number>
+             </property>
+             <property name="maximum">
+              <number>2</number>
+             </property>
+             <property name="value">
+              <number>2</number>
+             </property>
+            </widget>
+           </item>
          </layout>
         </item>
         <item row="1" column="0">

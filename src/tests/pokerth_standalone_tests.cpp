@@ -295,7 +295,7 @@ TEST_SUITE(GameLimits)
 TEST(PlayerLimits, TestPlayerCountLimits)
 {
     EXPECT_EQ(MIN_NUMBER_OF_PLAYERS, 2);
-    EXPECT_EQ(MAX_NUMBER_OF_PLAYERS, 10);
+    EXPECT_EQ(MAX_NUMBER_OF_PLAYERS, 2);
     EXPECT_TRUE(MIN_NUMBER_OF_PLAYERS < MAX_NUMBER_OF_PLAYERS);
     return true;
 }
@@ -756,7 +756,7 @@ TEST(GameDataCustom, TestCustomGameData)
 {
     GameData data;
     data.gameType = GAME_TYPE_RANKING;
-    data.maxNumberOfPlayers = 10;
+    data.maxNumberOfPlayers = 2;
     data.startMoney = 10000;
     data.firstSmallBlind = 50;
     data.guiSpeed = 8;

@@ -856,7 +856,7 @@ TEST(EdgeCases_BackdoorFlushDraw, TestBackdoorFlush)
 TEST(EdgeCases_PlayerCountBoundaries, TestPlayerLimits)
 {
     EXPECT_EQ(MIN_NUMBER_OF_PLAYERS, 2);
-    EXPECT_EQ(MAX_NUMBER_OF_PLAYERS, 10);
+    EXPECT_EQ(MAX_NUMBER_OF_PLAYERS, 2);
     EXPECT_TRUE(MIN_NUMBER_OF_PLAYERS < MAX_NUMBER_OF_PLAYERS);
     return true;
 }

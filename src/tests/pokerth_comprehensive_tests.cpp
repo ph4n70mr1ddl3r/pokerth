@@ -749,7 +749,7 @@ TEST(GameLogic_PlayerType, TestPlayerTypeValues)
 TEST(GameLogic_MinMaxPlayers, TestPlayerLimits)
 {
     EXPECT_EQ(MIN_NUMBER_OF_PLAYERS, 2);
-    EXPECT_EQ(MAX_NUMBER_OF_PLAYERS, 10);
+    EXPECT_EQ(MAX_NUMBER_OF_PLAYERS, 2);
     return true;
 }
 
@@ -951,7 +951,7 @@ TEST(GameData_CustomValues, TestCustomGameSettings)
 {
     GameData data;
     data.gameType = GAME_TYPE_RANKING;
-    data.maxNumberOfPlayers = 10;
+    data.maxNumberOfPlayers = 2;
     data.startMoney = 10000;
     data.firstSmallBlind = 50;
     data.guiSpeed = 8;

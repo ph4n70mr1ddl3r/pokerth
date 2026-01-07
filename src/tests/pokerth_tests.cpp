@@ -229,8 +229,8 @@ TEST(GameModeValues, TestGameModeConstants)
 TEST(GameLimits, TestPlayerCountLimits)
 {
     EXPECT_EQ(MIN_NUMBER_OF_PLAYERS, 2);
-    EXPECT_EQ(MAX_NUMBER_OF_PLAYERS, 10);
-    EXPECT_TRUE(MIN_NUMBER_OF_PLAYERS < MAX_NUMBER_OF_PLAYERS);
+    EXPECT_EQ(MAX_NUMBER_OF_PLAYERS, 2);
+    EXPECT_TRUE(MIN_NUMBER_OF_PLAYERS <= MAX_NUMBER_OF_PLAYERS);
     return true;
 }
 
@@ -300,14 +300,14 @@ TEST(GameDataCustom, TestCustomGameData)
 {
     GameData data;
     data.gameType = GAME_TYPE_RANKING;
-    data.maxNumberOfPlayers = 10;
+    data.maxNumberOfPlayers = 2;
     data.startMoney = 10000;
     data.firstSmallBlind = 50;
     data.guiSpeed = 8;
     data.playerActionTimeoutSec = 30;
     
     EXPECT_EQ(data.gameType, GAME_TYPE_RANKING);
-    EXPECT_EQ(data.maxNumberOfPlayers, 10);
+    EXPECT_EQ(data.maxNumberOfPlayers, 2);
     EXPECT_EQ(data.startMoney, 10000);
     EXPECT_EQ(data.firstSmallBlind, 50);
     return true;

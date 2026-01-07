@@ -33,19 +33,19 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1" colspan="3">
-       <widget class="QSpinBox" name="spinBox_quantityPlayers">
-        <property name="minimum">
-         <number>2</number>
-        </property>
-        <property name="maximum">
-         <number>10</number>
-        </property>
-        <property name="value">
-         <number>10</number>
-        </property>
-       </widget>
-      </item>
+       <item row="0" column="1" colspan="3">
+        <widget class="QSpinBox" name="spinBox_quantityPlayers">
+         <property name="minimum">
+          <number>2</number>
+         </property>
+         <property name="maximum">
+          <number>2</number>
+         </property>
+         <property name="value">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
