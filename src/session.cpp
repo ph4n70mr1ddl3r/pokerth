@@ -158,6 +158,8 @@ void Session::startClientGame(std::shared_ptr<Game> game)
 	currentGameNum++;
 
 	currentGame = game;
+	currentGame->initHand();
+	currentGame->startHand();
 }
 
 std::shared_ptr<Game> Session::getCurrentGame()

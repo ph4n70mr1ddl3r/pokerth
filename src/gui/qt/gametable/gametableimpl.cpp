@@ -705,7 +705,7 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 	}
 
 	//refresh board cards if game is running
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
 
 		int tempBoardCardsArray[5];
 		myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getBoard()->getMyCards(tempBoardCardsArray);
@@ -741,7 +741,7 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 	}
 
 	//Check for anti-peek mode
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
 		// 		check if human player is already active
 		std::shared_ptr<PlayerInterface> humanPlayer = myStartWindow->getSession()->getCurrentGame()->getSeatsList()->front();
 		if(humanPlayer->getMyActiveStatus()) {
@@ -771,7 +771,7 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 	if(this->isVisible() && myGameTableStyle->getState() != GT_STYLE_OK) myGameTableStyle->showErrorMessage();
 
 	//blind buttons refresh
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
 		refreshButton();
 		refreshGroupbox();
 		provideMyActions();
@@ -861,20 +861,28 @@ std::shared_ptr<Session> gameTableImpl::getSession()
 void gameTableImpl::refreshSet()
 {
 
+	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
+		return;
+	}
+
 	std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentGame->getSeatsList();
-	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
+	int seatPlace = 0;
+	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
 		if( (*it_c)->getMySet() == 0 )
-			setLabelArray[(*it_c)->getMyID()]->setText("");
+			setLabelArray[seatPlace]->setText("");
 		else
-			setLabelArray[(*it_c)->getMyID()]->setText("$"+QString("%L1").arg((*it_c)->getMySet()));
+			setLabelArray[seatPlace]->setText("$"+QString("%L1").arg((*it_c)->getMySet()));
 	}
 }
 
 void gameTableImpl::refreshButton()
 {
+	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
+		return;
+	}
 
 	QPixmap dealerButton = QPixmap::fromImage(QImage(myGameTableStyle->getDealerPuck()));
 	QPixmap smallblindButton = QPixmap::fromImage(QImage(myGameTableStyle->getSmallBlindPuck()));
@@ -886,52 +894,53 @@ void gameTableImpl::refreshButton()
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentGame->getSeatsList();
 	PlayerList activePlayerList = currentGame->getActivePlayerList();
-	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
+	int seatPlace = 0;
+	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
 		if( (*it_c)->getMyActiveStatus() ) {
 			if( activePlayerList->size() > 2 ) {
 				switch ( (*it_c)->getMyButton() ) {
 
 				case 1 :
-					buttonLabelArray[(*it_c)->getMyID()]->setPixmap(dealerButton);
+					buttonLabelArray[seatPlace]->setPixmap(dealerButton);
 					break;
 				case 2 : {
 					if(myConfig->readConfigInt("ShowBlindButtons"))
-						buttonLabelArray[(*it_c)->getMyID()]->setPixmap(smallblindButton);
+						buttonLabelArray[seatPlace]->setPixmap(smallblindButton);
 					else
-						buttonLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
+						buttonLabelArray[seatPlace]->setPixmap(onePix);
 				}
 				break;
 				case 3 : {
 					if(myConfig->readConfigInt("ShowBlindButtons"))
-						buttonLabelArray[(*it_c)->getMyID()]->setPixmap(bigblindButton);
+						buttonLabelArray[seatPlace]->setPixmap(bigblindButton);
 					else
-						buttonLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
+						buttonLabelArray[seatPlace]->setPixmap(onePix);
 				}
 				break;
 				default:
-					buttonLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
+					buttonLabelArray[seatPlace]->setPixmap(onePix);
 
 				}
 			} else {
 				switch ((*it_c)->getMyButton()) {
 
 				case 2 :
-					buttonLabelArray[(*it_c)->getMyID()]->setPixmap(dealerButton);
+					buttonLabelArray[seatPlace]->setPixmap(dealerButton);
 					break;
 				case 3 : {
 					if(myConfig->readConfigInt("ShowBlindButtons"))
-						buttonLabelArray[(*it_c)->getMyID()]->setPixmap(bigblindButton);
+						buttonLabelArray[seatPlace]->setPixmap(bigblindButton);
 					else
-						buttonLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
+						buttonLabelArray[seatPlace]->setPixmap(onePix);
 				}
 				break;
 				default:
-					buttonLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
+					buttonLabelArray[seatPlace]->setPixmap(onePix);
 
 				}
 			}
 		} else {
-			buttonLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
+			buttonLabelArray[seatPlace]->setPixmap(onePix);
 		}
 	}
 }
@@ -940,12 +949,13 @@ void gameTableImpl::refreshButton()
 void gameTableImpl::refreshPlayerName()
 {
 
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
 
 		std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 		PlayerListConstIterator it_c;
 		PlayerList seatsList = currentGame->getSeatsList();
-		for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
+		int seatPlace = 0;
+		for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
 
 			//collect needed infos
 			bool guest = myStartWindow->getSession()->getClientPlayerInfo((*it_c)->getMyUniqueID()).isGuest;
@@ -959,35 +969,36 @@ void gameTableImpl::refreshPlayerName()
 			switch(getCurrentSeatState((*it_c))) {
 
 			case SEAT_ACTIVE: {
-				playerNameLabelArray[(*it_c)->getMyID()]->setText(nick, false, guest, computerPlayer );
+				playerNameLabelArray[seatPlace]->setText(nick, false, guest, computerPlayer );
 			}
 			break;
 			case SEAT_AUTOFOLD: {
-				playerNameLabelArray[(*it_c)->getMyID()]->setText(nick, true, guest, computerPlayer );
+				playerNameLabelArray[seatPlace]->setText(nick, true, guest, computerPlayer );
 			}
 			break;
 			case SEAT_STAYONTABLE: {
-				playerNameLabelArray[(*it_c)->getMyID()]->setText(nick, true, guest, computerPlayer );
+				playerNameLabelArray[seatPlace]->setText(nick, true, guest, computerPlayer );
 			}
 			break;
 			case SEAT_CLEAR: {
-				playerNameLabelArray[(*it_c)->getMyID()]->setText("");
+				playerNameLabelArray[seatPlace]->setText("");
 			}
 			break;
 			default: {
-				playerNameLabelArray[(*it_c)->getMyID()]->setText("");
+				playerNameLabelArray[seatPlace]->setText("");
 			}
 			}
 		}
+		if (playerAvatarLabelArray[0]) {
+			playerAvatarLabelArray[0]->refreshTooltips();
+		}
 	}
-
-	playerAvatarLabelArray[0]->refreshTooltips();
 }
 
 void gameTableImpl::refreshPlayerAvatar()
 {
 
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
 
 		QPixmap onePix = QPixmap::fromImage(QImage(myAppDataPath +"gfx/gui/misc/1px.png"));
 
@@ -998,7 +1009,7 @@ void gameTableImpl::refreshPlayerAvatar()
 		for (it_c=seatsList->begin(), seatPlace=0; it_c!=seatsList->end(); ++it_c, seatPlace++) {
 
 			//set uniqueID
-			playerAvatarLabelArray[(*it_c)->getMyID()]->setMyUniqueId((*it_c)->getMyUniqueID());
+			playerAvatarLabelArray[seatPlace]->setMyUniqueId((*it_c)->getMyUniqueID());
 
 			//get CountryString
 			QString countryString(QString(myStartWindow->getSession()->getClientPlayerInfo((*it_c)->getMyUniqueID()).countryCode.c_str()).toLower());
@@ -1017,25 +1028,25 @@ void gameTableImpl::refreshPlayerAvatar()
 			switch(getCurrentSeatState((*it_c))) {
 
 			case SEAT_ACTIVE: {
-				playerAvatarLabelArray[(*it_c)->getMyID()]->setPixmapAndCountry(avatarPic, countryString, seatPlace);
+				playerAvatarLabelArray[seatPlace]->setPixmapAndCountry(avatarPic, countryString, seatPlace);
 			}
 			break;
 			case SEAT_AUTOFOLD: {
 //				qDebug() << seatPlace << "AVATAR AUTOFOLD";
-				playerAvatarLabelArray[(*it_c)->getMyID()]->setPixmapAndCountry(avatarPic, countryString, seatPlace, true);
+				playerAvatarLabelArray[seatPlace]->setPixmapAndCountry(avatarPic, countryString, seatPlace, true);
 			}
 			break;
 			case SEAT_STAYONTABLE: {
 //				qDebug() << seatPlace << "AVATAR STAYONTABLE";
-				playerAvatarLabelArray[(*it_c)->getMyID()]->setPixmapAndCountry(avatarPic, countryString, seatPlace, true);
+				playerAvatarLabelArray[seatPlace]->setPixmapAndCountry(avatarPic, countryString, seatPlace, true);
 			}
 			break;
 			case SEAT_CLEAR: {
-				playerAvatarLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
+				playerAvatarLabelArray[seatPlace]->setPixmap(onePix);
 			}
 			break;
 			default: {
-				playerAvatarLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
+				playerAvatarLabelArray[seatPlace]->setPixmap(onePix);
 			}
 			}
 		}
@@ -1045,7 +1056,7 @@ void gameTableImpl::refreshPlayerAvatar()
 void gameTableImpl::setPlayerAvatar(int myID, QString myAvatar)
 {
 
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
 
 		std::shared_ptr<PlayerInterface> tmpPlayer = myStartWindow->getSession()->getCurrentGame()->getPlayerByUniqueId(myID);
 		if (tmpPlayer.get()) {
@@ -1065,6 +1076,10 @@ void gameTableImpl::setPlayerAvatar(int myID, QString myAvatar)
 void gameTableImpl::refreshAction(int playerID, int playerAction)
 {
 
+	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
+		return;
+	}
+
 	QPixmap onePix = QPixmap::fromImage(QImage(myAppDataPath +"gfx/gui/misc/1px.png"));
 	QPixmap action;
 
@@ -1077,21 +1092,22 @@ void gameTableImpl::refreshAction(int playerID, int playerAction)
 
 		PlayerListConstIterator it_c;
 		PlayerList seatsList = currentGame->getSeatsList();
-		for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
+		int seatPlace = 0;
+		for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
 
 			//if no action --> clear Pixmap
 			if( (*it_c)->getMyAction() == 0) {
-				actionLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
+				actionLabelArray[seatPlace]->setPixmap(onePix);
 			} else {
 				//paint action pixmap
-				actionLabelArray[(*it_c)->getMyID()]->setPixmap(QPixmap::fromImage(QImage(myGameTableStyle->getActionPic((*it_c)->getMyAction()))));
+				actionLabelArray[seatPlace]->setPixmap(QPixmap::fromImage(QImage(myGameTableStyle->getActionPic((*it_c)->getMyAction()))));
 			}
 
 			if ((*it_c)->getMyAction()==1) {
 
-				if((*it_c)->getMyID() != 0) {
-					holeCardsArray[(*it_c)->getMyID()][0]->setPixmap(onePix, false);
-					holeCardsArray[(*it_c)->getMyID()][1]->setPixmap(onePix, false);
+				if(seatPlace != 0) {
+					holeCardsArray[seatPlace][0]->setPixmap(onePix, false);
+					holeCardsArray[seatPlace][1]->setPixmap(onePix, false);
 				}
 			}
 		}
@@ -1124,37 +1140,41 @@ void gameTableImpl::refreshAction(int playerID, int playerAction)
 
 void gameTableImpl::refreshCash()
 {
+	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
+		return;
+	}
 
 	std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 
 	bool transparent = true;
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentGame->getSeatsList();
-	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
+	int seatPlace = 0;
+	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
 
 		//check SeatStates and refresh
 		switch(getCurrentSeatState((*it_c))) {
 
 		case SEAT_ACTIVE: {
-//			qDebug() << (*it_c)->getMyID() << "CASH ACTIVE";
-			cashLabelArray[(*it_c)->getMyID()]->setText("$"+QString("%L1").arg((*it_c)->getMyCash()));
+//			qDebug() << seatPlace << "CASH ACTIVE";
+			cashLabelArray[seatPlace]->setText("$"+QString("%L1").arg((*it_c)->getMyCash()));
 		}
 		break;
 		case SEAT_AUTOFOLD: {
-//			qDebug() << (*it_c)->getMyID() << "CASH AUTOFOLD"; //TODO transparent
-			cashLabelArray[(*it_c)->getMyID()]->setText("$"+QString("%L1").arg((*it_c)->getMyCash()), transparent);
+//			qDebug() << seatPlace << "CASH AUTOFOLD"; //TODO transparent
+			cashLabelArray[seatPlace]->setText("$"+QString("%L1").arg((*it_c)->getMyCash()), transparent);
 		}
 		break;
 		case SEAT_STAYONTABLE: {
-			cashLabelArray[(*it_c)->getMyID()]->setText("");
+			cashLabelArray[seatPlace]->setText("");
 		}
 		break;
 		case SEAT_CLEAR: {
-			cashLabelArray[(*it_c)->getMyID()]->setText("");
+			cashLabelArray[seatPlace]->setText("");
 		}
 		break;
 		default: {
-			cashLabelArray[(*it_c)->getMyID()]->setText("");
+			cashLabelArray[seatPlace]->setText("");
 		}
 		}
 	}
@@ -1281,6 +1301,9 @@ void gameTableImpl::refreshGameLabels(int gameState)
 
 void gameTableImpl::refreshAll()
 {
+	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
+		return;
+	}
 
 	refreshSet();
 	refreshButton();
@@ -1289,7 +1312,7 @@ void gameTableImpl::refreshAll()
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentGame->getSeatsList();
 	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
-		refreshAction( (*it_c)->getMyID(), (*it_c)->getMyAction());
+		refreshAction( -1, -1);
 	}
 
 	refreshCash();
@@ -1300,6 +1323,9 @@ void gameTableImpl::refreshAll()
 
 void gameTableImpl::refreshChangePlayer()
 {
+	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
+		return;
+	}
 
 	refreshSet();
 
@@ -1307,7 +1333,7 @@ void gameTableImpl::refreshChangePlayer()
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentGame->getSeatsList();
 	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
-		refreshAction( (*it_c)->getMyID(), (*it_c)->getMyAction());
+		refreshAction( -1, -1);
 	}
 
 	refreshCash();
@@ -2309,20 +2335,27 @@ void gameTableImpl::myActionDone()
 
 void gameTableImpl::nextPlayerAnimation()
 {
+	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
+		return;
+	}
 
 	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	if(!currentHand) {
+		return;
+	}
 
 	//refresh Change Player
 	refreshSet();
 
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentHand->getSeatsList();
-	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
+	int seatPlace = 0;
+	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
 		if((*it_c)->getMyID() == currentHand->getPreviousPlayerID()) break;
 	}
 
 	if(currentHand->getPreviousPlayerID() != -1) {
-		refreshAction(currentHand->getPreviousPlayerID(), (*it_c)->getMyAction());
+		refreshAction(-1, -1);
 	}
 	refreshCash();
 
@@ -3580,7 +3613,7 @@ void gameTableImpl::networkGameModification()
 void gameTableImpl::mouseOverFlipCards(bool front)
 {
 
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
 		if(myConfig->readConfigInt("AntiPeekMode") && myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getSeatsList()->front()->getMyActiveStatus()/* && myStartWindow->getSession()->getCurrentGame()->getSeatsList()->front()->getMyAction() != PLAYER_ACTION_FOLD*/) {
 			holeCardsArray[0][0]->signalFastFlipCards(front);
 			holeCardsArray[0][1]->signalFastFlipCards(front);

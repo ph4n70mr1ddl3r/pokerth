@@ -184,7 +184,13 @@ ClientThread::SendPlayerAction()
 	netMyAction->set_gameid(GetGameId());
 	std::shared_ptr<PlayerInterface> myPlayer = GetGame()->getSeatsList()->front();
 	netMyAction->set_handnum(GetGame()->getCurrentHandID());
-	netMyAction->set_gamestate(static_cast<NetGameState>(GetGame()->getCurrentHand()->getCurrentRound()));
+	// CRITICAL RACE CONDITION FIX: Verify hand was created successfully
+	std::shared_ptr<HandInterface> currentHand = GetGame()->getCurrentHand();
+	if (!currentHand) {
+		// Hand not yet initialized - cannot send action
+		return;
+	}
+	netMyAction->set_gamestate(static_cast<NetGameState>(currentHand->getCurrentRound()));
 	netMyAction->set_myaction(static_cast<NetPlayerAction>(myPlayer->getMyAction()));
 	// Only send last bet if not fold/checked.
 	if (myPlayer->getMyAction() != PLAYER_ACTION_FOLD && myPlayer->getMyAction() != PLAYER_ACTION_CHECK)
@@ -640,12 +646,16 @@ ClientThread::InitGame()
 	//	throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_PLAYER_COUNT, 0);
 	m_startData.numberOfPlayers = (int)GetPlayerDataList().size();
 	m_game.reset(new Game(&m_gui, factory, GetPlayerDataList(), GetGameData(), GetStartData(), m_curGameNum++, m_clientLog.get()));
-	// Initialize Minimum GUI speed.
+	// Initialize Minimum GUI speed and init GUI BEFORE starting hand,
+	// because startHand() triggers GUI updates that require initGui to have run.
 	int minimumGuiSpeed = 1;
 	if(GetGameData().delayBetweenHandsSec < 11) {
 		minimumGuiSpeed = 12-GetGameData().delayBetweenHandsSec;
 	}
 	GetGui().initGui(minimumGuiSpeed);
+	// Initialize hand after initGui
+	m_game->initHand();
+	m_game->startHand();
 	// Signal start of game to GUI.
 	GetCallback().SignalNetClientGameStart(m_game);
 }

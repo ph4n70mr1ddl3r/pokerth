@@ -181,7 +181,12 @@ ServerGame::HandlePacket(std::shared_ptr<SessionData> session, std::shared_ptr<N
 GameState
 ServerGame::GetCurRound() const
 {
-	return static_cast<GameState>(GetGame().getCurrentHand()->getCurrentRound());
+	// CRITICAL RACE CONDITION FIX: Verify hand was created successfully
+	std::shared_ptr<HandInterface> currentHand = GetGame().getCurrentHand();
+	if (!currentHand) {
+		return GAME_STATE_PREFLOP; // Default fallback
+	}
+	return static_cast<GameState>(currentHand->getCurrentRound());
 }
 
 void

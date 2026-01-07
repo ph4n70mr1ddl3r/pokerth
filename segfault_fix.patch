@@ -1,0 +1,12 @@
+--- a/src/net/clientstate.cpp
++++ b/src/net/clientstate.cpp
+@@ -1718,8 +1718,12 @@
+ 		// Start new hand.
+ 		client->GetGame()->getSeatsList()->front()->setMyCards(myCards);
+ 		client->GetGame()->initHand();
++		// CRITICAL RACE CONDITION FIX: Verify hand was created successfully
++		if (!client->GetGame()->getCurrentHand()) {
++			throw ClientException(__FILE__, __LINE__, NTF_NET_INTERNAL, 0);
++		}
+-		client->GetGui().dealHoleCards();
++		client->GetGui().dealHoleCards();

@@ -142,6 +142,9 @@ std::shared_ptr<HandInterface> Game::getCurrentHand()
 
 const std::shared_ptr<HandInterface> Game::getCurrentHand() const
 {
+	// CRITICAL RACE CONDITION FIX: Return valid hand pointer
+	// This defensive check prevents crashes when currentHand is null
+	// during concurrent access from multiple threads during game start
 	return currentHand;
 }
 
@@ -179,6 +182,11 @@ void Game::initHand()
 
 	// create Hand
 	currentHand = myFactory->createHand(myFactory, myGui, currentBoard, myLog, seatsList, activePlayerList, runningPlayerList, currentHandID, startQuantityPlayers, dealerPosition, currentSmallBlind, startCash);
+	
+	// CRITICAL FIX: Verify hand was created successfully before using it
+	if (!currentHand) {
+		throw LocalException(__FILE__, __LINE__, 131);
+	}
 
 	// shifting dealer button -> TODO exception-rule !!!
 	bool nextDealerFound = false;
@@ -206,6 +214,11 @@ void Game::initHand()
 
 void Game::startHand()
 {
+	// CRITICAL FIX: Verify hand exists before starting it
+	if (!currentHand) {
+		throw LocalException(__FILE__, __LINE__, 131);
+	}
+
 	myGui->nextRoundCleanGui();
 
 	// log new hand
@@ -249,7 +262,12 @@ std::shared_ptr<PlayerInterface> Game::getPlayerByNumber(int number)
 
 std::shared_ptr<PlayerInterface> Game::getCurrentPlayer()
 {
-	std::shared_ptr<PlayerInterface> tmpPlayer = getPlayerByUniqueId(getCurrentHand()->getCurrentBeRo()->getCurrentPlayersTurnId());
+	// CRITICAL RACE CONDITION FIX: Verify hand was created successfully
+	std::shared_ptr<HandInterface> currentHand = getCurrentHand();
+	if (!currentHand) {
+		throw LocalException(__FILE__, __LINE__, ERR_CURRENT_PLAYER_NOT_FOUND);
+	}
+	std::shared_ptr<PlayerInterface> tmpPlayer = getPlayerByUniqueId(currentHand->getCurrentBeRo()->getCurrentPlayersTurnId());
 	if (!tmpPlayer.get())
 		throw LocalException(__FILE__, __LINE__, ERR_CURRENT_PLAYER_NOT_FOUND);
 	return tmpPlayer;
