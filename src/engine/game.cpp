@@ -107,17 +107,8 @@ Game::Game(GuiInterface *gui, std::shared_ptr<EngineFactory> factory,
 			++player_i;
 		}
 
-		int seatId = i;
-		if (startQuantityPlayers == 2) {
-			if (i == 0) {
-				seatId = 0;
-			} else if (i == 1) {
-				seatId = 5;
-			}
-		}
-
 		// create player objects
-		std::shared_ptr<PlayerInterface> tmpPlayer = myFactory->createPlayer(seatId, uniqueId, type, myName, myAvatarFile, myStartCash, startQuantityPlayers > i, myStayOnTableStatus, 0);
+		std::shared_ptr<PlayerInterface> tmpPlayer = myFactory->createPlayer(i, uniqueId, type, myName, myAvatarFile, myStartCash, startQuantityPlayers > i, myStayOnTableStatus, 0);
 		tmpPlayer->setIsSessionActive(true);
 		tmpPlayer->setMyGuid(myGuid);
 
