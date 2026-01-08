@@ -38,15 +38,15 @@
 #include <boost/asio/steady_timer.hpp>
 #include <boost/regex.hpp>
 #include <boost/thread.hpp>
-#include <memory>
+#include <boost/enable_shared_from_this.hpp>
 #include <map>
 #include <list>
 #include <string>
 
-class ServerBanManager : public std::enable_shared_from_this<ServerBanManager>
+class ServerBanManager : public boost::enable_shared_from_this<ServerBanManager>
 {
 public:
-	ServerBanManager(std::shared_ptr<boost::asio::io_context> ioService);
+	ServerBanManager(boost::shared_ptr<boost::asio::io_context> ioService);
 	virtual ~ServerBanManager();
 
 	void SetAdminPlayerIds(const std::list<DB_id> &adminList);
@@ -68,12 +68,12 @@ public:
 protected:
 
 	struct TimedPlayerBan {
-		std::shared_ptr<boost::asio::steady_timer> timer;
+		boost::shared_ptr<boost::asio::steady_timer> timer;
 		std::string nameStr;
 		boost::regex nameRegex;
 	};
 	struct TimedIPBan {
-		std::shared_ptr<boost::asio::steady_timer> timer;
+		boost::shared_ptr<boost::asio::steady_timer> timer;
 		std::string ipAddress;
 	};
 
@@ -82,10 +82,10 @@ protected:
 	typedef std::list<boost::regex> RegexList;
 	typedef std::vector<DB_id> DBPlayerIdList;
 
-	std::shared_ptr<boost::asio::steady_timer> InternalRegisterTimedBan(unsigned timerId, unsigned durationHours);
-	void TimerRemoveBan(const boost::system::error_code &ec, unsigned banId, std::shared_ptr<boost::asio::steady_timer> timer);
+	boost::shared_ptr<boost::asio::steady_timer> InternalRegisterTimedBan(unsigned timerId, unsigned durationHours);
+	void TimerRemoveBan(const boost::system::error_code &ec, unsigned banId, boost::shared_ptr<boost::asio::steady_timer> timer);
 
-	std::shared_ptr<boost::asio::io_context> m_ioService;
+	boost::shared_ptr<boost::asio::io_context> m_ioService;
 
 	unsigned GetNextBanId();
 

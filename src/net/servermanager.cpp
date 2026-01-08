@@ -76,18 +76,18 @@ ServerManager::Init(unsigned serverPort, unsigned websocketPort, bool ipv6, bool
 	GetLobbyThread().Init(logDir);
 
 	if (proto & TRANSPORT_PROTOCOL_TCP) {
-		std::shared_ptr<ServerAcceptInterface> tcpAcceptHelper(new ServerAcceptHelper<boost::asio::ip::tcp>(GetGui(), m_ioService, serverTls));
+		boost::shared_ptr<ServerAcceptInterface> tcpAcceptHelper(new ServerAcceptHelper<boost::asio::ip::tcp>(GetGui(), m_ioService, serverTls));
 		tcpAcceptHelper->Listen(serverPort, ipv6, logDir, m_lobbyThread);
 		m_acceptHelperPool.push_back(tcpAcceptHelper);
 	}
 	/*	if (proto & TRANSPORT_PROTOCOL_SCTP)
 		{
-			std::shared_ptr<ServerAcceptInterface> sctpAcceptHelper(new ServerAcceptHelper<boost::asio::ip::sctp>(GetGui(), m_ioService));
+			boost::shared_ptr<ServerAcceptInterface> sctpAcceptHelper(new ServerAcceptHelper<boost::asio::ip::sctp>(GetGui(), m_ioService));
 			sctpAcceptHelper->Listen(serverPort, ipv6, logDir, m_lobbyThread);
 			m_acceptHelperPool.push_back(sctpAcceptHelper);
 		}*/
 	if (proto & TRANSPORT_PROTOCOL_WEBSOCKET) {
-		std::shared_ptr<ServerAcceptInterface> webAcceptHelper(
+		boost::shared_ptr<ServerAcceptInterface> webAcceptHelper(
 			new ServerAcceptWebHelper(GetGui(), m_ioService, webSocketResource, webSocketOrigin, websocketTls));
 		webAcceptHelper->Listen(websocketPort, ipv6, logDir, m_lobbyThread);
 		m_acceptHelperPool.push_back(webAcceptHelper);

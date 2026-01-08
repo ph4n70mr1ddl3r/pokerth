@@ -72,10 +72,6 @@ joinNetworkGameDialogImpl::joinNetworkGameDialogImpl(QWidget *parent, ConfigFile
 
 }
 
-joinNetworkGameDialogImpl::~joinNetworkGameDialogImpl()
-{
-}
-
 int joinNetworkGameDialogImpl::exec()
 {
 
@@ -127,7 +123,6 @@ int joinNetworkGameDialogImpl::exec()
 	}
 
 	checkBox_ipv6->setEnabled(socket_has_ipv6());
-	checkBox_ipv6->setChecked(false);  // Default to IPv4 for better compatibility
 	checkBox_sctp->setEnabled(socket_has_sctp());
 
 	connectButtonTest();
@@ -138,41 +133,8 @@ int joinNetworkGameDialogImpl::exec()
 
 void joinNetworkGameDialogImpl::startClient()
 {
-	if (!validateInput()) {
-		return;
-	}
-}
 
-bool joinNetworkGameDialogImpl::validateInput()
-{
-	QString ipAddress = lineEdit_ipAddress->text().trimmed();
-	QString profileName = lineEdit_profileName->text().trimmed();
-	int port = spinBox_port->value();
-
-	if (ipAddress.isEmpty()) {
-		MyMessageBox::warning(this, tr("Input Validation Error"),
-							  tr("Please enter a valid IP address or hostname."),
-							  QMessageBox::Ok);
-		lineEdit_ipAddress->setFocus();
-		return false;
-	}
-
-	if (port <= 0 || port > 65535) {
-		MyMessageBox::warning(this, tr("Input Validation Error"),
-							  tr("Port must be between 1 and 65535."),
-							  QMessageBox::Ok);
-		return false;
-	}
-
-	if (!profileName.isEmpty() && !profileName.contains(QRegularExpression("[A-Za-z]"))) {
-		MyMessageBox::warning(this, tr("Input Validation Error"),
-							  tr("Profile name must start with a letter."),
-							  QMessageBox::Ok);
-		lineEdit_profileName->setFocus();
-		return false;
-	}
-
-	return true;
+	// TODO: Check input values!
 }
 
 void joinNetworkGameDialogImpl::fillServerProfileList()
@@ -240,17 +202,8 @@ void joinNetworkGameDialogImpl::itemFillForm (QTreeWidgetItem* item, int /*colum
 		if ( !profile.isNull()) {
 			lineEdit_profileName->setText(profile.attribute("Name"));
 			lineEdit_ipAddress->setText(profile.attribute("Address"));
-			int portValue = profile.attribute("Port").toInt(&toIntTrue, 10);
-			if (toIntTrue) {
-				spinBox_port->setValue(portValue);
-			}
-			// Default to IPv4 unless explicitly saved as IPv6
-			int savedIpv6 = profile.attribute("IsIpv6").toInt(&toIntTrue, 10);
-			if (savedIpv6 == 1 && socket_has_ipv6()) {
-				checkBox_ipv6->setChecked(true);
-			} else {
-				checkBox_ipv6->setChecked(false);
-			}
+			spinBox_port->setValue(profile.attribute("Port").toInt(&toIntTrue, 10));
+			checkBox_ipv6->setChecked(profile.attribute("IsIpv6").toInt(&toIntTrue, 10));
 			checkBox_sctp->setChecked(profile.attribute("IsSctp").toInt(&toIntTrue, 10));
 		}
 

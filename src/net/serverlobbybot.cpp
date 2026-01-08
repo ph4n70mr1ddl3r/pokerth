@@ -51,7 +51,7 @@ using namespace std::chrono;
 using namespace boost::chrono;
 #endif
 
-ServerLobbyBot::ServerLobbyBot(std::shared_ptr<boost::asio::io_context> ioService)
+ServerLobbyBot::ServerLobbyBot(boost::shared_ptr<boost::asio::io_context> ioService)
 	: m_reconnectTimer(*ioService)
 {
 }
@@ -61,7 +61,7 @@ ServerLobbyBot::~ServerLobbyBot()
 }
 
 void
-ServerLobbyBot::Init(std::shared_ptr<ServerLobbyThread> lobbyThread, std::shared_ptr<IrcThread> ircLobbyThread)
+ServerLobbyBot::Init(boost::shared_ptr<ServerLobbyThread> lobbyThread, boost::shared_ptr<IrcThread> ircLobbyThread)
 {
 	m_lobbyThread = lobbyThread;
 	m_ircLobbyThread = ircLobbyThread;
@@ -131,7 +131,7 @@ ServerLobbyBot::Reconnect(const boost::system::error_code& ec)
 		if (m_ircLobbyThread) {
 			m_ircLobbyThread->SignalTermination();
 			if (m_ircLobbyThread->Join(NET_ADMIN_IRC_TERMINATE_TIMEOUT_MSEC)) {
-				std::shared_ptr<IrcThread> tmpIrcThread(new IrcThread(*m_ircLobbyThread));
+				boost::shared_ptr<IrcThread> tmpIrcThread(new IrcThread(*m_ircLobbyThread));
 				tmpIrcThread->Run();
 				m_ircLobbyThread = tmpIrcThread;
 			}

@@ -41,8 +41,8 @@ ServerDBFactoryGeneric::~ServerDBFactoryGeneric()
 {
 }
 
-std::shared_ptr<ServerDBInterface>
-ServerDBFactoryGeneric::CreateServerDBObject(ServerDBCallback &cb, std::shared_ptr<boost::asio::io_context> ioService)
+boost::shared_ptr<ServerDBInterface>
+ServerDBFactoryGeneric::CreateServerDBObject(ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService)
 {
-	return std::shared_ptr<ServerDBInterface>(new ServerDBGeneric(cb, ioService));
+	return boost::shared_ptr<ServerDBInterface>(new ServerDBGeneric(cb, ioService));
 }

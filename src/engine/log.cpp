@@ -521,7 +521,7 @@ Log::logHoleCardsHandName(PlayerList activePlayerList)
 }
 
 void
-Log::logHoleCardsHandName(PlayerList activePlayerList, std::shared_ptr<PlayerInterface> player, bool forceExecLog)
+Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerInterface> player, bool forceExecLog)
 {
 
 	if(SQLITE_LOG) {
@@ -536,19 +536,19 @@ Log::logHoleCardsHandName(PlayerList activePlayerList, std::shared_ptr<PlayerInt
 				player->getMyCards(myCards);
 				sql += "UPDATE Hand SET ";
 				if(currentRound==GAME_STATE_POST_RIVER && player->getMyCardsValueInt()>0) {
-					sql += "Seat_" + std::to_string(player->getMyID()+1) + "_Hand_text=\"" + CardsValue::determineHandName(player->getMyCardsValueInt(),activePlayerList) + "\"";
-					sql += ",Seat_" + std::to_string(player->getMyID()+1) + "_Hand_int=" + std::to_string(player->getMyCardsValueInt());
+					sql += "Seat_" + boost::lexical_cast<string>(player->getMyID()+1) + "_Hand_text=\"" + CardsValue::determineHandName(player->getMyCardsValueInt(),activePlayerList) + "\"";
+					sql += ",Seat_" + boost::lexical_cast<string>(player->getMyID()+1) + "_Hand_int=" + boost::lexical_cast<string>(player->getMyCardsValueInt());
 				}
 				if(currentRound==GAME_STATE_POST_RIVER && player->getMyCardsValueInt()>0 && !player->getLogHoleCardsDone()) {
 					sql+= ",";
 				}
 				if(!player->getLogHoleCardsDone()) {
-					sql += "Seat_" + std::to_string(player->getMyID()+1) + "_Card_1=" + std::to_string(myCards[0]);
-					sql += ",Seat_" + std::to_string(player->getMyID()+1) + "_Card_2=" + std::to_string(myCards[1]);
+					sql += "Seat_" + boost::lexical_cast<string>(player->getMyID()+1) + "_Card_1=" + boost::lexical_cast<string>(myCards[0]);
+					sql += ",Seat_" + boost::lexical_cast<string>(player->getMyID()+1) + "_Card_2=" + boost::lexical_cast<string>(myCards[1]);
 				}
 				sql += " WHERE ";
-				sql += "UniqueGameID=" + std::to_string(uniqueGameID) + " AND ";
-				sql += "HandID=" + std::to_string(currentHandID);
+				sql += "UniqueGameID=" + boost::lexical_cast<string>(uniqueGameID) + " AND ";
+				sql += "HandID=" + boost::lexical_cast<string>(currentHandID);
 				sql += ";";
 				if(myConfig->readConfigInt("LogInterval") == 0 || forceExecLog) {
 					exec_transaction();

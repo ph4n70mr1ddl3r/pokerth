@@ -34,7 +34,6 @@
 #define _SESSIONMANAGER_H_
 
 #include <boost/function.hpp>
-#include <memory>
 #include <map>
 
 #include <net/sessiondata.h>
@@ -51,13 +50,13 @@ public:
 	SessionManager();
 	virtual ~SessionManager();
 
-	void AddSession(std::shared_ptr<SessionData> sessionData);
-	void SetSessionPlayerData(SessionId session, std::shared_ptr<PlayerData> playerData);
+	void AddSession(boost::shared_ptr<SessionData> sessionData);
+	void SetSessionPlayerData(SessionId session, boost::shared_ptr<PlayerData> playerData);
 	bool RemoveSession(SessionId session);
 
-	std::shared_ptr<SessionData> GetSessionById(SessionId id) const;
-	std::shared_ptr<SessionData> GetSessionByPlayerName(const std::string &playerName) const;
-	std::shared_ptr<SessionData> GetSessionByUniquePlayerId(unsigned uniqueId, bool initSessions = false) const;
+	boost::shared_ptr<SessionData> GetSessionById(SessionId id) const;
+	boost::shared_ptr<SessionData> GetSessionByPlayerName(const std::string &playerName) const;
+	boost::shared_ptr<SessionData> GetSessionByUniquePlayerId(unsigned uniqueId, bool initSessions = false) const;
 
 	PlayerDataList GetPlayerDataList() const;
 	PlayerDataList GetSpectatorDataList() const;
@@ -69,7 +68,7 @@ public:
 	bool IsPlayerAllowedToJoinCreateLimitRank(const std::string &playerName) const;
 	bool IsPlayerAllowedToJoinCreateLimitRank(unsigned uniqueId) const;
 
-	void ForEach(boost::function<void (std::shared_ptr<SessionData>)> func);
+	void ForEach(boost::function<void (boost::shared_ptr<SessionData>)> func);
 
 	unsigned CountReadySessions() const;
 	void ResetAllReadyFlags();
@@ -79,13 +78,13 @@ public:
 	unsigned GetSessionCountWithState(int state) const;
 	bool HasSessionWithState(int state) const;
 
-	void SendToAllSessions(SenderHelper &sender, std::shared_ptr<NetPacket> packet, int state);
-	void SendLobbyMsgToAllSessions(SenderHelper &sender, std::shared_ptr<NetPacket> packet, int state);
-	void SendToAllButOneSessions(SenderHelper &sender, std::shared_ptr<NetPacket> packet, SessionId except, int state);
+	void SendToAllSessions(SenderHelper &sender, boost::shared_ptr<NetPacket> packet, int state);
+	void SendLobbyMsgToAllSessions(SenderHelper &sender, boost::shared_ptr<NetPacket> packet, int state);
+	void SendToAllButOneSessions(SenderHelper &sender, boost::shared_ptr<NetPacket> packet, SessionId except, int state);
 
 protected:
 
-	typedef std::map<SessionId, std::shared_ptr<SessionData> > SessionMap;
+	typedef std::map<SessionId, boost::shared_ptr<SessionData> > SessionMap;
 
 private:
 

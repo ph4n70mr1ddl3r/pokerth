@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
     QIcon::setThemeName("pokerth");
 
-    std::shared_ptr<ConfigFile> myConfig;
+    boost::shared_ptr<ConfigFile> myConfig;
     myConfig.reset(new ConfigFile(argv[0], false));
 
     // make QSettings use the default PokerTH config.xml :
@@ -329,7 +329,7 @@ int main( int argc, char **argv )
 	}
 
 	qRegisterMetaType<unsigned>("unsigned");
-	qRegisterMetaType<std::shared_ptr<Game> >("std::shared_ptr<Game>");
+	qRegisterMetaType<boost::shared_ptr<Game> >("boost::shared_ptr<Game>");
 	qRegisterMetaType<ServerStats>("ServerStats");
 	qRegisterMetaType<DenyGameInvitationReason>("DenyGameInvitationReason");
 	///////////////////////////////////////////////////

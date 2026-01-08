@@ -33,7 +33,6 @@
 #include "session.h"
 #include "game.h"
 #include "log.h"
-#include <core/loghelper.h>
 #include "guiinterface.h"
 #include "configfile.h"
 #include <qttoolsinterface.h>
@@ -57,9 +56,6 @@ Session::Session(GuiInterface *g, ConfigFile *c, Log *l)
 	: currentGameNum(0), myGui(g), myConfig(c), myLog(l), myGameType(GAME_TYPE_NONE)
 {
 	myQtToolsInterface = CreateQtToolsWrapper();
-	if (!myQtToolsInterface) {
-		throw std::runtime_error("Failed to create QtToolsInterface");
-	}
 }
 
 
@@ -68,9 +64,9 @@ Session::~Session()
 	terminateNetworkClient();
 	terminateNetworkServer();
 	delete myQtToolsInterface;
-	myQtToolsInterface = nullptr;
+	myQtToolsInterface = 0;
 	delete myLog;
-	myLog = nullptr;
+	myLog = 0;
 }
 
 bool Session::init()
@@ -91,7 +87,7 @@ bool Session::init()
 	return retVal;
 }
 
-void Session::init(std::shared_ptr<AvatarManager> manager)
+void Session::init(boost::shared_ptr<AvatarManager> manager)
 {
 	myAvatarManager = manager;
 }
@@ -131,7 +127,7 @@ void Session::startLocalGame(const GameData &gameData, const StartData &startDat
 
 		//PlayerData erzeugen
 		// UniqueId = PlayerNumber for local games.
-		std::shared_ptr<PlayerData> playerData(new PlayerData(
+		boost::shared_ptr<PlayerData> playerData(new PlayerData(
 					i,
 					i,
 					i == 0 ? PLAYER_TYPE_HUMAN : PLAYER_TYPE_COMPUTER,
@@ -143,7 +139,7 @@ void Session::startLocalGame(const GameData &gameData, const StartData &startDat
 		playerDataList.push_back(playerData);
 	}
 	// EngineFactory erstellen
-	std::shared_ptr<EngineFactory> factory(new LocalEngineFactory(myConfig)); // LocalEngine erstellen
+	boost::shared_ptr<EngineFactory> factory(new LocalEngineFactory(myConfig)); // LocalEngine erstellen
 
 	currentGame.reset(new Game(myGui, factory, playerDataList, gameData, startData, currentGameNum, myLog));
 
@@ -153,16 +149,14 @@ void Session::startLocalGame(const GameData &gameData, const StartData &startDat
 	// SPIEL-SCHLEIFE
 }
 
-void Session::startClientGame(std::shared_ptr<Game> game)
+void Session::startClientGame(boost::shared_ptr<Game> game)
 {
 	currentGameNum++;
 
 	currentGame = game;
-	currentGame->initHand();
-	currentGame->startHand();
 }
 
-std::shared_ptr<Game> Session::getCurrentGame()
+boost::shared_ptr<Game> Session::getCurrentGame()
 {
 	return currentGame;
 }
@@ -177,7 +171,7 @@ Session::GameType Session::getGameType()
 	return myGameType;
 }
 
-std::shared_ptr<AvatarManager> Session::getAvatarManager()
+boost::shared_ptr<AvatarManager> Session::getAvatarManager()
 {
 	return myAvatarManager;
 }
@@ -201,7 +195,7 @@ void Session::startInternetClient()
 		myConfig->readConfigInt("InternetServerConfigMode") == 0,
 //		true,
 		myConfig->readConfigInt("InternetServerPort"),
-		false,  // Always use IPv4 for better compatibility
+		myConfig->readConfigInt("InternetServerUseIpv6") == 1,
 		myConfig->readConfigInt("InternetServerUseSctp") == 1,
 		myConfig->readConfigInt("InternetServerUseTls") == 1,
 		useAvatarServer ? myConfig->readConfigString("AvatarServerAddress") : "",
@@ -249,15 +243,15 @@ void Session::startNetworkClientForLocalServer(const GameData &gameData)
 	myGameType = GAME_TYPE_NETWORK;
 
 	myNetClient.reset(new ClientThread(*myGui, *myAvatarManager, myLog));
-	// Always use IPv4 for better compatibility
-	const char *loopbackAddr = "127.0.0.1";
+	bool useIpv6 = myConfig->readConfigInt("ServerUseIpv6") == 1;
+	const char *loopbackAddr = useIpv6 ? "::1" : "127.0.0.1";
 	myNetClient->Init(
 		loopbackAddr,
 		"",
 		myConfig->readConfigString("ServerPassword"),
 		false,
 		myConfig->readConfigInt("ServerPort"),
-		false,  // Always use IPv4
+		useIpv6,
 		myConfig->readConfigInt("ServerUseSctp") == 1,
 		false,
 		"", // no avatar server
@@ -276,16 +270,14 @@ void Session::startNetworkClientForLocalServer(const GameData &gameData)
 void Session::terminateNetworkClient()
 {
 	if (!myNetClient)
-		return;
+		return; // already terminated
 	myNetClient->SignalTermination();
-	if (myNetClient->Join(NET_CLIENT_TERMINATE_TIMEOUT_MSEC)) {
+	// Give the threads some time to terminate.
+	if (myNetClient->Join(NET_CLIENT_TERMINATE_TIMEOUT_MSEC))
 		myNetClient.reset();
-		myGameType = GAME_TYPE_NONE;
-	} else {
-		LOG_ERROR("Network client termination timed out - forcing cleanup");
-		myNetClient.reset();
-		myGameType = GAME_TYPE_NONE;
-	}
+
+	// If termination fails, leave a memory leak to prevent a crash.
+	myGameType = GAME_TYPE_NONE;
 }
 
 void Session::clientCreateGame(const GameData &gameData, const string &name, const string &password)
@@ -369,14 +361,12 @@ void Session::terminateNetworkServer()
 {
 #ifdef POKERTH_DEDICATED_SERVER	
 	if (!myNetServer)
-		return;
+		return; // already terminated
 	myNetServer->SignalTerminationAll();
-	if (myNetServer->JoinAll(true)) {
+	// Give the thread some time to terminate.
+	if (myNetServer->JoinAll(true))
 		myNetServer.reset();
-	} else {
-		LOG_ERROR("Network server termination timed out - forcing cleanup");
-		myNetServer.reset();
-	}
+	// If termination fails, leave a memory leak to prevent a crash.
 #endif
 }
 
@@ -419,74 +409,58 @@ void Session::sendClientPlayerAction()
 
 void Session::sendGameChatMessage(const std::string &message)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot send game chat message: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendGameChatMessage(message);
 }
 
 void Session::sendLobbyChatMessage(const std::string &message)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot send lobby chat message: network client not running");
+	if (!myNetClient)
 		return;
-	}
 	myNetClient->SendLobbyChatMessage(message);
 }
 
 void Session::sendPrivateChatMessage(unsigned targetPlayerId, const std::string &message)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot send private chat message: network client not running");
+	if (!myNetClient)
 		return;
-	}
 	myNetClient->SendPrivateChatMessage(targetPlayerId, message);
 }
 
 
 void Session::kickPlayer(unsigned playerId)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot kick player: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendKickPlayer(playerId);
 }
 
 void Session::resetNetworkTimeout()
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot reset network timeout: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendResetTimeout();
 }
 
 void Session::adminActionCloseGame(unsigned gameId)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot close game: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendAdminRemoveGame(gameId);
 }
 
 void Session::adminActionBanPlayer(unsigned playerId)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot ban player: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendAdminBanPlayer(playerId);
 }
 
 void Session::kickPlayer(const string &playerName)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot kick player by name: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	unsigned playerId;
 	if (myNetClient->GetPlayerIdFromName(playerName, playerId))
 		kickPlayer(playerId);
@@ -494,49 +468,39 @@ void Session::kickPlayer(const string &playerName)
 
 void Session::startVoteKickPlayer(unsigned playerId)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot start vote kick: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendAskKickPlayer(playerId);
 }
 
 void Session::selectServer(unsigned serverId)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot select server: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SelectServer(serverId);
 }
 
 void
 Session::setLogin(const std::string &userName, const std::string &password, bool isGuest)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot set login: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SetLogin(userName, password, isGuest);
 }
 
 void
 Session::invitePlayerToCurrentGame(unsigned playerId)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot invite player: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendInvitePlayerToCurrentGame(playerId);
 }
 
 void
 Session::acceptGameInvitation(unsigned gameId)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot accept invitation: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendJoinGame(
 		gameId,
 		"",
@@ -547,46 +511,36 @@ Session::acceptGameInvitation(unsigned gameId)
 void
 Session::rejectGameInvitation(unsigned gameId, DenyGameInvitationReason reason)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot reject invitation: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendRejectGameInvitation(gameId, reason);
 }
 
 void Session::reportBadAvatar(unsigned reportedPlayerId, const std::string &avatarHash)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot report avatar: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendReportAvatar(reportedPlayerId, avatarHash);
 }
 
 void Session::reportBadGameName(unsigned gameId)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot report game name: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendReportGameName(gameId);
 }
 
 void Session::voteKick(bool doKick)
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot vote kick: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendVoteKick(doKick);
 }
 
 void Session::showMyCards()
 {
-	if (!myNetClient) {
-		LOG_ERROR("Cannot show cards: network client not running");
-		return;
-	}
+	if (!myNetClient)
+		return; // only act if client is running.
 	myNetClient->SendShowMyCards();
 }
 

@@ -76,16 +76,16 @@ public:
 	startWindowImpl(ConfigFile *c, Log *l);
 	~startWindowImpl();
 
-	void setSession(std::shared_ptr<Session> session)
+	void setSession(boost::shared_ptr<Session> session)
 	{
 		mySession = session;
 	}
-	std::shared_ptr<Session> getSession()
+	boost::shared_ptr<Session> getSession()
 	{
 		assert(mySession.get());
 		return mySession;
 	}
-	std::shared_ptr< GuiInterface > getMyServerGuiInterface() const
+	boost::shared_ptr< GuiInterface > getMyServerGuiInterface() const
 	{
 		return myServerGuiInterface;
 	}
@@ -133,7 +133,7 @@ signals:
 	void signalNetClientGameListPlayerLeft(unsigned gameId, unsigned playerId);
 	void signalNetClientGameListSpectatorJoined(unsigned gameId, unsigned playerId);
 	void signalNetClientGameListSpectatorLeft(unsigned gameId, unsigned playerId);
-	void signalNetClientGameStart(std::shared_ptr<Game> game);
+	void signalNetClientGameStart(boost::shared_ptr<Game> game);
 	void signalNetClientGameChatMsg(QString nickName, QString msg);
 	void signalNetClientLobbyChatMsg(QString nickName, QString msg);
 	void signalNetClientPrivateChatMsg(QString nickName, QString msg);
@@ -175,7 +175,7 @@ public slots:
 	void networkMessage(QString);
 	void networkMessage(unsigned);
 
-	void networkStart(std::shared_ptr<Game> game);
+	void networkStart(boost::shared_ptr<Game> game);
 	QStringList getPlayerNicksList();
 
 	QString checkForFirstStartAfterUpdated();
@@ -185,9 +185,9 @@ private:
 	guiLog *myGuiLog;
 	Log *myLog;
 
-	std::shared_ptr<GuiInterface> myGuiInterface;
-	std::shared_ptr<Session> mySession;
-	std::shared_ptr<GuiInterface> myServerGuiInterface;
+	boost::shared_ptr<GuiInterface> myGuiInterface;
+	boost::shared_ptr<Session> mySession;
+	boost::shared_ptr<GuiInterface> myServerGuiInterface;
 
 	// 	Dialogs
 	aboutPokerthImpl *myAboutPokerthDialog;

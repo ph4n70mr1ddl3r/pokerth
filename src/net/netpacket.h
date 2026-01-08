@@ -33,7 +33,6 @@
 #ifndef _NETPACKET_H_
 #define _NETPACKET_H_
 
-#include <memory>
 #include <string>
 #include <list>
 
@@ -64,7 +63,7 @@ public:
 	NetPacket(PokerTHMessage *msg);
 	~NetPacket();
 
-	static std::shared_ptr<NetPacket> Create(const char *data, size_t dataSize);
+	static boost::shared_ptr<NetPacket> Create(const char *data, size_t dataSize);
 
 	const PokerTHMessage *GetMsg() const
 	{
@@ -89,7 +88,7 @@ private:
 	PokerTHMessage *m_msg;
 };
 
-typedef std::list<std::shared_ptr<NetPacket> > NetPacketList;
+typedef std::list<boost::shared_ptr<NetPacket> > NetPacketList;
 
 #endif
 

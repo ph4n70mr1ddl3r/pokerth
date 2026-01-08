@@ -52,7 +52,7 @@ class startNetworkGameDialogImpl: public QDialog, public Ui::startNetworkGameDia
 public:
 	startNetworkGameDialogImpl(startWindowImpl *parent = 0, ConfigFile *config = 0);
 
-	void setSession(std::shared_ptr<Session> session);
+	void setSession(boost::shared_ptr<Session> session);
 
 public slots:
 
@@ -107,7 +107,7 @@ private:
 	unsigned myPlayerId;
 	bool isAdmin;
 	ConfigFile *myConfig;
-	std::shared_ptr<Session> mySession;
+	boost::shared_ptr<Session> mySession;
 	ChatTools *myChat;
 
 };

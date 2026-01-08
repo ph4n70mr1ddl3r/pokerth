@@ -41,8 +41,8 @@ ServerDBFactoryInternal::~ServerDBFactoryInternal()
 {
 }
 
-std::shared_ptr<ServerDBInterface>
-ServerDBFactoryInternal::CreateServerDBObject(ServerDBCallback &cb, std::shared_ptr<boost::asio::io_context> ioService)
+boost::shared_ptr<ServerDBInterface>
+ServerDBFactoryInternal::CreateServerDBObject(ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService)
 {
-	return std::shared_ptr<ServerDBInterface>(new ServerDBThread(cb, ioService));
+	return boost::shared_ptr<ServerDBInterface>(new ServerDBThread(cb, ioService));
 }

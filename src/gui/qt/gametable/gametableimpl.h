@@ -83,7 +83,7 @@ public:
 
 	~gameTableImpl();
 
-	std::shared_ptr<Session> getSession();
+	boost::shared_ptr<Session> getSession();
 
 	SoundEvents* getMySoundEventHandler() const
 	{
@@ -201,7 +201,7 @@ public slots:
 	void refreshActionButtonFKeyIndicator(bool =0);
 	void setPlayerAvatar(int myID, QString myAvatar);
 
-	SeatState getCurrentSeatState(std::shared_ptr<PlayerInterface> );
+	SeatState getCurrentSeatState(boost::shared_ptr<PlayerInterface> );
 
 	void guiUpdateDone();
 	void waitForGuiUpdateDone();
@@ -387,7 +387,7 @@ public slots:
 
 private:
 
-	std::shared_ptr<GuiInterface> myServerGuiInterface;
+	boost::shared_ptr<GuiInterface> myServerGuiInterface;
 	guiLog *myGuiLog;
 	ChatTools *myChat;
 	ConfigFile *myConfig;

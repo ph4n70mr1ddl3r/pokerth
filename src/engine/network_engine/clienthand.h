@@ -41,13 +41,12 @@
 #include <log.h>
 #include <boost/thread.hpp>
 
-#include <memory>
 #include <vector>
 
 class ClientHand : public HandInterface
 {
 public:
-	ClientHand ( std::shared_ptr<EngineFactory> f, GuiInterface *g, std::shared_ptr<BoardInterface>, Log*, PlayerList, PlayerList, PlayerList , int, int, int, int, int );
+	ClientHand ( boost::shared_ptr<EngineFactory> f, GuiInterface*, boost::shared_ptr<BoardInterface>, Log*, PlayerList, PlayerList, PlayerList , int, int, int, int, int );
 	~ClientHand();
 
 	void start();
@@ -56,13 +55,13 @@ public:
 	PlayerList getActivePlayerList() const;
 	PlayerList getRunningPlayerList() const;
 
-	std::shared_ptr<BoardInterface> getBoard() const;
-	std::shared_ptr<BeRoInterface> getPreflop() const;
-	std::shared_ptr<BeRoInterface> getFlop() const;
-	std::shared_ptr<BeRoInterface> getTurn() const;
-	std::shared_ptr<BeRoInterface> getRiver() const;
+	boost::shared_ptr<BoardInterface> getBoard() const;
+	boost::shared_ptr<BeRoInterface> getPreflop() const;
+	boost::shared_ptr<BeRoInterface> getFlop() const;
+	boost::shared_ptr<BeRoInterface> getTurn() const;
+	boost::shared_ptr<BeRoInterface> getRiver() const;
 	GuiInterface* getGuiInterface() const;
-	std::shared_ptr<BeRoInterface> getCurrentBeRo() const;
+	boost::shared_ptr<BeRoInterface> getCurrentBeRo() const;
 
 	Log* getLog() const
 	{
@@ -117,16 +116,16 @@ protected:
 private:
 	mutable boost::recursive_mutex m_syncMutex;
 
-	std::shared_ptr<EngineFactory> myFactory;
-	GuiInterface* myGui;
-	std::shared_ptr<BoardInterface> myBoard;
+	boost::shared_ptr<EngineFactory> myFactory;
+	GuiInterface *myGui;
+	boost::shared_ptr<BoardInterface> myBoard;
 	Log *myLog;
 
 	PlayerList seatsList;
 	PlayerList activePlayerList;
 	PlayerList runningPlayerList;
 
-	std::vector<std::shared_ptr<BeRoInterface> > myBeRo;
+	std::vector<boost::shared_ptr<BeRoInterface> > myBeRo;
 
 	int myID;
 	int startQuantityPlayers;

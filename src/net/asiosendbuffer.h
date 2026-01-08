@@ -48,14 +48,14 @@ public:
     AsioSendBuffer();
     virtual ~AsioSendBuffer();
 
-    virtual void HandleWrite(std::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code &error);
-    virtual void HandleWriteSsl(std::shared_ptr<boost::asio::ssl::stream<boost::asio::basic_stream_socket<boost::asio::ip::tcp, boost::asio::any_io_executor>>> sslStream, const boost::system::error_code &error);
+    virtual void HandleWrite(boost::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code &error);
+    virtual void HandleWriteSsl(boost::shared_ptr<boost::asio::ssl::stream<boost::asio::basic_stream_socket<boost::asio::ip::tcp, boost::asio::any_io_executor>>> sslStream, const boost::system::error_code &error);
 
-    virtual void AsyncSendNextPacket(std::shared_ptr<SessionData> session);
-    void AsyncSendNextPacket(std::shared_ptr<boost::asio::ip::tcp::socket> socket);
-    void AsyncSendNextPacketSsl(std::shared_ptr<boost::asio::ssl::stream<boost::asio::basic_stream_socket<boost::asio::ip::tcp, boost::asio::any_io_executor>>> sslStream);
+    virtual void AsyncSendNextPacket(boost::shared_ptr<SessionData> session);
+    void AsyncSendNextPacket(boost::shared_ptr<boost::asio::ip::tcp::socket> socket);
+    void AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::stream<boost::asio::basic_stream_socket<boost::asio::ip::tcp, boost::asio::any_io_executor>>> sslStream);
 
-    virtual void InternalStorePacket(std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet);
+    virtual void InternalStorePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
     int EncodeToBuf(const void *data, size_t size);
 
     virtual void SetCloseAfterSend();

@@ -62,7 +62,7 @@ public:
 	std::string ResetLastMessage();
 
 protected:
-	std::shared_ptr<TransferData> GetData();
+	boost::shared_ptr<TransferData> GetData();
 
 	virtual void InternalInit(const std::string &url, const std::string &targetFileName,
 							  const std::string &user, const std::string &password,
@@ -70,7 +70,7 @@ protected:
 
 private:
 
-	std::shared_ptr<TransferData> m_data;
+	boost::shared_ptr<TransferData> m_data;
 };
 
 #endif

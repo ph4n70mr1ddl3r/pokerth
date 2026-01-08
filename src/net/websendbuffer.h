@@ -43,10 +43,10 @@ public:
 
 	virtual void SetCloseAfterSend();
 
-	virtual void AsyncSendNextPacket(std::shared_ptr<SessionData> session);
-	virtual void InternalStorePacket(std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet);
+	virtual void AsyncSendNextPacket(boost::shared_ptr<SessionData> session);
+	virtual void InternalStorePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
 
-	virtual void HandleWrite(std::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code &error);
+	virtual void HandleWrite(boost::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code &error);
 
 private:
 	bool closeAfterSend;

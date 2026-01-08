@@ -334,7 +334,7 @@ void guiLog::logNewGameHandMsg(int gameID, int handID)
 {
 
 	PlayerListConstIterator it_c;
-	std::shared_ptr<HandInterface> currentHand = myW->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<HandInterface> currentHand = myW->getSession()->getCurrentGame()->getCurrentHand();
 
 	PlayerList activePlayerList = currentHand->getActivePlayerList();
 
@@ -388,7 +388,7 @@ void guiLog::logNewBlindsSetsMsg(int sbSet, int bbSet, QString sbName, QString b
 			logFileStreamString += bbName+" ($"+QString::number(bbSet,10)+")";
 
 			PlayerListConstIterator it_c;
-			std::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
+			boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 			PlayerList activePlayerList = currentGame->getActivePlayerList();
 
 			for(it_c=activePlayerList->begin(); it_c!=activePlayerList->end(); ++it_c) {

@@ -54,19 +54,19 @@ class ServerGameState
 {
 public:
 	virtual ~ServerGameState();
-	virtual void Enter(std::shared_ptr<ServerGame> server) = 0;
-	virtual void Exit(std::shared_ptr<ServerGame> server) = 0;
+	virtual void Enter(boost::shared_ptr<ServerGame> server) = 0;
+	virtual void Exit(boost::shared_ptr<ServerGame> server) = 0;
 
-	virtual void NotifyGameAdminChanged(std::shared_ptr<ServerGame> server) = 0;
-	virtual void NotifySessionRemoved(std::shared_ptr<ServerGame> server) = 0;
+	virtual void NotifyGameAdminChanged(boost::shared_ptr<ServerGame> server) = 0;
+	virtual void NotifySessionRemoved(boost::shared_ptr<ServerGame> server) = 0;
 
 	// Handling of a new player session.
-	virtual void HandleNewPlayer(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session) = 0;
+	virtual void HandleNewPlayer(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session) = 0;
 	// Handling of a new spectator session.
-	virtual void HandleNewSpectator(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session) = 0;
+	virtual void HandleNewSpectator(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session) = 0;
 
 	// Main processing function of the current state.
-	virtual void ProcessPacket(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet) = 0;
+	virtual void ProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) = 0;
 };
 
 // Abstract State: Receiving.
@@ -77,18 +77,18 @@ public:
 
 	// Globally handle packets which are allowed in all running states.
 	// Calls InternalProcess if packet has not been processed.
-	virtual void ProcessPacket(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet);
+	virtual void ProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
 
-	static std::shared_ptr<NetPacket> CreateNetPacketPlayerJoined(unsigned gameId, const PlayerData &playerData);
-	static std::shared_ptr<NetPacket> CreateNetPacketSpectatorJoined(unsigned gameId, const PlayerData &playerData);
-	static std::shared_ptr<NetPacket> CreateNetPacketJoinGameAck(const ServerGame &server, const PlayerData &playerData, bool spectateOnly);
-	static std::shared_ptr<NetPacket> CreateNetPacketHandStart(const ServerGame &server);
+	static boost::shared_ptr<NetPacket> CreateNetPacketPlayerJoined(unsigned gameId, const PlayerData &playerData);
+	static boost::shared_ptr<NetPacket> CreateNetPacketSpectatorJoined(unsigned gameId, const PlayerData &playerData);
+	static boost::shared_ptr<NetPacket> CreateNetPacketJoinGameAck(const ServerGame &server, const PlayerData &playerData, bool spectateOnly);
+	static boost::shared_ptr<NetPacket> CreateNetPacketHandStart(const ServerGame &server);
 
-	static void AcceptNewSession(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session, bool spectateOnly);
+	static void AcceptNewSession(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, bool spectateOnly);
 
 protected:
 
-	virtual void InternalProcessPacket(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet) = 0;
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) = 0;
 };
 
 // State: Initialization.
@@ -96,30 +96,30 @@ class ServerGameStateInit : public AbstractServerGameStateReceiving
 {
 public:
 	static ServerGameStateInit &Instance();
-	virtual void Enter(std::shared_ptr<ServerGame> server);
-	virtual void Exit(std::shared_ptr<ServerGame> server);
+	virtual void Enter(boost::shared_ptr<ServerGame> server);
+	virtual void Exit(boost::shared_ptr<ServerGame> server);
 
 	virtual ~ServerGameStateInit();
 
-	virtual void NotifyGameAdminChanged(std::shared_ptr<ServerGame> server);
-	virtual void NotifySessionRemoved(std::shared_ptr<ServerGame> server);
+	virtual void NotifyGameAdminChanged(boost::shared_ptr<ServerGame> server);
+	virtual void NotifySessionRemoved(boost::shared_ptr<ServerGame> server);
 
-	virtual void HandleNewPlayer(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session);
-	virtual void HandleNewSpectator(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session);
+	virtual void HandleNewPlayer(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session);
+	virtual void HandleNewSpectator(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session);
 
 protected:
 	ServerGameStateInit();
 
-	void RegisterAdminTimer(std::shared_ptr<ServerGame> server);
-	void UnregisterAdminTimer(std::shared_ptr<ServerGame> server);
-	void RegisterAutoStartTimer(std::shared_ptr<ServerGame> server);
-	void UnregisterAutoStartTimer(std::shared_ptr<ServerGame> server);
-	void TimerAutoStart(const boost::system::error_code &ec, std::shared_ptr<ServerGame> server);
-	void TimerAdminWarning(const boost::system::error_code &ec, std::shared_ptr<ServerGame> server);
-	void TimerAdminTimeout(const boost::system::error_code &ec, std::shared_ptr<ServerGame> server);
+	void RegisterAdminTimer(boost::shared_ptr<ServerGame> server);
+	void UnregisterAdminTimer(boost::shared_ptr<ServerGame> server);
+	void RegisterAutoStartTimer(boost::shared_ptr<ServerGame> server);
+	void UnregisterAutoStartTimer(boost::shared_ptr<ServerGame> server);
+	void TimerAutoStart(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
+	void TimerAdminWarning(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
+	void TimerAdminTimeout(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
 	void SendStartEvent(ServerGame &server, bool fillWithComputerPlayers);
 
-	virtual void InternalProcessPacket(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet);
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
 
 private:
 	static ServerGameStateInit s_state;
@@ -130,22 +130,22 @@ class ServerGameStateStartGame : public AbstractServerGameStateReceiving
 {
 public:
 	static ServerGameStateStartGame &Instance();
-	virtual void Enter(std::shared_ptr<ServerGame> server);
-	virtual void Exit(std::shared_ptr<ServerGame> server);
+	virtual void Enter(boost::shared_ptr<ServerGame> server);
+	virtual void Exit(boost::shared_ptr<ServerGame> server);
 
 	virtual ~ServerGameStateStartGame();
 
-	virtual void NotifyGameAdminChanged(std::shared_ptr<ServerGame> /*server*/) {}
-	virtual void NotifySessionRemoved(std::shared_ptr<ServerGame> /*server*/) {}
-	virtual void HandleNewPlayer(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session);
-	virtual void HandleNewSpectator(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session);
+	virtual void NotifyGameAdminChanged(boost::shared_ptr<ServerGame> /*server*/) {}
+	virtual void NotifySessionRemoved(boost::shared_ptr<ServerGame> /*server*/) {}
+	virtual void HandleNewPlayer(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session);
+	virtual void HandleNewSpectator(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session);
 
 protected:
 	ServerGameStateStartGame();
 
-	virtual void InternalProcessPacket(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet);
-	void TimerTimeout(const boost::system::error_code &ec, std::shared_ptr<ServerGame> server);
-	void DoStart(std::shared_ptr<ServerGame> server);
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
+	void TimerTimeout(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
+	void DoStart(boost::shared_ptr<ServerGame> server);
 
 private:
 	static ServerGameStateStartGame s_state;
@@ -156,11 +156,11 @@ class AbstractServerGameStateRunning : public AbstractServerGameStateReceiving
 public:
 	virtual ~AbstractServerGameStateRunning();
 
-	virtual void HandleNewPlayer(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session);
-	virtual void HandleNewSpectator(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session);
+	virtual void HandleNewPlayer(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session);
+	virtual void HandleNewSpectator(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session);
 
 protected:
-	virtual void InternalProcessPacket(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet);
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
 };
 
 // State: Within hand.
@@ -168,32 +168,32 @@ class ServerGameStateHand : public AbstractServerGameStateRunning
 {
 public:
 	static ServerGameStateHand &Instance();
-	virtual void Enter(std::shared_ptr<ServerGame> server);
-	virtual void Exit(std::shared_ptr<ServerGame> server);
+	virtual void Enter(boost::shared_ptr<ServerGame> server);
+	virtual void Exit(boost::shared_ptr<ServerGame> server);
 
 	virtual ~ServerGameStateHand();
 
-	virtual void NotifyGameAdminChanged(std::shared_ptr<ServerGame> /*server*/) {}
-	virtual void NotifySessionRemoved(std::shared_ptr<ServerGame> /*server*/) {}
+	virtual void NotifyGameAdminChanged(boost::shared_ptr<ServerGame> /*server*/) {}
+	virtual void NotifySessionRemoved(boost::shared_ptr<ServerGame> /*server*/) {}
 
 protected:
 	ServerGameStateHand();
 
-	virtual void InternalProcessPacket(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet);
-	void TimerLoop(const boost::system::error_code &ec, std::shared_ptr<ServerGame> server);
-	void EngineLoop(std::shared_ptr<ServerGame> server);
-	void TimerShowCards(const boost::system::error_code &ec, std::shared_ptr<ServerGame> server);
-	void TimerComputerAction(const boost::system::error_code &ec, std::shared_ptr<ServerGame> server);
-	void TimerNextHand(const boost::system::error_code &ec, std::shared_ptr<ServerGame> server);
-	void TimerNextGame(const boost::system::error_code &ec, std::shared_ptr<ServerGame> server, unsigned winnerPlayerId);
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
+	void TimerLoop(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
+	void EngineLoop(boost::shared_ptr<ServerGame> server);
+	void TimerShowCards(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
+	void TimerComputerAction(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
+	void TimerNextHand(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
+	void TimerNextGame(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server, unsigned winnerPlayerId);
 	int GetDealCardsDelaySec(ServerGame &server);
-	static void StartNewHand(std::shared_ptr<ServerGame> server);
-	static void CheckPlayerTimeouts(std::shared_ptr<ServerGame> server);
-	static void ReactivatePlayers(std::shared_ptr<ServerGame> server);
-	static void InitRejoiningPlayers(std::shared_ptr<ServerGame> server);
-	static void InitNewSpectators(std::shared_ptr<ServerGame> server);
-	static void PerformRejoin(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session);
-	static void SendGameData(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session);
+	static void StartNewHand(boost::shared_ptr<ServerGame> server);
+	static void CheckPlayerTimeouts(boost::shared_ptr<ServerGame> server);
+	static void ReactivatePlayers(boost::shared_ptr<ServerGame> server);
+	static void InitRejoiningPlayers(boost::shared_ptr<ServerGame> server);
+	static void InitNewSpectators(boost::shared_ptr<ServerGame> server);
+	static void PerformRejoin(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session);
+	static void SendGameData(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session);
 
 private:
 	static ServerGameStateHand s_state;
@@ -207,19 +207,19 @@ class ServerGameStateWaitPlayerAction : public AbstractServerGameStateRunning
 {
 public:
 	static ServerGameStateWaitPlayerAction &Instance();
-	virtual void Enter(std::shared_ptr<ServerGame> server);
-	virtual void Exit(std::shared_ptr<ServerGame> server);
+	virtual void Enter(boost::shared_ptr<ServerGame> server);
+	virtual void Exit(boost::shared_ptr<ServerGame> server);
 
 	virtual ~ServerGameStateWaitPlayerAction();
 
-	virtual void NotifyGameAdminChanged(std::shared_ptr<ServerGame> /*server*/) {}
-	virtual void NotifySessionRemoved(std::shared_ptr<ServerGame> /*server*/) {}
+	virtual void NotifyGameAdminChanged(boost::shared_ptr<ServerGame> /*server*/) {}
+	virtual void NotifySessionRemoved(boost::shared_ptr<ServerGame> /*server*/) {}
 
 protected:
 	ServerGameStateWaitPlayerAction();
 
-	virtual void InternalProcessPacket(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet);
-	void TimerTimeout(const boost::system::error_code &ec, std::shared_ptr<ServerGame> server);
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
+	void TimerTimeout(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
 
 private:
 	static ServerGameStateWaitPlayerAction s_state;
@@ -230,19 +230,19 @@ class ServerGameStateWaitNextHand : public AbstractServerGameStateRunning
 {
 public:
 	static ServerGameStateWaitNextHand &Instance();
-	virtual void Enter(std::shared_ptr<ServerGame> server);
-	virtual void Exit(std::shared_ptr<ServerGame> server);
+	virtual void Enter(boost::shared_ptr<ServerGame> server);
+	virtual void Exit(boost::shared_ptr<ServerGame> server);
 
 	virtual ~ServerGameStateWaitNextHand();
 
-	virtual void NotifyGameAdminChanged(std::shared_ptr<ServerGame> /*server*/) {}
-	virtual void NotifySessionRemoved(std::shared_ptr<ServerGame> /*server*/) {}
+	virtual void NotifyGameAdminChanged(boost::shared_ptr<ServerGame> /*server*/) {}
+	virtual void NotifySessionRemoved(boost::shared_ptr<ServerGame> /*server*/) {}
 
 protected:
 	ServerGameStateWaitNextHand();
 
-	virtual void InternalProcessPacket(std::shared_ptr<ServerGame> server, std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet);
-	void TimerTimeout(const boost::system::error_code &ec, std::shared_ptr<ServerGame> server);
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
+	void TimerTimeout(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
 
 private:
 	static ServerGameStateWaitNextHand s_state;
@@ -254,18 +254,18 @@ public:
 	static ServerGameStateFinal &Instance();
 
 	virtual ~ServerGameStateFinal() {}
-	virtual void Enter(std::shared_ptr<ServerGame> /*server*/) {}
-	virtual void Exit(std::shared_ptr<ServerGame> /*server*/) {}
+	virtual void Enter(boost::shared_ptr<ServerGame> /*server*/) {}
+	virtual void Exit(boost::shared_ptr<ServerGame> /*server*/) {}
 
-	virtual void NotifyGameAdminChanged(std::shared_ptr<ServerGame> /*server*/) {}
-	virtual void NotifySessionRemoved(std::shared_ptr<ServerGame> /*server*/) {}
+	virtual void NotifyGameAdminChanged(boost::shared_ptr<ServerGame> /*server*/) {}
+	virtual void NotifySessionRemoved(boost::shared_ptr<ServerGame> /*server*/) {}
 
 	// Handling of a new session.
-	virtual void HandleNewPlayer(std::shared_ptr<ServerGame> /*server*/, std::shared_ptr<SessionData> /*session*/) {}
-	virtual void HandleNewSpectator(std::shared_ptr<ServerGame> /*server*/, std::shared_ptr<SessionData> /*session*/) {}
+	virtual void HandleNewPlayer(boost::shared_ptr<ServerGame> /*server*/, boost::shared_ptr<SessionData> /*session*/) {}
+	virtual void HandleNewSpectator(boost::shared_ptr<ServerGame> /*server*/, boost::shared_ptr<SessionData> /*session*/) {}
 
 	// Main processing function of the current state.
-	virtual void ProcessPacket(std::shared_ptr<ServerGame> /*server*/, std::shared_ptr<SessionData> /*session*/, std::shared_ptr<NetPacket> /*packet*/) {}
+	virtual void ProcessPacket(boost::shared_ptr<ServerGame> /*server*/, boost::shared_ptr<SessionData> /*session*/, boost::shared_ptr<NetPacket> /*packet*/) {}
 
 protected:
 	ServerGameStateFinal() {}

@@ -38,7 +38,7 @@ typedef unsigned SessionId;
 #include <boost/asio.hpp>
 #include <boost/asio/steady_timer.hpp>
 #include <boost/thread.hpp>
-#include <memory>
+#include <boost/enable_shared_from_this.hpp>
 #include <string>
 #include <vector>
 #include <boost/asio/ssl.hpp>
@@ -59,26 +59,26 @@ class NetPacket;
 class PlayerData;
 class ServerGame;
 
-class SessionData : public std::enable_shared_from_this<SessionData>
+class SessionData : public boost::enable_shared_from_this<SessionData>
 {
 public:
 	enum State { Init = 1, ReceivingAvatar = 2, Established = 4, Game = 8, Spectating = 16, SpectatorWaiting = 32, Closed = 128 };
 
-	SessionData(std::shared_ptr<boost::asio::ip::tcp::socket> sock, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService);
-	SessionData(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sslStream, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int filler);
-	SessionData(std::shared_ptr<WebSocketData> webData, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int filler);
+	SessionData(boost::shared_ptr<boost::asio::ip::tcp::socket> sock, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService);
+	SessionData(boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sslStream, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int filler);
+	SessionData(boost::shared_ptr<WebSocketData> webData, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int filler);
 	~SessionData();
 
 	SessionId GetId() const;
 
-	std::shared_ptr<ServerGame> GetGame() const;
-	void SetGame(std::shared_ptr<ServerGame> game);
+	boost::shared_ptr<ServerGame> GetGame() const;
+	void SetGame(boost::shared_ptr<ServerGame> game);
 
 	State GetState() const;
 	void SetState(State state);
 
-	std::shared_ptr<boost::asio::ip::tcp::socket> GetAsioSocket();
-	std::shared_ptr<WebSocketData> GetWebData();
+	boost::shared_ptr<boost::asio::ip::tcp::socket> GetAsioSocket();
+	boost::shared_ptr<WebSocketData> GetWebData();
 
 	bool CreateServerAuthSession(Gsasl *context);
 	bool CreateClientAuthSession(Gsasl *context, const std::string &userName, const std::string &password);
@@ -114,7 +114,7 @@ public:
 	}
 	void CloseSocketHandle();
 	void CloseWebSocketHandle();
-	void HandlePacket(std::shared_ptr<NetPacket> packet)
+	void HandlePacket(boost::shared_ptr<NetPacket> packet)
 	{
 		m_callback.HandlePacket(shared_from_this(), packet);
 	}
@@ -126,14 +126,14 @@ public:
 	void StartTimerActivityTimeout(unsigned timeoutSec, unsigned warningRemainingSec);
 	void CancelTimers();
 
-	void SetPlayerData(std::shared_ptr<PlayerData> player);
-	std::shared_ptr<PlayerData> GetPlayerData();
+	void SetPlayerData(boost::shared_ptr<PlayerData> player);
+	boost::shared_ptr<PlayerData> GetPlayerData();
 
 	std::string GetRemoteIPAddressFromSocket() const;
 
 	// New helpers
 	bool IsSsl() const;
-	std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> GetSslStream();
+	boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> GetSslStream();
 
 protected:
 	SessionData(const SessionData &other);
@@ -144,15 +144,15 @@ protected:
 	void TimerActivityWarning(const boost::system::error_code &ec);
 
 private:
-	std::shared_ptr<boost::asio::ip::tcp::socket>	m_socket;
-	std::shared_ptr<WebSocketData>	m_webData;
-	std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> m_sslStream;
+	boost::shared_ptr<boost::asio::ip::tcp::socket>	m_socket;
+	boost::shared_ptr<WebSocketData>	m_webData;
+	boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> m_sslStream;
 	const SessionId					m_id;
-	std::weak_ptr<ServerGame>		m_game;
+	boost::weak_ptr<ServerGame>		m_game;
 	State							m_state;
 	std::string						m_clientAddr;
-	std::shared_ptr<ReceiveBuffer>	m_receiveBuffer;
-	std::shared_ptr<SendBuffer>	m_sendBuffer;
+	boost::shared_ptr<ReceiveBuffer>	m_receiveBuffer;
+	boost::shared_ptr<SendBuffer>	m_sendBuffer;
 	bool							m_readyFlag;
 	bool							m_wantsLobbyMsg;
 	unsigned						m_activityTimeoutSec;
@@ -165,7 +165,7 @@ private:
 	int								m_curAuthStep;
 	std::string						m_nextGsaslMsg;
 	std::string						m_password;
-	std::shared_ptr<PlayerData>	m_playerData;
+	boost::shared_ptr<PlayerData>	m_playerData;
 
 	mutable boost::mutex			m_dataMutex;
 };

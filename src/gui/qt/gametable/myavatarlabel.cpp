@@ -75,11 +75,11 @@ void MyAvatarLabel::contextMenuEvent ( QContextMenuEvent *event )
 	assert(myW->getSession()->getCurrentGame());
 	if (myW->getSession()->isNetworkClientRunning()) {
 
-		std::shared_ptr<PlayerInterface> humanPlayer = myW->getSession()->getCurrentGame()->getSeatsList()->front();
+		boost::shared_ptr<PlayerInterface> humanPlayer = myW->getSession()->getCurrentGame()->getSeatsList()->front();
 		//only active players are allowed to start a vote
 		if(humanPlayer->getMyActiveStatus()) {
 
-			std::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
+			boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 			PlayerListConstIterator it_c;
 			int activePlayerCounter=0;
 			PlayerList seatList = currentGame->getSeatsList();
@@ -150,7 +150,7 @@ void MyAvatarLabel::setPlayerRating(QString playerInfo)
 {
 	int found=0;
 	QStringList playerInfoList=playerInfo.split("\"", Qt::KeepEmptyParts, Qt::CaseSensitive), tipInfo;
-	std::shared_ptr<Game> currentGame = myW->myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myW->myStartWindow->getSession()->getCurrentGame();
 	PlayerList seatsList = currentGame->getSeatsList();
 	std::list<std::string> tipsList = myW->getMyConfig()->readConfigStringList("PlayerTooltips");
 	std::list<std::string> result;
@@ -217,12 +217,12 @@ void MyAvatarLabel::refreshStars()
 #endif
 #endif
 
-	std::shared_ptr<Game> curGame = myW->myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> curGame = myW->myStartWindow->getSession()->getCurrentGame();
 	PlayerListConstIterator it_c;
 	int seatPlace;
 	PlayerList seatsList = curGame->getSeatsList();
 	for (seatPlace=0,it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
-		for(int i=1; i<=5; i++) if (myW->playerStarsArray[i][seatPlace]) myW->playerStarsArray[i][seatPlace]->setText("");
+		for(int i=1; i<=5; i++)myW->playerStarsArray[i][seatPlace]->setText("");
 		if(myW->myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_INTERNET && !myW->getSession()->getClientPlayerInfo((*it_c)->getMyUniqueID()).isGuest && (*it_c)->getMyType() != PLAYER_TYPE_COMPUTER) {
 			if((*it_c)->getMyStayOnTableStatus() == true && (*it_c)->getMyName()!="" && seatPlace!=0) {
 
@@ -244,7 +244,7 @@ void MyAvatarLabel::refreshStars()
 
 void MyAvatarLabel::refreshTooltips()
 {
-	std::shared_ptr<Game> currentGame = myW->myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myW->myStartWindow->getSession()->getCurrentGame();
 	PlayerListConstIterator it_c;
 	int seatPlace;
 	PlayerList seatsList = currentGame->getSeatsList();
@@ -254,19 +254,19 @@ void MyAvatarLabel::refreshTooltips()
 			if((*it_c)->getMyType() == PLAYER_TYPE_COMPUTER) {
 				computerPlayer = true;
 			}
-			if(seatPlace < MAX_NUMBER_OF_PLAYERS && !computerPlayer && getPlayerTip(QString::fromUtf8((*it_c)->getMyName().c_str()))!="" && seatPlace!=0) {
-				myW->playerTipLabelArray[seatPlace]->setText(QString("<a style='text-decoration: none; color: #"+myW->getMyGameTableStyle()->getPlayerInfoHintTextColor()+"; font-size: 14px; font-weight: bold; font-family:serif;' href=\'")+QString::fromUtf8((*it_c)->getMyName().c_str())+"\'>i</a>");
-				myW->playerTipLabelArray[seatPlace]->setToolTip( getPlayerTip(QString::fromUtf8((*it_c)->getMyName().c_str())) );
-				myW->playerAvatarLabelArray[seatPlace]->setToolTip( getPlayerTip(QString::fromUtf8((*it_c)->getMyName().c_str())) );
-			} else if (seatPlace < MAX_NUMBER_OF_PLAYERS) {
-				myW->playerTipLabelArray[seatPlace]->setText("");
-				myW->playerTipLabelArray[seatPlace]->setToolTip("");
-				myW->playerAvatarLabelArray[seatPlace]->setToolTip("");
+			if(!computerPlayer && getPlayerTip(QString::fromUtf8((*it_c)->getMyName().c_str()))!="" && seatPlace!=0) {
+				myW->playerTipLabelArray[(*it_c)->getMyID()]->setText(QString("<a style='text-decoration: none; color: #"+myW->getMyGameTableStyle()->getPlayerInfoHintTextColor()+"; font-size: 14px; font-weight: bold; font-family:serif;' href=\'")+QString::fromUtf8((*it_c)->getMyName().c_str())+"\'>i</a>");
+				myW->playerTipLabelArray[(*it_c)->getMyID()]->setToolTip( getPlayerTip(QString::fromUtf8((*it_c)->getMyName().c_str())) );
+				myW->playerAvatarLabelArray[(*it_c)->getMyID()]->setToolTip( getPlayerTip(QString::fromUtf8((*it_c)->getMyName().c_str())) );
+			} else {
+				myW->playerTipLabelArray[(*it_c)->getMyID()]->setText("");
+				myW->playerTipLabelArray[(*it_c)->getMyID()]->setToolTip("");
+				myW->playerAvatarLabelArray[(*it_c)->getMyID()]->setToolTip("");
 			}
-		} else if (seatPlace < MAX_NUMBER_OF_PLAYERS) {
-			myW->playerTipLabelArray[seatPlace]->setText("");
-			myW->playerTipLabelArray[seatPlace]->setToolTip("");
-			myW->playerAvatarLabelArray[seatPlace]->setToolTip("");
+		} else {
+			myW->playerTipLabelArray[(*it_c)->getMyID()]->setText("");
+			myW->playerTipLabelArray[(*it_c)->getMyID()]->setToolTip("");
+			myW->playerAvatarLabelArray[(*it_c)->getMyID()]->setToolTip("");
 
 		}
 
@@ -410,7 +410,7 @@ void MyAvatarLabel::paintEvent(QPaintEvent*)
 		painter.setOpacity(1.0);
 
 	//hide avatar if player is on ignore list
-	std::shared_ptr<Session> mySession = myW->myStartWindow->getSession();
+	boost::shared_ptr<Session> mySession = myW->myStartWindow->getSession();
 	if(!playerIsOnIgnoreList(QString::fromUtf8(mySession->getClientPlayerInfo(myUniqueId).playerName.c_str()))) {
 		painter.drawPixmap(0,0,myPixmap);
 	} else if(myW->getMyConfig()->readConfigInt("DontHideAvatarsOfIgnored")) {
@@ -531,7 +531,7 @@ void MyAvatarLabel::removePlayerFromIgnoreList()
 void MyAvatarLabel::reportBadAvatar()
 {
 
-	std::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 	int j=0;
 	PlayerListConstIterator it_c;
 	PlayerList seatList = currentGame->getSeatsList();
@@ -560,7 +560,7 @@ void MyAvatarLabel::reportBadAvatar()
 
 void MyAvatarLabel::startEditTip()
 {
-	std::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 	int j=0;
 	PlayerListConstIterator it_c;
 	PlayerList seatList = currentGame->getSeatsList();

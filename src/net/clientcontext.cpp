@@ -44,26 +44,26 @@ ClientContext::~ClientContext()
 	m_sessionData.reset();
 }
 
-std::shared_ptr<SessionData>
+boost::shared_ptr<SessionData>
 ClientContext::GetSessionData() const
 {
 	return m_sessionData;
 }
 
 void
-ClientContext::SetSessionData(std::shared_ptr<SessionData> sessionData)
+ClientContext::SetSessionData(boost::shared_ptr<SessionData> sessionData)
 {
 	m_sessionData = sessionData;
 }
 
-std::shared_ptr<boost::asio::ip::tcp::resolver>
+boost::shared_ptr<boost::asio::ip::tcp::resolver>
 ClientContext::GetResolver() const
 {
 	return m_resolver;
 }
 
 void
-ClientContext::SetResolver(std::shared_ptr<boost::asio::ip::tcp::resolver> resolver)
+ClientContext::SetResolver(boost::shared_ptr<boost::asio::ip::tcp::resolver> resolver)
 {
 	m_resolver = resolver;
 }

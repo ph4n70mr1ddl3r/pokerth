@@ -33,9 +33,10 @@
 #ifndef _CLIENTTHREAD_H_
 #define _CLIENTTHREAD_H_
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/steady_timer.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <string>
 #include <algorithm>
 #include <numeric>
@@ -101,7 +102,7 @@ private:
 	boost::timers::portable::microsec_timer pingTimer;
 };
 
-class ClientThread : public Thread, public std::enable_shared_from_this<ClientThread>, public SessionDataCallback
+class ClientThread : public Thread, public boost::enable_shared_from_this<ClientThread>, public SessionDataCallback
 {
 public:
 	ClientThread(GuiInterface &gui, AvatarManager &avatarManager, Log *myLog);
@@ -148,10 +149,10 @@ public:
 	void SendAdminBanPlayer(unsigned playerId);
 
 	void StartAsyncRead();
-	virtual void CloseSession(std::shared_ptr<SessionData> session);
-	virtual void SessionError(std::shared_ptr<SessionData> /*session*/, int /*errorCode*/) {}
-	virtual void SessionTimeoutWarning(std::shared_ptr<SessionData> /*session*/, unsigned /*remainingSec*/) {}
-	virtual void HandlePacket(std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet);
+	virtual void CloseSession(boost::shared_ptr<SessionData> session);
+	virtual void SessionError(boost::shared_ptr<SessionData> /*session*/, int /*errorCode*/) {}
+	virtual void SessionTimeoutWarning(boost::shared_ptr<SessionData> /*session*/, unsigned /*remainingSec*/) {}
+	virtual void HandlePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
 
 	static void SslInfoCallback(const SSL *ssl, int where, int ret);
 
@@ -172,14 +173,14 @@ public:
 
 	ClientCallback &GetCallback();
 	GuiInterface &GetGui();
-	std::shared_ptr<Log> GetClientLog();
+	boost::shared_ptr<Log> GetClientLog();
 	AvatarManager &GetAvatarManager();
 
 protected:
 	typedef std::map<unsigned, GameInfo> GameInfoMap;
-	typedef std::list<std::shared_ptr<NetPacket> > NetPacketList;
+	typedef std::list<boost::shared_ptr<NetPacket> > NetPacketList;
 	typedef std::map<unsigned, PlayerInfo> PlayerInfoMap;
-	typedef std::map<unsigned, std::shared_ptr<AvatarFile> > AvatarFileMap;
+	typedef std::map<unsigned, boost::shared_ptr<AvatarFile> > AvatarFileMap;
 	typedef std::map<unsigned, ServerInfo> ServerInfoMap;
 	struct LoginData {
 		LoginData() : isGuest(false) {}
@@ -197,7 +198,7 @@ protected:
 	void ClearAuthContext();
 	void InitGame();
 
-	void SendSessionPacket(std::shared_ptr<NetPacket> packet);
+	void SendSessionPacket(boost::shared_ptr<NetPacket> packet);
 	void SendQueuedPackets();
 
 	bool GetCachedPlayerInfo(unsigned id, PlayerInfo &info) const;
@@ -212,7 +213,7 @@ protected:
 	void AddTempAvatarFile(unsigned playerId, unsigned avatarSize, AvatarFileType type);
 	void StoreInTempAvatarFile(unsigned playerId, const std::vector<unsigned char> &data);
 	void CompleteTempAvatarFile(unsigned playerId);
-	void PassAvatarFileToManager(unsigned playerId, std::shared_ptr<AvatarFile> AvatarFile);
+	void PassAvatarFileToManager(unsigned playerId, boost::shared_ptr<AvatarFile> AvatarFile);
 	void SetUnknownAvatar(unsigned playerId);
 
 	void TimerCheckAvatarDownloads(const boost::system::error_code& ec);
@@ -238,18 +239,18 @@ protected:
 	void SetStartData(const StartData &startData);
 	void SetGuiPlayerId(unsigned guiPlayerId);
 
-	std::shared_ptr<Game> GetGame();
+	boost::shared_ptr<Game> GetGame();
 
 	QtToolsInterface &GetQtToolsInterface();
 
-	std::shared_ptr<PlayerData> CreatePlayerData(unsigned playerId, bool isGameAdmin);
-	void AddPlayerData(std::shared_ptr<PlayerData> playerData);
+	boost::shared_ptr<PlayerData> CreatePlayerData(unsigned playerId, bool isGameAdmin);
+	void AddPlayerData(boost::shared_ptr<PlayerData> playerData);
 	void RemovePlayerData(unsigned playerId, int removeReason);
 	void ClearPlayerDataList();
 	void MapPlayerDataList();
 	const PlayerDataList &GetPlayerDataList() const;
-	std::shared_ptr<PlayerData> GetPlayerDataByUniqueId(unsigned id);
-	std::shared_ptr<PlayerData> GetPlayerDataByName(const std::string &name);
+	boost::shared_ptr<PlayerData> GetPlayerDataByUniqueId(unsigned id);
+	boost::shared_ptr<PlayerData> GetPlayerDataByName(const std::string &name);
 
 	void AddServerInfo(unsigned serverId, const ServerInfo &info);
 	void ClearServerInfoMap();
@@ -288,21 +289,21 @@ protected:
 
 private:
 
-	std::shared_ptr<boost::asio::io_context> m_ioService;
-	std::shared_ptr<Log> m_clientLog;
+	boost::shared_ptr<boost::asio::io_context> m_ioService;
+	boost::shared_ptr<Log> m_clientLog;
 
 	Gsasl *m_authContext;
 
 	NetPacketList m_outPacketList;
 
-	std::shared_ptr<ClientContext> m_context;
+	boost::shared_ptr<ClientContext> m_context;
 	ClientState *m_curState;
 	GuiInterface &m_gui;
 	AvatarManager &m_avatarManager;
 
-	std::shared_ptr<SenderHelper> m_senderHelper;
+	boost::shared_ptr<SenderHelper> m_senderHelper;
 
-	std::shared_ptr<DownloaderThread> m_avatarDownloader;
+	boost::shared_ptr<DownloaderThread> m_avatarDownloader;
 
 	GameData m_gameData;
 	StartData m_startData;
@@ -321,8 +322,8 @@ private:
 	GameInfoMap m_gameInfoMap;
 	mutable boost::mutex m_gameInfoMapMutex;
 
-	std::shared_ptr<Game> m_game;
-	std::shared_ptr<QtToolsInterface> myQtToolsInterface;
+	boost::shared_ptr<Game> m_game;
+	boost::shared_ptr<QtToolsInterface> myQtToolsInterface;
 
 	PlayerInfoMap m_playerInfoMap;
 	mutable boost::mutex m_playerInfoMapMutex;

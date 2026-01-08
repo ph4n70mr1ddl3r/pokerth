@@ -33,7 +33,7 @@
 #ifndef _SESSIONDATACALLBACK_H_
 #define _SESSIONDATACALLBACK_H_
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 
 
 class NetPacket;
@@ -44,10 +44,10 @@ class SessionDataCallback
 public:
 	virtual ~SessionDataCallback();
 
-	virtual void CloseSession(std::shared_ptr<SessionData> session) = 0;
-	virtual void SessionError(std::shared_ptr<SessionData> session, int errorCode) = 0;
-	virtual void SessionTimeoutWarning(std::shared_ptr<SessionData> session, unsigned remainingSec) = 0;
-	virtual void HandlePacket(std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet) = 0;
+	virtual void CloseSession(boost::shared_ptr<SessionData> session) = 0;
+	virtual void SessionError(boost::shared_ptr<SessionData> session, int errorCode) = 0;
+	virtual void SessionTimeoutWarning(boost::shared_ptr<SessionData> session, unsigned remainingSec) = 0;
+	virtual void HandlePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) = 0;
 };
 
 #endif

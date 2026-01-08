@@ -216,7 +216,7 @@ void startNetworkGameDialogImpl::clearDialog()
 	myPlayerId = 0;
 }
 
-void startNetworkGameDialogImpl::setSession(std::shared_ptr<Session> session)
+void startNetworkGameDialogImpl::setSession(boost::shared_ptr<Session> session)
 {
 	mySession = session;
 	myChat->setSession(mySession);

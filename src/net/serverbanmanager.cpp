@@ -40,7 +40,7 @@ using namespace std::chrono;
 using namespace boost::chrono;
 #endif
 
-ServerBanManager::ServerBanManager(std::shared_ptr<boost::asio::io_context> ioService)
+ServerBanManager::ServerBanManager(boost::shared_ptr<boost::asio::io_context> ioService)
 	: m_ioService(ioService), m_curBanId(0)
 {
 }
@@ -240,10 +240,10 @@ ServerBanManager::IsBadGameName(const std::string &name) const
 	return retVal;
 }
 
-std::shared_ptr<boost::asio::steady_timer>
+boost::shared_ptr<boost::asio::steady_timer>
 ServerBanManager::InternalRegisterTimedBan(unsigned timerId, unsigned durationHours)
 {
-	std::shared_ptr<boost::asio::steady_timer> tmpTimer;
+	boost::shared_ptr<boost::asio::steady_timer> tmpTimer;
 	if (durationHours) {
 		tmpTimer.reset(new boost::asio::steady_timer(*m_ioService));
 		tmpTimer->expires_after(hours(durationHours));
@@ -255,7 +255,7 @@ ServerBanManager::InternalRegisterTimedBan(unsigned timerId, unsigned durationHo
 }
 
 void
-ServerBanManager::TimerRemoveBan(const boost::system::error_code &ec, unsigned banId, std::shared_ptr<boost::asio::steady_timer> timer)
+ServerBanManager::TimerRemoveBan(const boost::system::error_code &ec, unsigned banId, boost::shared_ptr<boost::asio::steady_timer> timer)
 {
 	if (!ec && timer)
 		UnBan(banId);

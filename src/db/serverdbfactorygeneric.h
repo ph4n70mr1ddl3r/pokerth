@@ -34,7 +34,7 @@
 #define _SERVERDBFACTORYGENERIC_H_
 
 #include <boost/asio.hpp>
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <db/serverdbinterface.h>
 #include <db/serverdbcallback.h>
 
@@ -44,8 +44,8 @@ public:
 	ServerDBFactoryGeneric();
 	virtual ~ServerDBFactoryGeneric();
 
-	virtual std::shared_ptr<ServerDBInterface> CreateServerDBObject(
-		ServerDBCallback &cb, std::shared_ptr<boost::asio::io_context> ioService);
+	virtual boost::shared_ptr<ServerDBInterface> CreateServerDBObject(
+		ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService);
 };
 
 typedef ServerDBFactoryGeneric DBFactory;

@@ -32,13 +32,13 @@
 #ifndef ENGINE_DEFS_H
 #define ENGINE_DEFS_H
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <list>
 
 class PlayerInterface;
 
-typedef std::shared_ptr<std::list<std::shared_ptr<PlayerInterface> > > PlayerList;
-typedef std::list<std::shared_ptr<PlayerInterface> >::iterator PlayerListIterator;
-typedef std::list<std::shared_ptr<PlayerInterface> >::const_iterator PlayerListConstIterator;
+typedef boost::shared_ptr<std::list<boost::shared_ptr<PlayerInterface> > > PlayerList;
+typedef std::list<boost::shared_ptr<PlayerInterface> >::iterator PlayerListIterator;
+typedef std::list<boost::shared_ptr<PlayerInterface> >::const_iterator PlayerListConstIterator;
 
 #endif

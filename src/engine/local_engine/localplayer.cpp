@@ -41,17 +41,6 @@
 
 using namespace std;
 
-static const size_t MAX_NIVEAU_SIZE = 3;
-static const size_t MAX_CARDS_SIZE = 2;
-static const size_t MAX_BEST_HAND_POS_SIZE = 5;
-static const size_t MAX_AVERAGE_SETS_SIZE = 4;
-static const size_t MAX_AGGRESSIVE_SIZE = 7;
-
-static const int FOLD_CALL_BASE_NIVEAU = 43;
-static const int CALL_RAISE_BASE_NIVEAU = 54;
-static const int NIVEAU_ADJUST_FACTOR = 6;
-static const int RAISE_NIVEAU_ADJUST_FACTOR = 7;
-
 struct RoundData {
 	int hand;
 	double data[4];
@@ -933,25 +922,25 @@ LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType ty
 	////////////////////////////
 
 	int i;
-	for(i=0; i<MAX_NIVEAU_SIZE; i++) {
+	for(i=0; i<3; i++) {
 		myNiveau[i] = 0;
 	}
-	for(i=0; i<MAX_CARDS_SIZE; i++) {
+	for(i=0; i<2; i++) {
 		myCards[i] = -1;
 	}
 
 	// myBestHandPosition mit -1 initialisieren
-	for(i=0; i<MAX_BEST_HAND_POS_SIZE; i++) {
+	for(i=0; i<5; i++) {
 		myBestHandPosition[i] = -1;
 	}
 
 	// myAverageSets initialisieren
-	for(i=0; i<MAX_AVERAGE_SETS_SIZE; i++) {
+	for(i=0; i<4; i++) {
 		myAverageSets[i] = 0;
 	}
 
 	// myAggressive initialisieren
-	for(i=0; i<MAX_AGGRESSIVE_SIZE; i++) {
+	for(i=0; i<7; i++) {
 		myAggressive[i] = 0;
 	}
 
@@ -1169,25 +1158,24 @@ void LocalPlayer::preflopEngine()
 
 	// Niveaus setzen + Dude + Anzahl Gegenspieler
 	// 1. Fold -- Call
-	myNiveau[0] = FOLD_CALL_BASE_NIVEAU + myDude4 - NIVEAU_ADJUST_FACTOR*(players - 2);
+	myNiveau[0] = 43 + myDude4 - 6*(players - 2);
 	// 3. Call -- Raise
-	myNiveau[2] = CALL_RAISE_BASE_NIVEAU + myDude4 - RAISE_NIVEAU_ADJUST_FACTOR*(players - 2);
+	myNiveau[2] = 54 + myDude4 - 7*(players - 2);
 
 	// eigenes mögliches highestSet
 	int individualHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 	if(individualHighestSet > myCash) individualHighestSet = myCash;
 
-	// Verhaeltnis Set / Cash fuer call
-	double cashToHighestRatio = static_cast<double>(myCash) / individualHighestSet;
-	if(cashToHighestRatio >= 25.0) {
-		myNiveau[0] += static_cast<int>((25.0 - cashToHighestRatio) / 10.0);
+	// Verhaeltnis Set / Cash für call
+	if(myCash/individualHighestSet >= 25) {
+		myNiveau[0] += (25-myCash/individualHighestSet)/10;
 	} else {
-		myNiveau[0] += static_cast<int>((25.0 - cashToHighestRatio) / 3.0);
+		myNiveau[0] += (25-myCash/individualHighestSet)/3;
 	}
 
-	// Verhaeltnis Set / Cash fuer raise
-	if(cashToHighestRatio < 11.0) {
-		myNiveau[2] += static_cast<int>((21.0 - cashToHighestRatio) / 2.0);
+	// Verhaeltnis Set / Cash für raise
+	if(myCash/individualHighestSet < 11) {
+		myNiveau[2] += (21-myCash/individualHighestSet)/2;
 	}
 
 	//	cout << myID << ": " << myHoleCardsValue << " - " << myNiveau[0] << " " << myNiveau[2] << " - " << myCards[0] << " " << myCards[1] << endl;

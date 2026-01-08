@@ -50,7 +50,6 @@ class joinNetworkGameDialogImpl: public QDialog, public Ui::joinNetworkGameDialo
 	Q_OBJECT
 public:
 	joinNetworkGameDialogImpl(QWidget *parent = 0, ConfigFile *c = 0);
-	~joinNetworkGameDialogImpl();
 
 	ConfigFile *myConfig;
 	std::string myServerProfilesFile;
@@ -67,11 +66,6 @@ public slots:
 	void keyPressEvent ( QKeyEvent * event );
 	void checkIp();
 	void connectButtonTest();
-
-private:
-	bool validateInput();
-
-	Q_DISABLE_COPY(joinNetworkGameDialogImpl)
 };
 
 #endif

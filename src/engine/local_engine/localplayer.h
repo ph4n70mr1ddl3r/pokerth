@@ -34,7 +34,7 @@
 
 #include <playerinterface.h>
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <string>
 
 

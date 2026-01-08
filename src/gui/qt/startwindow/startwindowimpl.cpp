@@ -75,12 +75,7 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 	myGuiInterface.reset(new GuiWrapper(myConfig, this));
 	{
 		mySession.reset(new Session(myGuiInterface.get(), myConfig, myLog));
-		if (!mySession->init()) {
-			MyMessageBox::critical(this, tr("Initialization Error"),
-								  tr("Failed to initialize session. Please check your configuration."),
-								  QMessageBox::Ok);
-			throw std::runtime_error("Session initialization failed");
-		}
+		mySession->init(); // TODO handle error
 		myLog->init();
 		// 		myGuiInterface->setSession(session);
 	}
@@ -258,7 +253,7 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 	connect(this, SIGNAL(signalNetClientNotification(int)), this, SLOT(networkNotification(int)));
 	connect(this, SIGNAL(signalNetServerError(int, int)), this, SLOT(networkError(int, int)));
 	connect(this, SIGNAL(signalNetClientRemovedFromGame(int)), this, SLOT(networkNotification(int)));
-	connect(this, SIGNAL(signalNetClientGameStart(std::shared_ptr<Game>)), this, SLOT(networkStart(std::shared_ptr<Game>)));
+	connect(this, SIGNAL(signalNetClientGameStart(boost::shared_ptr<Game>)), this, SLOT(networkStart(boost::shared_ptr<Game>)));
 
 	connect(this, SIGNAL(signalSelfGameInvitation(unsigned, unsigned)), myGameLobbyDialog, SLOT(showInvitationDialog(unsigned, unsigned)));
 	connect(this, SIGNAL(signalPlayerGameInvitation(unsigned, unsigned, unsigned)), myGameLobbyDialog, SLOT(chatInfoPlayerInvitation(unsigned, unsigned, unsigned)));
@@ -515,7 +510,7 @@ void startWindowImpl::callCreateNetworkGameDialog()
 			// Create pseudo Gui Wrapper for the server.
 			myServerGuiInterface.reset(new ServerGuiWrapper(myConfig, mySession->getGui(), mySession->getGui()));
 			{
-				std::shared_ptr<Session> session(new Session(myServerGuiInterface.get(), myConfig, 0));
+				boost::shared_ptr<Session> session(new Session(myServerGuiInterface.get(), myConfig, 0));
 				session->init(mySession->getAvatarManager());
 				myServerGuiInterface->setSession(session);
 			}
@@ -796,13 +791,13 @@ void startWindowImpl::networkError(int errorID, int /*osErrorID*/)
 	break;
 	case ERR_SOCK_CONNECT_FAILED: {
 		MyMessageBox::warning(this, tr("Network Error"),
-							  tr("Could not connect to the server.\n\nPlease check the server address and ensure the server is running."),
+							  tr("Could not connect to the server.\n\nPlease note: IPv6 is enabled in the settings. The connection fails if your provider does not support IPv6.\nThis may be fixed by unchecking the \"Use IPv6\" checkbox in the settings."),
 							  QMessageBox::Close);
 	}
 	break;
 	case ERR_SOCK_CONNECT_TIMEOUT: {
 		MyMessageBox::warning(this, tr("Network Error"),
-							  tr("Connection timed out.\nPlease check the server address and ensure the server is running."),
+							  tr("Connection timed out.\nPlease check the server address.\n\nPlease note: IPv6 is enabled in the settings. The connection fails if your provider does not support IPv6.\nThis may be fixed by unchecking the \"Use IPv6\" checkbox in the settings."),
 							  QMessageBox::Close);
 	}
 	break;
@@ -878,7 +873,7 @@ void startWindowImpl::networkError(int errorID, int /*osErrorID*/)
 	break;
 	case ERR_NET_VERSION_NOT_SUPPORTED: {
 		MyMessageBox msgBox(QMessageBox::Warning, tr("Network Error"),
-							tr("The PokerTH server does not support this version of the game.<br>Please go to <a href=\"http://www.pokerth.net/\" target=\"_blank\">http://www.pokerth.net</a> and download the latest version."),
+							tr("The PokerTH server does not support this version of the game.<br>Please go to <a href=\"https://www.pokerth.net/\" target=\"_blank\">https://www.pokerth.net</a> and download the latest version."),
 							QMessageBox::Close, this);
 		msgBox.setTextFormat(Qt::RichText);
 		msgBox.exec();
@@ -1128,7 +1123,7 @@ void startWindowImpl::networkNotification(int notificationId)
 	case NTF_NET_NEW_RELEASE_AVAILABLE: {
 		msgBoxOutdatedVersion.setIcon(QMessageBox::Information);
 		msgBoxOutdatedVersion.setWindowTitle(tr("Network Notification"));
-		msgBoxOutdatedVersion.setText(tr("A new release of PokerTH is available.<br>Please go to <a href=\"http://www.pokerth.net/\" target=\"_blank\">http://www.pokerth.net</a> and download the latest version."));
+		msgBoxOutdatedVersion.setText(tr("A new release of PokerTH is available.<br>Please go to <a href=\"https://www.pokerth.net/\" target=\"_blank\">https://www.pokerth.net</a> and download the latest version."));
 		msgBoxOutdatedVersion.setTextFormat(Qt::RichText);
 		msgBoxOutdatedVersion.setStandardButtons(QMessageBox::Ok);
 		msgBoxOutdatedVersion.setDefaultButton(QMessageBox::Ok);
@@ -1139,7 +1134,7 @@ void startWindowImpl::networkNotification(int notificationId)
 	case NTF_NET_OUTDATED_BETA: {
 		msgBoxOutdatedVersion.setIcon(QMessageBox::Information);
 		msgBoxOutdatedVersion.setWindowTitle(tr("Network Notification"));
-		msgBoxOutdatedVersion.setText(tr("This beta release of PokerTH is outdated.<br>Please go to <a href=\"http://www.pokerth.net/\" target=\"_blank\">http://www.pokerth.net</a> and download the latest version."));
+		msgBoxOutdatedVersion.setText(tr("This beta release of PokerTH is outdated.<br>Please go to <a href=\"https://www.pokerth.net/\" target=\"_blank\">https://www.pokerth.net</a> and download the latest version."));
 		msgBoxOutdatedVersion.setTextFormat(Qt::RichText);
 		msgBoxOutdatedVersion.setStandardButtons(QMessageBox::Ok);
 		msgBoxOutdatedVersion.setDefaultButton(QMessageBox::Ok);
@@ -1228,7 +1223,7 @@ void startWindowImpl::networkMessage(unsigned msgId)
 }
 
 
-void startWindowImpl::networkStart(std::shared_ptr<Game> game)
+void startWindowImpl::networkStart(boost::shared_ptr<Game> game)
 {
 	mySession->startClientGame(game);
 

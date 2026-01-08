@@ -24,7 +24,7 @@ if(GUI_800_480)
     add_definitions(-DGUI_800x480)
 endif()
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -43,8 +43,12 @@ if(ANDROID)
     add_compile_options(-femulated-tls)  # WICHTIG: Emuliere TLS für Android
 endif()
 
-find_package(Protobuf REQUIRED)
-find_package(Protobuf CONFIG)
+# vcpkg uses CONFIG mode for all platforms
+if(DEFINED VCPKG_TOOLCHAIN OR DEFINED CMAKE_TOOLCHAIN_FILE)
+    find_package(Protobuf CONFIG REQUIRED)
+else()
+    find_package(Protobuf REQUIRED)
+endif()
 
 if(ANDROID)
     # Find abseil and utf8_range (required for protobuf >= 5.27)
@@ -256,7 +260,6 @@ set_property(SOURCE src/third_party/protobuf/pokerth.pb.cc PROPERTY SKIP_AUTOGEN
 set_property(SOURCE src/third_party/protobuf/pokerth.pb.h PROPERTY SKIP_AUTOGEN ON)
 
 add_subdirectory(src)
-add_subdirectory(src/tests)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
 add_subdirectory(src/gui/qt)

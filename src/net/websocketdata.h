@@ -37,7 +37,7 @@
 
 
 struct WebSocketData {
-	std::shared_ptr<server> webSocketServer;
+	boost::shared_ptr<server> webSocketServer;
 	websocketpp::connection_hdl webHandle;
 };
 

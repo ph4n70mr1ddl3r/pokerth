@@ -31,8 +31,8 @@
 
 #include <net/servermanagerfactory.h>
 
-std::shared_ptr<ServerManager>
+boost::shared_ptr<ServerManager>
 ServerManagerFactory::CreateServerManager(ConfigFile &config, GuiInterface &gui, ServerMode mode, AvatarManager &avatarManager)
 {
-	return std::shared_ptr<ServerManager>(new ServerManager(config, gui, mode, avatarManager));
+	return boost::shared_ptr<ServerManager>(new ServerManager(config, gui, mode, avatarManager));
 }

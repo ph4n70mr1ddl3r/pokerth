@@ -33,7 +33,7 @@
 #ifndef _CLIENTCONTEXT_H_
 #define _CLIENTCONTEXT_H_
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 
 #include <net/sessiondata.h>
 #include <playerdata.h>
@@ -45,10 +45,10 @@ public:
 	ClientContext();
 	virtual ~ClientContext();
 
-	std::shared_ptr<SessionData> GetSessionData() const;
-	void SetSessionData(std::shared_ptr<SessionData> sessionData);
-	std::shared_ptr<boost::asio::ip::tcp::resolver> GetResolver() const;
-	void SetResolver(std::shared_ptr<boost::asio::ip::tcp::resolver> resolver);
+	boost::shared_ptr<SessionData> GetSessionData() const;
+	void SetSessionData(boost::shared_ptr<SessionData> sessionData);
+	boost::shared_ptr<boost::asio::ip::tcp::resolver> GetResolver() const;
+	void SetResolver(boost::shared_ptr<boost::asio::ip::tcp::resolver> resolver);
 	bool GetSctp() const
 	{
 		return m_sctp;
@@ -181,8 +181,8 @@ public:
 	}
 
 private:
-	std::shared_ptr<SessionData> m_sessionData;
-	std::shared_ptr<boost::asio::ip::tcp::resolver> m_resolver;
+	boost::shared_ptr<SessionData> m_sessionData;
+	boost::shared_ptr<boost::asio::ip::tcp::resolver> m_resolver;
 	bool				m_sctp;
 	bool				m_tls;
 	int					m_addrFamily;

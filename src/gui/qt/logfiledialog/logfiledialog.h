@@ -101,7 +101,7 @@ private:
 	int writer(char *data, size_t size, size_t nmemb,std::string *buffer);
 	QFile file;
 	QString id;
-	std::shared_ptr<UploaderThread> uploader;
+	boost::shared_ptr<UploaderThread> uploader;
 };
 
 #endif // LOGFILEDIALOG_H

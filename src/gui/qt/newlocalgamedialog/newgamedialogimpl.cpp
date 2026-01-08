@@ -31,7 +31,6 @@
 #include "newgamedialogimpl.h"
 #include "changecompleteblindsdialogimpl.h"
 #include "configfile.h"
-#include <game_defs.h>
 
 newGameDialogImpl::newGameDialogImpl(QMainWindow *parent, ConfigFile *c)
 	: QDialog(parent), myConfig(c)
@@ -51,20 +50,9 @@ newGameDialogImpl::newGameDialogImpl(QMainWindow *parent, ConfigFile *c)
 int newGameDialogImpl::exec()
 {
 
-	int savedPlayers = myConfig->readConfigInt("NumberOfPlayers");
-	if (savedPlayers > MAX_NUMBER_OF_PLAYERS) {
-		savedPlayers = MAX_NUMBER_OF_PLAYERS;
-	}
-	if (savedPlayers < MIN_NUMBER_OF_PLAYERS) {
-		savedPlayers = MIN_NUMBER_OF_PLAYERS;
-	}
-	if (savedPlayers != 2) {
-		savedPlayers = 2;
-		myConfig->writeConfigInt("NumberOfPlayers", 2);
-	}
- spinBox_quantityPlayers->setValue(savedPlayers);
- spinBox_startCash->setValue(myConfig->readConfigInt("StartCash"));
- spinBox_gameSpeed->setValue(myConfig->readConfigInt("GameSpeed"));
+	spinBox_quantityPlayers->setValue(myConfig->readConfigInt("NumberOfPlayers"));
+	spinBox_startCash->setValue(myConfig->readConfigInt("StartCash"));
+	spinBox_gameSpeed->setValue(myConfig->readConfigInt("GameSpeed"));
 
 	//fill changeCompleteBlindsDialog
 	myChangeCompleteBlindsDialog->spinBox_firstSmallBlind->setValue(myConfig->readConfigInt("FirstSmallBlind"));

@@ -73,7 +73,7 @@ private:
 	QTimer *timeOutAnimationTimer;
 	QTimer *timeOutAnimationKickOnTimer;
 
-// 	std::shared_ptr<SDLPlayer> mySDLPlayer;
+// 	boost::shared_ptr<SDLPlayer> mySDLPlayer;
 
 	boost::timers::portable::microsec_timer realTimer;
 

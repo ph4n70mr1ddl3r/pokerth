@@ -34,7 +34,7 @@
 #define _SERVERACCEPINTERFACE_H_
 
 #include <string>
-#include <memory>
+#include <boost/shared_ptr.hpp>
 
 class ServerLobbyThread;
 
@@ -44,7 +44,7 @@ public:
 	virtual ~ServerAcceptInterface();
 
 	virtual void Listen(unsigned serverPort, bool ipv6, const std::string &logDir,
-						std::shared_ptr<ServerLobbyThread> lobbyThread) = 0;
+						boost::shared_ptr<ServerLobbyThread> lobbyThread) = 0;
 
 	virtual void Close() = 0;
 };

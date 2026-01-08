@@ -34,6 +34,8 @@
 
 #include <boost/foreach.hpp>
 
+using namespace std;
+
 NetPacket::NetPacket()
 {
 	m_msg = PokerTHMessage::default_instance().New();
@@ -49,10 +51,10 @@ NetPacket::~NetPacket()
 	delete m_msg;
 }
 
-std::shared_ptr<NetPacket>
+boost::shared_ptr<NetPacket>
 NetPacket::Create(const char *data, size_t dataSize)
 {
-	std::shared_ptr<NetPacket> tmpPacket;
+	boost::shared_ptr<NetPacket> tmpPacket;
 
 	// Check minimum requirements.
 	if (data && dataSize > 0) {
@@ -86,7 +88,7 @@ NetPacket::IsClientActivity() const
 	return retVal;
 }
 
-std::string
+string
 NetPacket::ToString() const
 {
 	return m_msg ? m_msg->SerializeAsString() : "NULL";

@@ -37,7 +37,6 @@
 #include "playerdata.h"
 
 #include <third_party/boost/timers.hpp>
-#include <memory>
 
 class GuiInterface;
 class Log;
@@ -52,7 +51,7 @@ class Game
 {
 
 public:
-	Game(GuiInterface *gui, std::shared_ptr<EngineFactory> factory,
+	Game(GuiInterface *gui, boost::shared_ptr<EngineFactory> factory,
 		 const PlayerDataList &playerDataList, const GameData &gameData,
 		 const StartData &startData, int gameId, Log *myLog);
 
@@ -61,8 +60,8 @@ public:
 	void initHand();
 	void startHand();
 
-	std::shared_ptr<HandInterface> getCurrentHand();
-	const std::shared_ptr<HandInterface> getCurrentHand() const;
+	boost::shared_ptr<HandInterface> getCurrentHand();
+	const boost::shared_ptr<HandInterface> getCurrentHand() const;
 
 	PlayerList getSeatsList() const
 	{
@@ -138,20 +137,20 @@ public:
 			dealerPosition = newDealer;
 	}
 
-	std::shared_ptr<PlayerInterface> getPlayerByUniqueId(unsigned id);
-	std::shared_ptr<PlayerInterface> getPlayerByNumber(int number);
-	std::shared_ptr<PlayerInterface> getPlayerByName(const std::string &name);
-	std::shared_ptr<PlayerInterface> getCurrentPlayer();
+	boost::shared_ptr<PlayerInterface> getPlayerByUniqueId(unsigned id);
+	boost::shared_ptr<PlayerInterface> getPlayerByNumber(int number);
+	boost::shared_ptr<PlayerInterface> getPlayerByName(const std::string &name);
+	boost::shared_ptr<PlayerInterface> getCurrentPlayer();
 
 	void raiseBlinds();
 
 private:
-	std::shared_ptr<EngineFactory> myFactory;
+	boost::shared_ptr<EngineFactory> myFactory;
 
 	GuiInterface *myGui;
 	Log *myLog;
-	std::shared_ptr<HandInterface> currentHand;
-	std::shared_ptr<BoardInterface> currentBoard;
+	boost::shared_ptr<HandInterface> currentHand;
+	boost::shared_ptr<BoardInterface> currentBoard;
 
 	PlayerList seatsList;
 	PlayerList activePlayerList; // used seats

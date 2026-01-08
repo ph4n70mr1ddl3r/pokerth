@@ -51,8 +51,8 @@ public:
 
 	void initGui(int speed);
 
-	std::shared_ptr<Session> getSession();
-	void setSession(std::shared_ptr<Session> session);
+	boost::shared_ptr<Session> getSession();
+	void setSession(boost::shared_ptr<Session> session);
 
 	gameTableImpl* getMyW() const
 	{
@@ -167,7 +167,7 @@ public:
 	void SignalNetClientGameListSpectatorJoined(unsigned gameId, unsigned playerId);
 	void SignalNetClientGameListSpectatorLeft(unsigned gameId, unsigned playerId);
 
-	void SignalNetClientGameStart(std::shared_ptr<Game> game);
+	void SignalNetClientGameStart(boost::shared_ptr<Game> game);
 
 	void SignalNetServerSuccess(int actionID);
 	void SignalNetServerError(int errorID, int osErrorID);

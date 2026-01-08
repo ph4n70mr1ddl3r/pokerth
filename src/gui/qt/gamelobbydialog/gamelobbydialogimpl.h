@@ -71,8 +71,8 @@ public:
 		return myChat;
 	}
 
-	void setSession(std::shared_ptr<Session> session);
-	std::shared_ptr<Session> getSession()
+	void setSession(boost::shared_ptr<Session> session);
+	boost::shared_ptr<Session> getSession()
 	{
 		assert(mySession.get());
 		return mySession;
@@ -178,7 +178,7 @@ private:
 	gameTableImpl* myW;
 	startWindowImpl* myStartWindow;
 	ConfigFile *myConfig;
-	std::shared_ptr<Session> mySession;
+	boost::shared_ptr<Session> mySession;
 	createInternetGameDialogImpl *myCreateInternetGameDialog;
 	QString currentGameName;
 	unsigned myPlayerId;

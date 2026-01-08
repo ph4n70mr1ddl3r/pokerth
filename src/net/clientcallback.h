@@ -33,7 +33,7 @@
 #ifndef _CLIENTCALLBACK_H_
 #define _CLIENTCALLBACK_H_
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <string>
 
 #include <game_defs.h>
@@ -65,7 +65,7 @@ public:
 	virtual void SignalNetClientGameListSpectatorJoined(unsigned gameId, unsigned playerId) = 0;
 	virtual void SignalNetClientGameListSpectatorLeft(unsigned gameId, unsigned playerId) = 0;
 
-	virtual void SignalNetClientGameStart(std::shared_ptr<Game> game) = 0;
+	virtual void SignalNetClientGameStart(boost::shared_ptr<Game> game) = 0;
 	virtual void SignalNetClientSelfJoined(unsigned playerId, const std::string &playerName, bool isGameAdmin) = 0;
 	virtual void SignalNetClientPlayerJoined(unsigned playerId, const std::string &playerName, bool isGameAdmin) = 0;
 	virtual void SignalNetClientPlayerChanged(unsigned playerId, const std::string &newPlayerName) = 0;

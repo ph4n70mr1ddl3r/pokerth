@@ -85,9 +85,9 @@ gameLobbyDialogImpl::gameLobbyDialogImpl(startWindowImpl *parent, ConfigFile *c)
 	inviteOnlyInfoMsgBox = new myMessageDialogImpl(myConfig, this);
 
 	//HTML stuff
-	QString pokerthDotNet("<a href='http://www.pokerth.net'>http://www.pokerth.net</a>");
+	QString pokerthDotNet("<a href='https://www.pokerth.net'>https://www.pokerth.net</a>");
 	QString clickToRanking(QString("<a href='http://online-ranking.pokerth.net'>%1</a>").arg(tr("Click here to view the online rankings")));
-	QString clickToSpectate(QString("<a href='http://pokerth.net/live'><b>%1</b></a>").arg(tr("Spectate")));
+	QString clickToSpectate(QString("<a href='https://www.pokerth.net/live'><b>%1</b></a>").arg(tr("Spectate")));
 	label_pokerthDotNet->setText(pokerthDotNet);
 	label_rankings->setText(clickToRanking);
 	label_spectate->setText(clickToSpectate);
@@ -298,7 +298,7 @@ gameLobbyDialogImpl::~gameLobbyDialogImpl()
 	inviteOnlyInfoMsgBox = NULL;
 }
 
-void gameLobbyDialogImpl::setSession(std::shared_ptr<Session> session)
+void gameLobbyDialogImpl::setSession(boost::shared_ptr<Session> session)
 {
 	mySession = session;
 	myChat->setSession(mySession);
@@ -1886,7 +1886,7 @@ void gameLobbyDialogImpl::openPlayerStats1()
 
 		unsigned playerId = myNickListSelectionModel->currentIndex().data(Qt::UserRole).toUInt();
 		if(!mySession->getClientPlayerInfo(playerId).isGuest) {
-			QUrl url("http://pokerth.net/redirect_user_profile.php?nick="+QUrl::toPercentEncoding(myNickListSelectionModel->currentIndex().data(Qt::DisplayRole).toString()));
+			QUrl url("https://www.pokerth.net/redirect_user_profile.php?nick="+QUrl::toPercentEncoding(myNickListSelectionModel->currentIndex().data(Qt::DisplayRole).toString()));
 			QDesktopServices::openUrl(url);
 		}
 	}
@@ -1898,7 +1898,7 @@ void gameLobbyDialogImpl::openPlayerStats2()
 
 		unsigned playerId = treeWidget_connectedPlayers->currentItem()->data(0, Qt::UserRole).toUInt();
 		if(!mySession->getClientPlayerInfo(playerId).isGuest) {
-			QUrl url("http://pokerth.net/redirect_user_profile.php?nick="+QUrl::toPercentEncoding(treeWidget_connectedPlayers->currentItem()->data(0, Qt::DisplayRole).toString()));
+			QUrl url("https://www.pokerth.net/redirect_user_profile.php?nick="+QUrl::toPercentEncoding(treeWidget_connectedPlayers->currentItem()->data(0, Qt::DisplayRole).toString()));
 			QDesktopServices::openUrl(url);
 		}
 	}

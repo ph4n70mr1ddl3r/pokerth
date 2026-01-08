@@ -80,7 +80,7 @@ using namespace std;
 gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	: QMainWindow(parent), myChat(NULL), myConfig(c), gameSpeed(0), myActionIsBet(0), myActionIsRaise(0), pushButtonBetRaiseIsChecked(false), pushButtonCallCheckIsChecked(false), pushButtonFoldIsChecked(false), pushButtonAllInIsChecked(false), myButtonsAreCheckable(false), breakAfterCurrentHand(false), currentGameOver(false), betSliderChangedByInput(false), guestMode(false), myLastPreActionBetValue(0)
 {
-	int i, j;
+	int i;
 
 	//	this->setStyle(new QPlastiqueStyle);
 
@@ -236,46 +236,102 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 
 	enableCallCheckPushButtonTimer->setSingleShot(true);
 
-	// playerStarsArray init - only for MAX_NUMBER_OF_PLAYERS
-	for (i = 0; i < MAX_NUMBER_OF_PLAYERS; i++) {
-		for (j = 1; j <= 5; j++) {
-			playerStarsArray[j][i] = NULL;
-		}
-	}
+	playerStarsArray[1][0]=label_Star10;
+	playerStarsArray[2][0]=label_Star20;
+	playerStarsArray[3][0]=label_Star30;
+	playerStarsArray[4][0]=label_Star40;
+	playerStarsArray[5][0]=label_Star50;
+	playerStarsArray[1][1]=label_Star11;
+	playerStarsArray[2][1]=label_Star21;
+	playerStarsArray[3][1]=label_Star31;
+	playerStarsArray[4][1]=label_Star41;
+	playerStarsArray[5][1]=label_Star51;
+	playerStarsArray[1][2]=label_Star12;
+	playerStarsArray[2][2]=label_Star22;
+	playerStarsArray[3][2]=label_Star32;
+	playerStarsArray[4][2]=label_Star42;
+	playerStarsArray[5][2]=label_Star52;
+	playerStarsArray[1][3]=label_Star13;
+	playerStarsArray[2][3]=label_Star23;
+	playerStarsArray[3][3]=label_Star33;
+	playerStarsArray[4][3]=label_Star43;
+	playerStarsArray[5][3]=label_Star53;
+	playerStarsArray[1][4]=label_Star14;
+	playerStarsArray[2][4]=label_Star24;
+	playerStarsArray[3][4]=label_Star34;
+	playerStarsArray[4][4]=label_Star44;
+	playerStarsArray[5][4]=label_Star54;
+	playerStarsArray[1][5]=label_Star15;
+	playerStarsArray[2][5]=label_Star25;
+	playerStarsArray[3][5]=label_Star35;
+	playerStarsArray[4][5]=label_Star45;
+	playerStarsArray[5][5]=label_Star55;
+	playerStarsArray[1][6]=label_Star16;
+	playerStarsArray[2][6]=label_Star26;
+	playerStarsArray[3][6]=label_Star36;
+	playerStarsArray[4][6]=label_Star46;
+	playerStarsArray[5][6]=label_Star56;
+	playerStarsArray[1][7]=label_Star17;
+	playerStarsArray[2][7]=label_Star27;
+	playerStarsArray[3][7]=label_Star37;
+	playerStarsArray[4][7]=label_Star47;
+	playerStarsArray[5][7]=label_Star57;
+	playerStarsArray[1][8]=label_Star18;
+	playerStarsArray[2][8]=label_Star28;
+	playerStarsArray[3][8]=label_Star38;
+	playerStarsArray[4][8]=label_Star48;
+	playerStarsArray[5][8]=label_Star58;
+	playerStarsArray[1][9]=label_Star19;
+	playerStarsArray[2][9]=label_Star29;
+	playerStarsArray[3][9]=label_Star39;
+	playerStarsArray[4][9]=label_Star49;
+	playerStarsArray[5][9]=label_Star59;
 
 	// buttonLabelArray init
 	buttonLabelArray[0] = textLabel_Button0;
 	buttonLabelArray[1] = textLabel_Button1;
-	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
-		buttonLabelArray[i] = NULL;
-	}
+	buttonLabelArray[2] = textLabel_Button2;
+	buttonLabelArray[3] = textLabel_Button3;
+	buttonLabelArray[4] = textLabel_Button4;
+	buttonLabelArray[5] = textLabel_Button5;
+	buttonLabelArray[6] = textLabel_Button6;
+	buttonLabelArray[7] = textLabel_Button7;
+	buttonLabelArray[8] = textLabel_Button8;
+	buttonLabelArray[9] = textLabel_Button9;
 
 	// cashLabelArray init
 	cashLabelArray[0] = textLabel_Cash0;
 	cashLabelArray[1] = textLabel_Cash1;
-	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
-		cashLabelArray[i] = NULL;
-	}
+	cashLabelArray[2] = textLabel_Cash2;
+	cashLabelArray[3] = textLabel_Cash3;
+	cashLabelArray[4] = textLabel_Cash4;
+	cashLabelArray[5] = textLabel_Cash5;
+	cashLabelArray[6] = textLabel_Cash6;
+	cashLabelArray[7] = textLabel_Cash7;
+	cashLabelArray[8] = textLabel_Cash8;
+	cashLabelArray[9] = textLabel_Cash9;
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 		cashLabelArray[i]->setMyW(this);
 	}
 
 	playerTipLabelArray[0] = label_playerTip0;
 	playerTipLabelArray[1] = label_playerTip1;
-	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
-		playerTipLabelArray[i] = NULL;
-	}
+	playerTipLabelArray[2] = label_playerTip2;
+	playerTipLabelArray[3] = label_playerTip3;
+	playerTipLabelArray[4] = label_playerTip4;
+	playerTipLabelArray[5] = label_playerTip5;
+	playerTipLabelArray[6] = label_playerTip6;
+	playerTipLabelArray[7] = label_playerTip7;
+	playerTipLabelArray[8] = label_playerTip8;
+	playerTipLabelArray[9] = label_playerTip9;
 
 #ifdef GUI_800x480
+	int j;
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; ++i) {
 		for (j=1; j<=5; ++j) {
-			if (playerStarsArray[j][i]) {
-				playerStarsArray[j][i]->hide();
-			}
+			playerStarsArray[j][i]->hide();
 		}
-		if (playerTipLabelArray[i]) {
-			playerTipLabelArray[i]->hide();
-		}
+		playerTipLabelArray[i]->hide();
 	}
 
 #endif
@@ -283,9 +339,14 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// playerNameLabelArray init
 	playerNameLabelArray[0] = label_PlayerName0;
 	playerNameLabelArray[1] = label_PlayerName1;
-	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
-		playerNameLabelArray[i] = NULL;
-	}
+	playerNameLabelArray[2] = label_PlayerName2;
+	playerNameLabelArray[3] = label_PlayerName3;
+	playerNameLabelArray[4] = label_PlayerName4;
+	playerNameLabelArray[5] = label_PlayerName5;
+	playerNameLabelArray[6] = label_PlayerName6;
+	playerNameLabelArray[7] = label_PlayerName7;
+	playerNameLabelArray[8] = label_PlayerName8;
+	playerNameLabelArray[9] = label_PlayerName9;
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 		playerNameLabelArray[i]->setMyW(this);
 	}
@@ -293,9 +354,14 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// playerAvatarLabelArray init
 	playerAvatarLabelArray[0] = label_Avatar0;
 	playerAvatarLabelArray[1] = label_Avatar1;
-	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
-		playerAvatarLabelArray[i] = NULL;
-	}
+	playerAvatarLabelArray[2] = label_Avatar2;
+	playerAvatarLabelArray[3] = label_Avatar3;
+	playerAvatarLabelArray[4] = label_Avatar4;
+	playerAvatarLabelArray[5] = label_Avatar5;
+	playerAvatarLabelArray[6] = label_Avatar6;
+	playerAvatarLabelArray[7] = label_Avatar7;
+	playerAvatarLabelArray[8] = label_Avatar8;
+	playerAvatarLabelArray[9] = label_Avatar9;
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 		playerAvatarLabelArray[i]->setMyW(this);
 		playerAvatarLabelArray[i]->setMyId(i);
@@ -304,9 +370,14 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// timeoutLabelArray init
 	timeoutLabelArray[0] = label_Timeout0;
 	timeoutLabelArray[1] = label_Timeout1;
-	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
-		timeoutLabelArray[i] = NULL;
-	}
+	timeoutLabelArray[2] = label_Timeout2;
+	timeoutLabelArray[3] = label_Timeout3;
+	timeoutLabelArray[4] = label_Timeout4;
+	timeoutLabelArray[5] = label_Timeout5;
+	timeoutLabelArray[6] = label_Timeout6;
+	timeoutLabelArray[7] = label_Timeout7;
+	timeoutLabelArray[8] = label_Timeout8;
+	timeoutLabelArray[9] = label_Timeout9;
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 		timeoutLabelArray[i]->setMyW(this);
 	}
@@ -314,9 +385,14 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// setLabelArray init
 	setLabelArray[0] = textLabel_Set0;
 	setLabelArray[1] = textLabel_Set1;
-	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
-		setLabelArray[i] = NULL;
-	}
+	setLabelArray[2] = textLabel_Set2;
+	setLabelArray[3] = textLabel_Set3;
+	setLabelArray[4] = textLabel_Set4;
+	setLabelArray[5] = textLabel_Set5;
+	setLabelArray[6] = textLabel_Set6;
+	setLabelArray[7] = textLabel_Set7;
+	setLabelArray[8] = textLabel_Set8;
+	setLabelArray[9] = textLabel_Set9;
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 		setLabelArray[i]->setMyW(this);
 	}
@@ -325,9 +401,14 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// statusLabelArray init
 	actionLabelArray[0] = textLabel_Status0;
 	actionLabelArray[1] = textLabel_Status1;
-	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
-		actionLabelArray[i] = NULL;
-	}
+	actionLabelArray[2] = textLabel_Status2;
+	actionLabelArray[3] = textLabel_Status3;
+	actionLabelArray[4] = textLabel_Status4;
+	actionLabelArray[5] = textLabel_Status5;
+	actionLabelArray[6] = textLabel_Status6;
+	actionLabelArray[7] = textLabel_Status7;
+	actionLabelArray[8] = textLabel_Status8;
+	actionLabelArray[9] = textLabel_Status9;
 
 	textLabel_Status0->setMyW(this);
 
@@ -338,9 +419,14 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// GroupBoxArray init
 	groupBoxArray[0] = groupBox0;
 	groupBoxArray[1] = groupBox1;
-	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
-		groupBoxArray[i] = NULL;
-	}
+	groupBoxArray[2] = groupBox2;
+	groupBoxArray[3] = groupBox3;
+	groupBoxArray[4] = groupBox4;
+	groupBoxArray[5] = groupBox5;
+	groupBoxArray[6] = groupBox6;
+	groupBoxArray[7] = groupBox7;
+	groupBoxArray[8] = groupBox8;
+	groupBoxArray[9] = groupBox9;
 
 	// boardCardsArray init
 	boardCardsArray[0] = pixmapLabel_cardBoard0;
@@ -354,10 +440,22 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	holeCardsArray[0][1] = pixmapLabel_card0b;
 	holeCardsArray[1][0] = pixmapLabel_card1a;
 	holeCardsArray[1][1] = pixmapLabel_card1b;
-	for (i = 2; i < MAX_NUMBER_OF_PLAYERS; i++) {
-		holeCardsArray[i][0] = NULL;
-		holeCardsArray[i][1] = NULL;
-	}
+	holeCardsArray[2][0] = pixmapLabel_card2a;
+	holeCardsArray[2][1] = pixmapLabel_card2b;
+	holeCardsArray[3][0] = pixmapLabel_card3a;
+	holeCardsArray[3][1] = pixmapLabel_card3b;
+	holeCardsArray[4][0] = pixmapLabel_card4a;
+	holeCardsArray[4][1] = pixmapLabel_card4b;
+	holeCardsArray[5][0] = pixmapLabel_card5a;
+	holeCardsArray[5][1] = pixmapLabel_card5b;
+	holeCardsArray[6][0] = pixmapLabel_card6a;
+	holeCardsArray[6][1] = pixmapLabel_card6b;
+	holeCardsArray[7][0] = pixmapLabel_card7a;
+	holeCardsArray[7][1] = pixmapLabel_card7b;
+	holeCardsArray[8][0] = pixmapLabel_card8a;
+	holeCardsArray[8][1] = pixmapLabel_card8b;
+	holeCardsArray[9][0] = pixmapLabel_card9a;
+	holeCardsArray[9][1] = pixmapLabel_card9b;
 
 	pushButton_showMyCards->hide();
 
@@ -542,16 +640,10 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 #endif
 
 	connect( pushButton_showMyCards, SIGNAL( clicked() ), this, SLOT( sendShowMyCardsSignal() ) );
-	for(i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
-		if (playerTipLabelArray[i] && playerAvatarLabelArray[i]) {
-			connect( playerTipLabelArray[i], SIGNAL( linkActivated(QString) ), playerAvatarLabelArray[i], SLOT(startChangePlayerTip(QString) ) );
-		}
-	}
-	for(i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
+	for(i=0; i<=9; i++)connect( playerTipLabelArray[i], SIGNAL( linkActivated(QString) ), playerAvatarLabelArray[i], SLOT(startChangePlayerTip(QString) ) );
+	for(i=0; i<=9; i++) {
 		for(int j=1; j<=5; j++) {
-			if (playerStarsArray[j][i] && playerAvatarLabelArray[i]) {
-				connect( playerStarsArray[j][i], SIGNAL( linkActivated(QString) ), playerAvatarLabelArray[i], SLOT(setPlayerRating(QString) ) );
-			}
+			connect( playerStarsArray[j][i], SIGNAL( linkActivated(QString) ), playerAvatarLabelArray[i], SLOT(setPlayerRating(QString) ) );
 		}
 	}
 	//Nachrichten Thread-Save
@@ -668,7 +760,7 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 	//Falls Spielernamen geändert wurden --> neu zeichnen --> erst beim nächsten Neustart neu ausgelesen
 	if (mySettingsDialog->getPlayerNickIsChanged() && myStartWindow->getSession()->getCurrentGame() && !myStartWindow->getSession()->isNetworkClientRunning()) {
 
-		std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+		boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 		PlayerListIterator it = currentGame->getSeatsList()->begin();
 		(*it)->setMyName(mySettingsDialog->lineEdit_HumanPlayerName->text().toUtf8().constData());
 		(*(++it))->setMyName(mySettingsDialog->lineEdit_Opponent1Name->text().toUtf8().constData());
@@ -687,7 +779,7 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 
 	if(myStartWindow->getSession()->getCurrentGame() && !myStartWindow->getSession()->isNetworkClientRunning()) {
 
-		std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+		boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 		PlayerListIterator it = currentGame->getSeatsList()->begin();
 		(*it)->setMyAvatar(mySettingsDialog->pushButton_HumanPlayerAvatar->getMyLink().toUtf8().constData());
 		(*(++it))->setMyAvatar(mySettingsDialog->pushButton_Opponent1Avatar->getMyLink().toUtf8().constData());
@@ -705,7 +797,7 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 	}
 
 	//refresh board cards if game is running
-	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame()) {
 
 		int tempBoardCardsArray[5];
 		myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getBoard()->getMyCards(tempBoardCardsArray);
@@ -741,9 +833,9 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 	}
 
 	//Check for anti-peek mode
-	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame()) {
 		// 		check if human player is already active
-		std::shared_ptr<PlayerInterface> humanPlayer = myStartWindow->getSession()->getCurrentGame()->getSeatsList()->front();
+		boost::shared_ptr<PlayerInterface> humanPlayer = myStartWindow->getSession()->getCurrentGame()->getSeatsList()->front();
 		if(humanPlayer->getMyActiveStatus()) {
 
 			QPixmap tempCardsPixmapArray[2];
@@ -771,7 +863,7 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 	if(this->isVisible() && myGameTableStyle->getState() != GT_STYLE_OK) myGameTableStyle->showErrorMessage();
 
 	//blind buttons refresh
-	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame()) {
 		refreshButton();
 		refreshGroupbox();
 		provideMyActions();
@@ -851,7 +943,7 @@ void gameTableImpl::initGui(int speed)
 
 }
 
-std::shared_ptr<Session> gameTableImpl::getSession()
+boost::shared_ptr<Session> gameTableImpl::getSession()
 {
 	assert(myStartWindow->getSession().get());
 	return myStartWindow->getSession();
@@ -861,86 +953,77 @@ std::shared_ptr<Session> gameTableImpl::getSession()
 void gameTableImpl::refreshSet()
 {
 
-	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
-		return;
-	}
-
-	std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentGame->getSeatsList();
-	int seatPlace = 0;
-	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
+	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 		if( (*it_c)->getMySet() == 0 )
-			setLabelArray[seatPlace]->setText("");
+			setLabelArray[(*it_c)->getMyID()]->setText("");
 		else
-			setLabelArray[seatPlace]->setText("$"+QString("%L1").arg((*it_c)->getMySet()));
+			setLabelArray[(*it_c)->getMyID()]->setText("$"+QString("%L1").arg((*it_c)->getMySet()));
 	}
 }
 
 void gameTableImpl::refreshButton()
 {
-	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
-		return;
-	}
 
 	QPixmap dealerButton = QPixmap::fromImage(QImage(myGameTableStyle->getDealerPuck()));
 	QPixmap smallblindButton = QPixmap::fromImage(QImage(myGameTableStyle->getSmallBlindPuck()));
 	QPixmap bigblindButton = QPixmap::fromImage(QImage(myGameTableStyle->getBigBlindPuck()));
 	QPixmap onePix = QPixmap::fromImage(QImage(myAppDataPath +"gfx/gui/misc/1px.png"));
 
-	std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentGame->getSeatsList();
 	PlayerList activePlayerList = currentGame->getActivePlayerList();
-	int seatPlace = 0;
-	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
+	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 		if( (*it_c)->getMyActiveStatus() ) {
 			if( activePlayerList->size() > 2 ) {
 				switch ( (*it_c)->getMyButton() ) {
 
 				case 1 :
-					buttonLabelArray[seatPlace]->setPixmap(dealerButton);
+					buttonLabelArray[(*it_c)->getMyID()]->setPixmap(dealerButton);
 					break;
 				case 2 : {
 					if(myConfig->readConfigInt("ShowBlindButtons"))
-						buttonLabelArray[seatPlace]->setPixmap(smallblindButton);
+						buttonLabelArray[(*it_c)->getMyID()]->setPixmap(smallblindButton);
 					else
-						buttonLabelArray[seatPlace]->setPixmap(onePix);
+						buttonLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
 				}
 				break;
 				case 3 : {
 					if(myConfig->readConfigInt("ShowBlindButtons"))
-						buttonLabelArray[seatPlace]->setPixmap(bigblindButton);
+						buttonLabelArray[(*it_c)->getMyID()]->setPixmap(bigblindButton);
 					else
-						buttonLabelArray[seatPlace]->setPixmap(onePix);
+						buttonLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
 				}
 				break;
 				default:
-					buttonLabelArray[seatPlace]->setPixmap(onePix);
+					buttonLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
 
 				}
 			} else {
 				switch ((*it_c)->getMyButton()) {
 
 				case 2 :
-					buttonLabelArray[seatPlace]->setPixmap(dealerButton);
+					buttonLabelArray[(*it_c)->getMyID()]->setPixmap(dealerButton);
 					break;
 				case 3 : {
 					if(myConfig->readConfigInt("ShowBlindButtons"))
-						buttonLabelArray[seatPlace]->setPixmap(bigblindButton);
+						buttonLabelArray[(*it_c)->getMyID()]->setPixmap(bigblindButton);
 					else
-						buttonLabelArray[seatPlace]->setPixmap(onePix);
+						buttonLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
 				}
 				break;
 				default:
-					buttonLabelArray[seatPlace]->setPixmap(onePix);
+					buttonLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
 
 				}
 			}
 		} else {
-			buttonLabelArray[seatPlace]->setPixmap(onePix);
+			buttonLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
 		}
 	}
 }
@@ -949,13 +1032,12 @@ void gameTableImpl::refreshButton()
 void gameTableImpl::refreshPlayerName()
 {
 
-	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame()) {
 
-		std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+		boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 		PlayerListConstIterator it_c;
 		PlayerList seatsList = currentGame->getSeatsList();
-		int seatPlace = 0;
-		for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
+		for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 
 			//collect needed infos
 			bool guest = myStartWindow->getSession()->getClientPlayerInfo((*it_c)->getMyUniqueID()).isGuest;
@@ -969,47 +1051,46 @@ void gameTableImpl::refreshPlayerName()
 			switch(getCurrentSeatState((*it_c))) {
 
 			case SEAT_ACTIVE: {
-				playerNameLabelArray[seatPlace]->setText(nick, false, guest, computerPlayer );
+				playerNameLabelArray[(*it_c)->getMyID()]->setText(nick, false, guest, computerPlayer );
 			}
 			break;
 			case SEAT_AUTOFOLD: {
-				playerNameLabelArray[seatPlace]->setText(nick, true, guest, computerPlayer );
+				playerNameLabelArray[(*it_c)->getMyID()]->setText(nick, true, guest, computerPlayer );
 			}
 			break;
 			case SEAT_STAYONTABLE: {
-				playerNameLabelArray[seatPlace]->setText(nick, true, guest, computerPlayer );
+				playerNameLabelArray[(*it_c)->getMyID()]->setText(nick, true, guest, computerPlayer );
 			}
 			break;
 			case SEAT_CLEAR: {
-				playerNameLabelArray[seatPlace]->setText("");
+				playerNameLabelArray[(*it_c)->getMyID()]->setText("");
 			}
 			break;
 			default: {
-				playerNameLabelArray[seatPlace]->setText("");
+				playerNameLabelArray[(*it_c)->getMyID()]->setText("");
 			}
 			}
-		}
-		if (playerAvatarLabelArray[0]) {
-			playerAvatarLabelArray[0]->refreshTooltips();
 		}
 	}
+
+	playerAvatarLabelArray[0]->refreshTooltips();
 }
 
 void gameTableImpl::refreshPlayerAvatar()
 {
 
-	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame()) {
 
 		QPixmap onePix = QPixmap::fromImage(QImage(myAppDataPath +"gfx/gui/misc/1px.png"));
 
-		std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+		boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 		int seatPlace;
 		PlayerListConstIterator it_c;
 		PlayerList seatsList = currentGame->getSeatsList();
 		for (it_c=seatsList->begin(), seatPlace=0; it_c!=seatsList->end(); ++it_c, seatPlace++) {
 
 			//set uniqueID
-			playerAvatarLabelArray[seatPlace]->setMyUniqueId((*it_c)->getMyUniqueID());
+			playerAvatarLabelArray[(*it_c)->getMyID()]->setMyUniqueId((*it_c)->getMyUniqueID());
 
 			//get CountryString
 			QString countryString(QString(myStartWindow->getSession()->getClientPlayerInfo((*it_c)->getMyUniqueID()).countryCode.c_str()).toLower());
@@ -1028,25 +1109,25 @@ void gameTableImpl::refreshPlayerAvatar()
 			switch(getCurrentSeatState((*it_c))) {
 
 			case SEAT_ACTIVE: {
-				playerAvatarLabelArray[seatPlace]->setPixmapAndCountry(avatarPic, countryString, seatPlace);
+				playerAvatarLabelArray[(*it_c)->getMyID()]->setPixmapAndCountry(avatarPic, countryString, seatPlace);
 			}
 			break;
 			case SEAT_AUTOFOLD: {
 //				qDebug() << seatPlace << "AVATAR AUTOFOLD";
-				playerAvatarLabelArray[seatPlace]->setPixmapAndCountry(avatarPic, countryString, seatPlace, true);
+				playerAvatarLabelArray[(*it_c)->getMyID()]->setPixmapAndCountry(avatarPic, countryString, seatPlace, true);
 			}
 			break;
 			case SEAT_STAYONTABLE: {
 //				qDebug() << seatPlace << "AVATAR STAYONTABLE";
-				playerAvatarLabelArray[seatPlace]->setPixmapAndCountry(avatarPic, countryString, seatPlace, true);
+				playerAvatarLabelArray[(*it_c)->getMyID()]->setPixmapAndCountry(avatarPic, countryString, seatPlace, true);
 			}
 			break;
 			case SEAT_CLEAR: {
-				playerAvatarLabelArray[seatPlace]->setPixmap(onePix);
+				playerAvatarLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
 			}
 			break;
 			default: {
-				playerAvatarLabelArray[seatPlace]->setPixmap(onePix);
+				playerAvatarLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
 			}
 			}
 		}
@@ -1056,9 +1137,9 @@ void gameTableImpl::refreshPlayerAvatar()
 void gameTableImpl::setPlayerAvatar(int myID, QString myAvatar)
 {
 
-	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame()) {
 
-		std::shared_ptr<PlayerInterface> tmpPlayer = myStartWindow->getSession()->getCurrentGame()->getPlayerByUniqueId(myID);
+		boost::shared_ptr<PlayerInterface> tmpPlayer = myStartWindow->getSession()->getCurrentGame()->getPlayerByUniqueId(myID);
 		if (tmpPlayer.get()) {
 
 			QFile myAvatarFile(myAvatar);
@@ -1076,38 +1157,33 @@ void gameTableImpl::setPlayerAvatar(int myID, QString myAvatar)
 void gameTableImpl::refreshAction(int playerID, int playerAction)
 {
 
-	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
-		return;
-	}
-
 	QPixmap onePix = QPixmap::fromImage(QImage(myAppDataPath +"gfx/gui/misc/1px.png"));
 	QPixmap action;
 
 	QStringList actionArray;
 	actionArray << "" << "fold" << "check" << "call" << "bet" << "raise" << "allin";
 
-	std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 
 	if(playerID == -1 || playerAction == -1) {
 
 		PlayerListConstIterator it_c;
 		PlayerList seatsList = currentGame->getSeatsList();
-		int seatPlace = 0;
-		for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
+		for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 
 			//if no action --> clear Pixmap
 			if( (*it_c)->getMyAction() == 0) {
-				actionLabelArray[seatPlace]->setPixmap(onePix);
+				actionLabelArray[(*it_c)->getMyID()]->setPixmap(onePix);
 			} else {
 				//paint action pixmap
-				actionLabelArray[seatPlace]->setPixmap(QPixmap::fromImage(QImage(myGameTableStyle->getActionPic((*it_c)->getMyAction()))));
+				actionLabelArray[(*it_c)->getMyID()]->setPixmap(QPixmap::fromImage(QImage(myGameTableStyle->getActionPic((*it_c)->getMyAction()))));
 			}
 
 			if ((*it_c)->getMyAction()==1) {
 
-				if(seatPlace != 0) {
-					holeCardsArray[seatPlace][0]->setPixmap(onePix, false);
-					holeCardsArray[seatPlace][1]->setPixmap(onePix, false);
+				if((*it_c)->getMyID() != 0) {
+					holeCardsArray[(*it_c)->getMyID()][0]->setPixmap(onePix, false);
+					holeCardsArray[(*it_c)->getMyID()][1]->setPixmap(onePix, false);
 				}
 			}
 		}
@@ -1140,41 +1216,37 @@ void gameTableImpl::refreshAction(int playerID, int playerAction)
 
 void gameTableImpl::refreshCash()
 {
-	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
-		return;
-	}
 
-	std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 
 	bool transparent = true;
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentGame->getSeatsList();
-	int seatPlace = 0;
-	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
+	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 
 		//check SeatStates and refresh
 		switch(getCurrentSeatState((*it_c))) {
 
 		case SEAT_ACTIVE: {
-//			qDebug() << seatPlace << "CASH ACTIVE";
-			cashLabelArray[seatPlace]->setText("$"+QString("%L1").arg((*it_c)->getMyCash()));
+//			qDebug() << (*it_c)->getMyID() << "CASH ACTIVE";
+			cashLabelArray[(*it_c)->getMyID()]->setText("$"+QString("%L1").arg((*it_c)->getMyCash()));
 		}
 		break;
 		case SEAT_AUTOFOLD: {
-//			qDebug() << seatPlace << "CASH AUTOFOLD"; //TODO transparent
-			cashLabelArray[seatPlace]->setText("$"+QString("%L1").arg((*it_c)->getMyCash()), transparent);
+//			qDebug() << (*it_c)->getMyID() << "CASH AUTOFOLD"; //TODO transparent
+			cashLabelArray[(*it_c)->getMyID()]->setText("$"+QString("%L1").arg((*it_c)->getMyCash()), transparent);
 		}
 		break;
 		case SEAT_STAYONTABLE: {
-			cashLabelArray[seatPlace]->setText("");
+			cashLabelArray[(*it_c)->getMyID()]->setText("");
 		}
 		break;
 		case SEAT_CLEAR: {
-			cashLabelArray[seatPlace]->setText("");
+			cashLabelArray[(*it_c)->getMyID()]->setText("");
 		}
 		break;
 		default: {
-			cashLabelArray[seatPlace]->setText("");
+			cashLabelArray[(*it_c)->getMyID()]->setText("");
 		}
 		}
 	}
@@ -1187,7 +1259,7 @@ void gameTableImpl::refreshGroupbox(int playerID, int status)
 
 	if(playerID == -1 || status == -1) {
 
-		std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+		boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 		PlayerListConstIterator it_c;
 		PlayerList seatsList = currentGame->getSeatsList();
 		for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
@@ -1301,18 +1373,15 @@ void gameTableImpl::refreshGameLabels(int gameState)
 
 void gameTableImpl::refreshAll()
 {
-	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
-		return;
-	}
 
 	refreshSet();
 	refreshButton();
 
-	std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentGame->getSeatsList();
 	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
-		refreshAction( -1, -1);
+		refreshAction( (*it_c)->getMyID(), (*it_c)->getMyAction());
 	}
 
 	refreshCash();
@@ -1323,17 +1392,14 @@ void gameTableImpl::refreshAll()
 
 void gameTableImpl::refreshChangePlayer()
 {
-	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
-		return;
-	}
 
 	refreshSet();
 
-	std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentGame->getSeatsList();
 	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
-		refreshAction( -1, -1);
+		refreshAction( (*it_c)->getMyID(), (*it_c)->getMyAction());
 	}
 
 	refreshCash();
@@ -1341,7 +1407,7 @@ void gameTableImpl::refreshChangePlayer()
 
 void gameTableImpl::refreshPot()
 {
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
 
 	textLabel_Sets->setText("$"+QString("%L1").arg(currentHand->getBoard()->getSets()));
 	textLabel_Pot->setText("$"+QString("%L1").arg(currentHand->getBoard()->getPot()));
@@ -1376,7 +1442,7 @@ void gameTableImpl::dealHoleCards()
 
 	// Karten der Gegner und eigene Karten austeilen
 	int j;
-	std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentGame->getSeatsList();
@@ -1639,8 +1705,8 @@ void gameTableImpl::provideMyActions(int mode)
 	QString pushButtonAllInString;
 	QString lastPushButtonCallCheckString = pushButton_CallCheck->text();
 
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
-	std::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 	PlayerList activePlayerList = currentHand->getActivePlayerList();
 
 	//really disabled buttons if human player is fold/all-in or server-autofold... and not called from dealberocards
@@ -1690,7 +1756,7 @@ void gameTableImpl::provideMyActions(int mode)
 				pushButtonCallCheckString = CheckString;
 				pushButtonBetRaiseString = BetString+"\n$"+QString("%L1").arg(getMyBetAmount());
 			}
-			if (currentHand->getCurrentBeRo()->getHighestSet() > 0 && currentHand->getCurrentBeRo()->getHighestSet() >= humanPlayer->getMySet()) {
+			if (currentHand->getCurrentBeRo()->getHighestSet() > 0 && currentHand->getCurrentBeRo()->getHighestSet() > humanPlayer->getMySet()) {
 				pushButtonCallCheckString = CallString+"\n$"+QString("%L1").arg(getMyCallAmount());
 				if (humanPlayer->getMyCash()+humanPlayer->getMySet() > currentHand->getCurrentBeRo()->getHighestSet() && !currentHand->getCurrentBeRo()->getFullBetRule()) {
 					pushButtonBetRaiseString = RaiseString+"\n$"+QString("%L1").arg(getMyBetAmount());
@@ -1705,15 +1771,10 @@ void gameTableImpl::provideMyActions(int mode)
 			if( humanPlayer->getMyAction() != PLAYER_ACTION_FOLD ) {
 				pushButtonBetRaiseString = BetString+"\n$"+QString("%L1").arg(getMyBetAmount());
 				pushButtonCallCheckString = CheckString;
-				// FIX: Handle headsup games correctly
-				// In headsup (2 players), dealer (BUTTON_SMALL_BLIND) acts first post-flop
-				// The small blind in >2 player games also acts first
-				// Both should get "Check/Fold" when no bet exists
-				if( (activePlayerList->size() > 2 && humanPlayer->getMyButton() == BUTTON_SMALL_BLIND) ||
-					(activePlayerList->size() <= 2 && humanPlayer->getMyButton() == BUTTON_SMALL_BLIND) ) {
-					pushButtonFoldString = CheckString+" /\n"+FoldString;
-				} else {
+				if( (activePlayerList->size() > 2 && humanPlayer->getMyButton() == BUTTON_SMALL_BLIND ) || ( activePlayerList->size() <= 2 && humanPlayer->getMyButton() == BUTTON_BIG_BLIND)) {
 					pushButtonFoldString = FoldString;
+				} else {
+					pushButtonFoldString = CheckString+" /\n"+FoldString;
 				}
 
 				pushButtonAllInString = AllInString;
@@ -1924,7 +1985,7 @@ void gameTableImpl::stopTimeoutAnimation(int playerId)
 void gameTableImpl::disableMyButtons()
 {
 
-	std::shared_ptr<PlayerInterface> humanPlayer = myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getSeatsList()->front();
+	boost::shared_ptr<PlayerInterface> humanPlayer = myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getSeatsList()->front();
 
 	clearMyButtons();
 
@@ -1961,8 +2022,8 @@ void gameTableImpl::myFold()
 
 	if(pushButton_Fold->text() == FoldString) {
 
-		std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
-		std::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
+		boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+		boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 		humanPlayer->setMyAction(PLAYER_ACTION_FOLD,true);
 		humanPlayer->setMyTurn(0);
 
@@ -1979,8 +2040,8 @@ void gameTableImpl::myFold()
 void gameTableImpl::myCheck()
 {
 
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
-	std::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 	humanPlayer->setMyTurn(0);
 	humanPlayer->setMyAction(PLAYER_ACTION_CHECK,true);
 
@@ -1996,37 +2057,15 @@ void gameTableImpl::myCheck()
 int gameTableImpl::getMyCallAmount()
 {
 
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
-	std::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 	int tempHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 
-	qDebug() << "DEBUG getMyCallAmount():";
-	qDebug() << "  - humanPlayer (from front):" << QString::fromStdString(humanPlayer->getMyName());
-	qDebug() << "  - humanPlayer->getMySet():" << humanPlayer->getMySet();
-	qDebug() << "  - humanPlayer->getMyCash():" << humanPlayer->getMyCash();
-	qDebug() << "  - tempHighestSet:" << tempHighestSet;
-
-	// Find the actual human player by unique ID
-	unsigned humanPlayerId = myStartWindow->getSession()->getClientUniquePlayerId();
-	PlayerList seatsList = currentHand->getSeatsList();
-	for (auto it = seatsList->begin(); it != seatsList->end(); ++it) {
-		if ((*it)->getMyUniqueID() == humanPlayerId) {
-			humanPlayer = *it;
-			break;
-		}
-	}
-
-	qDebug() << "  - humanPlayer (after search):" << QString::fromStdString(humanPlayer->getMyName());
-	qDebug() << "  - humanPlayer->getMySet():" << humanPlayer->getMySet();
-	qDebug() << "  - humanPlayer->getMyCash():" << humanPlayer->getMyCash();
-
 	if (humanPlayer->getMyCash() + humanPlayer->getMySet() <= tempHighestSet) {
-		qDebug() << "  - Returning cash:" << humanPlayer->getMyCash();
+
 		return humanPlayer->getMyCash();
 	} else {
-		int callAmount = tempHighestSet - humanPlayer->getMySet();
-		qDebug() << "  - Returning callAmount:" << callAmount;
-		return callAmount;
+		return tempHighestSet - humanPlayer->getMySet();
 	}
 }
 
@@ -2040,8 +2079,8 @@ int gameTableImpl::getBetRaisePushButtonValue()
 int gameTableImpl::getMyBetAmount()
 {
 
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
-	std::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 
 	int betValue = getBetRaisePushButtonValue();
 	int minimum;
@@ -2058,8 +2097,8 @@ int gameTableImpl::getMyBetAmount()
 void gameTableImpl::myCall()
 {
 
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
-	std::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 
 	int tempHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 
@@ -2091,8 +2130,8 @@ void gameTableImpl::mySet()
 
 	if(pushButton_BetRaise->text() != "") {
 
-		std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
-		std::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
+		boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+		boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 
 		int tempCash = humanPlayer->getMyCash();
 
@@ -2156,8 +2195,8 @@ void gameTableImpl::myAllIn()
 
 	if(pushButton_AllIn->text() == AllInString) {
 
-		std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
-		std::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
+		boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+		boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 
 		humanPlayer->setMySet(humanPlayer->getMyCash());
 		humanPlayer->setMyCash(0);
@@ -2335,27 +2374,20 @@ void gameTableImpl::myActionDone()
 
 void gameTableImpl::nextPlayerAnimation()
 {
-	if(!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
-		return;
-	}
 
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
-	if(!currentHand) {
-		return;
-	}
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
 
 	//refresh Change Player
 	refreshSet();
 
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentHand->getSeatsList();
-	int seatPlace = 0;
-	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
+	for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 		if((*it_c)->getMyID() == currentHand->getPreviousPlayerID()) break;
 	}
 
 	if(currentHand->getPreviousPlayerID() != -1) {
-		refreshAction(-1, -1);
+		refreshAction(currentHand->getPreviousPlayerID(), (*it_c)->getMyAction());
 	}
 	refreshCash();
 
@@ -2491,7 +2523,7 @@ void gameTableImpl::postRiverRunAnimation2()
 	horizontalSlider_bet->setDisabled(true);
 	spinBox_betValue->setDisabled(true);
 
-	std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 
 	bool internetOrNetworkGame = (myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_INTERNET || myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_NETWORK);
 
@@ -2534,7 +2566,7 @@ void gameTableImpl::postRiverRunAnimation2()
 	} else {
 
 		//display show! button if human player is active and the latest non foldedone
-		std::shared_ptr<PlayerInterface> humanPlayer = myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getSeatsList()->front();
+		boost::shared_ptr<PlayerInterface> humanPlayer = myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getSeatsList()->front();
 		if( internetOrNetworkGame && humanPlayer->getMyActiveStatus() && humanPlayer->getMyAction() != PLAYER_ACTION_FOLD) {
 
 			showShowMyCardsButton();
@@ -2548,7 +2580,7 @@ void gameTableImpl::postRiverRunAnimation2()
 void gameTableImpl::postRiverRunAnimation3()
 {
 
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
 
 	int nonfoldPlayerCounter = 0;
 	PlayerListConstIterator it_c;
@@ -2703,7 +2735,7 @@ void gameTableImpl::postRiverRunAnimation4()
 void gameTableImpl::postRiverRunAnimation5()
 {
 
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
 	PlayerList activePlayerList = currentHand->getActivePlayerList();
 	PlayerListConstIterator it_c;
 
@@ -2746,7 +2778,7 @@ void gameTableImpl::postRiverRunAnimation5()
 void gameTableImpl::postRiverRunAnimation6()
 {
 
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
 
 	refreshCash();
 	refreshPot();
@@ -2807,7 +2839,7 @@ void gameTableImpl::postRiverRunAnimation6()
 
 void gameTableImpl::showHoleCards(unsigned playerId, bool allIn)
 {
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
 	//TempArrays
 	QPixmap tempCardsPixmapArray[2];
 	int tempCardsIntArray[2];
@@ -2842,7 +2874,7 @@ void gameTableImpl::showHoleCards(unsigned playerId, bool allIn)
 void gameTableImpl::flipHolecardsAllIn()
 {
 
-	std::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 
 	if(!flipHolecardsAllInAlreadyDone && currentGame->getCurrentHand()->getCurrentRound() < GAME_STATE_RIVER) {
 		//Aktive Spieler zählen --> wenn nur noch einer nicht-folded dann keine Karten umdrehen
@@ -3613,7 +3645,7 @@ void gameTableImpl::networkGameModification()
 void gameTableImpl::mouseOverFlipCards(bool front)
 {
 
-	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame()) {
 		if(myConfig->readConfigInt("AntiPeekMode") && myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getSeatsList()->front()->getMyActiveStatus()/* && myStartWindow->getSession()->getCurrentGame()->getSeatsList()->front()->getMyAction() != PLAYER_ACTION_FOLD*/) {
 			holeCardsArray[0][0]->signalFastFlipCards(front);
 			holeCardsArray[0][1]->signalFastFlipCards(front);
@@ -3624,7 +3656,7 @@ void gameTableImpl::mouseOverFlipCards(bool front)
 void gameTableImpl::updateMyButtonsState(int mode)
 {
 
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
 
 	if(currentHand->getPreviousPlayerID() == 0) {
 		myButtonsCheckable(false);
@@ -3670,7 +3702,7 @@ void gameTableImpl::clearMyButtons()
 void gameTableImpl::myButtonsCheckable(bool state)
 {
 
-	std::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
 
 	if(state) {
 		//checkable
@@ -3987,7 +4019,7 @@ void gameTableImpl::refreshCardsChance(GameState bero)
 {
 	if(myConfig->readConfigInt("ShowCardsChanceMonitor")) {
 
-		std::shared_ptr<PlayerInterface> humanPlayer = myStartWindow->getSession()->getCurrentGame()->getSeatsList()->front();
+		boost::shared_ptr<PlayerInterface> humanPlayer = myStartWindow->getSession()->getCurrentGame()->getSeatsList()->front();
 		if(humanPlayer->getMyActiveStatus()) {
 			int boardCards[5];
 			int holeCards[2];
@@ -4374,7 +4406,7 @@ void gameTableImpl::hide()
 	QWidget::hide();
 }
 
-SeatState gameTableImpl::getCurrentSeatState(std::shared_ptr<PlayerInterface> player)
+SeatState gameTableImpl::getCurrentSeatState(boost::shared_ptr<PlayerInterface> player)
 {
 
 	if(player->getMyActiveStatus()) {

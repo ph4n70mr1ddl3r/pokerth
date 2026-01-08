@@ -33,7 +33,7 @@
 #ifndef _PLAYERDATA_H_
 #define _PLAYERDATA_H_
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <string>
 #include <list>
@@ -96,8 +96,8 @@ public:
 	void SetAvatarFile(const std::string &avatarFile);
 	MD5Buf GetAvatarMD5() const;
 	void SetAvatarMD5(const MD5Buf &avatarMD5);
-	std::shared_ptr<AvatarFile> GetNetAvatarFile() const;
-	void SetNetAvatarFile(std::shared_ptr<AvatarFile> AvatarFile);
+	boost::shared_ptr<AvatarFile> GetNetAvatarFile() const;
+	void SetNetAvatarFile(boost::shared_ptr<AvatarFile> AvatarFile);
 	PlayerType GetType() const;
 	void SetType(PlayerType type);
 	PlayerRights GetRights() const;
@@ -139,7 +139,7 @@ private:
 	PlayerType						m_type;
 	PlayerRights					m_rights;
 	bool							m_isGameAdmin;
-	std::shared_ptr<AvatarFile>	m_netAvatarFile;
+	boost::shared_ptr<AvatarFile>	m_netAvatarFile;
 
 	std::vector<long> 				m_last_games;
 
@@ -147,8 +147,8 @@ private:
 };
 
 typedef std::list<std::pair<unsigned, unsigned> > RemovePlayerList;
-typedef std::list<std::shared_ptr<PlayerData> > PlayerDataList;
-typedef std::map<unsigned, std::shared_ptr<PlayerData> > PlayerDataMap;
+typedef std::list<boost::shared_ptr<PlayerData> > PlayerDataList;
+typedef std::map<unsigned, boost::shared_ptr<PlayerData> > PlayerDataMap;
 
 #endif
 

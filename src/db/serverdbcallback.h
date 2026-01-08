@@ -36,7 +36,7 @@
 #include <db/dbdefs.h>
 #include <string>
 #include <list>
-#include <memory>
+#include <boost/shared_ptr.hpp>
 
 // Callback operations are posted using the io service,
 // and will therefore be executed in the io service thread.
@@ -50,7 +50,7 @@ public:
 
 	virtual void QueryError(std::string error) = 0;
 
-	virtual void PlayerLoginSuccess(unsigned requestId, std::shared_ptr<DBPlayerData> dbPlayerData) = 0;
+	virtual void PlayerLoginSuccess(unsigned requestId, boost::shared_ptr<DBPlayerData> dbPlayerData) = 0;
 	virtual void PlayerLoginFailed(unsigned requestId) = 0;
 	virtual void PlayerLoginBlocked(unsigned requestId) = 0;
 

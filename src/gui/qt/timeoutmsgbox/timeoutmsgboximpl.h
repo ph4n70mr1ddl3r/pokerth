@@ -59,7 +59,7 @@ public slots:
 	void timerRefresh();
 	void stopTimeout();
 
-	void setMySession ( std::shared_ptr<Session>  theValue )
+	void setMySession ( boost::shared_ptr<Session>  theValue )
 	{
 		mySession = theValue;
 	}
@@ -76,7 +76,7 @@ private:
 
 	QTimer *timeOutTimer;
 	QPushButton *okButton;
-	std::shared_ptr<Session> mySession;
+	boost::shared_ptr<Session> mySession;
 	NetTimeoutReason msgID;
 	int timeoutDuration;
 	boost::timers::portable::microsec_timer realTimer;

@@ -33,9 +33,9 @@
 #ifndef _SERVERGAME_H_
 #define _SERVERGAME_H_
 
+#include <boost/enable_shared_from_this.hpp>
 #include <boost/asio/steady_timer.hpp>
 #include <third_party/boost/timers.hpp>
-#include <memory>
 #include <map>
 
 #include <net/sessionmanager.h>
@@ -52,11 +52,11 @@ class ConfigFile;
 struct GameData;
 class Game;
 
-class ServerGame : public std::enable_shared_from_this<ServerGame>
+class ServerGame : public boost::enable_shared_from_this<ServerGame>
 {
 public:
 	ServerGame(
-		std::shared_ptr<ServerLobbyThread> lobbyThread, u_int32_t id, const std::string &name, const std::string &pwd, const GameData &gameData,
+		boost::shared_ptr<ServerLobbyThread> lobbyThread, u_int32_t id, const std::string &name, const std::string &pwd, const GameData &gameData,
 		unsigned adminPlayerId, unsigned creatorPlayerDBId, GuiInterface &gui, ConfigFile &playerConfig);
 	virtual ~ServerGame();
 
@@ -67,19 +67,19 @@ public:
 	const std::string &GetName() const;
 	unsigned GetCreatorDBId() const;
 
-	void AddSession(std::shared_ptr<SessionData> session, bool spectateOnly);
+	void AddSession(boost::shared_ptr<SessionData> session, bool spectateOnly);
 	void RemovePlayer(unsigned playerId, unsigned errorCode);
 	void MutePlayer(unsigned playerId, bool mute);
 	void MarkPlayerAsInactive(unsigned playerId);
 	void MarkPlayerAsKicked(unsigned playerId);
 
-	void HandlePacket(std::shared_ptr<SessionData> session, std::shared_ptr<NetPacket> packet);
+	void HandlePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
 
 	ServerCallback &GetCallback();
 	GameState GetCurRound() const;
 
-	void SendToAllPlayers(std::shared_ptr<NetPacket> packet, int state);
-	void SendToAllButOnePlayers(std::shared_ptr<NetPacket> packet, SessionId except, int state);
+	void SendToAllPlayers(boost::shared_ptr<NetPacket> packet, int state);
+	void SendToAllButOnePlayers(boost::shared_ptr<NetPacket> packet, SessionId except, int state);
 	void RemoveAllSessions();
 	void MoveSpectatorsToLobby();
 
@@ -88,14 +88,14 @@ public:
 	static bool CheckSettings(const GameData &data, const std::string &password, ServerMode mode);
 	const GameData &GetGameData() const;
 
-	std::shared_ptr<PlayerData> GetPlayerDataByUniqueId(unsigned playerId) const;
+	boost::shared_ptr<PlayerData> GetPlayerDataByUniqueId(unsigned playerId) const;
 	PlayerIdList GetPlayerIdList() const;
 	PlayerIdList GetSpectatorIdList() const;
 	bool IsPlayerConnected(const std::string &name) const;
 	bool IsPlayerConnected(unsigned playerId) const;
 	bool IsClientAddressConnected(const std::string &clientAddress) const;
-	std::shared_ptr<PlayerInterface> GetPlayerInterfaceFromGame(const std::string &playerName);
-	std::shared_ptr<PlayerInterface> GetPlayerInterfaceFromGame(unsigned playerId);
+	boost::shared_ptr<PlayerInterface> GetPlayerInterfaceFromGame(const std::string &playerName);
+	boost::shared_ptr<PlayerInterface> GetPlayerInterfaceFromGame(unsigned playerId);
 
 	bool IsRunning() const;
 
@@ -152,22 +152,22 @@ protected:
 	void RemoveAutoLeavePlayers();
 	void InternalEndGame();
 
-	void InternalAskVoteKick(std::shared_ptr<SessionData> byWhom, unsigned playerIdWho, unsigned timeoutSec);
-	void InternalDenyAskVoteKick(std::shared_ptr<SessionData> byWhom, unsigned playerIdWho, DenyKickPlayerReason reason);
-	void InternalVoteKick(std::shared_ptr<SessionData> byWhom, unsigned petitionId, KickVote vote);
-	void InternalDenyVoteKick(std::shared_ptr<SessionData> byWhom, unsigned petitionId, DenyVoteReason reason);
+	void InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned playerIdWho, unsigned timeoutSec);
+	void InternalDenyAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned playerIdWho, DenyKickPlayerReason reason);
+	void InternalVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned petitionId, KickVote vote);
+	void InternalDenyVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned petitionId, DenyVoteReason reason);
 
 	PlayerDataList GetFullPlayerDataList() const;
 
-	void AddComputerPlayer(std::shared_ptr<PlayerData> player);
-	std::shared_ptr<PlayerData> RemoveComputerPlayer(unsigned playerId);
+	void AddComputerPlayer(boost::shared_ptr<PlayerData> player);
+	boost::shared_ptr<PlayerData> RemoveComputerPlayer(unsigned playerId);
 	bool IsComputerPlayerActive(unsigned playerId) const;
 	void ResetComputerPlayerList();
 
-	void RemoveSession(std::shared_ptr<SessionData> session, int reason);
-	void RemovePlayerData(std::shared_ptr<PlayerData> player, int reason, bool spectateOnly);
-	void SessionError(std::shared_ptr<SessionData> session, int errorCode);
-	void MoveSessionToLobby(std::shared_ptr<SessionData> session, int reason);
+	void RemoveSession(boost::shared_ptr<SessionData> session, int reason);
+	void RemovePlayerData(boost::shared_ptr<PlayerData> player, int reason, bool spectateOnly);
+	void SessionError(boost::shared_ptr<SessionData> session, int errorCode);
+	void MoveSessionToLobby(boost::shared_ptr<SessionData> session, int reason);
 
 	void RemoveDisconnectedPlayers();
 	int GetCurNumberOfPlayers() const;
@@ -226,15 +226,15 @@ private:
 
 	unsigned m_adminPlayerId;
 
-	std::shared_ptr<VoteKickData> m_voteKickData;
+	boost::shared_ptr<VoteKickData> m_voteKickData;
 
-	std::shared_ptr<ServerLobbyThread> m_lobbyThread;
-	std::shared_ptr<ServerDBInterface> m_database;
+	boost::shared_ptr<ServerLobbyThread> m_lobbyThread;
+	boost::shared_ptr<ServerDBInterface> m_database;
 	GuiInterface &m_gui;
 
 	const GameData		m_gameData;
 	StartData			m_startData;
-	std::shared_ptr<Game>	 m_game;
+	boost::shared_ptr<Game>	 m_game;
 	ServerGameState			*m_curState;
 
 	const u_int32_t		m_id;

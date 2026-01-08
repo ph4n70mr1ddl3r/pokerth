@@ -39,7 +39,6 @@
 #include <handinterface.h>
 #include <berointerface.h>
 
-#include <memory>
 #include <vector>
 
 class Log;
@@ -47,7 +46,7 @@ class Log;
 class LocalHand : public HandInterface
 {
 public:
-	LocalHand(std::shared_ptr<EngineFactory> f, GuiInterface *g, std::shared_ptr<BoardInterface>, Log*, PlayerList, PlayerList, PlayerList, int, int, unsigned, int, int);
+	LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface*, boost::shared_ptr<BoardInterface>, Log*, PlayerList, PlayerList, PlayerList, int, int, unsigned, int, int);
 	~LocalHand();
 
 	void start();
@@ -65,23 +64,23 @@ public:
 		return runningPlayerList;
 	}
 
-	std::shared_ptr<BoardInterface> getBoard() const
+	boost::shared_ptr<BoardInterface> getBoard() const
 	{
 		return myBoard;
 	}
-	std::shared_ptr<BeRoInterface> getPreflop() const
+	boost::shared_ptr<BeRoInterface> getPreflop() const
 	{
 		return myBeRo[GAME_STATE_PREFLOP];
 	}
-	std::shared_ptr<BeRoInterface> getFlop() const
+	boost::shared_ptr<BeRoInterface> getFlop() const
 	{
 		return myBeRo[GAME_STATE_FLOP];
 	}
-	std::shared_ptr<BeRoInterface> getTurn() const
+	boost::shared_ptr<BeRoInterface> getTurn() const
 	{
 		return myBeRo[GAME_STATE_TURN];
 	}
-	std::shared_ptr<BeRoInterface> getRiver() const
+	boost::shared_ptr<BeRoInterface> getRiver() const
 	{
 		return myBeRo[GAME_STATE_RIVER];
 	}
@@ -89,7 +88,7 @@ public:
 	{
 		return myGui;
 	}
-	std::shared_ptr<BeRoInterface> getCurrentBeRo() const
+	boost::shared_ptr<BeRoInterface> getCurrentBeRo() const
 	{
 		return myBeRo[currentRound];
 	}
@@ -203,16 +202,16 @@ protected:
 
 private:
 
-	std::shared_ptr<EngineFactory> myFactory;
-	GuiInterface* myGui;
-	std::shared_ptr<BoardInterface> myBoard;
+	boost::shared_ptr<EngineFactory> myFactory;
+	GuiInterface *myGui;
+	boost::shared_ptr<BoardInterface> myBoard;
 	Log *myLog;
 
 	PlayerList seatsList; // all player
 	PlayerList activePlayerList; // all player who are not out
 	PlayerList runningPlayerList; // all player who are not folded, not all in and not out
 
-	std::vector<std::shared_ptr<BeRoInterface> > myBeRo;
+	std::vector<boost::shared_ptr<BeRoInterface> > myBeRo;
 
 	int myID;
 	int startQuantityPlayers;

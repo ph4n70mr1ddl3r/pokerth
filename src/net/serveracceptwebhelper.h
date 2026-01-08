@@ -40,19 +40,19 @@
 class ServerAcceptWebHelper : public ServerAcceptInterface
 {
 public:
-	ServerAcceptWebHelper(ServerCallback &serverCallback, std::shared_ptr<boost::asio::io_context> ioService,
+	ServerAcceptWebHelper(ServerCallback &serverCallback, boost::shared_ptr<boost::asio::io_context> ioService,
 						  const std::string &webSocketResource, const std::string &webSocketOrigin, const bool &websocketTls );
 
 	virtual void Listen(unsigned serverPort, bool ipv6, const std::string &logDir,
-						std::shared_ptr<ServerLobbyThread> lobbyThread);
+						boost::shared_ptr<ServerLobbyThread> lobbyThread);
 
 	virtual void Close();
 
 protected:
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L) // c++11
-	typedef std::map<websocketpp::connection_hdl, std::weak_ptr<SessionData>, std::owner_less<websocketpp::connection_hdl> > SessionMap;
+	typedef std::map<websocketpp::connection_hdl, boost::weak_ptr<SessionData>, std::owner_less<websocketpp::connection_hdl> > SessionMap;
 #else
-	typedef std::map<websocketpp::connection_hdl, std::weak_ptr<SessionData> > SessionMap;
+	typedef std::map<websocketpp::connection_hdl, boost::weak_ptr<SessionData> > SessionMap;
 #endif
 	bool validate(websocketpp::connection_hdl hdl);
 	void on_open(websocketpp::connection_hdl hdl);
@@ -60,16 +60,16 @@ protected:
 	void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg);
 	context_ptr on_tls_init(websocketpp::connection_hdl hdl);
 private:
-	std::shared_ptr<boost::asio::io_context> m_ioService;
+	boost::shared_ptr<boost::asio::io_context> m_ioService;
 	ServerCallback &m_serverCallback;
-	std::shared_ptr<server> m_webSocketServer;
-	std::shared_ptr<tls_server> m_webSocketTlsServer;
+	boost::shared_ptr<server> m_webSocketServer;
+	boost::shared_ptr<tls_server> m_webSocketTlsServer;
 	SessionMap m_sessionMap;
 	std::string m_webSocketResource;
 	std::string m_webSocketOrigin;
 	bool m_tls;
 
-	std::shared_ptr<ServerLobbyThread> m_lobbyThread;
+	boost::shared_ptr<ServerLobbyThread> m_lobbyThread;
 };
 
 #endif
