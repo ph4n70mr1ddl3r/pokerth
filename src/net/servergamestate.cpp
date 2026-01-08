@@ -155,7 +155,6 @@ static void SendNewRoundCards(ServerGame &server, Game &curGame, int state)
 	}
 	break;
 	default: {
-		//
 	}
 	}
 }
