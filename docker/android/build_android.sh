@@ -128,14 +128,8 @@ cmake --build "$BUILD_DIR" --target ${TARGET} -j $(nproc || echo 1)
 
 echo "Build finished. Artefacts in: $BUILD_DIR"
 
-# Bestimme das Android Source Directory basierend auf dem Target
-if [[ $TARGET == "pokerth_qml-client" ]]; then
-  ANDROID_SOURCE_DIR="${PWD}/src/gui/qt6-qml/android"
-  BUILD_SUBDIR="src/gui/qt6-qml"
-else
-  ANDROID_SOURCE_DIR="${PWD}/src/gui/qt/android"
-  BUILD_SUBDIR="src/gui/qt"
-fi
+ANDROID_SOURCE_DIR="${PWD}/src/gui/qt/android"
+BUILD_SUBDIR="src/gui/qt"
 
 ANDROID_BUILD_DIR="$BUILD_DIR/android-build"
 

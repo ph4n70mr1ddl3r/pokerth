@@ -263,5 +263,3 @@ add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
 add_subdirectory(src/gui/qt)
-add_subdirectory(src/gui/qt6-qml)
-

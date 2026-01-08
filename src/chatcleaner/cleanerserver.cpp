@@ -132,17 +132,7 @@ void CleanerServer::onRead()
 		tcpSocket->close();
 	}
 
-	/*	char buf[1024];
-	tcpSocket->readLine(buf, sizeof(buf));
-	QString message = QString::fromUtf8("%1").arg(buf);
 
-	// TESTING DEFAULT VALUES
-	QString nick = "PlayerNick";
-	unsigned playerId = 1;
-	// TESTING DEFAULT VALUES
-
-	QString checkMessage = myMessageFilter->check(playerId, nick, message);
-	tcpSocket->write(checkMessage.toAscii().data(), checkMessage.length());*/
 }
 
 bool CleanerServer::handleMessage(ChatCleanerMessage &msg)

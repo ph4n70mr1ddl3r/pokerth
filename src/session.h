@@ -120,8 +120,8 @@ public:
 
 	void adminActionCloseGame(unsigned gameId);
 
-	bool isNetworkClientRunning() const; // TODO hack
-	bool isNetworkServerRunning() const; // TODO hack
+	bool isNetworkClientRunning() const;
+	bool isNetworkServerRunning() const;
 
 	ServerInfo getClientServerInfo(unsigned serverId) const;
 	GameInfo getClientGameInfo(unsigned gameId) const;

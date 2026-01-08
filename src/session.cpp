@@ -546,14 +546,12 @@ void Session::showMyCards()
 
 bool Session::isNetworkClientRunning() const
 {
-	// This, and every place which calls this, is a HACK.
 	return myNetClient.get() != NULL;
 }
 
 bool Session::isNetworkServerRunning() const
 {
 #ifdef POKERTH_DEDICATED_SERVER	
-	// This, and every place which calls this, is a HACK.
 	return myNetServer.get() != NULL;
 #else
 	return false;
