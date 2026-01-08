@@ -88,6 +88,7 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	for(i=0; i<15; i++) {
 		statisticArray[i] = 0;
 	}
+	////////////////////////////
 
 	myAppDataPath = QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str());
 

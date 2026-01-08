@@ -919,6 +919,7 @@ LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType ty
 		}
 
 	}
+	////////////////////////////
 
 	int i;
 	for(i=0; i<3; i++) {
@@ -1000,6 +1001,7 @@ LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType ty
 		}
 
 	}
+	////////////////////////////
 
 }
 
@@ -1948,9 +1950,251 @@ void LocalPlayer::flopEngine()
 
 
 
+	// 		cout << "Engine 0.4" << endl;
+	// 		int tempArray[5];
+	// 		int boardCards[5];
+	// 		int info[4];
+	// 		int cBluff;
+	// 		int sBluff;
+	// 		int bet = 0;
+	// 		int raise = 0;
+	//
+	// 		int i;
+	//
+	//
+	// 		for(i=0; i<2; i++) tempArray[i] = myCards[i];
+	// 		currentBoard->getMyCards(boardCards);
+	// 		for(i=0; i<3; i++) tempArray[2+i] = boardCards[i];
+	//
+	// 		for(i=0; i<4; i++) info[i] = -1;
+	//
+	// // 		for(i=0; i<5; i++) cout << tempArray[i] << " ";
+	// // 		cout << endl;
+	//
+	// 		cout << myID << ": ";
+	//
+	// 		flopCardsValue(tempArray);
+	//
+	// 		// aktive Situation --> check / bet
+	// 		if(currentHand->getCurrentBeRo()->getHighestSet() == 0) {
+	//
+	// 			switch(info[0]) {
+	// 				case 9: {}
+	// 				case 8: {}
+	// 				case 7: {}
+	// 				case 6: {}
+	// 				case 5: {}
+	// 				case 4: {
+	// 					Tools::getRandNumber(0,100,1,&cBluff,0);
+	// 					if(cBluff < 35) {
+	// 						myAction = PLAYER_ACTION_CHECK;
+	// 					}
+	// 					else {
+	// 						if(myCash/(2*currentHand->getSmallBlind()) <= 8) {
+	// 							myAction = PLAYER_ACTION_ALLIN;
+	// 						} else {
+	// 							if(cBluff < 60) {
+	// 								bet = (7-myDude4)*2*currentHand->getSmallBlind();
+	// 							} else {
+	// 								bet = (((100-cBluff)/20)+2)*currentHand->getSmallBlind();
+	// 							}
+	// 							if(bet < 2*currentHand->getSmallBlind()) bet = 2*currentHand->getSmallBlind();
+	// 							myAction = PLAYER_ACTION_BET;
+	// 						}
+	// 					}
+	// 				}
+	// 				break;
+	// 				case 3: {
+	// 					switch(info[3]) {
+	// 						case 2: {
+	// 							Tools::getRandNumber(0,100,1,&cBluff,0);
+	// 							if(cBluff < 35) {
+	// 								myAction = PLAYER_ACTION_CHECK;
+	// 							}
+	// 							else {
+	// 								if(myCash/(2*currentHand->getSmallBlind()) <= 8) {
+	// 									myAction = PLAYER_ACTION_ALLIN;
+	// 								} else {
+	// 									if(cBluff < 60) {
+	// 										bet = (5-myDude4)*2*currentHand->getSmallBlind();
+	// 									} else {
+	// 										bet = (((100-cBluff)/20)+2)*currentHand->getSmallBlind();
+	// 									}
+	// 									if(bet < 2*currentHand->getSmallBlind()) bet = 2*currentHand->getSmallBlind();
+	// 									myAction = PLAYER_ACTION_BET;
+	// 								}
+	// 							}
+	// 						}
+	// 						break;
+	// 						case 1: {
+	// 							Tools::getRandNumber(0,100,1,&cBluff,0);
+	// 							if(cBluff < 40) {
+	// 								myAction = PLAYER_ACTION_CHECK;
+	// 							}
+	// 							else {
+	// 								if(myCash/(2*currentHand->getSmallBlind()) <= 6) {
+	// 									myAction = PLAYER_ACTION_ALLIN;
+	// 								} else {
+	// 									if(cBluff < 60) {
+	// 										bet = (3-myDude4)*2*currentHand->getSmallBlind();
+	// 									} else {
+	// 										bet = (((100-cBluff)/20)+2)*currentHand->getSmallBlind();
+	// 									}
+	// 									if(bet < 2*currentHand->getSmallBlind()) bet = 2*currentHand->getSmallBlind();
+	// 									myAction = PLAYER_ACTION_BET;
+	// 								}
+	// 							}
+	// 						}
+	// 						break;
+	// 						default: {
+	// 							Tools::getRandNumber(0,100,1,&sBluff,0);
+	// 							if(info[1] >= 10 && sBluff <= 40) {
+	// 								bet = (sBluff/10)*2*currentHand->getSmallBlind();
+	// 								if(bet < 2*currentHand->getSmallBlind()) bet = 2*currentHand->getSmallBlind();
+	// 								myAction = PLAYER_ACTION_BET;
+	// 							}
+	// 							else {
+	// 								myAction = PLAYER_ACTION_CHECK;
+	// 							}
+	// 						}
+	// 					}
+	// 				}
+	// 				break;
+	// 				case 2: {
+	// 					switch(info[3]) {
+	// 						case 2: {
+	// 							Tools::getRandNumber(0,100,1,&cBluff,0);
+	// 							if(cBluff > 80) {
+	// 								myAction = PLAYER_ACTION_CHECK;
+	// 							}
+	// 							else {
+	// 								if(myCash/(2*currentHand->getSmallBlind()) <= 6) {
+	// 									myAction = PLAYER_ACTION_ALLIN;
+	// 								} else {
+	// 									bet = (cBluff/20)*2*currentHand->getSmallBlind();
+	// 									if(bet < 2*currentHand->getSmallBlind()) bet = 2*currentHand->getSmallBlind();
+	// 									myAction = PLAYER_ACTION_BET;
+	// 								}
+	// 							}
+	// 						}
+	// 						break;
+	// 						default: {
+	// 							Tools::getRandNumber(0,100,1,&cBluff,0);
+	// 							if(cBluff > 90) {
+	// 								myAction = PLAYER_ACTION_CHECK;
+	// 							}
+	// 							else {
+	// 								if(myCash/(2*currentHand->getSmallBlind()) <= 5) {
+	// 									myAction = PLAYER_ACTION_ALLIN;
+	// 								} else {
+	// 									bet = (cBluff/30)*2*currentHand->getSmallBlind();
+	// 									if(bet < 2*currentHand->getSmallBlind()) bet = 2*currentHand->getSmallBlind();
+	// 									myAction = PLAYER_ACTION_BET;
+	// 								}
+	// 							}
+	// 						}
+	// 					}
+	// 				}
+	// 				break;
+	// 				case 1: {
+	// 					if(!info[2]) {
+	// 					Tools::getRandNumber(0,100,1,&sBluff,0);
+	// 					switch(info[3]) {
+	// 						case 2: {}
+	// 						case 1: {
+	// 							if(currentHand->getActivePlayerList().size() == 2) {
+	// 								bet = (1-myDude4)*2*currentHand->getSmallBlind();
+	// 								if(bet < 2*currentHand->getSmallBlind()) bet = 2*currentHand->getSmallBlind();
+	// 								myAction = PLAYER_ACTION_BET;
+	//
+	// 							}
+	// 							else {
+	// 								switch(info[1]) {
+	// 									case 3: {
+	// 										if(sBluff <= 10) {
+	// 											bet = (sBluff/5 + 2)*currentHand->getSmallBlind();
+	// 											myAction = PLAYER_ACTION_BET;
+	// 										}
+	// 										else {
+	// 											myAction = PLAYER_ACTION_CHECK;
+	// 										}
+	// 									}
+	// 									break;
+	// 									case 2: {
+	// 										if(sBluff <= 15) {
+	// 											bet = (sBluff/5 + 2)*currentHand->getSmallBlind();
+	// 											myAction = PLAYER_ACTION_BET;
+	// 										}
+	// 										else {
+	// 											myAction = PLAYER_ACTION_CHECK;
+	// 										}
+	// 									}
+	// 									break;
+	// 									case 1: {
+	// 										if(sBluff <= 50) {
+	// 											bet = (sBluff/15 + 2)*currentHand->getSmallBlind();
+	// 											myAction = PLAYER_ACTION_BET;
+	// 										}
+	// 										else {
+	// 											myAction = PLAYER_ACTION_CHECK;
+	// 										}
+	// 									}
+	// 									break;
+	// 									default: {
+	// 										if(myCash/(2*currentHand->getSmallBlind()) <= 5) {
+	// 											myAction = PLAYER_ACTION_ALLIN;
+	// 										} else {
+	// 											bet = (sBluff/15)*2*currentHand->getSmallBlind();
+	// 											if(bet < 2*currentHand->getSmallBlind()) bet = 2*currentHand->getSmallBlind();
+	// 											myAction = PLAYER_ACTION_BET;
+	// 										}
+	// 									}
+	// 									break;
+	// 								}
+	// 							}
+	// 						}
+	// 						break;
+	// 						default: {
+	// 						}
+	// 					}
+	// 					}
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	// 				}
+	// 				break;
+	// 				default: {}
+	// 			}
+	//
+	//
+	//
+	// 		}
+	// 		// passive Situation --> fold / call / raise
+	// 		else {
+	//
+	//
+	//
+	// 		}
 
 
-	void LocalPlayer::turnEngine()
+}
+
+
+void LocalPlayer::turnEngine()
 {
 
 	// 		int tempArray[6];
