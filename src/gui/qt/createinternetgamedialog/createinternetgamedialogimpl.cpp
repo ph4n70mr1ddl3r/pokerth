@@ -157,7 +157,7 @@ void createInternetGameDialogImpl::gameTypeChanged()
 		checkBox_Password->setDisabled(false);
 		spinBox_startCash->setDisabled(false);
 		spinBox_quantityPlayers->setDisabled(false);
-		spinBox_quantityPlayers->setValue(myConfig->readConfigInt("NetNumberOfPlayers"));
+		spinBox_quantityPlayers->setValue(2);
 		spinBox_startCash->setValue(myConfig->readConfigInt("NetStartCash"));
 		radioButton_useSavedBlindsSettings->show();
 		radioButton_changeBlindsSettings->show();
@@ -172,7 +172,7 @@ void createInternetGameDialogImpl::gameTypeChanged()
 		checkBox_Password->setDisabled(false);
 		spinBox_startCash->setDisabled(false);
 		spinBox_quantityPlayers->setDisabled(false);
-		spinBox_quantityPlayers->setValue(myConfig->readConfigInt("NetNumberOfPlayers"));
+		spinBox_quantityPlayers->setValue(2);
 		spinBox_startCash->setValue(myConfig->readConfigInt("NetStartCash"));
 		radioButton_useSavedBlindsSettings->show();
 		radioButton_changeBlindsSettings->show();
@@ -187,7 +187,7 @@ void createInternetGameDialogImpl::gameTypeChanged()
 		checkBox_Password->setDisabled(true);
 		spinBox_startCash->setDisabled(false);
 		spinBox_quantityPlayers->setDisabled(false);
-		spinBox_quantityPlayers->setValue(myConfig->readConfigInt("NetNumberOfPlayers"));
+		spinBox_quantityPlayers->setValue(2);
 		spinBox_startCash->setValue(myConfig->readConfigInt("NetStartCash"));
 		radioButton_useSavedBlindsSettings->show();
 		radioButton_changeBlindsSettings->show();

@@ -221,7 +221,7 @@ void settingsDialogImpl::prepareDialog()
 	pushButton_Opponent9Avatar->setIcon(QIcon(pushButton_Opponent9Avatar->getMyLink()));
 
 	//Network Game Settings
-	spinBox_netQuantityPlayers->setValue(myConfig->readConfigInt("NetNumberOfPlayers"));
+	spinBox_netQuantityPlayers->setValue(2);
 	spinBox_netStartCash->setValue(myConfig->readConfigInt("NetStartCash"));
 	spinBox_netFirstSmallBlind->setValue(myConfig->readConfigInt("NetFirstSmallBlind"));
 	radioButton_netRaiseBlindsAtHands->setChecked(myConfig->readConfigInt("NetRaiseBlindsAtHands"));
@@ -649,7 +649,7 @@ void settingsDialogImpl::isAccepted()
 	}
 
 	//Network Game Settings
-	myConfig->writeConfigInt("NetNumberOfPlayers", spinBox_netQuantityPlayers->value());
+	myConfig->writeConfigInt("NetNumberOfPlayers", 2);
 	myConfig->writeConfigInt("NetStartCash", spinBox_netStartCash->value());
 	myConfig->writeConfigInt("NetFirstSmallBlind", spinBox_netFirstSmallBlind->value());
 	myConfig->writeConfigInt("NetRaiseBlindsAtHands", radioButton_netRaiseBlindsAtHands->isChecked());

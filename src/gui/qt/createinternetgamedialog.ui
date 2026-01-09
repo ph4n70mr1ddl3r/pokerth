@@ -154,14 +154,17 @@
       </item>
       <item row="5" column="1">
        <widget class="QSpinBox" name="spinBox_quantityPlayers">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimum">
          <number>2</number>
         </property>
         <property name="maximum">
-         <number>10</number>
+         <number>2</number>
         </property>
         <property name="value">
-         <number>10</number>
+         <number>2</number>
         </property>
        </widget>
       </item>

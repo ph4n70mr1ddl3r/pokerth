@@ -1310,6 +1310,7 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 	// Create a new game.
 	GameData tmpData;
 	NetPacket::GetGameData(newGame.gameinfo(), tmpData);
+	tmpData.maxNumberOfPlayers = 2; // Force heads-up only
 	string gameName(newGame.gameinfo().gamename());
 	// Always trim the game name.
 	boost::trim(gameName);
