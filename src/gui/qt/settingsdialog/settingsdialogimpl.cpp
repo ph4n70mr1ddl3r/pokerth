@@ -609,7 +609,7 @@ void settingsDialogImpl::isAccepted()
 	checkSetPlayerNicks.insert(lineEdit_Opponent8Name->text().trimmed());
 	checkSetPlayerNicks.insert(lineEdit_Opponent9Name->text().trimmed());
 
-	if(checkSetPlayerNicks.count() != 10) {
+	if(checkSetPlayerNicks.count() != 2) {
 		MyMessageBox::warning(this, tr("Settings Error"),
 							  tr("The opponent names are not unique.\n"
 								 "Please choose different names for each Opponent!"),

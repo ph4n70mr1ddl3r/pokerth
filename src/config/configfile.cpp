@@ -195,7 +195,7 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 	configList.push_back(ConfigInfo("PlayLobbyChatNotification", CONFIG_TYPE_INT, "1"));
 	configList.push_back(ConfigInfo("PlayNetworkGameNotification", CONFIG_TYPE_INT, "1"));
 	configList.push_back(ConfigInfo("PlayBlindRaiseNotification", CONFIG_TYPE_INT, "1"));
-	configList.push_back(ConfigInfo("NumberOfPlayers", CONFIG_TYPE_INT, "10"));
+	configList.push_back(ConfigInfo("NumberOfPlayers", CONFIG_TYPE_INT, "2"));
 	configList.push_back(ConfigInfo("StartCash", CONFIG_TYPE_INT, "5000"));
 	configList.push_back(ConfigInfo("FirstSmallBlind", CONFIG_TYPE_INT, "10"));
 	configList.push_back(ConfigInfo("RaiseBlindsAtHands", CONFIG_TYPE_INT, "1"));
@@ -212,7 +212,7 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 	configList.push_back(ConfigInfo("GameSpeed", CONFIG_TYPE_INT, "4"));
 	configList.push_back(ConfigInfo("PauseBetweenHands", CONFIG_TYPE_INT, "0"));
 	configList.push_back(ConfigInfo("ShowGameSettingsDialogOnNewGame", CONFIG_TYPE_INT, "1"));
-	configList.push_back(ConfigInfo("NetNumberOfPlayers", CONFIG_TYPE_INT, "10"));
+	configList.push_back(ConfigInfo("NetNumberOfPlayers", CONFIG_TYPE_INT, "2"));
 	configList.push_back(ConfigInfo("NetStartCash", CONFIG_TYPE_INT, "3000"));
 	configList.push_back(ConfigInfo("NetFirstSmallBlind", CONFIG_TYPE_INT, "10"));
 	configList.push_back(ConfigInfo("NetRaiseBlindsAtHands", CONFIG_TYPE_INT, "1"));
@@ -287,20 +287,6 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 	configList.push_back(ConfigInfo("Opponent1Avatar", CONFIG_TYPE_STRING, ""));
 	configList.push_back(ConfigInfo("Opponent2Name", CONFIG_TYPE_STRING, "Player 2"));
 	configList.push_back(ConfigInfo("Opponent2Avatar", CONFIG_TYPE_STRING, ""));
-	configList.push_back(ConfigInfo("Opponent3Name", CONFIG_TYPE_STRING, "Player 3"));
-	configList.push_back(ConfigInfo("Opponent3Avatar", CONFIG_TYPE_STRING, ""));
-	configList.push_back(ConfigInfo("Opponent4Name", CONFIG_TYPE_STRING, "Player 4"));
-	configList.push_back(ConfigInfo("Opponent4Avatar", CONFIG_TYPE_STRING, ""));
-	configList.push_back(ConfigInfo("Opponent5Name", CONFIG_TYPE_STRING, "Player 5"));
-	configList.push_back(ConfigInfo("Opponent5Avatar", CONFIG_TYPE_STRING, ""));
-	configList.push_back(ConfigInfo("Opponent6Name", CONFIG_TYPE_STRING, "Player 6"));
-	configList.push_back(ConfigInfo("Opponent6Avatar", CONFIG_TYPE_STRING, ""));
-	configList.push_back(ConfigInfo("Opponent7Name", CONFIG_TYPE_STRING, "Player 7"));
-	configList.push_back(ConfigInfo("Opponent7Avatar", CONFIG_TYPE_STRING, ""));
-	configList.push_back(ConfigInfo("Opponent8Name", CONFIG_TYPE_STRING, "Player 8"));
-	configList.push_back(ConfigInfo("Opponent8Avatar", CONFIG_TYPE_STRING, ""));
-	configList.push_back(ConfigInfo("Opponent9Name", CONFIG_TYPE_STRING, "Player 9"));
-	configList.push_back(ConfigInfo("Opponent9Avatar", CONFIG_TYPE_STRING, ""));
 	configList.push_back(ConfigInfo("LogOnOff", CONFIG_TYPE_INT, logOnOffDefault));
 	configList.push_back(ConfigInfo("LogDir", CONFIG_TYPE_STRING, logDir));
 	configList.push_back(ConfigInfo("LogStoreDuration", CONFIG_TYPE_INT, "2"));
@@ -475,18 +461,18 @@ void ConfigFile::checkAndCorrectPlayerNames()
 	// Verify that the player names are uniquely set.
 	set<string> playerNames;
 	playerNames.insert(readConfigString("MyName"));
-	for (int i = 1; i <= 9; i++)
+	for (int i = 1; i < 2; i++)
 	{
 		ostringstream opponentVar;
 		opponentVar << "Opponent" << i << "Name";
 		playerNames.insert(readConfigString(opponentVar.str()));
 	}
-	if (playerNames.size() < 10 || playerNames.find("") != playerNames.end())
+	if (playerNames.size() < 2 || playerNames.find("") != playerNames.end())
 	{
-		// The set contains less than 10 players or an empty player name.
+		// The set contains less than 2 players or an empty player name.
 		// Reset to default player names.
 		writeConfigString("MyName", "Human Player");
-		for (int i = 1; i <= 9; i++)
+		for (int i = 1; i < 2; i++)
 		{
 			ostringstream opponentVar;
 			ostringstream opponentName;

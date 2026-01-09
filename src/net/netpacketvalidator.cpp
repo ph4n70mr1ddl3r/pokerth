@@ -337,7 +337,7 @@ NetPacketValidator::ValidateGameListNewMessage(const NetPacket &packet)
 	if (packet.GetMsg()->has_gamelistnewmessage()) {
 		const GameListNewMessage &msg = packet.GetMsg()->gamelistnewmessage();
 		if (msg.gameid() != 0
-				&& VALIDATE_LIST_SIZE(msg.playerids(), 0, 10)
+				&& VALIDATE_LIST_SIZE(msg.playerids(), 0, 2)
 				&& msg.adminplayerid() != 0
 				&& ValidateGameInfo(msg.gameinfo())) {
 
@@ -405,7 +405,7 @@ NetPacketValidator::ValidatePlayerInfoRequestMessage(const NetPacket &packet)
 	bool retVal = false;
 	if (packet.GetMsg()->has_playerinforequestmessage()) {
 		const PlayerInfoRequestMessage &msg = packet.GetMsg()->playerinforequestmessage();
-		if (VALIDATE_LIST_SIZE(msg.playerid(), 1, 10)) {
+		if (VALIDATE_LIST_SIZE(msg.playerid(), 1, 2)) {
 			retVal = true;
 		}
 	}
@@ -670,7 +670,7 @@ NetPacketValidator::ValidateGameStartInitialMessage(const NetPacket &packet)
 		const GameStartInitialMessage &msg = packet.GetMsg()->gamestartinitialmessage();
 		if (msg.gameid() != 0
 				&& msg.startdealerplayerid() != 0
-				&& VALIDATE_LIST_SIZE(msg.playerseats(), 2, 10)) {
+				&& VALIDATE_LIST_SIZE(msg.playerseats(), 2, 2)) {
 
 			retVal = true;
 		}
@@ -687,7 +687,7 @@ NetPacketValidator::ValidateGameStartRejoinMessage(const NetPacket &packet)
 		if (msg.gameid() != 0
 				&& msg.startdealerplayerid() != 0
 				&& msg.handnum() != 0
-				&& VALIDATE_LIST_SIZE(msg.rejoinplayerdata(), 2, 10)) {
+				&& VALIDATE_LIST_SIZE(msg.rejoinplayerdata(), 2, 2)) {
 
 			retVal = true;
 		}
@@ -703,7 +703,7 @@ NetPacketValidator::ValidateHandStartMessage(const NetPacket &packet)
 		const HandStartMessage &msg = packet.GetMsg()->handstartmessage();
 		if (msg.gameid() != 0
 				&& VALIDATE_UINT_RANGE(msg.smallblind(), 1, 100000000)
-				&& VALIDATE_LIST_SIZE(msg.seatstates(), 2, 10)) {
+				&& VALIDATE_LIST_SIZE(msg.seatstates(), 2, 2)) {
 
 			retVal = true;
 		}
@@ -820,7 +820,7 @@ NetPacketValidator::ValidateAllInShowCardsMessage(const NetPacket &packet)
 	if (packet.GetMsg()->has_allinshowcardsmessage()) {
 		const AllInShowCardsMessage &msg = packet.GetMsg()->allinshowcardsmessage();
 		if (msg.gameid() != 0
-				&& VALIDATE_LIST_SIZE(msg.playersallin(), 1, 10)) {
+				&& VALIDATE_LIST_SIZE(msg.playersallin(), 1, 2)) {
 
 			retVal = true;
 		}
@@ -835,7 +835,7 @@ NetPacketValidator::ValidateEndOfHandShowCardsMessage(const NetPacket &packet)
 	if (packet.GetMsg()->has_endofhandshowcardsmessage()) {
 		const EndOfHandShowCardsMessage &msg = packet.GetMsg()->endofhandshowcardsmessage();
 		if (msg.gameid() != 0
-				&& VALIDATE_LIST_SIZE(msg.playerresults(), 1, 10)) {
+				&& VALIDATE_LIST_SIZE(msg.playerresults(), 1, 2)) {
 
 			retVal = true;
 		}
@@ -1210,7 +1210,7 @@ NetPacketValidator::ValidateGameInfo(const NetGameInfo &gameInfo)
 {
 	bool retVal = false;
 	if (VALIDATE_STRING_SIZE(gameInfo.gamename(), 1, 64)
-			&& VALIDATE_UINT_RANGE(gameInfo.maxnumplayers(), 2, 10)
+			&& VALIDATE_UINT_RANGE(gameInfo.maxnumplayers(), 2, 2)
 			&& (!gameInfo.has_raiseeveryhands() || VALIDATE_UINT_RANGE(gameInfo.raiseeveryhands(), 1, 1000))
 			&& (!gameInfo.has_raiseeveryminutes() || VALIDATE_UINT_RANGE(gameInfo.raiseeveryminutes(), 1, 1000))
 			&& (!gameInfo.has_endraisesmallblindvalue() || VALIDATE_UINT_UPPER(gameInfo.endraisesmallblindvalue(), 1000000))
