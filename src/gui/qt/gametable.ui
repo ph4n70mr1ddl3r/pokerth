@@ -400,7 +400,6 @@
             <layout class="QHBoxLayout">
              <item><widget class="QLabel" name="label_Pot"><property name="text"><string>Pot:</string></property></widget></item>
              <item><widget class="QLabel" name="textLabel_Pot"><property name="text"><string>$0</string></property></widget></item>
-             <item><widget class="QLabel" name="label_Total"><property name="text"><string>Total:</string></property></widget></item>
              <item><widget class="QLabel" name="label_Sets"><property name="text"><string>Sets:</string></property></widget></item>
              <item><widget class="QLabel" name="textLabel_Sets"><property name="text"><string>$0</string></property></widget></item>
             </layout>

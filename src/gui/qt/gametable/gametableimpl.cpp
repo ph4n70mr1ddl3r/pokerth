@@ -650,7 +650,7 @@ void gameTableImpl::initGui(int speed)
 	this->setWindowTitle(QString(titleString + tr("PokerTH %1").arg(POKERTH_BETA_RELEASE_STRING)));
 
 	label_Sets->setText(BetsString);
-	label_Total->setText(TotalString);
+	// label_Total->setText(TotalString);
 	tabs.groupBox_RightToolBox->setDisabled(false);
 	tabs.groupBox_LeftToolBox->setDisabled(false);
 
@@ -668,7 +668,7 @@ void gameTableImpl::initGui(int speed)
 	this->setWindowTitle(QString(titleString + tr("PokerTH %1 - The Open-Source Texas Holdem Engine").arg(POKERTH_BETA_RELEASE_STRING)));
 
 	label_Pot->setText(PotString);
-	label_Total->setText(TotalString+":");
+	// label_Total->setText(TotalString+":");
 	label_Sets->setText(BetsString+":");
 //	groupBox_RightToolBox->setDisabled(false);
 //	groupBox_LeftToolBox->setDisabled(false);
@@ -3335,7 +3335,7 @@ void gameTableImpl::refreshGameTableStyle()
 
 #ifdef GUI_800x480
 	myGameTableStyle->setBigFontBoardStyle(label_Sets);
-	myGameTableStyle->setBigFontBoardStyle(label_Total);
+	// myGameTableStyle->setBigFontBoardStyle(label_Total);
 	myGameTableStyle->setBigFontBoardStyle(textLabel_Sets);
 	myGameTableStyle->setBigFontBoardStyle(textLabel_Pot);
 	myGameTableStyle->setBigFontBoardStyle(label_handNumber);
@@ -3345,7 +3345,7 @@ void gameTableImpl::refreshGameTableStyle()
 	// myGameTableStyle->setBigFontBoardStyle(textLabel_handLabel);
 #else
 	myGameTableStyle->setSmallFontBoardStyle(label_Sets);
-	myGameTableStyle->setSmallFontBoardStyle(label_Total);
+	// myGameTableStyle->setSmallFontBoardStyle(label_Total);
 	myGameTableStyle->setSmallFontBoardStyle(textLabel_Sets);
 	myGameTableStyle->setSmallFontBoardStyle(textLabel_Pot);
 	myGameTableStyle->setSmallFontBoardStyle(label_handNumber);
@@ -3512,7 +3512,7 @@ void gameTableImpl::refreshGameTableStyle()
 #ifndef GUI_800x480
 	label_Pot->setText(PotString);
 #endif
-	label_Total->setText(TotalString+":");
+	// label_Total->setText(TotalString+":");
 	label_Sets->setText(BetsString+":");
 	label_handNumber->setText(HandString+":");
 	label_gameNumber->setText(GameString+":");
