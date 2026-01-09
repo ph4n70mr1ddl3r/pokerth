@@ -512,8 +512,8 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 #endif
 
 	connect( pushButton_showMyCards, SIGNAL( clicked() ), this, SLOT( sendShowMyCardsSignal() ) );
-	for(i=0; i<=9; i++)connect( playerTipLabelArray[i], SIGNAL( linkActivated(QString) ), playerAvatarLabelArray[i], SLOT(startChangePlayerTip(QString) ) );
-	for(i=0; i<=9; i++) {
+	for(i=0; i<MAX_NUMBER_OF_PLAYERS; i++)connect( playerTipLabelArray[i], SIGNAL( linkActivated(QString) ), playerAvatarLabelArray[i], SLOT(startChangePlayerTip(QString) ) );
+	for(i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 		for(int j=1; j<=5; j++) {
 			connect( playerStarsArray[j][i], SIGNAL( linkActivated(QString) ), playerAvatarLabelArray[i], SLOT(setPlayerRating(QString) ) );
 		}
