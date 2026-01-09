@@ -3702,19 +3702,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>checkBox_playGameActions</tabstop>
   <tabstop>checkBox_playLobbyChatNotification</tabstop>
   <tabstop>checkBox_playNetworkGameNotification</tabstop>
-  <tabstop>spinBox_quantityPlayers</tabstop>
-  <tabstop>spinBox_startCash</tabstop>
-  <tabstop>spinBox_firstSmallBlind</tabstop>
-  <tabstop>radioButton_raiseBlindsAtHands</tabstop>
-  <tabstop>spinBox_raiseSmallBlindEveryHands</tabstop>
-  <tabstop>radioButton_raiseBlindsAtMinutes</tabstop>
-  <tabstop>spinBox_raiseSmallBlindEveryMinutes</tabstop>
-  <tabstop>radioButton_alwaysDoubleBlinds</tabstop>
-  <tabstop>radioButton_manualBlindsOrder</tabstop>
-  <tabstop>pushButton_editManualBlindsOrder</tabstop>
-  <tabstop>spinBox_gameSpeed</tabstop>
-  <tabstop>checkBox_pauseBetweenHands</tabstop>
-  <tabstop>checkBox_showGameSettingsDialogOnNewGame</tabstop>
   <tabstop>spinBox_netQuantityPlayers</tabstop>
   <tabstop>spinBox_netStartCash</tabstop>
   <tabstop>spinBox_netFirstSmallBlind</tabstop>
@@ -3823,22 +3810,6 @@ p, li { white-space: pre-wrap; }
     <hint type="destinationlabel">
      <x>322</x>
      <y>92</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_manualBlindsOrder</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pushButton_editManualBlindsOrder</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>765</x>
-     <y>212</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>765</x>
-     <y>242</y>
     </hint>
    </hints>
   </connection>

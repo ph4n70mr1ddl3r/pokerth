@@ -1952,6 +1952,10 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		tmpCards[3] = tmpCards[4] = 0;
 		curGame->getCurrentHand()->getBoard()->setMyCards(tmpCards);
 		curGame->getCurrentHand()->getBoard()->collectPot();
+		curGame->getCurrentHand()->getCurrentBeRo()->setHighestSet(0);
+		PlayerList activePlayers = curGame->getCurrentHand()->getActivePlayerList();
+		for (PlayerListIterator it = activePlayers->begin(); it != activePlayers->end(); ++it)
+			(*it)->setMySetNull();
 		curGame->getCurrentHand()->setPreviousPlayerID(-1);
 
 		client->GetGui().logDealBoardCardsMsg(GAME_STATE_FLOP, tmpCards[0], tmpCards[1], tmpCards[2], tmpCards[3], tmpCards[4]);
@@ -1969,6 +1973,10 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		tmpCards[3] = static_cast<int>(netDealTurn.turncard());
 		curGame->getCurrentHand()->getBoard()->setMyCards(tmpCards);
 		curGame->getCurrentHand()->getBoard()->collectPot();
+		curGame->getCurrentHand()->getCurrentBeRo()->setHighestSet(0);
+		PlayerList activePlayers = curGame->getCurrentHand()->getActivePlayerList();
+		for (PlayerListIterator it = activePlayers->begin(); it != activePlayers->end(); ++it)
+			(*it)->setMySetNull();
 		curGame->getCurrentHand()->setPreviousPlayerID(-1);
 
 		client->GetGui().logDealBoardCardsMsg(GAME_STATE_TURN, tmpCards[0], tmpCards[1], tmpCards[2], tmpCards[3], tmpCards[4]);
@@ -1986,6 +1994,10 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		tmpCards[4] = static_cast<int>(netDealRiver.rivercard());
 		curGame->getCurrentHand()->getBoard()->setMyCards(tmpCards);
 		curGame->getCurrentHand()->getBoard()->collectPot();
+		curGame->getCurrentHand()->getCurrentBeRo()->setHighestSet(0);
+		PlayerList activePlayers = curGame->getCurrentHand()->getActivePlayerList();
+		for (PlayerListIterator it = activePlayers->begin(); it != activePlayers->end(); ++it)
+			(*it)->setMySetNull();
 		curGame->getCurrentHand()->setPreviousPlayerID(-1);
 
 		client->GetGui().logDealBoardCardsMsg(GAME_STATE_RIVER, tmpCards[0], tmpCards[1], tmpCards[2], tmpCards[3], tmpCards[4]);
