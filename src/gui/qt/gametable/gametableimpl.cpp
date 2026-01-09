@@ -634,16 +634,12 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 
 		boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 		PlayerListIterator it = currentGame->getSeatsList()->begin();
-		(*it)->setMyName(mySettingsDialog->lineEdit_HumanPlayerName->text().toUtf8().constData());
-		(*(++it))->setMyName(mySettingsDialog->lineEdit_Opponent1Name->text().toUtf8().constData());
-		(*(++it))->setMyName(mySettingsDialog->lineEdit_Opponent2Name->text().toUtf8().constData());
-		(*(++it))->setMyName(mySettingsDialog->lineEdit_Opponent3Name->text().toUtf8().constData());
-		(*(++it))->setMyName(mySettingsDialog->lineEdit_Opponent4Name->text().toUtf8().constData());
-		(*(++it))->setMyName(mySettingsDialog->lineEdit_Opponent5Name->text().toUtf8().constData());
-		(*(++it))->setMyName(mySettingsDialog->lineEdit_Opponent6Name->text().toUtf8().constData());
-		(*(++it))->setMyName(mySettingsDialog->lineEdit_Opponent7Name->text().toUtf8().constData());
-		(*(++it))->setMyName(mySettingsDialog->lineEdit_Opponent8Name->text().toUtf8().constData());
-		(*(++it))->setMyName(mySettingsDialog->lineEdit_Opponent9Name->text().toUtf8().constData());
+		if (it != currentGame->getSeatsList()->end()) {
+			(*it)->setMyName(mySettingsDialog->lineEdit_HumanPlayerName->text().toUtf8().constData());
+			if (++it != currentGame->getSeatsList()->end()) {
+				(*it)->setMyName(mySettingsDialog->lineEdit_Opponent1Name->text().toUtf8().constData());
+			}
+		}
 		mySettingsDialog->setPlayerNickIsChanged(false);
 
 		refreshPlayerName();
@@ -653,16 +649,12 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 
 		boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 		PlayerListIterator it = currentGame->getSeatsList()->begin();
-		(*it)->setMyAvatar(mySettingsDialog->pushButton_HumanPlayerAvatar->getMyLink().toUtf8().constData());
-		(*(++it))->setMyAvatar(mySettingsDialog->pushButton_Opponent1Avatar->getMyLink().toUtf8().constData());
-		(*(++it))->setMyAvatar(mySettingsDialog->pushButton_Opponent2Avatar->getMyLink().toUtf8().constData());
-		(*(++it))->setMyAvatar(mySettingsDialog->pushButton_Opponent3Avatar->getMyLink().toUtf8().constData());
-		(*(++it))->setMyAvatar(mySettingsDialog->pushButton_Opponent4Avatar->getMyLink().toUtf8().constData());
-		(*(++it))->setMyAvatar(mySettingsDialog->pushButton_Opponent5Avatar->getMyLink().toUtf8().constData());
-		(*(++it))->setMyAvatar(mySettingsDialog->pushButton_Opponent6Avatar->getMyLink().toUtf8().constData());
-		(*(++it))->setMyAvatar(mySettingsDialog->pushButton_Opponent7Avatar->getMyLink().toUtf8().constData());
-		(*(++it))->setMyAvatar(mySettingsDialog->pushButton_Opponent8Avatar->getMyLink().toUtf8().constData());
-		(*(++it))->setMyAvatar(mySettingsDialog->pushButton_Opponent9Avatar->getMyLink().toUtf8().constData());
+		if (it != currentGame->getSeatsList()->end()) {
+			(*it)->setMyAvatar(mySettingsDialog->pushButton_HumanPlayerAvatar->getMyLink().toUtf8().constData());
+			if (++it != currentGame->getSeatsList()->end()) {
+				(*it)->setMyAvatar(mySettingsDialog->pushButton_Opponent1Avatar->getMyLink().toUtf8().constData());
+			}
+		}
 
 		//avatar refresh
 		refreshPlayerAvatar();

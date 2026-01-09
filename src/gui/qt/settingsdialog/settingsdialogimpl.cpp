@@ -125,26 +125,10 @@ settingsDialogImpl::settingsDialogImpl(QWidget *parent, ConfigFile *c, selectAva
 
 	connect( lineEdit_HumanPlayerName, SIGNAL( textChanged( const QString &) ), this, SLOT( playerNickChanged() ) );
 	connect( lineEdit_Opponent1Name, SIGNAL( textChanged(const QString &) ), this, SLOT( playerNickChanged() ) );
-	connect( lineEdit_Opponent2Name, SIGNAL( textChanged(const QString &) ), this, SLOT( playerNickChanged() ) );
-	connect( lineEdit_Opponent3Name, SIGNAL( textChanged(const QString &) ), this, SLOT( playerNickChanged() ) );
-	connect( lineEdit_Opponent4Name, SIGNAL( textChanged(const QString &) ), this, SLOT( playerNickChanged() ) );
-	connect( lineEdit_Opponent5Name, SIGNAL( textChanged(const QString &) ), this, SLOT( playerNickChanged() ) );
-	connect( lineEdit_Opponent6Name, SIGNAL( textChanged(const QString &) ), this, SLOT( playerNickChanged() ) );
-	connect( lineEdit_Opponent7Name, SIGNAL( textChanged(const QString &) ), this, SLOT( playerNickChanged() ) );
-	connect( lineEdit_Opponent8Name, SIGNAL( textChanged(const QString &) ), this, SLOT( playerNickChanged() ) );
-	connect( lineEdit_Opponent9Name, SIGNAL( textChanged(const QString &) ), this, SLOT( playerNickChanged() ) );
 	connect( pushButton_openFlipsidePicture, SIGNAL( clicked() ), this, SLOT( setFlipsidePicFileName()) );
 	connect( pushButton_openLogDir, SIGNAL( clicked() ), this, SLOT( setLogDir()) );
 	connect( pushButton_HumanPlayerAvatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile0()) );
 	connect( pushButton_Opponent1Avatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile1()) );
-	connect( pushButton_Opponent2Avatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile2()) );
-	connect( pushButton_Opponent3Avatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile3()) );
-	connect( pushButton_Opponent4Avatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile4()) );
-	connect( pushButton_Opponent5Avatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile5()) );
-	connect( pushButton_Opponent6Avatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile6()) );
-	connect( pushButton_Opponent7Avatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile7()) );
-	connect( pushButton_Opponent8Avatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile8()) );
-	connect( pushButton_Opponent9Avatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile9()) );
 	connect( pushButton_netEditManualBlindsOrder, SIGNAL( clicked() ), this, SLOT( callNetManualBlindsOrderDialog()) );
 	connect( pushButton_resetSettings, SIGNAL(clicked()), this, SLOT(resetSettings()));
 
@@ -189,36 +173,12 @@ void settingsDialogImpl::prepareDialog()
 	pushButton_HumanPlayerAvatar->setMyLink(QString::fromUtf8(myConfig->readConfigString("MyAvatar").c_str()));
 	lineEdit_Opponent1Name->setText(QString::fromUtf8(myConfig->readConfigString("Opponent1Name").c_str()));
 	pushButton_Opponent1Avatar->setMyLink(QString::fromUtf8(myConfig->readConfigString("Opponent1Avatar").c_str()));
-	lineEdit_Opponent2Name->setText(QString::fromUtf8(myConfig->readConfigString("Opponent2Name").c_str()));
-	pushButton_Opponent2Avatar->setMyLink(QString::fromUtf8(myConfig->readConfigString("Opponent2Avatar").c_str()));
-	lineEdit_Opponent3Name->setText(QString::fromUtf8(myConfig->readConfigString("Opponent3Name").c_str()));
-	pushButton_Opponent3Avatar->setMyLink(QString::fromUtf8(myConfig->readConfigString("Opponent3Avatar").c_str()));
-	lineEdit_Opponent4Name->setText(QString::fromUtf8(myConfig->readConfigString("Opponent4Name").c_str()));
-	pushButton_Opponent4Avatar->setMyLink(QString::fromUtf8(myConfig->readConfigString("Opponent4Avatar").c_str()));
-	lineEdit_Opponent5Name->setText(QString::fromUtf8(myConfig->readConfigString("Opponent5Name").c_str()));
-	pushButton_Opponent5Avatar->setMyLink(QString::fromUtf8(myConfig->readConfigString("Opponent5Avatar").c_str()));
-	lineEdit_Opponent6Name->setText(QString::fromUtf8(myConfig->readConfigString("Opponent6Name").c_str()));
-	pushButton_Opponent6Avatar->setMyLink(QString::fromUtf8(myConfig->readConfigString("Opponent6Avatar").c_str()));
-	lineEdit_Opponent7Name->setText(QString::fromUtf8(myConfig->readConfigString("Opponent7Name").c_str()));
-	pushButton_Opponent7Avatar->setMyLink(QString::fromUtf8(myConfig->readConfigString("Opponent7Avatar").c_str()));
-	lineEdit_Opponent8Name->setText(QString::fromUtf8(myConfig->readConfigString("Opponent8Name").c_str()));
-	pushButton_Opponent8Avatar->setMyLink(QString::fromUtf8(myConfig->readConfigString("Opponent8Avatar").c_str()));
-	lineEdit_Opponent9Name->setText(QString::fromUtf8(myConfig->readConfigString("Opponent9Name").c_str()));
-	pushButton_Opponent9Avatar->setMyLink(QString::fromUtf8(myConfig->readConfigString("Opponent9Avatar").c_str()));
 	//disable player nicks page if the dialogs is called ingame to prevent changes during game
 	this->page_3->setDisabled(calledIngame);
 
 	//refresh AvatarIcons
 	pushButton_HumanPlayerAvatar->setIcon(QIcon(pushButton_HumanPlayerAvatar->getMyLink()));
 	pushButton_Opponent1Avatar->setIcon(QIcon(pushButton_Opponent1Avatar->getMyLink()));
-	pushButton_Opponent2Avatar->setIcon(QIcon(pushButton_Opponent2Avatar->getMyLink()));
-	pushButton_Opponent3Avatar->setIcon(QIcon(pushButton_Opponent3Avatar->getMyLink()));
-	pushButton_Opponent4Avatar->setIcon(QIcon(pushButton_Opponent4Avatar->getMyLink()));
-	pushButton_Opponent5Avatar->setIcon(QIcon(pushButton_Opponent5Avatar->getMyLink()));
-	pushButton_Opponent6Avatar->setIcon(QIcon(pushButton_Opponent6Avatar->getMyLink()));
-	pushButton_Opponent7Avatar->setIcon(QIcon(pushButton_Opponent7Avatar->getMyLink()));
-	pushButton_Opponent8Avatar->setIcon(QIcon(pushButton_Opponent8Avatar->getMyLink()));
-	pushButton_Opponent9Avatar->setIcon(QIcon(pushButton_Opponent9Avatar->getMyLink()));
 
 	//Network Game Settings
 	spinBox_netQuantityPlayers->setValue(2);
@@ -600,14 +560,6 @@ void settingsDialogImpl::isAccepted()
 	QSet<QString> checkSetPlayerNicks;
 	checkSetPlayerNicks.insert(lineEdit_HumanPlayerName->text().trimmed());
 	checkSetPlayerNicks.insert(lineEdit_Opponent1Name->text().trimmed());
-	checkSetPlayerNicks.insert(lineEdit_Opponent2Name->text().trimmed());
-	checkSetPlayerNicks.insert(lineEdit_Opponent3Name->text().trimmed());
-	checkSetPlayerNicks.insert(lineEdit_Opponent4Name->text().trimmed());
-	checkSetPlayerNicks.insert(lineEdit_Opponent5Name->text().trimmed());
-	checkSetPlayerNicks.insert(lineEdit_Opponent6Name->text().trimmed());
-	checkSetPlayerNicks.insert(lineEdit_Opponent7Name->text().trimmed());
-	checkSetPlayerNicks.insert(lineEdit_Opponent8Name->text().trimmed());
-	checkSetPlayerNicks.insert(lineEdit_Opponent9Name->text().trimmed());
 
 	if(checkSetPlayerNicks.count() != 2) {
 		MyMessageBox::warning(this, tr("Settings Error"),
@@ -622,30 +574,6 @@ void settingsDialogImpl::isAccepted()
 
 		myConfig->writeConfigString("Opponent1Name", lineEdit_Opponent1Name->text().trimmed().toUtf8().constData());
 		myConfig->writeConfigString("Opponent1Avatar", pushButton_Opponent1Avatar->getMyLink().toUtf8().constData());
-
-		myConfig->writeConfigString("Opponent2Name", lineEdit_Opponent2Name->text().trimmed().toUtf8().constData());
-		myConfig->writeConfigString("Opponent2Avatar", pushButton_Opponent2Avatar->getMyLink().toUtf8().constData());
-
-		myConfig->writeConfigString("Opponent3Name", lineEdit_Opponent3Name->text().trimmed().toUtf8().constData());
-		myConfig->writeConfigString("Opponent3Avatar", pushButton_Opponent3Avatar->getMyLink().toUtf8().constData());
-
-		myConfig->writeConfigString("Opponent4Name", lineEdit_Opponent4Name->text().trimmed().toUtf8().constData());
-		myConfig->writeConfigString("Opponent4Avatar", pushButton_Opponent4Avatar->getMyLink().toUtf8().constData());
-
-		myConfig->writeConfigString("Opponent5Name", lineEdit_Opponent5Name->text().trimmed().toUtf8().constData());
-		myConfig->writeConfigString("Opponent5Avatar", pushButton_Opponent5Avatar->getMyLink().toUtf8().constData());
-
-		myConfig->writeConfigString("Opponent6Name", lineEdit_Opponent6Name->text().trimmed().toUtf8().constData());
-		myConfig->writeConfigString("Opponent6Avatar", pushButton_Opponent6Avatar->getMyLink().toUtf8().constData());
-
-		myConfig->writeConfigString("Opponent7Name", lineEdit_Opponent7Name->text().trimmed().toUtf8().constData());
-		myConfig->writeConfigString("Opponent7Avatar", pushButton_Opponent7Avatar->getMyLink().toUtf8().constData());
-
-		myConfig->writeConfigString("Opponent8Name", lineEdit_Opponent8Name->text().trimmed().toUtf8().constData());
-		myConfig->writeConfigString("Opponent8Avatar", pushButton_Opponent8Avatar->getMyLink().toUtf8().constData());
-
-		myConfig->writeConfigString("Opponent9Name", lineEdit_Opponent9Name->text().trimmed().toUtf8().constData());
-		myConfig->writeConfigString("Opponent9Avatar", pushButton_Opponent9Avatar->getMyLink().toUtf8().constData());
 	}
 
 	//Network Game Settings
@@ -883,86 +811,6 @@ void settingsDialogImpl::setAvatarFile1()
 	}
 }
 
-void settingsDialogImpl::setAvatarFile2()
-{
-
-	callSelectAvatarDialog();
-
-	if(mySelectAvatarDialogImpl->getSettingsCorrect()) {
-		pushButton_Opponent2Avatar->setMyLink(mySelectAvatarDialogImpl->getAvatarLink());
-		pushButton_Opponent2Avatar->setIcon(QIcon(pushButton_Opponent2Avatar->getMyLink()));
-	}
-}
-
-void settingsDialogImpl::setAvatarFile3()
-{
-
-	callSelectAvatarDialog();
-	if(mySelectAvatarDialogImpl->getSettingsCorrect()) {
-		pushButton_Opponent3Avatar->setMyLink(mySelectAvatarDialogImpl->getAvatarLink());
-		pushButton_Opponent3Avatar->setIcon(QIcon(pushButton_Opponent3Avatar->getMyLink()));
-	}
-}
-
-void settingsDialogImpl::setAvatarFile4()
-{
-
-	callSelectAvatarDialog();
-	if(mySelectAvatarDialogImpl->getSettingsCorrect()) {
-		pushButton_Opponent4Avatar->setMyLink(mySelectAvatarDialogImpl->getAvatarLink());
-		pushButton_Opponent4Avatar->setIcon(QIcon(pushButton_Opponent4Avatar->getMyLink()));
-	}
-}
-
-void settingsDialogImpl::setAvatarFile5()
-{
-
-	callSelectAvatarDialog();
-	if(mySelectAvatarDialogImpl->getSettingsCorrect()) {
-		pushButton_Opponent5Avatar->setMyLink(mySelectAvatarDialogImpl->getAvatarLink());
-		pushButton_Opponent5Avatar->setIcon(QIcon(pushButton_Opponent5Avatar->getMyLink()));
-	}
-}
-
-void settingsDialogImpl::setAvatarFile6()
-{
-
-	callSelectAvatarDialog();
-	if(mySelectAvatarDialogImpl->getSettingsCorrect()) {
-		pushButton_Opponent6Avatar->setMyLink(mySelectAvatarDialogImpl->getAvatarLink());
-		pushButton_Opponent6Avatar->setIcon(QIcon(pushButton_Opponent6Avatar->getMyLink()));
-	}
-}
-
-void settingsDialogImpl::setAvatarFile7()
-{
-
-	callSelectAvatarDialog();
-	if(mySelectAvatarDialogImpl->getSettingsCorrect()) {
-		pushButton_Opponent7Avatar->setMyLink(mySelectAvatarDialogImpl->getAvatarLink());
-		pushButton_Opponent7Avatar->setIcon(QIcon(pushButton_Opponent7Avatar->getMyLink()));
-	}
-}
-
-void settingsDialogImpl::setAvatarFile8()
-{
-
-	callSelectAvatarDialog();
-	if(mySelectAvatarDialogImpl->getSettingsCorrect()) {
-		pushButton_Opponent8Avatar->setMyLink(mySelectAvatarDialogImpl->getAvatarLink());
-		pushButton_Opponent8Avatar->setIcon(QIcon(pushButton_Opponent8Avatar->getMyLink()));
-	}
-}
-
-void settingsDialogImpl::setAvatarFile9()
-{
-
-	callSelectAvatarDialog();
-	if(mySelectAvatarDialogImpl->getSettingsCorrect()) {
-		pushButton_Opponent9Avatar->setMyLink(mySelectAvatarDialogImpl->getAvatarLink());
-		pushButton_Opponent9Avatar->setIcon(QIcon(pushButton_Opponent9Avatar->getMyLink()));
-	}
-}
 void settingsDialogImpl::setLogDir()
 {
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
