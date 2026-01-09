@@ -25,7 +25,6 @@ PokerTH is an open-source Texas Hold'em engine and game, written in C++ using th
     *   `third_party/`: Includes and generated protobuf code.
 *   `data/`: Game assets (graphics, sounds, fonts, translations).
 *   `cmake/`: Custom CMake modules.
-*   `tests/`: Unit tests.
 *   `build/`: Build artifacts (not tracked).
 *   `tls/`: SSL/TLS certificates for the server.
 

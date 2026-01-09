@@ -41,15 +41,6 @@ ln -sf ./build/share/pokerth/data ./build/bin/data
 ./run_client2.sh             # Second client instance
 ```
 
-### Tests (Java JUnit)
-```bash
-# Compile and run all tests
-cd tests && ant test
-
-# Run specific test class
-cd tests && ant -Dtest.class=de.pokerth.test.GameListTest test
-```
-
 ## Code Style Guidelines
 
 ### Copyright Header
@@ -130,12 +121,6 @@ All source files must include the AGPL header:
 ### Logging
 - Use the `Log` class from `src/engine/log.h`
 - Check `DEBUG_MODE` flag for debug-only code paths
-
-### Testing
-- Java JUnit tests in `tests/src/de/pokerth/test/`
-- Test classes extend `TestBase`
-- AllTests.java aggregates all tests
-- Use the same AGPL header in test files
 
 ### Compilation Flags
 - `-Wno-stringop-overflow` (used in project)
