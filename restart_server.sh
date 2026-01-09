@@ -7,16 +7,41 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_DIR="${SCRIPT_DIR}/build"
 SERVER_BIN="${BUILD_DIR}/bin/pokerth_official_server"
 PID_FILE="${HOME}/.pokerth/log-files/pokerth.pid"
+SERVER_NAME="pokerth_official_server"
 
 echo "=== PokerTH Official Server Restart ==="
 
-# Stop the server
+# Function to kill process by name
+kill_by_name() {
+    local pids=$(pgrep -f "$SERVER_NAME" 2>/dev/null || true)
+    if [ -n "$pids" ]; then
+        for pid in $pids; do
+            if kill -0 "$pid" 2>/dev/null; then
+                echo "Stopping server (PID: $pid, name: $SERVER_NAME)..."
+                kill "$pid"
+                local TIMEOUT=10
+                while kill -0 "$pid" 2>/dev/null && [ $TIMEOUT -gt 0 ]; do
+                    sleep 1
+                    ((TIMEOUT--))
+                done
+                if kill -0 "$pid" 2>/dev/null; then
+                    echo "Force killing server..."
+                    kill -9 "$pid"
+                fi
+            fi
+        done
+        echo "Server(s) stopped."
+    fi
+}
+
+# Stop the server (by name first, then by PID file)
+kill_by_name
+
 if [ -f "$PID_FILE" ]; then
     PID=$(cat "$PID_FILE")
     if kill -0 "$PID" 2>/dev/null; then
         echo "Stopping server (PID: $PID)..."
         kill "$PID"
-        # Wait for graceful shutdown
         TIMEOUT=10
         while kill -0 "$PID" 2>/dev/null && [ $TIMEOUT -gt 0 ]; do
             sleep 1
