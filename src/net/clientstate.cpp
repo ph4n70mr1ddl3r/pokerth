@@ -703,29 +703,6 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 
 		boost::shared_ptr<PlayerData> playerData = client->CreatePlayerData(netPlayerJoined.playerid(), netPlayerJoined.isgameadmin());
 		client->AddPlayerData(playerData);
-	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_GameSpectatorJoinedMessage) {
-		// Another spectator joined the network game.
-		const GameSpectatorJoinedMessage &netSpectatorJoined = tmpPacket->GetMsg()->gamespectatorjoinedmessage();
-		// Request player info if needed.
-		PlayerInfo info;
-		if (!client->GetCachedPlayerInfo(netSpectatorJoined.playerid(), info)) {
-			client->RequestPlayerInfo(netSpectatorJoined.playerid());
-		}
-		client->ModifyGameInfoAddSpectatorDuringGame(netSpectatorJoined.playerid());
-	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_GameSpectatorLeftMessage) {
-		// A spectator left the network game.
-		const GameSpectatorLeftMessage &netSpectatorLeft = tmpPacket->GetMsg()->gamespectatorleftmessage();
-		// Signal to GUI and remove from data list.
-		int removeReason;
-		switch (netSpectatorLeft.gamespectatorleftreason()) {
-		case GamePlayerLeftMessage::leftKicked :
-			removeReason = NTF_NET_REMOVED_KICKED;
-			break;
-		default :
-			removeReason = NTF_NET_REMOVED_ON_REQUEST;
-			break;
-		}
-		client->ModifyGameInfoRemoveSpectatorDuringGame(netSpectatorLeft.playerid(), removeReason);
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_TimeoutWarningMessage) {
 		const TimeoutWarningMessage &tmpTimeout = tmpPacket->GetMsg()->timeoutwarningmessage();
 		client->GetCallback().SignalNetClientShowTimeoutDialog((NetTimeoutReason)tmpTimeout.timeoutreason(), tmpTimeout.remainingseconds());
@@ -790,15 +767,6 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 			}
 			tmpInfo.players.push_back(playerId);
 		}
-		// All spectators.
-		for (int i = 0; i < netListNew.spectatorids_size(); i++) {
-			PlayerInfo info;
-			unsigned playerId = netListNew.spectatorids(i);
-			if (!client->GetCachedPlayerInfo(playerId, info)) {
-				requestList.push_back(playerId);
-			}
-			tmpInfo.spectators.push_back(playerId);
-		}
 		// Send request for multiple players (will only act if list is non-empty).
 		client->RequestPlayerInfo(requestList);
 
@@ -829,19 +797,6 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		const GameListPlayerLeftMessage &netListLeft = tmpPacket->GetMsg()->gamelistplayerleftmessage();
 
 		client->ModifyGameInfoRemovePlayer(netListLeft.gameid(), netListLeft.playerid());
-	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_GameListSpectatorJoinedMessage) {
-		const GameListSpectatorJoinedMessage &netListJoined = tmpPacket->GetMsg()->gamelistspectatorjoinedmessage();
-
-		client->ModifyGameInfoAddSpectator(netListJoined.gameid(), netListJoined.playerid());
-		// Request player info if needed.
-		PlayerInfo info;
-		if (!client->GetCachedPlayerInfo(netListJoined.playerid(), info)) {
-			client->RequestPlayerInfo(netListJoined.playerid());
-		}
-	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_GameListSpectatorLeftMessage) {
-		const GameListSpectatorLeftMessage &netListLeft = tmpPacket->GetMsg()->gamelistspectatorleftmessage();
-
-		client->ModifyGameInfoRemoveSpectator(netListLeft.gameid(), netListLeft.playerid());
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_GameListAdminChangedMessage) {
 		const GameListAdminChangedMessage &netListAdmin = tmpPacket->GetMsg()->gamelistadminchangedmessage();
 
@@ -1300,7 +1255,6 @@ ClientStateWaitJoin::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		GameData tmpData;
 		NetPacket::GetGameData(netJoinAck.gameinfo(), tmpData);
 		client->SetGameData(tmpData);
-		client->ModifyGameInfoClearSpectatorsDuringGame();
 
 		// Player number is 0 on init. Will be set when the game starts.
 		boost::shared_ptr<PlayerData> playerData(

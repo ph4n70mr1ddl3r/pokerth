@@ -110,7 +110,6 @@ message NetGameInfo {
 	required	uint32			firstSmallBlind = 12;
 	required	uint32			startMoney = 13;
 	repeated	uint32			manualBlinds = 14 [packed = true];
-	optional	bool			allowSpectators = 15 [default = true];
 }
 
 // Message Part containing player result.
@@ -220,7 +219,6 @@ message GameListNewMessage {
 	repeated	uint32			playerIds = 4 [packed = true];
 	required	uint32			adminPlayerId = 5;
 	required	NetGameInfo		gameInfo = 6;
-	repeated	uint32			spectatorIds = 7 [packed = true];
 }
 
 message GameListUpdateMessage {
@@ -234,16 +232,6 @@ message GameListPlayerJoinedMessage {
 }
 
 message GameListPlayerLeftMessage {
-	required	uint32			gameId = 1;
-	required	uint32			playerId = 2;
-}
-
-message GameListSpectatorJoinedMessage {
-	required	uint32			gameId = 1;
-	required	uint32			playerId = 2;
-}
-
-message GameListSpectatorLeftMessage {
 	required	uint32			gameId = 1;
 	required	uint32			playerId = 2;
 }
@@ -287,7 +275,6 @@ message JoinExistingGameMessage {
 	required	uint32			gameId = 1;
 	optional	string			password = 2;
 	optional	bool			autoLeave = 3 [default = false];
-	optional	bool			spectateOnly = 4 [default = false];
 }
 
 message JoinNewGameMessage {
@@ -305,7 +292,6 @@ message JoinGameAckMessage {
 	required	uint32			gameId = 1;
 	required	bool			areYouGameAdmin = 2;
 	required	NetGameInfo		gameInfo = 3;
-	optional	bool			spectateOnly = 4;
 }
 
 message JoinGameFailedMessage {
@@ -321,7 +307,6 @@ message JoinGameFailedMessage {
 		invalidSettings = 9;
 		ipAddressBlocked = 10;
 		rejoinFailed = 11;
-		noSpectatorsAllowed = 12;
 	}
 	required	JoinGameFailureReason	joinGameFailureReason = 2;
 }
@@ -341,17 +326,6 @@ message GamePlayerLeftMessage {
 		leftError = 2;
 	}
 	required	GamePlayerLeftReason	gamePlayerLeftReason = 3;
-}
-
-message GameSpectatorJoinedMessage {
-	required	uint32			gameId = 1;
-	required	uint32			playerId = 2;
-}
-
-message GameSpectatorLeftMessage {
-	required	uint32			gameId = 1;
-	required	uint32			playerId = 2;
-	required	GamePlayerLeftMessage.GamePlayerLeftReason	gameSpectatorLeftReason = 3;
 }
 
 message GameAdminChangedMessage {
@@ -824,10 +798,6 @@ message PokerTHMessage {
 		Type_AdminRemoveGameAckMessage = 75;
 		Type_AdminBanPlayerMessage = 76;
 		Type_AdminBanPlayerAckMessage = 77;
-		Type_GameListSpectatorJoinedMessage = 78;
-		Type_GameListSpectatorLeftMessage = 79;
-		Type_GameSpectatorJoinedMessage = 80;
-		Type_GameSpectatorLeftMessage = 81;
 	}
 	required	PokerTHMessageType				messageType = 1;
 
@@ -908,8 +878,4 @@ message PokerTHMessage {
 	optional	AdminRemoveGameAckMessage		adminRemoveGameAckMessage = 76;
 	optional	AdminBanPlayerMessage			adminBanPlayerMessage = 77;
 	optional	AdminBanPlayerAckMessage		adminBanPlayerAckMessage = 78;
-	optional	GameListSpectatorJoinedMessage	gameListSpectatorJoinedMessage = 79;
-	optional	GameListSpectatorLeftMessage	gameListSpectatorLeftMessage = 80;
-	optional	GameSpectatorJoinedMessage		gameSpectatorJoinedMessage = 81;
-	optional	GameSpectatorLeftMessage		gameSpectatorLeftMessage = 82;
 }

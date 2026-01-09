@@ -154,8 +154,6 @@ void createInternetGameDialogImpl::gameTypeChanged()
 		radioButton_changeBlindsSettings->show();
 		startBlind->hide();
 		raiseMode->hide();
-		checkBox_allowSpectators->setEnabled(true);
-		checkBox_allowSpectators->setChecked(myConfig->readConfigInt("InternetGameAllowSpectators"));
 	}
 
 	break;
@@ -169,8 +167,6 @@ void createInternetGameDialogImpl::gameTypeChanged()
 		radioButton_changeBlindsSettings->show();
 		startBlind->hide();
 		raiseMode->hide();
-		checkBox_allowSpectators->setEnabled(true);
-		checkBox_allowSpectators->setChecked(myConfig->readConfigInt("InternetGameAllowSpectators"));
 	}
 	break;
 	case GAME_TYPE_INVITE_ONLY-1: {
@@ -184,8 +180,6 @@ void createInternetGameDialogImpl::gameTypeChanged()
 		radioButton_changeBlindsSettings->show();
 		startBlind->hide();
 		raiseMode->hide();
-		checkBox_allowSpectators->setEnabled(true);
-		checkBox_allowSpectators->setChecked(myConfig->readConfigInt("InternetGameAllowSpectators"));
 	}
 	break;
 	case GAME_TYPE_RANKING-1: {
@@ -200,8 +194,6 @@ void createInternetGameDialogImpl::gameTypeChanged()
 		radioButton_changeBlindsSettings->hide();
 		startBlind->show();
 		raiseMode->show();
-		checkBox_allowSpectators->setDisabled(true);
-		checkBox_allowSpectators->setChecked(true);
 	}
 	break;
 	}

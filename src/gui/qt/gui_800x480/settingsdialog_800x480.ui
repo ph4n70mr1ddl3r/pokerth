@@ -2192,11 +2192,17 @@ p, li { white-space: pre-wrap; }
               </layout>
              </item>
              <item row="4" column="0">
-              <widget class="QCheckBox" name="checkBox_allowSpectators">
-               <property name="text">
-                <string>Allow spectators to watch the game</string>
+              <spacer name="spacer_spectators">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
                </property>
-              </widget>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
             </layout>
            </widget>

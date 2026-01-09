@@ -223,11 +223,17 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QLabel" name="label_spectate">
-       <property name="openExternalLinks">
-        <bool>true</bool>
+      <spacer name="spacer_spectate">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-      </widget>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
      </item>
      <item>
       <spacer>
@@ -414,99 +420,36 @@
        <number>1</number>
       </property>
       <item row="0" column="0">
-       <widget class="QTabWidget" name="tabWidget_playerSpectators">
-        <property name="currentIndex">
-         <number>0</number>
+       <widget class="QTreeWidget" name="treeWidget_connectedPlayers">
+        <property name="minimumSize">
+         <size>
+          <width>221</width>
+          <height>100</height>
+         </size>
         </property>
-        <widget class="QWidget" name="tab_players">
-         <attribute name="title">
-          <string>Players</string>
-         </attribute>
-         <layout class="QGridLayout" name="gridLayout_3">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <item row="0" column="0">
-           <widget class="QTreeWidget" name="treeWidget_connectedPlayers">
-            <property name="minimumSize">
-             <size>
-              <width>221</width>
-              <height>100</height>
-             </size>
-            </property>
-            <property name="contextMenuPolicy">
-             <enum>Qt::CustomContextMenu</enum>
-            </property>
-            <property name="midLineWidth">
-             <number>1</number>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>25</width>
-              <height>26</height>
-             </size>
-            </property>
-            <property name="indentation">
-             <number>15</number>
-            </property>
-            <attribute name="headerVisible">
-             <bool>false</bool>
-            </attribute>
-            <column>
-             <property name="text">
-              <string>Connected Players</string>
-             </property>
-            </column>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="tab_spectators">
-         <attribute name="title">
-          <string>Spectators</string>
-         </attribute>
-         <layout class="QGridLayout" name="gridLayout_5">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <item row="0" column="0">
-           <widget class="QTreeWidget" name="treeWidget_connectedSpectators">
-            <attribute name="headerVisible">
-             <bool>false</bool>
-            </attribute>
-            <column>
-             <property name="text">
-              <string notr="true">1</string>
-             </property>
-            </column>
-           </widget>
-          </item>
-         </layout>
-        </widget>
+        <property name="contextMenuPolicy">
+         <enum>Qt::CustomContextMenu</enum>
+        </property>
+        <property name="midLineWidth">
+         <number>1</number>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>25</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="indentation">
+         <number>15</number>
+        </property>
+        <attribute name="headerVisible">
+         <bool>false</bool>
+        </attribute>
+        <column>
+         <property name="text">
+          <string>Connected Players</string>
+         </property>
+        </column>
        </widget>
       </item>
       <item row="1" column="0">

@@ -87,10 +87,8 @@ gameLobbyDialogImpl::gameLobbyDialogImpl(startWindowImpl *parent, ConfigFile *c)
 	//HTML stuff
 	QString pokerthDotNet("<a href='https://www.pokerth.net'>https://www.pokerth.net</a>");
 	QString clickToRanking(QString("<a href='http://online-ranking.pokerth.net'>%1</a>").arg(tr("Click here to view the online rankings")));
-	QString clickToSpectate(QString("<a href='https://www.pokerth.net/live'><b>%1</b></a>").arg(tr("Spectate")));
 	label_pokerthDotNet->setText(pokerthDotNet);
 	label_rankings->setText(clickToRanking);
-	label_spectate->setText(clickToSpectate);
 
 	waitStartGameMsgBoxTimer = new QTimer(this);
 	waitStartGameMsgBoxTimer->setSingleShot(true);
@@ -349,7 +347,6 @@ void gameLobbyDialogImpl::createGame()
 		gameData.delayBetweenHandsSec = myCreateInternetGameDialog->spinBox_netDelayBetweenHands->value();
 		gameData.playerActionTimeoutSec = myCreateInternetGameDialog->spinBox_netTimeOutPlayerAction->value();
 		gameData.gameType = GameType(myCreateInternetGameDialog->comboBox_gameType->itemData(myCreateInternetGameDialog->comboBox_gameType->currentIndex(), Qt::UserRole).toInt());
-		gameData.allowSpectators = myCreateInternetGameDialog->checkBox_allowSpectators->isChecked();
 
 		currentGameName = myCreateInternetGameDialog->lineEdit_gameName->text().simplified();
 
@@ -530,15 +527,6 @@ void gameLobbyDialogImpl::gameSelected(const QModelIndex &index)
 			++i;
 		}
 
-		treeWidget_connectedSpectators->clear();
-		PlayerIdList::const_iterator s = info.spectators.begin();
-		PlayerIdList::const_iterator s_end = info.spectators.end();
-		while (s != s_end) {
-			PlayerInfo playerInfo(mySession->getClientPlayerInfo(*s));
-			addConnectedSpectator(*s, QString::fromUtf8(playerInfo.playerName.c_str()));
-			++s;
-		}
-
 #ifdef __APPLE__
 		// Dirty workaround for a Qt redraw bug on Mac OS.
 		treeWidget_connectedPlayers->setFocus();
@@ -658,22 +646,6 @@ void gameLobbyDialogImpl::updateGameItem(QList <QStandardItem*> itemList, unsign
 
 	treeView_GameList->sortByColumn(myConfig->readConfigInt("DlgGameLobbyGameListSortingSection"), (Qt::SortOrder)myConfig->readConfigInt("DlgGameLobbyGameListSortingOrder") );
 	refreshGameStats();
-
-	//mark spactators as active
-	PlayerIdList::const_iterator s = info.spectators.begin();
-	PlayerIdList::const_iterator s_end = info.spectators.end();
-
-	while (s != s_end) {
-		int it2 = 0;
-		while (myNickListModel->item(it2)) {
-			if (myNickListModel->item(it2, 0)->data(Qt::UserRole) == *s) {
-				myNickListModel->item(it2, 0)->setData("active", 34);
-				break;
-			}
-			++it2;
-		}
-		++s;
-	}
 }
 
 void gameLobbyDialogImpl::addGame(unsigned gameId)
@@ -781,18 +753,6 @@ void gameLobbyDialogImpl::gameAddPlayer(unsigned gameId, unsigned playerId)
 	}
 }
 
-void gameLobbyDialogImpl::gameAddSpectator(unsigned /*gameId*/, unsigned playerId)
-{
-	int it1 = 0;
-	while (myNickListModel->item(it1)) {
-		if (myNickListModel->item(it1, 0)->data(Qt::UserRole) == playerId) {
-			myNickListModel->item(it1, 0)->setData("active", 34);
-			break;
-		}
-		++it1;
-	}
-}
-
 void gameLobbyDialogImpl::gameRemovePlayer(unsigned gameId, unsigned playerId)
 {
 	if (!inGame) {
@@ -829,18 +789,6 @@ void gameLobbyDialogImpl::gameRemovePlayer(unsigned gameId, unsigned playerId)
 	}
 }
 
-void gameLobbyDialogImpl::gameRemoveSpectator(unsigned, unsigned playerId)
-{
-	//mark spectator as idle again
-	int it1 = 0;
-	while (myNickListModel->item(it1)) {
-		if (myNickListModel->item(it1, 0)->data(Qt::UserRole) == playerId) {
-			myNickListModel->item(it1, 0)->setData("idle", 34);
-			break;
-		}
-		++it1;
-	}
-}
 
 void gameLobbyDialogImpl::updateStats(ServerStats /*stats*/)
 {
@@ -869,7 +817,6 @@ void gameLobbyDialogImpl::clearDialog()
 	myGameListSortFilterProxyModel->invalidate();
 	treeView_GameList->show();
 	treeWidget_connectedPlayers->clear();
-	treeWidget_connectedSpectators->clear();
 
 	pushButton_Leave->hide();
 	pushButton_Kick->hide();
@@ -927,8 +874,6 @@ void gameLobbyDialogImpl::clearDialog()
 
 void gameLobbyDialogImpl::checkPlayerQuantity()
 {
-	tabWidget_playerSpectators->setTabText(0, tr("Players (%1)").arg(treeWidget_connectedPlayers->topLevelItemCount()));
-
 	assert(mySession);
 	GameInfo info(mySession->getClientGameInfo(mySession->getClientCurrentGameId()));
 
@@ -1043,17 +988,6 @@ void gameLobbyDialogImpl::addConnectedPlayer(unsigned playerId, QString playerNa
 		refreshConnectedPlayerAvatars();
 }
 
-void gameLobbyDialogImpl::addConnectedSpectator(unsigned spectatorId, QString spectatorName)
-{
-
-	QTreeWidgetItem *item = new QTreeWidgetItem(treeWidget_connectedSpectators, 0);
-	item->setData(0, Qt::UserRole, spectatorId);
-	item->setData(0, Qt::DisplayRole, spectatorName);
-	tabWidget_playerSpectators->setTabText(1, tr("Spectators (%1)").arg(treeWidget_connectedSpectators->topLevelItemCount()));
-//	if (inGame)
-//		refreshConnectedSpecatatorAvatars();
-}
-
 void gameLobbyDialogImpl::updatePlayer(unsigned playerId, QString newPlayerName)
 {
 
@@ -1112,19 +1046,6 @@ void gameLobbyDialogImpl::removePlayer(unsigned playerId, QString)
 	checkPlayerQuantity();
 }
 
-
-void gameLobbyDialogImpl::removeSpectator(unsigned spectatorId, QString)
-{
-	QTreeWidgetItemIterator it(treeWidget_connectedSpectators);
-	while (*it) {
-		if ((*it)->data(0, Qt::UserRole) == spectatorId) {
-			treeWidget_connectedSpectators->takeTopLevelItem(treeWidget_connectedSpectators->indexOfTopLevelItem(*it));
-			break;
-		}
-		++it;
-	}
-	tabWidget_playerSpectators->setTabText(1, tr("Spectators (%1)").arg(treeWidget_connectedSpectators->topLevelItemCount()));
-}
 
 void gameLobbyDialogImpl::playerLeftLobby(unsigned playerId)
 {
@@ -1273,7 +1194,6 @@ void gameLobbyDialogImpl::leftGameDialogUpdate()
 	label_GameTiming->setText("");
 
 	treeWidget_connectedPlayers->clear();
-	treeWidget_connectedSpectators->clear();
 	pushButton_StartGame->hide();
 	pushButton_Leave->hide();
 	pushButton_Kick->hide();
@@ -1443,8 +1363,6 @@ void gameLobbyDialogImpl::showGameDescription(bool show)
 		label_gameDesc5->hide();
 		label_gameDesc6->hide();
 		label_gameDesc7->hide();
-		tabWidget_playerSpectators->setTabText(0, tr("Players (%1)").arg(0));
-		tabWidget_playerSpectators->setTabText(1, tr("Spectators (%1)").arg(0));
 	}
 }
 

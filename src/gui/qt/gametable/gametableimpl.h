@@ -134,7 +134,6 @@ signals:
 	void signalRefreshPlayerName();
 	void signalRefreshButton();
 	void signalRefreshGameLabels(int);
-	void signalRefreshSpectatorsDisplay();
 
 	void signalSetPlayerAvatar(int, QString);
 	void signalGuiUpdateDone();
@@ -174,8 +173,6 @@ signals:
 	void signalChangeVoteOnKickButtonsState(bool showHide);
 	void signalEndVoteOnKick();
 	void signalNetClientPlayerLeft(unsigned playerId);
-	void signalNetClientSpectatorLeft(unsigned playerId);
-	void signalNetClientSpectatorJoined(unsigned playerId);
 	void signalNetClientPingUpdate(unsigned minPing, unsigned avgPing, unsigned maxPing);
 
 public slots:
@@ -359,8 +356,6 @@ public slots:
 	void restoreGameTableGeometry();
 
 	void netClientPlayerLeft(unsigned playerId);
-	void netClientSpectatorLeft(unsigned playerId);
-	void netClientSpectatorJoined(unsigned playerId);
 	void registeredUserMode();
 
 	void showShowMyCardsButton();
@@ -376,7 +371,6 @@ public slots:
 	void tabsButtonClicked();
 	void tabsButtonClose();
 #endif
-	void refreshSpectatorsDisplay();
 	void pingUpdate(unsigned, unsigned, unsigned);
 	int getAndroidApiVersion();
 
@@ -445,8 +439,6 @@ private:
 
 	QLabel *playerTipLabelArray[MAX_NUMBER_OF_PLAYERS];
 	QPixmap flipside;
-	QLabel *spectatorIcon;
-	QLabel *spectatorNumberLabel;
 
 	// 	Dialogs
 	startWindowImpl *myStartWindow;
