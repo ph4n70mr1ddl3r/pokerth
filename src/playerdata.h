@@ -50,9 +50,8 @@ enum PlayerType {
 };
 
 enum PlayerRights {
-	PLAYER_RIGHTS_GUEST = 1,
-	PLAYER_RIGHTS_NORMAL,
-	PLAYER_RIGHTS_ADMIN
+	PLAYER_RIGHTS_NORMAL = 2,
+	PLAYER_RIGHTS_ADMIN = 3
 };
 
 enum AvatarFileType {
@@ -70,11 +69,11 @@ struct AvatarFile {
 };
 
 struct PlayerInfo {
-	PlayerInfo() : ptype(PLAYER_TYPE_HUMAN), isGuest(false), isAdmin(false), hasAvatar(false), avatarType(AVATAR_FILE_TYPE_UNKNOWN) {}
-	std::string		playerName;
-	PlayerType		ptype;
-	bool			isGuest;
-	bool			isAdmin;
+	PlayerInfo() : ptype(PLAYER_TYPE_HUMAN), isAdmin(false), hasAvatar(false), avatarType(AVATAR_FILE_TYPE_UNKNOWN) {}
+		unsigned	playerId;
+		std::string	playerName;
+		PlayerType	ptype;
+		bool		isAdmin;
 	std::string		countryCode;
 	bool			hasAvatar;
 	MD5Buf			avatar;

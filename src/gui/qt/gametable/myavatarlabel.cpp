@@ -88,7 +88,7 @@ void MyAvatarLabel::contextMenuEvent ( QContextMenuEvent *event )
 			}
 			GameInfo info(myW->getSession()->getClientGameInfo(myW->getSession()->getClientCurrentGameId()));
 
-			if(activePlayerCounter > 2 && !voteRunning && info.data.gameType != GAME_TYPE_RANKING && !myW->getGuestMode()) {
+			if(activePlayerCounter > 2 && !voteRunning && info.data.gameType != GAME_TYPE_RANKING) {
 				setVoteOnKickContextMenuEnabled(true);
 			} else {
 				setVoteOnKickContextMenuEnabled(false);
@@ -105,11 +105,6 @@ void MyAvatarLabel::contextMenuEvent ( QContextMenuEvent *event )
 						action_EditTip->setDisabled(true);
 					}
 					if(myW->myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_NETWORK) {
-						action_EditTip->setDisabled(true);
-					}
-
-					if(myW->getSession()->getClientPlayerInfo((*it_c)->getMyUniqueID()).isGuest) {
-						action_IgnorePlayer->setDisabled(true);
 						action_EditTip->setDisabled(true);
 					}
 
@@ -204,7 +199,7 @@ void MyAvatarLabel::refreshStars()
 	PlayerList seatsList = curGame->getSeatsList();
 	for (seatPlace=0,it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
 		for(int i=1; i<=5; i++)myW->playerStarsArray[i][seatPlace]->setText("");
-		if(myW->myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_INTERNET && !myW->getSession()->getClientPlayerInfo((*it_c)->getMyUniqueID()).isGuest && (*it_c)->getMyType() != PLAYER_TYPE_COMPUTER) {
+		if(myW->myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_INTERNET && (*it_c)->getMyType() != PLAYER_TYPE_COMPUTER) {
 			if((*it_c)->getMyStayOnTableStatus() == true && (*it_c)->getMyName()!="" && seatPlace!=0) {
 
 				// Bug #319: https://github.com/pokerth/pokerth/issues/319

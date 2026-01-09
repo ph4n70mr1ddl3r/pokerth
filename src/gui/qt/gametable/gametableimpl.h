@@ -101,10 +101,6 @@ public:
 	{
 		return myGameTableStyle;
 	}
-	bool getGuestMode() const
-	{
-		return guestMode;
-	}
 
 	void setStartWindow(startWindowImpl* s)
 	{
@@ -366,7 +362,6 @@ public slots:
 	void netClientSpectatorLeft(unsigned playerId);
 	void netClientSpectatorJoined(unsigned playerId);
 	void registeredUserMode();
-	void guestUserMode();
 
 	void showShowMyCardsButton();
 	void sendShowMyCardsSignal();
@@ -494,7 +489,6 @@ private:
 	bool currentGameOver;
 	bool flipHolecardsAllInAlreadyDone;
 	bool betSliderChangedByInput;
-	bool guestMode;
 
 	// statistic testing
 	int statisticArray[15];

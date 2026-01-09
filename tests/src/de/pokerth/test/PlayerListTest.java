@@ -34,7 +34,7 @@ public class PlayerListTest extends TestBase {
 	@Test
 	public void testPlayerList() throws Exception {
 
-		int myId = guestInit();
+		int myId = userInit();
 
 		// Waiting for player list update.
 		PokerTHMessage msg;

@@ -45,7 +45,7 @@ MyNameLabel::~MyNameLabel()
 {
 }
 
-void MyNameLabel::setText ( const QString &t, bool trans, bool guest, bool computerplayer)
+void MyNameLabel::setText ( const QString &t, bool trans, bool computerplayer)
 {
 
 	QString text;
@@ -67,7 +67,7 @@ void MyNameLabel::setText ( const QString &t, bool trans, bool guest, bool compu
 
 	if(myW->getSession()) {
 
-		if(myW->getSession()->getGameType() == Session::GAME_TYPE_INTERNET && !guest && !computerplayer ) {
+		if(myW->getSession()->getGameType() == Session::GAME_TYPE_INTERNET && !computerplayer ) {
 //          for internet game show players name with links to their profile included
 			this->setTextFormat(Qt::RichText);
 			QString linkString;

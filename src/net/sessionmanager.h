@@ -64,7 +64,6 @@ public:
 	bool IsPlayerConnected(const std::string &playerName) const;
 	bool IsPlayerConnected(unsigned uniqueId) const;
 	bool IsClientAddressConnected(const std::string &clientAddress) const;
-	bool IsGuestAllowedToConnect(const std::string &clientAddress) const;
 	bool IsPlayerAllowedToJoinCreateLimitRank(const std::string &playerName) const;
 	bool IsPlayerAllowedToJoinCreateLimitRank(unsigned uniqueId) const;
 

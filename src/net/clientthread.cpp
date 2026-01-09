@@ -440,12 +440,11 @@ ClientThread::SelectServer(unsigned serverId)
 }
 
 void
-ClientThread::SetLogin(const std::string &userName, const std::string &password, bool isGuest)
+ClientThread::SetLogin(const std::string &userName, const std::string &password)
 {
 	boost::mutex::scoped_lock lock(m_loginDataMutex);
 	m_loginData.userName = userName;
 	m_loginData.password = password;
-	m_loginData.isGuest = isGuest;
 }
 
 ServerInfo
@@ -1181,7 +1180,7 @@ ClientThread::CreatePlayerData(unsigned playerId, bool isGameAdmin)
 	if (GetCachedPlayerInfo(playerId, info)) {
 		playerData.reset(
 			new PlayerData(playerId, 0, info.ptype,
-						   info.isGuest ? PLAYER_RIGHTS_GUEST : PLAYER_RIGHTS_NORMAL, isGameAdmin));
+						   PLAYER_RIGHTS_NORMAL, isGameAdmin));
 		playerData->SetName(info.playerName);
 		if (info.hasAvatar) {
 			string avatarFile;

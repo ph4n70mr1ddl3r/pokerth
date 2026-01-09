@@ -481,11 +481,9 @@ void Session::selectServer(unsigned serverId)
 }
 
 void
-Session::setLogin(const std::string &userName, const std::string &password, bool isGuest)
+Session::setLogin(const std::string &userName, const std::string &password)
 {
-	if (!myNetClient)
-		return; // only act if client is running.
-	myNetClient->SetLogin(userName, password, isGuest);
+	myNetClient->SetLogin(userName, password);
 }
 
 void

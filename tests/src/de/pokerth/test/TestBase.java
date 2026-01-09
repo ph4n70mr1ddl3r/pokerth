@@ -58,7 +58,6 @@ public abstract class TestBase {
 	public final int PROTOCOL_VERSION_MINOR = 1;
 	public final String AuthUser = "user";
 	public final String AuthPassword = "pencil";
-	public final String GuestUser = "Guest112233";
 	public final String GamePassword = "äöü?ßÄÖÜ";
 
 	protected Socket sock;
@@ -146,43 +145,6 @@ public abstract class TestBase {
 		return PokerTHMessage.parseFrom(data);
 	}
 
-	public int guestInit() throws Exception {
-		return guestInit(sock);
-	}
-
-	public int guestInit(Socket s) throws Exception {
-		int playerId = 0;
-		PokerTHMessage msg = receiveMessage(s);
-		assertTrue(msg.hasAnnounceMessage());
-
-		AnnounceMessage.Version requestedVersion = AnnounceMessage.Version.newBuilder()
-			.setMajorVersion(PROTOCOL_VERSION_MAJOR)
-			.setMinorVersion(PROTOCOL_VERSION_MINOR)
-			.build();
-		InitMessage init = InitMessage.newBuilder()
-			.setBuildId(0)
-			.setLogin(InitMessage.LoginType.guestLogin)
-			.setRequestedVersion(requestedVersion)
-			.setNickName(GuestUser)
-			.build();
-		msg = PokerTHMessage.newBuilder()
-			.setMessageType(PokerTHMessageType.Type_InitMessage)
-			.setInitMessage(init)
-			.build();
-		sendMessage(msg, s);
-
-		msg = receiveMessage(s);
-		if (msg.hasInitAckMessage() && msg.getMessageType() == PokerTHMessageType.Type_InitAckMessage) {
-			InitAckMessage initAck = msg.getInitAckMessage();
-			assertTrue(initAck.getYourPlayerId() != 0L);
-			assertTrue(!initAck.hasYourAvatarHash());
-			playerId = initAck.getYourPlayerId();
-		}
-		else {
-			failOnErrorMessage(msg);
-			fail("Invalid message.");
-		}
-		return playerId;
 	}
 
 	public int userInit() throws Exception {

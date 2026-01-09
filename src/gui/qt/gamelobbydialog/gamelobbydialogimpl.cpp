@@ -46,7 +46,7 @@ using namespace std;
 
 
 gameLobbyDialogImpl::gameLobbyDialogImpl(startWindowImpl *parent, ConfigFile *c)
-	: QDialog(parent), myW(NULL), myStartWindow(parent), myConfig(c), currentGameName(""), myPlayerId(0), isGameAdministrator(false), inGame(false), guestMode(false), blinkingButtonAnimationState(true), myChat(NULL), keyUpCounter(0), infoMsgToShowId(0), currentInvitationGameId(0), inviteDialogIsCurrentlyShown(false), autoStartTimerCounter(0), lastNickListFilterState(0)
+	: QDialog(parent), myW(NULL), myStartWindow(parent), myConfig(c), currentGameName(""), myPlayerId(0), isGameAdministrator(false), inGame(false), blinkingButtonAnimationState(true), myChat(NULL), keyUpCounter(0), infoMsgToShowId(0), currentInvitationGameId(0), inviteDialogIsCurrentlyShown(false), autoStartTimerCounter(0), lastNickListFilterState(0)
 {
 
 #ifdef __APPLE__
@@ -268,13 +268,6 @@ int gameLobbyDialogImpl::exec()
 	}
 	readDialogSettings();
 
-	PlayerInfo playerInfo(mySession->getClientPlayerInfo(mySession->getClientUniquePlayerId()));
-	if(playerInfo.isGuest) {
-		guestUserMode();
-	} else {
-		registeredUserMode();
-	}
-
 	// Bug #320: https://github.com/pokerth/pokerth/issues/320
 	myChat->refreshIgnoreList();
 
@@ -310,7 +303,7 @@ void gameLobbyDialogImpl::createGame()
 
 	myCreateInternetGameDialog = new createInternetGameDialogImpl(this, myConfig);
 	PlayerInfo playerInfo(mySession->getClientPlayerInfo(mySession->getClientUniquePlayerId()));
-	myCreateInternetGameDialog->exec(guestMode, QString::fromUtf8(playerInfo.playerName.c_str()));
+	myCreateInternetGameDialog->exec(QString::fromUtf8(playerInfo.playerName.c_str()));
 
 	if (myCreateInternetGameDialog->result() == QDialog::Accepted ) {
 
@@ -1088,7 +1081,7 @@ void gameLobbyDialogImpl::updatePlayer(unsigned playerId, QString newPlayerName)
 			PlayerInfo playerInfo(mySession->getClientPlayerInfo(playerId));
 			QString countryString = QString::fromUtf8(playerInfo.countryCode.c_str()).toLower();
 			myNickListModel->item(it1, 0)->setData(countryString, 33);
-			if(playerInfo.isGuest || countryString.isEmpty()) {
+			if(countryString.isEmpty()) {
 				myNickListModel->item(it1, 0)->setIcon(QIcon(":/cflags/cflags/undefined.png"));
 				myNickListModel->item(it1, 0)->setToolTip("");
 			} else {
@@ -1156,7 +1149,7 @@ void gameLobbyDialogImpl::playerJoinedLobby(unsigned playerId, QString /*playerN
 	item->setText(QString::fromUtf8(playerInfo.playerName.c_str()));
 	item->setData(playerId, Qt::UserRole);
 	item->setData(countryString, 33);
-	if(playerInfo.isGuest || countryString.isEmpty()) {
+	if(countryString.isEmpty()) {
 		item->setIcon(QIcon(":/cflags/cflags/undefined.png"));
 	} else {
 		item->setIcon(QIcon(QString(":/cflags/cflags/%1.png").arg(countryString)));
@@ -1398,7 +1391,6 @@ void gameLobbyDialogImpl::keyPressEvent ( QKeyEvent * event )
 	// 	if (event->key() == Qt::Key_Tab) event->ignore(); else { /*blah*/ }
 
 	//        if (event->key() == Qt::Key_N) showInvitationDialog();
-	//        if (event->key() == Qt::Key_M) guestUserMode();
 
 }
 
@@ -1629,21 +1621,6 @@ void gameLobbyDialogImpl::changeGameListSorting()
 }
 
 
-void gameLobbyDialogImpl::registeredUserMode()
-{
-	lineEdit_ChatInput->clear();
-	lineEdit_ChatInput->setEnabled(true);
-	guestMode = false;
-}
-
-
-void gameLobbyDialogImpl::guestUserMode()
-{
-	lineEdit_ChatInput->setText(tr("Chat is only available to registered players."));
-	lineEdit_ChatInput->setDisabled(true);
-	guestMode = true;
-}
-
 void gameLobbyDialogImpl::showNickListContextMenu(QPoint p)
 {
 	if(myNickListModel->rowCount() && myNickListSelectionModel->currentIndex().isValid()) {
@@ -1651,7 +1628,7 @@ void gameLobbyDialogImpl::showNickListContextMenu(QPoint p)
 		assert(mySession);
 		unsigned playerUid = myNickListSelectionModel->currentIndex().data(Qt::UserRole).toUInt();
 
-		if(inGame && mySession->getClientGameInfo(mySession->getClientCurrentGameId()).data.gameType == GAME_TYPE_INVITE_ONLY && playerUid != mySession->getClientUniquePlayerId() && !mySession->getClientPlayerInfo(playerUid).isGuest) {
+		if(inGame && mySession->getClientGameInfo(mySession->getClientCurrentGameId()).data.gameType == GAME_TYPE_INVITE_ONLY && playerUid != mySession->getClientUniquePlayerId()) {
 			nickListInviteAction->setEnabled(true);
 			nickListInviteAction->setText(tr("Invite %1").arg(QString::fromUtf8(mySession->getClientPlayerInfo(playerUid).playerName.c_str())));
 
@@ -1660,7 +1637,7 @@ void gameLobbyDialogImpl::showNickListContextMenu(QPoint p)
 			nickListInviteAction->setEnabled(false);
 		}
 
-		if(playerUid != mySession->getClientUniquePlayerId() && !mySession->getClientPlayerInfo(playerUid).isGuest && !playerIsOnIgnoreList(playerUid)) {
+		if(playerUid != mySession->getClientUniquePlayerId() && !playerIsOnIgnoreList(playerUid)) {
 			nickListIgnorePlayerAction->setEnabled(true);
 			nickListIgnorePlayerAction->setText(tr("Ignore %1").arg(QString::fromUtf8(mySession->getClientPlayerInfo(playerUid).playerName.c_str())));
 		} else {
@@ -1668,7 +1645,7 @@ void gameLobbyDialogImpl::showNickListContextMenu(QPoint p)
 			nickListIgnorePlayerAction->setText(tr("Ignore player ..."));
 		}
 
-		if(playerUid != mySession->getClientUniquePlayerId() && !mySession->getClientPlayerInfo(playerUid).isGuest && playerIsOnIgnoreList(playerUid)) {
+		if(playerUid != mySession->getClientUniquePlayerId() && playerIsOnIgnoreList(playerUid)) {
 			nickListUnignorePlayerAction->setEnabled(true);
 			nickListUnignorePlayerAction->setText(tr("Unignore %1").arg(QString::fromUtf8(mySession->getClientPlayerInfo(playerUid).playerName.c_str())));
 		} else {
@@ -1885,10 +1862,8 @@ void gameLobbyDialogImpl::openPlayerStats1()
 	if(myNickListSelectionModel->currentIndex().isValid()) {
 
 		unsigned playerId = myNickListSelectionModel->currentIndex().data(Qt::UserRole).toUInt();
-		if(!mySession->getClientPlayerInfo(playerId).isGuest) {
-			QUrl url("https://www.pokerth.net/redirect_user_profile.php?nick="+QUrl::toPercentEncoding(myNickListSelectionModel->currentIndex().data(Qt::DisplayRole).toString()));
-			QDesktopServices::openUrl(url);
-		}
+		QUrl url("https://www.pokerth.net/redirect_user_profile.php?nick="+QUrl::toPercentEncoding(myNickListSelectionModel->currentIndex().data(Qt::DisplayRole).toString()));
+		QDesktopServices::openUrl(url);
 	}
 }
 
@@ -1897,10 +1872,8 @@ void gameLobbyDialogImpl::openPlayerStats2()
 	if(treeWidget_connectedPlayers->currentItem()) {
 
 		unsigned playerId = treeWidget_connectedPlayers->currentItem()->data(0, Qt::UserRole).toUInt();
-		if(!mySession->getClientPlayerInfo(playerId).isGuest) {
-			QUrl url("https://www.pokerth.net/redirect_user_profile.php?nick="+QUrl::toPercentEncoding(treeWidget_connectedPlayers->currentItem()->data(0, Qt::DisplayRole).toString()));
-			QDesktopServices::openUrl(url);
-		}
+		QUrl url("https://www.pokerth.net/redirect_user_profile.php?nick="+QUrl::toPercentEncoding(treeWidget_connectedPlayers->currentItem()->data(0, Qt::DisplayRole).toString()));
+		QDesktopServices::openUrl(url);
 	}
 }
 
@@ -1911,13 +1884,10 @@ void gameLobbyDialogImpl::showConnectedPlayersContextMenu(QPoint p)
 		assert(mySession);
 		unsigned playerUid = treeWidget_connectedPlayers->currentItem()->data(0, Qt::UserRole).toUInt();
 
-		if(!mySession->getClientPlayerInfo(playerUid).isGuest) {
-
-			//popup a little more to the right to avaoid double click action
-			QPoint tempPoint = p;
-			tempPoint.setX(p.x()+5);
-			connectedPlayersListPlayerInfoSubMenu->popup(treeWidget_connectedPlayers->mapToGlobal(tempPoint));
-		}
+		//popup a little more to the right to avaoid double click action
+		QPoint tempPoint = p;
+		tempPoint.setX(p.x()+5);
+		connectedPlayersListPlayerInfoSubMenu->popup(treeWidget_connectedPlayers->mapToGlobal(tempPoint));
 	}
 }
 

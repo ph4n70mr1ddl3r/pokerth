@@ -68,7 +68,6 @@ enum NetPlayerState {
 }
 
 enum NetPlayerInfoRights {
-	netPlayerRightsGuest = 1;
 	netPlayerRightsNormal = 2;
 	netPlayerRightsAdmin = 3;
 }
@@ -153,16 +152,15 @@ message InitMessage {
 	optional	bytes			myLastSessionId = 3;
 	optional	string			authServerPassword = 4;
 	enum LoginType {
-		guestLogin = 0;
 		authenticatedLogin = 1;
 		unauthenticatedLogin = 2;
 	}
 	required	LoginType		login = 5;
-	// Only used for guest login or unauthenticated login.
+	// Only used for unauthenticated login.
 	optional	string			nickName = 6;
 	// Authenticated login data is according to SCRAM SHA-1
 	optional	bytes			clientUserData = 7;
-	// Ignored for guest login.
+	// Ignored for unauthenticated login.
 	optional	bytes			avatarHash = 8;
 }
 
@@ -320,7 +318,6 @@ message JoinGameFailedMessage {
 		gameIsFull = 2;
 		gameIsRunning = 3;
 		invalidPassword = 4;
-		notAllowedAsGuest = 5;
 		notInvited = 6;
 		gameNameInUse = 7;
 		badGameName = 8;
@@ -743,7 +740,6 @@ message AdminBanPlayerAckMessage {
 	enum AdminBanPlayerResult {
 		banPlayerAccepted = 0;
 		banPlayerPending = 1;
-		banPlayerNoDB = 2;
 		banPlayerDBError = 3;
 		banPlayerInvalid = 4;
 	}

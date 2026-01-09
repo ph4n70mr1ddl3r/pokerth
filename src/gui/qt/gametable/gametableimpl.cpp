@@ -77,7 +77,7 @@
 using namespace std;
 
 gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
-	: QMainWindow(parent), myChat(NULL), myConfig(c), gameSpeed(0), myActionIsBet(0), myActionIsRaise(0), pushButtonBetRaiseIsChecked(false), pushButtonCallCheckIsChecked(false), pushButtonFoldIsChecked(false), pushButtonAllInIsChecked(false), myButtonsAreCheckable(false), breakAfterCurrentHand(false), currentGameOver(false), betSliderChangedByInput(false), guestMode(false), myLastPreActionBetValue(0)
+	: QMainWindow(parent), myChat(NULL), myConfig(c), gameSpeed(0), myActionIsBet(0), myActionIsRaise(0), pushButtonBetRaiseIsChecked(false), pushButtonCallCheckIsChecked(false), pushButtonFoldIsChecked(false), pushButtonAllInIsChecked(false), myButtonsAreCheckable(false), breakAfterCurrentHand(false), currentGameOver(false), betSliderChangedByInput(false), myLastPreActionBetValue(0)
 {
 	int i;
 
@@ -783,7 +783,6 @@ void gameTableImpl::refreshPlayerName()
 		for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 
 			//collect needed infos
-			bool guest = myStartWindow->getSession()->getClientPlayerInfo((*it_c)->getMyUniqueID()).isGuest;
 			bool computerPlayer = false;
 			if((*it_c)->getMyType() == PLAYER_TYPE_COMPUTER) {
 				computerPlayer = true;
@@ -794,15 +793,15 @@ void gameTableImpl::refreshPlayerName()
 			switch(getCurrentSeatState((*it_c))) {
 
 			case SEAT_ACTIVE: {
-				playerNameLabelArray[(*it_c)->getMyID()]->setText(nick, false, guest, computerPlayer );
+				playerNameLabelArray[(*it_c)->getMyID()]->setText(nick, false, computerPlayer );
 			}
 			break;
 			case SEAT_AUTOFOLD: {
-				playerNameLabelArray[(*it_c)->getMyID()]->setText(nick, true, guest, computerPlayer );
+				playerNameLabelArray[(*it_c)->getMyID()]->setText(nick, true, computerPlayer );
 			}
 			break;
 			case SEAT_STAYONTABLE: {
-				playerNameLabelArray[(*it_c)->getMyID()]->setText(nick, true, guest, computerPlayer );
+				playerNameLabelArray[(*it_c)->getMyID()]->setText(nick, true, computerPlayer );
 			}
 			break;
 			case SEAT_CLEAR: {
@@ -3005,11 +3004,7 @@ void gameTableImpl::networkGameModification()
 	//restore saved windows geometry
 	restoreGameTableGeometry();
 
-	if(myStartWindow->getSession()->getClientPlayerInfo(myStartWindow->getSession()->getClientUniquePlayerId()).isGuest) {
-		guestUserMode();
-	} else {
-		registeredUserMode();
-	}
+	registeredUserMode();
 
 	blinkingStartButtonAnimationTimer->stop();
 
@@ -3583,13 +3578,6 @@ void gameTableImpl::netClientSpectatorLeft(unsigned /*playerId*/)
 
 void gameTableImpl::registeredUserMode()
 {
-	guestMode = false;
-}
-
-
-void gameTableImpl::guestUserMode()
-{
-	guestMode = true;
 }
 
 void gameTableImpl::showShowMyCardsButton()

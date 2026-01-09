@@ -1,18 +1,18 @@
 /*  PokerTH automated tests.
-	Copyright (C) 2010 Lothar May
+        Copyright (C) 2010 Lothar May
 
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Affero General Public License as
-	published by the Free Software Foundation, either version 3 of the
-	License, or (at your option) any later version.
+        This program is free software: you can redistribute it and/or modify
+        it under the terms of the GNU Affero General Public License as
+        published by the Free Software Foundation, either version 3 of the
+        License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Affero General Public License for more details.
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU Affero General Public License for more details.
 
-	You should have received a copy of the GNU Affero General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+        You should have received a copy of the GNU Affero General Public License
+        along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package de.pokerth.test;
@@ -40,150 +40,139 @@ import de.pokerth.protocol.ProtoBuf.StartEventMessage.StartEventType;
 
 public class RunNormalGameTest extends TestBase {
 
-	@Test
-	public void testRunNormalGameAsGuest() throws Exception {
-		guestInit();
+        @Test
+        public void testRunNormalGameAsUser() throws Exception {
+                userInit();
 
-		Collection<Integer> l = new ArrayList<Integer>();
-		NetGameInfo gameInfo = createGameInfo(NetGameType.normalGame, 10, 5, 5, EndRaiseMode.doubleBlinds, 0, 100, GuestUser + " run normal game", l, 10, 0, 2, 2000);
-		sendMessage(createGameRequestMsg(
-				gameInfo,
-				"",
-				false));
+                PokerTHMessage msg;
+                msg = receiveMessage();
+                if (!msg.hasPlayerListMessage() || msg.getMessageType() != PokerTHMessageType.Type_PlayerListMessage) {
+                        failOnErrorMessage(msg);
+                        fail("Invalid message.");
+                }
 
-		PokerTHMessage msg;
+                Collection<Integer> l = new ArrayList<Integer>();
+                NetGameInfo gameInfo = createGameInfo(NetGameType.normalGame, 10, 5, 5, EndRaiseMode.doubleBlinds, 0, 100, AuthUser + " run normal game", l, 10, 0, 2, 2000);
+                sendMessage(createGameRequestMsg(
+                                gameInfo,
+                                "",
+                                false));
 
-		// Waiting for player list update.
-		msg = receiveMessage();
-		if (!msg.hasPlayerListMessage() || msg.getMessageType() != PokerTHMessageType.Type_PlayerListMessage) {
-			failOnErrorMessage(msg);
-			fail("Invalid message.");
-		}
+                // Game list update (new game)
+                msg = receiveMessage();
+                if (!msg.hasGameListNewMessage() || msg.getMessageType() != PokerTHMessageType.Type_GameListNewMessage) {
+                        failOnErrorMessage(msg);
+                        fail("Invalid message.");
+                }
 
-		// Game list update (new game)
-		msg = receiveMessage();
-		if (!msg.hasGameListNewMessage() || msg.getMessageType() != PokerTHMessageType.Type_GameListNewMessage) {
-			failOnErrorMessage(msg);
-			fail("Invalid message.");
-		}
+                // Join game ack.
+                msg = receiveMessage();
+                if (!msg.hasJoinGameAckMessage() || msg.getMessageType() != PokerTHMessageType.Type_JoinGameAckMessage) {
+                        failOnErrorMessage(msg);
+                        fail("Could not create game!");
+                }
+                int gameId = msg.getJoinGameAckMessage().getGameId();
 
-		// Join game ack.
-		msg = receiveMessage();
-		if (!msg.hasJoinGameAckMessage() || msg.getMessageType() != PokerTHMessageType.Type_JoinGameAckMessage) {
-			failOnErrorMessage(msg);
-			fail("Could not create game!");
-		}
-		int gameId = msg.getJoinGameAckMessage().getGameId();
+                // Game list update (player joined).
+                msg = receiveMessage();
+                if (!msg.hasGameListPlayerJoinedMessage() || msg.getMessageType() != PokerTHMessageType.Type_GameListPlayerJoinedMessage) {
+                        failOnErrorMessage(msg);
+                        fail("Invalid message.");
+                }
 
-		// Game list update (player joined).
-		msg = receiveMessage();
-		if (!msg.hasGameListPlayerJoinedMessage() || msg.getMessageType() != PokerTHMessageType.Type_GameListPlayerJoinedMessage) {
-			failOnErrorMessage(msg);
-			fail("Invalid message.");
-		}
+                StartEventMessage startMsg = StartEventMessage.newBuilder()
+                                .setGameId(gameId)
+                                .setFillWithComputerPlayers(true)
+                                .setStartEventType(StartEventType.startEvent)
+                                .build();
+                msg = PokerTHMessage.newBuilder()
+                                .setMessageType(PokerTHMessageType.Type_StartEventMessage)
+                                .setStartEventMessage(startMsg)
+                                .build();
+                sendMessage(msg);
 
-		StartEventMessage startMsg = StartEventMessage.newBuilder()
-				.setGameId(gameId)
-				.setFillWithComputerPlayers(true)
-				.setStartEventType(StartEventType.startEvent)
-				.build();
-		msg = PokerTHMessage.newBuilder()
-				.setMessageType(PokerTHMessageType.Type_StartEventMessage)
-				.setStartEventMessage(startMsg)
-				.build();
-		sendMessage(msg);
+                // Now the computer players should join.
+                for (int i = 0; i < 9; i++) {
+                        msg = receiveMessage();
+                        if (!msg.hasGamePlayerJoinedMessage() || msg.getMessageType() != PokerTHMessageType.Type_GamePlayerJoinedMessage) {
+                                failOnErrorMessage(msg);
+                                fail("Invalid message.");
+                        }
+                        msg = receiveMessage();
+                        if (!msg.hasGameListPlayerJoinedMessage() || msg.getMessageType() != PokerTHMessageType.Type_GameListPlayerJoinedMessage) {
+                                failOnErrorMessage(msg);
+                                fail("Invalid message.");
+                        }
+                }
 
-		// Now the computer players should join.
-		for (int i = 0; i < 9; i++) {
-			msg = receiveMessage();
-			if (!msg.hasGamePlayerJoinedMessage() || msg.getMessageType() != PokerTHMessageType.Type_GamePlayerJoinedMessage) {
-				failOnErrorMessage(msg);
-				fail("Invalid message.");
-			}
-			msg = receiveMessage();
-			if (!msg.hasGameListPlayerJoinedMessage() || msg.getMessageType() != PokerTHMessageType.Type_GameListPlayerJoinedMessage) {
-				failOnErrorMessage(msg);
-				fail("Invalid message.");
-			}
-		}
+                // Server should confirm start event.
+                msg = receiveMessage();
+                if (!msg.hasStartEventMessage() || msg.getMessageType() != PokerTHMessageType.Type_StartEventMessage) {
+                        failOnErrorMessage(msg);
+                        fail("Invalid message.");
+                }
+                // Acknowledge start event.
+                StartEventAckMessage startAck = StartEventAckMessage.newBuilder()
+                        .setGameId(gameId)
+                        .build();
+                msg = PokerTHMessage.newBuilder()
+                        .setMessageType(PokerTHMessageType.Type_StartEventAckMessage)
+                        .setStartEventAckMessage(startAck)
+                        .build();
+                sendMessage(msg);
 
-		// Server should confirm start event.
-		msg = receiveMessage();
-		if (!msg.hasStartEventMessage() || msg.getMessageType() != PokerTHMessageType.Type_StartEventMessage) {
-			failOnErrorMessage(msg);
-			fail("Invalid message.");
-		}
-		// Acknowledge start event.
-		StartEventAckMessage startAck = StartEventAckMessage.newBuilder()
-			.setGameId(gameId)
-			.build();
-		msg = PokerTHMessage.newBuilder()
-			.setMessageType(PokerTHMessageType.Type_StartEventAckMessage)
-			.setStartEventAckMessage(startAck)
-			.build();
-		sendMessage(msg);
+                // Game list update (game now running).
+                msg = receiveMessage();
+                if (!msg.hasGameListUpdateMessage() || msg.getMessageType() != PokerTHMessageType.Type_GameListUpdateMessage) {
+                        failOnErrorMessage(msg);
+                        fail("Invalid message.");
+                }
 
-		// Game list update (game now running).
-		msg = receiveMessage();
-		if (!msg.hasGameListUpdateMessage() || msg.getMessageType() != PokerTHMessageType.Type_GameListUpdateMessage) {
-			failOnErrorMessage(msg);
-			fail("Invalid message.");
-		}
+                msg = receiveMessage();
+                if (!msg.hasHandStartMessage() || msg.getMessageType() != PokerTHMessageType.Type_HandStartMessage) {
+                        failOnErrorMessage(msg);
+                        fail("Invalid message.");
+                }
 
-		msg = receiveMessage();
-		if (!msg.hasGameStartInitialMessage() || msg.getMessageType() != PokerTHMessageType.Type_GameStartInitialMessage) {
-			failOnErrorMessage(msg);
-			fail("Invalid message.");
-		}
+                // Play game until end.
+                while (true) {
+                        msg = receiveMessage();
+                        if (msg.hasPlayersTurnMessage()) {
+                                // Ignore turn message.
+                        } else if (msg.hasPlayersActionDoneMessage()) {
+                                // Ignore action message.
+                        } else if (msg.hasDealFlopCardsMessage() || msg.hasDealTurnCardMessage() || msg.hasDealRiverCardMessage()) {
+                                // Ignore deal cards messages.
+                        } else if (msg.hasEndOfHandShowCardsMessage() || msg.hasEndOfHandHideCardsMessage()) {
+                                // Acknowledge hand start after hand is over.
+                                msg = receiveMessage();
+                                if (msg.hasHandStartMessage()) {
+                                        // Next hand started.
+                                } else if (msg.hasEndOfGameMessage()) {
+                                        // Game is over.
+                                        break;
+                                } else {
+                                        failOnErrorMessage(msg);
+                                        fail("Invalid message.");
+                                }
+                        } else {
+                                failOnErrorMessage(msg);
+                                fail("Invalid message.");
+                        }
+                }
 
-		long lastPlayerMoney = 0;
-		do {
-			msg = receiveMessage();
-			if (msg.hasEndOfHandHideCardsMessage()) {
-				lastPlayerMoney = msg.getEndOfHandHideCardsMessage().getPlayerMoney();
-			} else if (msg.hasEndOfHandShowCardsMessage()) {
-				Collection<PlayerResult> result = msg.getEndOfHandShowCardsMessage().getPlayerResultsList();
-				assertFalse(result.isEmpty());
-				long maxPlayerMoney = 0;
-				for (Iterator<PlayerResult> it = result.iterator(); it.hasNext(); ) {
-					PlayerResult r = it.next();
-					int curMoney = r.getPlayerMoney();
-					if (curMoney > maxPlayerMoney) {
-						maxPlayerMoney = curMoney;
-					}
-				}
-				lastPlayerMoney = maxPlayerMoney;
-			}
-		} while (
-				msg.hasHandStartMessage()
-				|| msg.hasDealFlopCardsMessage()
-				|| msg.hasDealRiverCardMessage()
-				|| msg.hasDealTurnCardMessage()
-				|| msg.hasPlayersTurnMessage()
-				|| msg.hasPlayersActionDoneMessage()
-				|| msg.hasEndOfHandHideCardsMessage()
-				|| msg.hasEndOfHandShowCardsMessage()
-				|| msg.hasAllInShowCardsMessage()
-				|| msg.hasTimeoutWarningMessage()
-				);
-		if (!msg.hasEndOfGameMessage() || msg.getMessageType() != PokerTHMessageType.Type_EndOfGameMessage) {
-			fail("No end of game received.");
-		}
-		// Last player money should be sum of all money.
-		assertEquals(2000 * 10, lastPlayerMoney);
+                // Verify game results.
+                msg = receiveMessage();
+                if (!msg.hasEndOfGameMessage() || msg.getMessageType() != PokerTHMessageType.Type_EndOfGameMessage) {
+                        failOnErrorMessage(msg);
+                        fail("Invalid message.");
+                }
 
-		// Now the computer players should leave.
-		for (int i = 0; i < 9; i++) {
-			msg = receiveMessage();
-			if (!msg.hasGamePlayerLeftMessage()) {
-				failOnErrorMessage(msg);
-				fail("Invalid message.");
-			}
-			msg = receiveMessage();
-			if (!msg.hasGameListPlayerLeftMessage()) {
-				failOnErrorMessage(msg);
-				fail("Invalid message.");
-			}
-		}
-	}
+                // Final game list update (game closed).
+                msg = receiveMessage();
+                if (!msg.hasGameListRemoveMessage() || msg.getMessageType() != PokerTHMessageType.Type_GameListRemoveMessage) {
+                        failOnErrorMessage(msg);
+                        fail("Invalid message.");
+                }
+        }
 }

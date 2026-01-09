@@ -34,13 +34,13 @@ public class CreateGameTest extends TestBase {
 
 	@Test
 	public void testJoinGameRequestMessage() throws Exception {
-		guestInit();
+		userInit();
 
 		Collection<Integer> l = new ArrayList<Integer>();
 		l.add(250);
 		l.add(600);
 		l.add(1000);
-		NetGameInfo gameInfo = createGameInfo(NetGameInfo.NetGameType.normalGame, 20, 7, 8, EndRaiseMode.raiseByEndValue, 1000, 100, GuestUser + " create test game", l, 10, 0, 7, 2000);
+		NetGameInfo gameInfo = createGameInfo(NetGameInfo.NetGameType.normalGame, 20, 7, 8, EndRaiseMode.raiseByEndValue, 1000, 100, AuthUser + " create test game", l, 10, 0, 7, 2000);
 		sendMessage(createGameRequestMsg(
 				gameInfo,
 				GamePassword,

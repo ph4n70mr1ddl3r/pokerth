@@ -50,7 +50,7 @@ class createInternetGameDialogImpl: public QDialog, public Ui::createInternetGam
 public:
 	createInternetGameDialogImpl(QWidget *parent = 0, ConfigFile *c = 0);
 
-	void exec(bool guestMode, QString playerName);
+	void exec(QString playerName);
 	changeCompleteBlindsDialogImpl* getChangeCompleteBlindsDialog()
 	{
 		return myChangeCompleteBlindsDialog;
@@ -61,7 +61,7 @@ public slots:
 
 	void createGame();
 	void cancel();
-	void fillFormular(bool guestMode, QString playerName);
+	void fillFormular(QString playerName);
 	void keyPressEvent ( QKeyEvent * event );
 	void clearGamePassword(bool);
 	void gameTypeChanged();
@@ -71,7 +71,6 @@ private:
 
 	ConfigFile *myConfig;
 	changeCompleteBlindsDialogImpl *myChangeCompleteBlindsDialog;
-	bool currentGuestMode;
 	QString currentPlayerName;
 	QLabel *startBlind;
 	QLabel *raiseMode;

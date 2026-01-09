@@ -106,7 +106,7 @@ public:
 	void voteKick(bool doKick);
 	void showMyCards();
 	void selectServer(unsigned serverId);
-	void setLogin(const std::string &userName, const std::string &password, bool isGuest);
+	void setLogin(const std::string &userName, const std::string &password);
 
 	void invitePlayerToCurrentGame(unsigned playerId);
 	void acceptGameInvitation(unsigned gameId);

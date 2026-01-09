@@ -37,10 +37,10 @@ public class StartNormalGameTest extends TestBase {
 
 	@Test
 	public void testGameStartMessage() throws Exception {
-		guestInit();
+		userInit();
 
 		Collection<Integer> l = new ArrayList<Integer>();
-		NetGameInfo gameInfo = createGameInfo(NetGameType.normalGame, 10, 7, 10, EndRaiseMode.doubleBlinds, 0, 100, GuestUser + " start normal game", l, 10, 0, 11, 20000);
+		NetGameInfo gameInfo = createGameInfo(NetGameType.normalGame, 10, 7, 10, EndRaiseMode.doubleBlinds, 0, 100, AuthUser + " start normal game", l, 10, 0, 11, 20000);
 		sendMessage(createGameRequestMsg(
 				gameInfo,
 				"",

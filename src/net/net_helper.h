@@ -33,7 +33,6 @@
 #define _NET_HELPER_H_
 
 #define SERVER_COMPUTER_PLAYER_NAME			"Computer"
-#define SERVER_GUEST_PLAYER_NAME			"Guest"
 
 class NetHelper
 {

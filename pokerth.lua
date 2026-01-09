@@ -97,7 +97,6 @@ local server_types = {
 }
 
 local login_types = {
-    [0] = "Guest",
     [1] = "Authenticated",
     [2] = "Unauthenticated"
 }
@@ -130,7 +129,6 @@ local f_init_build_id = ProtoField.uint32("pokerth.init.build_id", "Build ID", b
 local f_init_last_session = ProtoField.bytes("pokerth.init.last_session", "Last Session ID")
 local f_init_password = ProtoField.string("pokerth.init.password", "Auth Server Password")
 local f_init_login = ProtoField.uint8("pokerth.init.login", "Login Type", base.DEC, {
-    [0] = "Guest Login",
     [1] = "Authenticated Login",
     [2] = "Unauthenticated Login"
 })

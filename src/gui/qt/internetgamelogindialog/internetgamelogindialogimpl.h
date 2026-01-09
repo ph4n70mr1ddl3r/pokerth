@@ -51,8 +51,6 @@ public:
 	bool eventFilter(QObject *obj, QEvent *event);
 
 public slots:
-	void regUserToggled(bool);
-	void guestUserToggled(bool);
 	void okButtonCheck();
 	void clickLoginButton()
 	{

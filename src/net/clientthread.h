@@ -157,7 +157,8 @@ public:
 	static void SslInfoCallback(const SSL *ssl, int where, int ret);
 
 	void SelectServer(unsigned serverId);
-	void SetLogin(const std::string &userName, const std::string &password, bool isGuest);
+	void SetLogin(const std::string &userName, const std::string &password);
+	void SetServerPassword(const std::string &password);
 	ServerInfo GetServerInfo(unsigned serverId) const;
 
 	GameInfo GetGameInfo(unsigned gameId) const;
@@ -183,10 +184,8 @@ protected:
 	typedef std::map<unsigned, boost::shared_ptr<AvatarFile> > AvatarFileMap;
 	typedef std::map<unsigned, ServerInfo> ServerInfoMap;
 	struct LoginData {
-		LoginData() : isGuest(false) {}
 		std::string userName;
 		std::string password;
-		bool isGuest;
 	};
 
 	// Main function of the thread.

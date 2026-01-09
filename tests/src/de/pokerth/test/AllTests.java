@@ -25,7 +25,6 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses( {
 	AnnounceTest.class,
-	GuestLoginTest.class,
 	AuthLoginTest.class,
 	PlayerListTest.class,
 	GameListTest.class,

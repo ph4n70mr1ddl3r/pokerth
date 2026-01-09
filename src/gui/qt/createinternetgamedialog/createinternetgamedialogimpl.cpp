@@ -36,7 +36,7 @@
 
 
 createInternetGameDialogImpl::createInternetGameDialogImpl(QWidget *parent, ConfigFile *c)
-	: QDialog(parent), myConfig(c), currentGuestMode(false), currentPlayerName("")
+	: QDialog(parent), myConfig(c), currentPlayerName("")
 {
 #ifdef __APPLE__
 	setWindowModality(Qt::ApplicationModal);
@@ -71,12 +71,11 @@ createInternetGameDialogImpl::createInternetGameDialogImpl(QWidget *parent, Conf
 }
 
 
-void createInternetGameDialogImpl::exec(bool guestMode, QString playerName)
+void createInternetGameDialogImpl::exec(QString playerName)
 {
 
-	currentGuestMode = guestMode;
 	currentPlayerName = playerName;
-	fillFormular(guestMode, playerName);
+	fillFormular(playerName);
 	QDialog::exec();
 }
 
@@ -90,7 +89,7 @@ void createInternetGameDialogImpl::cancel()
 
 }
 
-void createInternetGameDialogImpl::fillFormular(bool guestMode, QString playerName)
+void createInternetGameDialogImpl::fillFormular(QString playerName)
 {
 
 	//Network Game Settings
@@ -102,18 +101,10 @@ void createInternetGameDialogImpl::fillFormular(bool guestMode, QString playerNa
 	}
 
 
-	if(guestMode) {
-		comboBox_gameType->setCurrentIndex(0);
-		comboBox_gameType->setDisabled(true);
-		lineEdit_gameName->setText(tr("%1's game").arg(playerName));
-		lineEdit_gameName->setDisabled(true);
-
-	} else {
-		comboBox_gameType->setDisabled(false);
-		comboBox_gameType->setCurrentIndex(myConfig->readConfigInt("InternetGameType"));
-		lineEdit_gameName->setDisabled(false);
-		lineEdit_gameName->setText(QString::fromUtf8(myConfig->readConfigString("InternetGameName").c_str()));
-	}
+	comboBox_gameType->setDisabled(false);
+	comboBox_gameType->setCurrentIndex(myConfig->readConfigInt("InternetGameType"));
+	lineEdit_gameName->setDisabled(false);
+	lineEdit_gameName->setText(QString::fromUtf8(myConfig->readConfigString("InternetGameName").c_str()));
 
 	gameTypeChanged();
 }

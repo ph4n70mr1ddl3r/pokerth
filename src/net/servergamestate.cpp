@@ -274,11 +274,9 @@ AbstractServerGameStateReceiving::ProcessPacket(boost::shared_ptr<ServerGame> se
 	else if (packet->GetMsg()->messagetype() == PokerTHMessage::Type_ChatRequestMessage) {
 		bool chatSent = false;
 		const ChatRequestMessage &netChatRequest = packet->GetMsg()->chatrequestmessage();
-		// Only forward if this player is known and not a guest.
-		if (session->GetPlayerData()->GetRights() != PLAYER_RIGHTS_GUEST) {
-			// Forward chat text to all players.
-			// TODO: Some limitation needed.
-			if (!netChatRequest.has_targetgameid()) {
+		// Forward chat text to all players.
+		// TODO: Some limitation needed.
+		if (!netChatRequest.has_targetgameid()) {
 				if (!server->IsRunning()) {
 					server->GetLobbyThread().HandleChatRequest(session, netChatRequest);
 					chatSent = true;
@@ -309,7 +307,6 @@ AbstractServerGameStateReceiving::ProcessPacket(boost::shared_ptr<ServerGame> se
 					//}
 				}
 			}
-		}
 		// Reject chat otherwise.
 		if (!chatSent) {
 			boost::shared_ptr<NetPacket> packet(new NetPacket);

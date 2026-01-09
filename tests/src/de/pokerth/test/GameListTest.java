@@ -62,7 +62,7 @@ public class GameListTest extends TestBase {
 	@Test
 	public void testGameList() throws Exception {
 
-		int myId = guestInit();
+		int myId = userInit();
 
 		// Waiting for player list update.
 		PokerTHMessage msg;
@@ -71,7 +71,7 @@ public class GameListTest extends TestBase {
 
 		// Create a new game.
 		Collection<Integer> l = new ArrayList<Integer>();
-		NetGameInfo gameInfo = createGameInfo(NetGameType.normalGame, 10, 5, 5, EndRaiseMode.doubleBlinds, 0, 100, GuestUser + " game list normal game", l, 10, 0, 2, 2000);
+		NetGameInfo gameInfo = createGameInfo(NetGameType.normalGame, 10, 5, 5, EndRaiseMode.doubleBlinds, 0, 100, AuthUser + " game list normal game", l, 10, 0, 2, 2000);
 		sendMessage(createGameRequestMsg(
 				gameInfo,
 				"",

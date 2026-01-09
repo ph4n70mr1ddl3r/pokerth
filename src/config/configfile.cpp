@@ -281,7 +281,6 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 	configList.push_back(ConfigInfo("ChatCleanerUseIpv6", CONFIG_TYPE_INT, "0"));
 	configList.push_back(ConfigInfo("MyName", CONFIG_TYPE_STRING, "Human Player"));
 	configList.push_back(ConfigInfo("MyAvatar", CONFIG_TYPE_STRING, ""));
-	configList.push_back(ConfigInfo("MyRememberedNameDuringGuestLogin", CONFIG_TYPE_STRING, ""));
 	configList.push_back(ConfigInfo("Opponent1Name", CONFIG_TYPE_STRING, "Player 1"));
 	configList.push_back(ConfigInfo("Opponent1Avatar", CONFIG_TYPE_STRING, ""));
 	configList.push_back(ConfigInfo("LogOnOff", CONFIG_TYPE_INT, logOnOffDefault));
@@ -310,7 +309,6 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 	configList.push_back(ConfigInfo("DBServerDatabaseName", CONFIG_TYPE_STRING, "pokerth"));
 	configList.push_back(ConfigInfo("DBServerEncryptionKey", CONFIG_TYPE_STRING, ""));
 	configList.push_back(ConfigInfo("GameNameBadWordList", CONFIG_TYPE_STRING_LIST, "Regex"));
-	configList.push_back(ConfigInfo("ServerRestrictGuestLogin", CONFIG_TYPE_INT, "0"));
 	configList.push_back(ConfigInfo("ServerLimitRankNum", CONFIG_TYPE_INT, "4"));
 	configList.push_back(ConfigInfo("ServerLimitRankPeriod", CONFIG_TYPE_INT, "60"));
 

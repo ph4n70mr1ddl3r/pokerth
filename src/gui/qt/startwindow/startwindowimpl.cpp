@@ -305,8 +305,7 @@ void startWindowImpl::callInternetGameLoginDialog()
 		//send login infos
 		mySession->setLogin(
 			myConfig->readConfigString("MyName"),
-			myInternetGameLoginDialog->lineEdit_password->text().toUtf8().constData(),
-			myInternetGameLoginDialog->checkBox_guest->isChecked());
+			myInternetGameLoginDialog->lineEdit_password->text().toUtf8().constData());
 	} else {
 		myConnectToServerDialog->reject();
 		mySession->terminateNetworkClient();
@@ -804,12 +803,6 @@ void startWindowImpl::networkNotification(int notificationId)
 							  QMessageBox::Close);
 	}
 	break;
-	case NTF_NET_JOIN_GUEST_FORBIDDEN: {
-		MyMessageBox::warning(this, tr("Network Notification"),
-							  tr("You cannot join this type of game as guest."),
-							  QMessageBox::Close);
-	}
-	break;
 	case NTF_NET_JOIN_INVALID_SETTINGS: {
 		MyMessageBox::warning(this, tr("Network Notification"),
 							  tr("The settings are invalid for this type of game."),
@@ -890,10 +883,6 @@ void startWindowImpl::networkMessage(unsigned msgId)
 	break;
 	case MSG_NET_ADMIN_BAN_PLAYER_ACCEPTED: {
 		msgText = tr("The player was kicked and banned permanently.");
-	}
-	break;
-	case MSG_NET_ADMIN_BAN_PLAYER_NODB: {
-		msgText = tr("The player was kicked, but could not be banned because it was a guest player.");
 	}
 	break;
 	case MSG_NET_ADMIN_BAN_PLAYER_DBERROR: {

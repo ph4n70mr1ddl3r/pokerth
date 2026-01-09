@@ -621,7 +621,6 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 			const PlayerInfoReplyMessage::PlayerInfoData &netInfo = infoReply.playerinfodata();
 			tmpInfo.playerName = netInfo.playername();
 			tmpInfo.ptype = netInfo.ishuman() ? PLAYER_TYPE_HUMAN : PLAYER_TYPE_COMPUTER;
-			tmpInfo.isGuest = netInfo.playerrights() == netPlayerRightsGuest;
 			tmpInfo.isAdmin = netInfo.playerrights() == netPlayerRightsAdmin;
 			if (netInfo.has_countrycode()) {
 				tmpInfo.countryCode = netInfo.countrycode();
@@ -924,9 +923,6 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		case AdminBanPlayerAckMessage::banPlayerPending:
 			msgCode = MSG_NET_ADMIN_BAN_PLAYER_PENDING;
 			break;
-		case AdminBanPlayerAckMessage::banPlayerNoDB:
-			msgCode = MSG_NET_ADMIN_BAN_PLAYER_NODB;
-			break;
 		case AdminBanPlayerAckMessage::banPlayerDBError:
 			msgCode = MSG_NET_ADMIN_BAN_PLAYER_DBERROR;
 			break;
@@ -1110,33 +1106,18 @@ ClientStateWaitEnterLogin::TimerLoop(const boost::system::error_code& ec, boost:
 
             context.SetPlayerName(loginData.userName);
 
-            // Handle guest login first.
-            if (loginData.isGuest) {
-                qDebug() << "[AUTH DEBUG] TimerLoop - Guest login for:" << QString::fromStdString(loginData.userName);
-                context.SetPassword("");
-                context.SetPlayerRights(PLAYER_RIGHTS_GUEST);
-                netInit->set_login(InitMessage::guestLogin);
-                netInit->set_nickname(context.GetPlayerName());
-
-                qDebug() << "[AUTH DEBUG] TimerLoop - Sending guest InitMessage, switching to WaitSession";
-                client->GetSender().Send(context.GetSessionData(), init);
-                client->SetState(ClientStateWaitSession::Instance());
+            qDebug() << "[AUTH DEBUG] TimerLoop - Authenticated login for:" << QString::fromStdString(loginData.userName);
+            context.SetPassword(loginData.password);
+            netInit->set_login(InitMessage::authenticatedLogin);
+            netInit->set_nickname(context.GetPlayerName());
+            if (!context.GetPassword().empty()) {
+                qDebug() << "[AUTH DEBUG] TimerLoop - Password is set (plain text auth)";
+                netInit->set_clientuserdata(context.GetPassword());
             }
-            // If the player is not a guest, authenticate.
-            else {
-                qDebug() << "[AUTH DEBUG] TimerLoop - Authenticated login for:" << QString::fromStdString(loginData.userName);
-                context.SetPassword(loginData.password);
-                netInit->set_login(InitMessage::authenticatedLogin);
-                netInit->set_nickname(context.GetPlayerName());
-                if (!context.GetPassword().empty()) {
-                    qDebug() << "[AUTH DEBUG] TimerLoop - Password is set (plain text auth)";
-                    netInit->set_clientuserdata(context.GetPassword());
-                }
 
-                qDebug() << "[AUTH DEBUG] TimerLoop - Sending authenticated InitMessage, switching to WaitSession";
-                client->GetSender().Send(context.GetSessionData(), init);
-                client->SetState(ClientStateWaitSession::Instance());
-            }
+            qDebug() << "[AUTH DEBUG] TimerLoop - Sending authenticated InitMessage, switching to WaitSession";
+            client->GetSender().Send(context.GetSessionData(), init);
+            client->SetState(ClientStateWaitSession::Instance());
         } else {
             client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
             client->GetStateTimer().async_wait(
@@ -1378,9 +1359,6 @@ ClientStateWaitJoin::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 			break;
 		case JoinGameFailedMessage::invalidPassword :
 			failureCode = NTF_NET_JOIN_INVALID_PASSWORD;
-			break;
-		case JoinGameFailedMessage::notAllowedAsGuest :
-			failureCode = NTF_NET_JOIN_GUEST_FORBIDDEN;
 			break;
 		case JoinGameFailedMessage::notInvited :
 			failureCode = NTF_NET_JOIN_NOT_INVITED;

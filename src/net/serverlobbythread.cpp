@@ -1066,17 +1066,8 @@ ServerLobbyThread::HandleNetPacketInit(boost::shared_ptr<SessionData> session, c
     string playerName;
     MD5Buf avatarMD5;
     bool noAuth = false;
-    bool validGuest = false;
 
-    if (initMessage.login() == InitMessage::guestLogin) {
-        // Gast-Login
-        playerName = initMessage.nickname();
-        validGuest = true;
-        if (initMessage.has_avatarhash()) {
-            memcpy(avatarMD5.GetData(), initMessage.avatarhash().data(), MD5_DATA_SIZE);
-        }
-        noAuth = true;
-    } else if (initMessage.login() == InitMessage::unauthenticatedLogin) {
+    if (initMessage.login() == InitMessage::unauthenticatedLogin) {
         playerName = initMessage.nickname();
         if (initMessage.has_avatarhash()) {
             memcpy(avatarMD5.GetData(), initMessage.avatarhash().data(), MD5_DATA_SIZE);
@@ -1117,7 +1108,7 @@ ServerLobbyThread::HandleNetPacketInit(boost::shared_ptr<SessionData> session, c
 
 	// Create player data object.
 	boost::shared_ptr<PlayerData> tmpPlayerData(
-		new PlayerData(GetNextUniquePlayerId(), 0, PLAYER_TYPE_HUMAN, validGuest ? PLAYER_RIGHTS_GUEST : PLAYER_RIGHTS_NORMAL, false));
+		new PlayerData(GetNextUniquePlayerId(), 0, PLAYER_TYPE_HUMAN, PLAYER_RIGHTS_NORMAL, false));
 	tmpPlayerData->SetName(playerName);
 	tmpPlayerData->SetAvatarMD5(avatarMD5);
 	if (initMessage.has_mylastsessionid()) {
@@ -1327,9 +1318,6 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_GAME_NAME_IN_USE);
 	} else if (GetBanManager().IsBadGameName(gameName)) {
 		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_GAME_BAD_NAME);
-	} else if (session->GetPlayerData()->GetRights() == PLAYER_RIGHTS_GUEST
-			   && tmpData.gameType != GAME_TYPE_NORMAL) {
-		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_GUEST_FORBIDDEN);
 	} else if (!ServerGame::CheckSettings(tmpData, password, GetServerMode())) {
 		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_INVALID_SETTINGS);
 	} else if (!session->GetPlayerData()->IsPlayerAllowedToJoinCreateLimitRank(m_serverConfig.readConfigString("ServerLimitRankNum"), m_serverConfig.readConfigString("ServerLimitRankPeriod"))
@@ -1378,11 +1366,7 @@ ServerLobbyThread::HandleNetPacketJoinGame(boost::shared_ptr<SessionData> sessio
 			}
 		} else {
 			LOG_ERROR("JoinGame pre validation");
-			// As guest, you are only allowed to join normal games.
-			if (session->GetPlayerData()->GetRights() == PLAYER_RIGHTS_GUEST
-					&& tmpData.gameType != GAME_TYPE_NORMAL) {
-				SendJoinGameFailed(session, joinGame.gameid(), NTF_NET_JOIN_GUEST_FORBIDDEN);
-			} else if (tmpData.gameType == GAME_TYPE_INVITE_ONLY
+			if (tmpData.gameType == GAME_TYPE_INVITE_ONLY
 					   && !game->IsPlayerInvited(session->GetPlayerData()->GetUniqueId())) {
 				SendJoinGameFailed(session, joinGame.gameid(), NTF_NET_JOIN_NOT_INVITED);
 			} else if (!game->CheckPassword(password)) {
@@ -1422,8 +1406,7 @@ void
 ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> session, const ChatRequestMessage &chatRequest)
 {
 	bool chatSent = false;
-	// Guests are not allowed to chat.
-	if (session->GetPlayerData() && session->GetPlayerData()->GetRights() != PLAYER_RIGHTS_GUEST) {
+	if (session->GetPlayerData()) {
 		if (!chatRequest.has_targetgameid() && !chatRequest.has_targetplayerid()) {
 			string chatMsg(chatRequest.chattext());
 
@@ -1602,7 +1585,7 @@ ServerLobbyThread::HandleNetPacketAdminBanPlayer(boost::shared_ptr<SessionData> 
 				GetDatabase()->AsyncBlockPlayer(session->GetPlayerData()->GetUniqueId(), tmpPlayer->GetUniqueId(), tmpPlayer->GetDBId(), 0, 4);
 				netBanAck->set_banplayerresult(AdminBanPlayerAckMessage::banPlayerPending);
 			} else {
-				netBanAck->set_banplayerresult(AdminBanPlayerAckMessage::banPlayerNoDB);
+				netBanAck->set_banplayerresult(AdminBanPlayerAckMessage::banPlayerInvalid);
 			}
 		} else {
 			netBanAck->set_banplayerresult(AdminBanPlayerAckMessage::banPlayerInvalid);
@@ -2101,9 +2084,6 @@ ServerLobbyThread::SendJoinGameFailed(boost::shared_ptr<SessionData> s, unsigned
 		break;
 	case NTF_NET_JOIN_INVALID_PASSWORD :
 		netJoinFailed->set_joingamefailurereason(JoinGameFailedMessage::invalidPassword);
-		break;
-	case NTF_NET_JOIN_GUEST_FORBIDDEN :
-		netJoinFailed->set_joingamefailurereason(JoinGameFailedMessage::notAllowedAsGuest);
 		break;
 	case NTF_NET_JOIN_NOT_INVITED :
 		netJoinFailed->set_joingamefailurereason(JoinGameFailedMessage::notInvited);

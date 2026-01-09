@@ -144,8 +144,6 @@ public slots:
 	void changeGameListFilter(int);
 	void changeNickListFilter(int);
 	void changeGameListSorting();
-	void registeredUserMode();
-	void guestUserMode();
 	void showNickListContextMenu(QPoint);
 	void showGameListContextMenu(QPoint);
 	void showConnectedPlayersContextMenu(QPoint);
@@ -184,7 +182,6 @@ private:
 	unsigned myPlayerId;
 	bool isGameAdministrator;
 	bool inGame;
-	bool guestMode;
 	typedef std::map<QString, QString> CountryStringMap;
 	CountryStringMap countryStringMap;
 

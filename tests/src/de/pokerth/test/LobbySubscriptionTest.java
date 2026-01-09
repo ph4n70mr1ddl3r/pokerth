@@ -39,7 +39,7 @@ public class LobbySubscriptionTest extends TestBase {
 
 	@Test
 	public void testLobbySubscription() throws Exception {
-		guestInit();
+		userInit();
 
 		PokerTHMessage msg;
 		msg = receiveMessage();
@@ -59,7 +59,7 @@ public class LobbySubscriptionTest extends TestBase {
 
 		// Create a new game.
 		Collection<Integer> l = new ArrayList<Integer>();
-		NetGameInfo gameInfo = createGameInfo(NetGameType.normalGame, 10, 5, 5, EndRaiseMode.doubleBlinds, 0, 100, GuestUser + " game list normal game", l, 10, 0, 2, 2000);
+		NetGameInfo gameInfo = createGameInfo(NetGameType.normalGame, 10, 5, 5, EndRaiseMode.doubleBlinds, 0, 100, AuthUser + " game list normal game", l, 10, 0, 2, 2000);
 		sendMessage(createGameRequestMsg(
 				gameInfo,
 				"",
