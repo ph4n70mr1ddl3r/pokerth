@@ -255,13 +255,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0" colspan="2">
-                <widget class="QCheckBox" name="checkBox_disableSplashscreen">
-                 <property name="text">
-                  <string>Disable splashscreen on startup</string>
-                 </property>
-                </widget>
-               </item>
                <item row="1" column="0" colspan="2">
                 <widget class="QCheckBox" name="checkBox_showFlipCardsAnimation">
                  <property name="text">
@@ -4165,7 +4158,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>checkBox_showBlindButtons</tabstop>
   <tabstop>checkBox_cardsChanceMonitor</tabstop>
   <tabstop>checkBox_antiPeekMode</tabstop>
-  <tabstop>checkBox_disableSplashscreen</tabstop>
   <tabstop>checkBox_dontTranslatePokerStrings</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>treeWidget_gameTableStyles</tabstop>

@@ -34,7 +34,6 @@
 #include "settingsdialogimpl.h"
 #include "startwindowimpl.h"
 
-#include "startsplash.h"
 #include "mycardspixmaplabel.h"
 #include "mysetlabel.h"
 #include "myavatarlabel.h"
@@ -481,6 +480,7 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 #ifdef GUI_800x480
 	connect( tabsButton, SIGNAL( clicked() ), this, SLOT( tabsButtonClicked() ) );
 #endif
+	this->setFixedSize(480, 800);
 }
 
 gameTableImpl::~gameTableImpl()
@@ -3310,6 +3310,7 @@ void gameTableImpl::refreshActionButtonFKeyIndicator(bool clear)
 void gameTableImpl::refreshGameTableStyle()
 {
 	myGameTableStyle->setWindowsGeometry(this);
+	this->setFixedSize(480, 800);
 #ifdef GUI_800x480
 #ifdef ANDROID
 //	myGameTableStyle->setChatLogStyle(tabs.textBrowser_Log);
@@ -3545,6 +3546,7 @@ void gameTableImpl::restoreGameTableGeometry()
 
 			this->resize(myConfig->readConfigInt("GameTableWidthSave"), myConfig->readConfigInt("GameTableHeightSave"));
 		}
+		this->setFixedSize(480, 800);
 	}
 #ifdef ANDROID
 	if(getAndroidApiVersion() == 10) {

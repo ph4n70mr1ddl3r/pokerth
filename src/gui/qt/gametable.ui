@@ -44,7 +44,7 @@
     </property>
     
     <!-- Opponent -->
-    <item>
+    <item alignment="Qt::AlignHCenter">
      <widget class="QGroupBox" name="groupBox1">
       <property name="minimumSize">
        <size>
@@ -269,7 +269,7 @@
     </item>
 
     <!-- Board -->
-    <item>
+    <item alignment="Qt::AlignHCenter">
      <widget class="QGroupBox" name="groupBox_Board">
       <property name="minimumSize">
        <size>
@@ -397,7 +397,7 @@
     </item>
 
     <!-- Player -->
-    <item>
+    <item alignment="Qt::AlignHCenter">
      <widget class="QGroupBox" name="groupBox0">
       <property name="minimumSize">
        <size>
@@ -543,7 +543,7 @@
          <x>72</x>
          <y>72</y>
          <width>100</width>
-         <height>25</height>
+         <height>35</height>
         </rect>
        </property>
        <property name="text">
@@ -632,24 +632,80 @@
     </item>
 
     <!-- Controls -->
-    <item>
+    <item alignment="Qt::AlignHCenter">
      <widget class="QGroupBox" name="groupBoxControls">
       <property name="minimumSize">
        <size>
         <width>280</width>
-        <height>100</height>
+        <height>180</height>
        </size>
       </property>
       <property name="title">
        <string/>
       </property>
       <layout class="QGridLayout" name="gridLayout_Controls">
-       <item row="0" column="0"><widget class="MyActionButton" name="pushButton_Fold"><property name="text"><string>Fold</string></property></widget></item>
-       <item row="0" column="1"><widget class="MyActionButton" name="pushButton_CallCheck"><property name="text"><string>Call/Check</string></property></widget></item>
-       <item row="0" column="2"><widget class="MyActionButton" name="pushButton_BetRaise"><property name="text"><string>Bet/Raise</string></property></widget></item>
-       <item row="1" column="0" colspan="3"><widget class="QSpinBox" name="spinBox_betValue"/></item>
-       <item row="2" column="0" colspan="3"><widget class="Slider" name="horizontalSlider_bet"><property name="orientation"><enum>Qt::Horizontal</enum></property></widget></item>
-       <item row="3" column="0" colspan="3"><widget class="MyActionButton" name="pushButton_AllIn"><property name="text"><string>All-In</string></property></widget></item>
+       <item row="0" column="0">
+        <widget class="MyActionButton" name="pushButton_Fold">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Fold</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="MyActionButton" name="pushButton_CallCheck">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Call/Check</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="MyActionButton" name="pushButton_BetRaise">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Bet/Raise</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="3">
+        <widget class="QSpinBox" name="spinBox_betValue"/>
+       </item>
+       <item row="2" column="0" colspan="3">
+        <widget class="Slider" name="horizontalSlider_bet">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="3">
+        <widget class="MyActionButton" name="pushButton_AllIn">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>All-In</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>

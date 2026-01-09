@@ -255,7 +255,6 @@ void settingsDialogImpl::prepareDialog()
 	checkBox_enableBetInputFocusSwitch->setChecked(myConfig->readConfigInt("EnableBetInputFocusSwitch"));
 	checkBox_cardsChanceMonitor->setChecked(myConfig->readConfigInt("ShowCardsChanceMonitor"));
 	checkBox_dontTranslatePokerStrings->setChecked(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle"));
-	checkBox_disableSplashscreen->setChecked(myConfig->readConfigInt("DisableSplashScreenOnStartup"));
 	checkBox_enableAccidentallyCallBlocker->setChecked(myConfig->readConfigInt("AccidentallyCallBlocker"));
 	checkBox_dontHideAvatarsOfIgnored->setChecked(myConfig->readConfigInt("DontHideAvatarsOfIgnored"));
 	checkBox_disableChatEmoticons->setChecked(myConfig->readConfigInt("DisableChatEmoticons"));
@@ -660,7 +659,6 @@ void settingsDialogImpl::isAccepted()
 	myConfig->writeConfigInt("ShowCountryFlagInAvatar", checkBox_showCountryFlagInAvatar->isChecked());
 	myConfig->writeConfigInt("ShowPingStateInAvatar", checkBox_showPingStateInAvatar->isChecked());
 	myConfig->writeConfigInt("DontTranslateInternationalPokerStringsFromStyle", checkBox_dontTranslatePokerStrings->isChecked());
-	myConfig->writeConfigInt("DisableSplashScreenOnStartup", checkBox_disableSplashscreen->isChecked());
 	myConfig->writeConfigInt("EnableBetInputFocusSwitch", checkBox_enableBetInputFocusSwitch->isChecked());
 	myConfig->writeConfigInt("AccidentallyCallBlocker", checkBox_enableAccidentallyCallBlocker->isChecked());
 	myConfig->writeConfigInt("DontHideAvatarsOfIgnored", checkBox_dontHideAvatarsOfIgnored->isChecked());

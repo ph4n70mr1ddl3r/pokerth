@@ -311,6 +311,9 @@ cp -r ~/pokerth/tls/ ~/pokerth/build/
 cp -r ~/pokerth/data ~/pokerth/build/share/pokerth/
 mkdir -p ~/pokerth/build/bin
 ln -sf ~/pokerth/build/share/pokerth/data ~/pokerth/build/bin/data
+./restart_server.sh
+
+tail -f ~/.pokerth/log-files/server_messages.log
 ```
 
 ## Quick Reference Summary

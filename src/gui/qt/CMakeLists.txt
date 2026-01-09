@@ -20,7 +20,6 @@ set(POKERTH_CLIENT_SRC ../../pokerth.cpp
     gametable/myavatarlabel.cpp
     gametable/myrighttabwidget.cpp
     gametable/mylefttabwidget.cpp
-    gametable/startsplash/startsplash.cpp
     gametable/log/guilog.cpp
     aboutpokerth/aboutpokerthimpl.cpp
     connecttoserverdialog/connecttoserverdialogimpl.cpp
@@ -84,7 +83,6 @@ target_include_directories(pokerth_client PUBLIC
     chattools
     qttools/qthelper
     gametable
-    gametable/startsplash
     gametable/log
     aboutpokerth
     createinternetgamedialog
