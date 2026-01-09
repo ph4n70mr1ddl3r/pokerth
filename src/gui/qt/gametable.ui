@@ -283,19 +283,23 @@
         </widget>
        </item>
 
-       <!-- Board -->
+       <!-- Board (Cards Only) -->
        <item alignment="Qt::AlignHCenter">
         <widget class="QGroupBox" name="groupBox_Board">
          <property name="minimumSize">
           <size>
            <width>350</width>
-           <height>180</height>
+           <height>110</height>
           </size>
          </property>
          <property name="styleSheet">
           <string notr="true">QGroupBox {border-style:none;}</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_Board">
+          <property name="leftMargin"><number>0</number></property>
+          <property name="topMargin"><number>0</number></property>
+          <property name="rightMargin"><number>0</number></property>
+          <property name="bottomMargin"><number>0</number></property>
           <item>
            <widget class="QGroupBox" name="groupBox">
             <property name="minimumSize">
@@ -368,6 +372,29 @@
 
            </widget>
           </item>
+         </layout>
+        </widget>
+       </item>
+
+       <!-- Info Box -->
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QGroupBox" name="groupBox_Info">
+         <property name="minimumSize">
+          <size>
+           <width>350</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QGroupBox {border-style:none;}</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_Info">
+          <property name="spacing"><number>2</number></property>
+          <property name="leftMargin"><number>2</number></property>
+          <property name="topMargin"><number>2</number></property>
+          <property name="rightMargin"><number>2</number></property>
+          <property name="bottomMargin"><number>2</number></property>
+          
           <item>
            <widget class="QLabel" name="textLabel_handLabel">
             <property name="alignment">
@@ -396,7 +423,6 @@
            </widget>
           </item>
           
-          <!-- Info Labels restored -->
           <item>
            <widget class="QFrame" name="framegameinfo">
             <layout class="QHBoxLayout">
