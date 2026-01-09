@@ -654,146 +654,9 @@
      </widget>
     </item>
 
-    <!-- ToolBoxes (Restored) -->
-    <item>
-     <widget class="QGroupBox" name="groupBox_LeftToolBox">
-      <property name="minimumSize"><size><width>260</width><height>188</height></size></property>
-          <layout class="QGridLayout">
-           <item row="0" column="0">
-            <widget class="MyLeftTabWidget" name="tabWidget_Left">
-             <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
-             </property>
-             <property name="currentIndex">
-              <number>3</number>
-             </property>
-             <widget class="QWidget" name="tab_Hands">
-              <attribute name="title"><string>Hands</string></attribute>
-              <layout class="QGridLayout">
-               <item row="0" column="0"><widget class="QLabel" name="label_Handranking"/></item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="tab_Chat">
-              <attribute name="title"><string>Chat</string></attribute>
-              <layout class="QGridLayout">
-               <item row="0" column="0"><widget class="QTextBrowser" name="textBrowser_Chat"/></item>
-               <item row="1" column="0"><widget class="QLineEdit" name="lineEdit_ChatInput" /></item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="tab_Kick">
-              <attribute name="title"><string>Kick</string></attribute>
-              <layout class="QGridLayout">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout">
-                 <item>
-                  <layout class="QHBoxLayout">
-                   <item><widget class="QLabel" name="label_votestartedby"/></item>
-                   <item><widget class="QLabel" name="label_voteStarterNick"/></item>
-                  </layout>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout">
-                   <item><widget class="QLabel" name="label_timeout"/></item>
-                   <item><widget class="QLabel" name="label_kickVoteTimeout"/></item>
-                  </layout>
-                 </item>
-                </layout>
-               </item>
-               <item row="1" column="0"><widget class="QLabel" name="label_kickUser"/></item>
-               <item row="2" column="0">
-                <layout class="QHBoxLayout">
-                 <item><widget class="QPushButton" name="pushButton_voteOnKickYes"/></item>
-                 <item><widget class="QPushButton" name="pushButton_voteOnKickNo"/></item>
-                </layout>
-               </item>
-               <item row="3" column="0"><widget class="QLabel" name="label_votesMonitor"/></item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="tab_editTip">
-              <attribute name="title"><string>Player info</string></attribute>
-              <layout class="QGridLayout">
-               <item row="0" column="0"><widget class="QPlainTextEdit" name="textEdit_tipInput"/></item>
-               <item row="1" column="0"><widget class="QPushButton" name="pushButton_tipSave"/></item>
-              </layout>
-             </widget>
-            </widget>
-           </item>
-          </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="groupBox_RightToolBox">
-      <property name="minimumSize"><size><width>260</width><height>188</height></size></property>
-      <layout class="QGridLayout">
-           <item row="0" column="0">
-            <widget class="MyRightTabWidget" name="tabWidget_Right">
-             <widget class="QWidget" name="tab_Log">
-              <attribute name="title"><string>Log</string></attribute>
-              <layout class="QGridLayout">
-               <item row="0" column="0"><widget class="QTextBrowser" name="textBrowser_Log"/></item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="tab_away">
-              <attribute name="title"><string>Away</string></attribute>
-              <layout class="QGridLayout">
-               <item row="0" column="0"><widget class="QRadioButton" name="radioButton_manualAction"/></item>
-               <item row="1" column="0"><widget class="QRadioButton" name="radioButton_autoCheckFold"/></item>
-               <item row="2" column="0"><widget class="QRadioButton" name="radioButton_autoCheckCallAny"/></item>
-               <item row="3" column="0"><spacer><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property></spacer></item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="tab_Chance">
-              <attribute name="title"><string>Chance</string></attribute>
-              <layout class="QGridLayout">
-               <item row="0" column="0"><widget class="MyChanceLabel" name="label_chance"/></item>
-              </layout>
-             </widget>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <layout class="QHBoxLayout">
-             <item><widget class="QLabel" name="label_speedString"/></item>
-             <item><widget class="QLabel" name="label_speedValue"/></item>
-             <item><widget class="Slider" name="horizontalSlider_speed"><property name="orientation"><enum>Qt::Horizontal</enum></property></widget></item>
-             <item><widget class="QPushButton" name="pushButton_break"/></item>
-            </layout>
-           </item>
-      </layout>
-     </widget>
-    </item>
-
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>480</width>
-     <height>19</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuView">
-    <property name="title">
-     <string>&amp;View</string>
-    </property>
-    <addaction name="actionFullScreen"/>
-    <addaction name="actionShowHideChat"/>
-    <addaction name="actionShowHideHelp"/>
-    <addaction name="actionShowHideLog"/>
-    <addaction name="actionShowHideAway"/>
-    <addaction name="actionShowHideChance"/>
-    <addaction name="actionClose"/>
-   </widget>
-   <widget class="QMenu" name="menuSettings">
-    <property name="title">
-     <string>&amp;Settings</string>
-    </property>
-    <addaction name="actionConfigure_PokerTH"/>
-   </widget>
-   <addaction name="menuView"/>
-   <addaction name="menuSettings"/>
-  </widget>
+
   <action name="actionNewGame">
    <property name="text">
     <string>Start Local Game ...</string>
@@ -848,50 +711,12 @@
     <string>Ctrl+F</string>
    </property>
   </action>
-  <action name="actionShowHideChat">
-   <property name="text">
-    <string>Show/Hide Chat Window</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+T</string>
-   </property>
-  </action>
-  <action name="actionShowHideHelp">
-   <property name="text">
-    <string>Show/Hide Hands Window</string>
-   </property>
-   <property name="iconText">
-    <string>Show/Hide Hands Window</string>
-   </property>
-   <property name="toolTip">
-    <string>Show/Hide Hands Window</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+H</string>
-   </property>
-  </action>
-  <action name="actionShowHideLog">
-   <property name="text">
-    <string>Show/Hide Log Window</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+L</string>
-   </property>
-  </action>
   <action name="actionInternet_Game">
    <property name="text">
     <string>Internet Game ...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
-   </property>
-  </action>
-  <action name="actionShowHideAway">
-   <property name="text">
-    <string>Show/Hide Away Window</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+A</string>
    </property>
   </action>
   <action name="actionConfigure_PokerTH">
@@ -913,14 +738,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
-   </property>
-  </action>
-  <action name="actionShowHideChance">
-   <property name="text">
-    <string>Show/Hide Chance Window</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+C</string>
    </property>
   </action>
  </widget>
@@ -992,21 +809,5 @@
   <include location="resources/pokerth.qrc" />
  </resources>
  <connections>
-  <connection>
-   <sender>horizontalSlider_speed</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>label_speedValue</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>886</x>
-     <y>624</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>800</x>
-     <y>638</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
 </ui>

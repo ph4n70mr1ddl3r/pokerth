@@ -53,7 +53,7 @@ ChatTools::~ChatTools()
 void ChatTools::sendMessage()
 {
 
-	if(myLineEdit->text().size() && mySession) {
+	if(myLineEdit && myLineEdit->text().size() && mySession) {
 		fillChatLinesHistory(myLineEdit->text());
 		QString chatText(myLineEdit->text());
 		if(myChatType == INGAME_CHAT) {
@@ -196,7 +196,7 @@ void ChatTools::clearChat()
 void ChatTools::checkInputLength(QString string)
 {
 
-	if(string.toUtf8().length() > 120) myLineEdit->setMaxLength(string.length());
+	if(myLineEdit && string.toUtf8().length() > 120) myLineEdit->setMaxLength(string.length());
 }
 
 void ChatTools::fillChatLinesHistory(QString fillString)
@@ -223,6 +223,8 @@ void ChatTools::showChatHistoryIndex(int index)
 
 void ChatTools::nickAutoCompletition()
 {
+
+	if(!myLineEdit) return;
 
 	QString myChatString = myLineEdit->text();
 	QStringList myChatStringList = myChatString.split(" ");

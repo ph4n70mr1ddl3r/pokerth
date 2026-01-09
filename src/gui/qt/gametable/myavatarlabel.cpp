@@ -181,25 +181,6 @@ void MyAvatarLabel::setPlayerRating(QString playerInfo)
 
 void MyAvatarLabel::startChangePlayerTip(QString playerName)
 {
-#ifdef GUI_800x480
-	if(myW->tabs.tabWidget_Left->widget(2) == myW->tabs.tab_Kick) {
-		myW->tabs.tabWidget_Left->insertTab(3, myW->tabs.tab_editTip, playerName);
-		myW->tabs.tabWidget_Left->setCurrentIndex(3);
-	} else {
-		myW->tabs.tabWidget_Left->insertTab(2, myW->tabs.tab_editTip, playerName);
-		myW->tabs.tabWidget_Left->setCurrentIndex(2);
-	}
-	myW->tabs.textEdit_tipInput->setPlainText(getPlayerTip(playerName));
-#else
-	if(myW->tabWidget_Left->widget(2) == myW->tab_Kick) {
-		myW->tabWidget_Left->insertTab(3, myW->tab_editTip, playerName);
-		myW->tabWidget_Left->setCurrentIndex(3);
-	} else {
-		myW->tabWidget_Left->insertTab(2, myW->tab_editTip, playerName);
-		myW->tabWidget_Left->setCurrentIndex(2);
-	}
-	myW->textEdit_tipInput->setPlainText(getPlayerTip(playerName));
-#endif
 }
 
 void MyAvatarLabel::refreshStars()
@@ -307,52 +288,6 @@ QString MyAvatarLabel::getPlayerTip(QString playerName)
 
 void MyAvatarLabel::setPlayerTip()
 {
-	int found=0;
-	//std::string rating="1";
-	std::string separator="(!#$%)";
-	std::string playerName;
-#ifdef GUI_800x480
-	std::string tip = std::string((const char*)myW->tabs.textEdit_tipInput->toPlainText().toUtf8());
-	if(myW->tabs.tabWidget_Left->widget(2) == myW->tabs.tab_editTip)playerName = myW->tabs.tabWidget_Left->tabText(2).toUtf8().constData();
-	if(myW->tabs.tabWidget_Left->widget(3) == myW->tabs.tab_editTip)playerName = myW->tabs.tabWidget_Left->tabText(3).toUtf8().constData();
-#else
-	std::string tip = std::string((const char*)myW->textEdit_tipInput->toPlainText().toUtf8());
-	if(myW->tabWidget_Left->widget(2) == myW->tab_editTip)playerName = myW->tabWidget_Left->tabText(2).toUtf8().constData();
-	if(myW->tabWidget_Left->widget(3) == myW->tab_editTip)playerName = myW->tabWidget_Left->tabText(3).toUtf8().constData();
-#endif
-	QStringList playerInfo;
-	std::list<std::string> tipsList = myW->getMyConfig()->readConfigStringList("PlayerTooltips");
-	std::list<std::string> result;
-	std::list<std::string>::iterator iterator;
-	for(iterator = tipsList.begin(); iterator != tipsList.end(); ++iterator) {
-		playerInfo=QString::fromUtf8(iterator->c_str()).split("(!#$%)", Qt::KeepEmptyParts, Qt::CaseSensitive);
-		if(QString::fromUtf8(playerName.c_str())==playerInfo.at(0)) {
-			result.push_back(playerName+separator+QString::fromUtf8(tip.c_str()).toUtf8().constData()+separator+playerInfo.at(2).toStdString()+separator);
-			found=1;
-		} else {
-			result.push_back(playerInfo.at(0).toUtf8().constData()+separator+playerInfo.at(1).toUtf8().constData()+separator+playerInfo.at(2).toStdString()+separator);
-		}
-	}
-	if(found==0) {
-		result.push_back(playerName.c_str()+separator+QString::fromUtf8(tip.c_str()).toUtf8().constData()+separator+QString("0").toStdString()+separator);
-	}
-	myW->getMyConfig()->writeConfigStringList("PlayerTooltips", result);
-	myW->getMyConfig()->writeBuffer();
-
-#ifdef GUI_800x480
-	if(myW->tabs.tabWidget_Left->widget(3) == myW->tabs.tab_editTip) {
-		myW->tabs.tabWidget_Left->removeTab(3);
-	} else if(myW->tabs.tabWidget_Left->widget(2) == myW->tabs.tab_editTip) {
-		myW->tabs.tabWidget_Left->removeTab(2);
-	}
-#else
-	if(myW->tabWidget_Left->widget(3) == myW->tab_editTip) {
-		myW->tabWidget_Left->removeTab(3);
-	} else if(myW->tabWidget_Left->widget(2) == myW->tab_editTip) {
-		myW->tabWidget_Left->removeTab(2);
-	}
-#endif
-	refreshTooltips();
 }
 
 

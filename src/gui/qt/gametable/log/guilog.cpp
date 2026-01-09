@@ -306,13 +306,6 @@ void guiLog::logPlayerActionMsg(QString msg, int action, int setValue)
 		msg += "$"+QString::number(setValue,10)+".";
 	}
 
-#ifdef GUI_800x480
-	myW->tabs.textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+msg+"</span>");
-#else
-	myW->textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+msg+"</span>");
-#endif
-
-
 	if(HTML_LOG) {
 
 		if(myConfig->readConfigInt("LogOnOff")) {
@@ -338,12 +331,6 @@ void guiLog::logNewGameHandMsg(int gameID, int handID)
 
 	PlayerList activePlayerList = currentHand->getActivePlayerList();
 
-#ifdef GUI_800x480
-	myW->tabs.textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+"; font-size:large; font-weight:bold\">## Game: "+QString::number(gameID,10)+" | Hand: "+QString::number(handID,10)+" ##</span>");
-#else
-	myW->textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+"; font-size:large; font-weight:bold\">## Game: "+QString::number(gameID,10)+" | Hand: "+QString::number(handID,10)+" ##</span>");
-#endif
-
 	if(HTML_LOG) {
 
 		if(myConfig->readConfigInt("LogOnOff")) {
@@ -367,15 +354,6 @@ void guiLog::logNewGameHandMsg(int gameID, int handID)
 
 void guiLog::logNewBlindsSetsMsg(int sbSet, int bbSet, QString sbName, QString bbName)
 {
-
-	// log blinds
-#ifdef GUI_800x480
-	myW->tabs.textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+sbName+" posts small blind ($"+QString::number(sbSet,10)+")</span>");
-	myW->tabs.textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+bbName+" posts big blind ($"+QString::number(bbSet,10)+")</span>");
-#else
-	myW->textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+sbName+" posts small blind ($"+QString::number(sbSet,10)+")</span>");
-	myW->textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+bbName+" posts big blind ($"+QString::number(bbSet,10)+")</span>");
-#endif
 
 	if(HTML_LOG) {
 
@@ -420,20 +398,6 @@ void guiLog::logNewBlindsSetsMsg(int sbSet, int bbSet, QString sbName, QString b
 void guiLog::logPlayerWinsMsg(QString playerName, int pot, bool main)
 {
 
-#ifdef GUI_800x480
-	if(main) {
-		myW->tabs.textBrowser_Log->append("<span style=\"color:#"+myStyle->getLogWinnerMainPotColor()+";\">"+playerName+" wins $"+QString::number(pot,10)+"</span>");
-	} else {
-		myW->tabs.textBrowser_Log->append("<span style=\"color:#"+myStyle->getLogWinnerSidePotColor()+";\">"+playerName+" wins $"+QString::number(pot,10)+" (side pot)</span>");
-	}
-#else
-	if(main) {
-		myW->textBrowser_Log->append("<span style=\"color:#"+myStyle->getLogWinnerMainPotColor()+";\">"+playerName+" wins $"+QString::number(pot,10)+"</span>");
-	} else {
-		myW->textBrowser_Log->append("<span style=\"color:#"+myStyle->getLogWinnerSidePotColor()+";\">"+playerName+" wins $"+QString::number(pot,10)+" (side pot)</span>");
-	}
-#endif
-
 	if(HTML_LOG) {
 
 		if(myConfig->readConfigInt("LogOnOff")) {
@@ -456,12 +420,6 @@ void guiLog::logPlayerWinsMsg(QString playerName, int pot, bool main)
 
 void guiLog::logPlayerSitsOut(QString playerName)
 {
-
-#ifdef GUI_800x480
-	myW->tabs.textBrowser_Log->append("<i><span style=\"color:#"+myStyle->getLogPlayerSitsOutColor()+";\">"+playerName+" sits out</span></i>");
-#else
-	myW->textBrowser_Log->append("<i><span style=\"color:#"+myStyle->getLogPlayerSitsOutColor()+";\">"+playerName+" sits out</span></i>");
-#endif
 
 	if(HTML_LOG) {
 
@@ -487,27 +445,12 @@ void guiLog::logDealBoardCardsMsg(int roundID, int card1, int card2, int card3, 
 
 	case 1:
 		round = "Flop";
-#ifdef GUI_800x480
-		myW->tabs.textBrowser_Log->append("<span style=\"color:#"+myStyle->getLogPlayerSitsOutColor()+";\">--- "+round+" --- "+"["+translateCardCode(card1).at(0)+translateCardCode(card1).at(1)+","+translateCardCode(card2).at(0)+translateCardCode(card2).at(1)+","+translateCardCode(card3).at(0)+translateCardCode(card3).at(1)+"]</span>");
-#else
-		myW->textBrowser_Log->append("<span style=\"color:#"+myStyle->getLogPlayerSitsOutColor()+";\">--- "+round+" --- "+"["+translateCardCode(card1).at(0)+translateCardCode(card1).at(1)+","+translateCardCode(card2).at(0)+translateCardCode(card2).at(1)+","+translateCardCode(card3).at(0)+translateCardCode(card3).at(1)+"]</span>");
-#endif
 		break;
 	case 2:
 		round = "Turn";
-#ifdef GUI_800x480
-		myW->tabs.textBrowser_Log->append("<span style=\"color:#"+myStyle->getLogPlayerSitsOutColor()+";\">--- "+round+" --- "+"["+translateCardCode(card1).at(0)+translateCardCode(card1).at(1)+","+translateCardCode(card2).at(0)+translateCardCode(card2).at(1)+","+translateCardCode(card3).at(0)+translateCardCode(card3).at(1)+","+translateCardCode(card4).at(0)+translateCardCode(card4).at(1)+"]</span>");
-#else
-		myW->textBrowser_Log->append("<span style=\"color:#"+myStyle->getLogPlayerSitsOutColor()+";\">--- "+round+" --- "+"["+translateCardCode(card1).at(0)+translateCardCode(card1).at(1)+","+translateCardCode(card2).at(0)+translateCardCode(card2).at(1)+","+translateCardCode(card3).at(0)+translateCardCode(card3).at(1)+","+translateCardCode(card4).at(0)+translateCardCode(card4).at(1)+"]</span>");
-#endif
 		break;
 	case 3:
 		round = "River";
-#ifdef GUI_800x480
-		myW->tabs.textBrowser_Log->append("<span style=\"color:#"+myStyle->getLogPlayerSitsOutColor()+";\">--- "+round+" --- "+"["+translateCardCode(card1).at(0)+translateCardCode(card1).at(1)+","+translateCardCode(card2).at(0)+translateCardCode(card2).at(1)+","+translateCardCode(card3).at(0)+translateCardCode(card3).at(1)+","+translateCardCode(card4).at(0)+translateCardCode(card4).at(1)+","+translateCardCode(card5).at(0)+translateCardCode(card5).at(1)+"]</span>");
-#else
-		myW->textBrowser_Log->append("<span style=\"color:#"+myStyle->getLogPlayerSitsOutColor()+";\">--- "+round+" --- "+"["+translateCardCode(card1).at(0)+translateCardCode(card1).at(1)+","+translateCardCode(card2).at(0)+translateCardCode(card2).at(1)+","+translateCardCode(card3).at(0)+translateCardCode(card3).at(1)+","+translateCardCode(card4).at(0)+translateCardCode(card4).at(1)+","+translateCardCode(card5).at(0)+translateCardCode(card5).at(1)+"]</span>");
-#endif
 		break;
 	default:
 		round = "ERROR";
@@ -551,24 +494,6 @@ void guiLog::logFlipHoleCardsMsg(QString playerName, int card1, int card2, int c
 
 	QString tempHandName;
 
-	if (cardsValueInt != -1) {
-
-		tempHandName = CardsValue::determineHandName(cardsValueInt,myW->getSession()->getCurrentGame()->getActivePlayerList()).c_str();
-
-#ifdef GUI_800x480
-		myW->tabs.textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+playerName+" "+showHas+" ["+translateCardCode(card1).at(0)+translateCardCode(card1).at(1)+","+translateCardCode(card2).at(0)+translateCardCode(card2).at(1)+"] - \""+tempHandName+"\"</span>");
-#else
-		myW->textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+playerName+" "+showHas+" ["+translateCardCode(card1).at(0)+translateCardCode(card1).at(1)+","+translateCardCode(card2).at(0)+translateCardCode(card2).at(1)+"] - \""+tempHandName+"\"</span>");
-#endif
-
-	} else {
-#ifdef GUI_800x480
-		myW->tabs.textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+playerName+" "+showHas+" ["+translateCardCode(card1).at(0)+translateCardCode(card1).at(1)+","+translateCardCode(card2).at(0)+translateCardCode(card2).at(1)+"]</span>");
-#else
-		myW->textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+playerName+" "+showHas+" ["+translateCardCode(card1).at(0)+translateCardCode(card1).at(1)+","+translateCardCode(card2).at(0)+translateCardCode(card2).at(1)+"]</span>");
-#endif
-	}
-
 	if(HTML_LOG) {
 
 		if(myConfig->readConfigInt("LogOnOff")) {
@@ -606,12 +531,6 @@ void guiLog::logPlayerLeftMsg(QString playerName, int wasKicked)
 	if(wasKicked) action = "was kicked from";
 	else action = "has left";
 
-#ifdef GUI_800x480
-	myW->tabs.textBrowser_Log->append( "<span style=\"color:#"+myStyle->getChatLogTextColor()+";\"><i>"+playerName+" "+action+" the game!</i></span>");
-#else
-	myW->textBrowser_Log->append( "<span style=\"color:#"+myStyle->getChatLogTextColor()+";\"><i>"+playerName+" "+action+" the game!</i></span>");
-#endif
-
 	if(HTML_LOG) {
 
 		if(myConfig->readConfigInt("LogOnOff")) {
@@ -630,12 +549,6 @@ void guiLog::logPlayerLeftMsg(QString playerName, int wasKicked)
 void guiLog::logNewGameAdminMsg(QString playerName)
 {
 
-#ifdef GUI_800x480
-	myW->tabs.textBrowser_Log->append( "<i><span style=\"color:#"+myStyle->getLogNewGameAdminColor()+";\">"+playerName+" is game admin now!</span></i>");
-#else
-	myW->textBrowser_Log->append( "<i><span style=\"color:#"+myStyle->getLogNewGameAdminColor()+";\">"+playerName+" is game admin now!</span></i>");
-#endif
-
 	if(HTML_LOG) {
 
 		if(myConfig->readConfigInt("LogOnOff")) {
@@ -653,11 +566,6 @@ void guiLog::logNewGameAdminMsg(QString playerName)
 
 void guiLog::logPlayerJoinedMsg(QString playerName)
 {
-#ifdef GUI_800x480
-	myW->tabs.textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\"><i>"+playerName+" has joined the game!</i></span>");
-#else
-	myW->textBrowser_Log->append("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\"><i>"+playerName+" has joined the game!</i></span>");
-#endif
 }
 
 void guiLog::logSpectatorLeftMsg(QString playerName, int wasKicked)
@@ -672,12 +580,6 @@ void guiLog::logSpectatorJoinedMsg(QString playerName)
 
 void guiLog::logPlayerWinGame(QString playerName, int gameID)
 {
-
-#ifdef GUI_800x480
-	myW->tabs.textBrowser_Log->append( "<i><b>"+playerName+" wins game " + QString::number(gameID,10)  +"!</i></b><br>");
-#else
-	myW->textBrowser_Log->append( "<i><b>"+playerName+" wins game " + QString::number(gameID,10)  +"!</i></b><br>");
-#endif
 
 	if(HTML_LOG) {
 
