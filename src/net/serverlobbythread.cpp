@@ -326,17 +326,7 @@ ServerLobbyThread::AddConnection(boost::shared_ptr<SessionData> sessionData)
 			netAnnounce->mutable_latestgameversion()->set_majorversion(POKERTH_VERSION_MAJOR);
 			netAnnounce->mutable_latestgameversion()->set_minorversion(POKERTH_VERSION_MINOR);
 			netAnnounce->set_latestbetarevision(POKERTH_BETA_REVISION);
-			switch (GetServerMode()) {
-			case SERVER_MODE_LAN:
-				netAnnounce->set_servertype(AnnounceMessage::serverTypeLAN);
-				break;
-			case SERVER_MODE_INTERNET_NOAUTH:
-				netAnnounce->set_servertype(AnnounceMessage::serverTypeInternetNoAuth);
-				break;
-			case SERVER_MODE_INTERNET_AUTH:
-				netAnnounce->set_servertype(AnnounceMessage::serverTypeInternetAuth);
-				break;
-			}
+			netAnnounce->set_servertype(AnnounceMessage::serverTypeInternetAuth);
 			{
 				boost::mutex::scoped_lock lock(m_statMutex);
 				netAnnounce->set_numplayersonserver(m_statData.numberOfPlayersOnServer);
@@ -1065,20 +1055,12 @@ ServerLobbyThread::HandleNetPacketInit(boost::shared_ptr<SessionData> session, c
 
     string playerName;
     MD5Buf avatarMD5;
-    bool noAuth = false;
 
-    if (initMessage.login() == InitMessage::unauthenticatedLogin) {
-        playerName = initMessage.nickname();
-        if (initMessage.has_avatarhash()) {
-            memcpy(avatarMD5.GetData(), initMessage.avatarhash().data(), MD5_DATA_SIZE);
-        }
-        noAuth = true;
-    } else if (initMessage.login() == InitMessage::authenticatedLogin) {
+    if (initMessage.login() == InitMessage::authenticatedLogin) {
         playerName = initMessage.nickname();
         if (initMessage.has_clientuserdata()) {
             session->AuthSetPassword(initMessage.clientuserdata());
         }
-        noAuth = false;
     } else {
         SessionError(session, ERR_NET_INVALID_PASSWORD);
         return;
@@ -1119,10 +1101,7 @@ ServerLobbyThread::HandleNetPacketInit(boost::shared_ptr<SessionData> session, c
 	m_sessionManager.SetSessionPlayerData(session->GetId(), tmpPlayerData);
 	session->SetPlayerData(tmpPlayerData);
 
-	if (noAuth)
-		InitAfterLogin(session);
-	else
-		AuthenticatePlayer(session);
+	AuthenticatePlayer(session);
 }
 
 void

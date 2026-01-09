@@ -998,39 +998,9 @@ ClientStateStartSession::InternalHandlePacket(boost::shared_ptr<ClientThread> cl
 		}
 		ClientContext &context = client->GetContext();
 
-		// CASE 1: Authenticated login (username, challenge/response for password).
-		if (netAnnounce.servertype() == AnnounceMessage::serverTypeInternetAuth) {
-			client->GetCallback().SignalNetClientLoginShow();
-			client->SetState(ClientStateWaitEnterLogin::Instance());
-		}
-		// CASE 2: Unauthenticated login (network game or dedicated server without auth backend).
-		else if (netAnnounce.servertype() == AnnounceMessage::serverTypeInternetNoAuth
-				 || netAnnounce.servertype() == AnnounceMessage::serverTypeLAN) {
-			boost::shared_ptr<NetPacket> init(new NetPacket);
-			init->GetMsg()->set_messagetype(PokerTHMessage::Type_InitMessage);
-			InitMessage *netInit = init->GetMsg()->mutable_initmessage();
-			netInit->mutable_requestedversion()->set_majorversion(NET_VERSION_MAJOR);
-			netInit->mutable_requestedversion()->set_minorversion(NET_VERSION_MINOR);
-			netInit->set_buildid(0);
-			if (!context.GetSessionGuid().empty()) {
-				netInit->set_mylastsessionid(context.GetSessionGuid());
-			}
-			if (!context.GetServerPassword().empty()) {
-				netInit->set_authserverpassword(context.GetServerPassword());
-			}
-			netInit->set_login(InitMessage::unauthenticatedLogin);
-			netInit->set_nickname(context.GetPlayerName());
-			string avatarFile = client->GetQtToolsInterface().stringFromUtf8(context.GetAvatarFile());
-			if (!avatarFile.empty()) {
-				MD5Buf tmpMD5;
-				if (client->GetAvatarManager().GetHashForAvatar(avatarFile, tmpMD5)) {
-					// Send MD5 hash of avatar.
-					netInit->set_avatarhash(tmpMD5.GetData(), MD5_DATA_SIZE);
-				}
-			}
-			client->GetSender().Send(context.GetSessionData(), init);
-			client->SetState(ClientStateWaitSession::Instance());
-		}
+		// Always require authenticated login (username, password).
+		client->GetCallback().SignalNetClientLoginShow();
+		client->SetState(ClientStateWaitEnterLogin::Instance());
 	}
 }
 

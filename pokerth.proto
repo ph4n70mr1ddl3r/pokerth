@@ -137,8 +137,6 @@ message AnnounceMessage {
 	required	Version			latestGameVersion = 2;
 	required	uint32			latestBetaRevision = 3;
 	enum ServerType {
-		serverTypeLAN = 0;
-		serverTypeInternetNoAuth = 1;
 		serverTypeInternetAuth = 2;
 	}
 	required	ServerType		serverType = 4;
@@ -153,7 +151,6 @@ message InitMessage {
 	optional	string			authServerPassword = 4;
 	enum LoginType {
 		authenticatedLogin = 1;
-		unauthenticatedLogin = 2;
 	}
 	required	LoginType		login = 5;
 	// Only used for unauthenticated login.

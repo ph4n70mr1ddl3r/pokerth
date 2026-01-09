@@ -91,14 +91,11 @@ local message_type_names = {
 
 -- Enum mappings
 local server_types = {
-    [0] = "LAN",
-    [1] = "InternetNoAuth",
     [2] = "InternetAuth"
 }
 
 local login_types = {
-    [1] = "Authenticated",
-    [2] = "Unauthenticated"
+    [1] = "Authenticated"
 }
 
 -- Fields
@@ -115,8 +112,6 @@ f_announce_server_type = ProtoField.string("pokerth.announce.server_type", "Serv
 f_announce_num_players = ProtoField.uint32("pokerth.announce.num_players", "Players On Server", base.DEC)
 
 server_type_enum = {
-    [0] = "LAN",
-    [1] = "Internet (No Auth)",
     [2] = "Internet (Auth)"
 }
 
@@ -129,8 +124,7 @@ local f_init_build_id = ProtoField.uint32("pokerth.init.build_id", "Build ID", b
 local f_init_last_session = ProtoField.bytes("pokerth.init.last_session", "Last Session ID")
 local f_init_password = ProtoField.string("pokerth.init.password", "Auth Server Password")
 local f_init_login = ProtoField.uint8("pokerth.init.login", "Login Type", base.DEC, {
-    [1] = "Authenticated Login",
-    [2] = "Unauthenticated Login"
+    [1] = "Authenticated Login"
 })
 local f_init_nickname = ProtoField.string("pokerth.init.nickname", "Nickname")
 local f_init_userdata = ProtoField.bytes("pokerth.init.client_userdata", "Client User Data")
