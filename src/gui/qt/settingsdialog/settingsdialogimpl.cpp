@@ -145,7 +145,6 @@ settingsDialogImpl::settingsDialogImpl(QWidget *parent, ConfigFile *c, selectAva
 	connect( pushButton_Opponent7Avatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile7()) );
 	connect( pushButton_Opponent8Avatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile8()) );
 	connect( pushButton_Opponent9Avatar, SIGNAL( clicked() ), this, SLOT( setAvatarFile9()) );
-	connect( pushButton_editManualBlindsOrder, SIGNAL( clicked() ), this, SLOT( callManualBlindsOrderDialog()) );
 	connect( pushButton_netEditManualBlindsOrder, SIGNAL( clicked() ), this, SLOT( callNetManualBlindsOrderDialog()) );
 	connect( pushButton_resetSettings, SIGNAL(clicked()), this, SLOT(resetSettings()));
 
@@ -155,7 +154,6 @@ settingsDialogImpl::settingsDialogImpl(QWidget *parent, ConfigFile *c, selectAva
 	// 	connect( spinBox_firstSmallBlind, SIGNAL( valueChanged(int) ), this, SLOT ( checkProperFirstSmallBlind(int)));
 
 	connect( radioButton_netManualBlindsOrder, SIGNAL( toggled(bool) ), this, SLOT( setFirstSmallBlindMargin() ));
-	connect( radioButton_manualBlindsOrder, SIGNAL( toggled(bool) ), this, SLOT( setFirstSmallBlindMargin() ));
 
 	connect( comboBox_switchLanguage, SIGNAL( currentIndexChanged (int) ), this, SLOT ( setLanguageChanged(int) ));
 
@@ -221,20 +219,6 @@ void settingsDialogImpl::prepareDialog()
 	pushButton_Opponent7Avatar->setIcon(QIcon(pushButton_Opponent7Avatar->getMyLink()));
 	pushButton_Opponent8Avatar->setIcon(QIcon(pushButton_Opponent8Avatar->getMyLink()));
 	pushButton_Opponent9Avatar->setIcon(QIcon(pushButton_Opponent9Avatar->getMyLink()));
-
-	//Local Game Settings
-	spinBox_quantityPlayers->setValue(myConfig->readConfigInt("NumberOfPlayers"));
-	spinBox_startCash->setValue(myConfig->readConfigInt("StartCash"));
-	spinBox_firstSmallBlind->setValue(myConfig->readConfigInt("FirstSmallBlind"));
-	radioButton_raiseBlindsAtHands->setChecked(myConfig->readConfigInt("RaiseBlindsAtHands"));
-	radioButton_raiseBlindsAtMinutes->setChecked(myConfig->readConfigInt("RaiseBlindsAtMinutes"));
-	spinBox_raiseSmallBlindEveryHands->setValue(myConfig->readConfigInt("RaiseSmallBlindEveryHands"));
-	spinBox_raiseSmallBlindEveryMinutes->setValue(myConfig->readConfigInt("RaiseSmallBlindEveryMinutes"));
-	radioButton_alwaysDoubleBlinds->setChecked(myConfig->readConfigInt("AlwaysDoubleBlinds"));
-	radioButton_manualBlindsOrder->setChecked(myConfig->readConfigInt("ManualBlindsOrder"));
-	spinBox_gameSpeed->setValue(myConfig->readConfigInt("GameSpeed"));
-	checkBox_pauseBetweenHands->setChecked(myConfig->readConfigInt("PauseBetweenHands"));
-	checkBox_showGameSettingsDialogOnNewGame->setChecked(myConfig->readConfigInt("ShowGameSettingsDialogOnNewGame"));
 
 	//Network Game Settings
 	spinBox_netQuantityPlayers->setValue(myConfig->readConfigInt("NetNumberOfPlayers"));
@@ -664,20 +648,6 @@ void settingsDialogImpl::isAccepted()
 		myConfig->writeConfigString("Opponent9Avatar", pushButton_Opponent9Avatar->getMyLink().toUtf8().constData());
 	}
 
-	// 	Local Game Settings
-	myConfig->writeConfigInt("NumberOfPlayers", spinBox_quantityPlayers->value());
-	myConfig->writeConfigInt("StartCash", spinBox_startCash->value());
-	myConfig->writeConfigInt("FirstSmallBlind", spinBox_firstSmallBlind->value());
-	myConfig->writeConfigInt("RaiseBlindsAtHands", radioButton_raiseBlindsAtHands->isChecked());
-	myConfig->writeConfigInt("RaiseBlindsAtMinutes", radioButton_raiseBlindsAtMinutes->isChecked());
-	myConfig->writeConfigInt("RaiseSmallBlindEveryHands", spinBox_raiseSmallBlindEveryHands->value());
-	myConfig->writeConfigInt("RaiseSmallBlindEveryMinutes", spinBox_raiseSmallBlindEveryMinutes->value());
-	myConfig->writeConfigInt("AlwaysDoubleBlinds", radioButton_alwaysDoubleBlinds->isChecked());
-	myConfig->writeConfigInt("ManualBlindsOrder", radioButton_manualBlindsOrder->isChecked());
-	myConfig->writeConfigInt("GameSpeed", spinBox_gameSpeed->value());
-	myConfig->writeConfigInt("PauseBetweenHands", checkBox_pauseBetweenHands->isChecked());
-	myConfig->writeConfigInt("ShowGameSettingsDialogOnNewGame", checkBox_showGameSettingsDialogOnNewGame->isChecked());
-
 	//Network Game Settings
 	myConfig->writeConfigInt("NetNumberOfPlayers", spinBox_netQuantityPlayers->value());
 	myConfig->writeConfigInt("NetStartCash", spinBox_netStartCash->value());
@@ -1026,41 +996,7 @@ void settingsDialogImpl::clearInternetGamePassword(bool clear)
 	}
 }
 
-void settingsDialogImpl::callManualBlindsOrderDialog()
-{
 
-	myManualBlindsOrderDialog->listWidget_blinds->clear();
-	myManualBlindsOrderDialog->spinBox_input->setMinimum(spinBox_firstSmallBlind->value());
-
-	list<int>::iterator it1;
-	for(it1= myManualBlindsList.begin(); it1 != myManualBlindsList.end(); ++it1) {
-		myManualBlindsOrderDialog->listWidget_blinds->addItem(QString::number(*it1,10));
-	}
-	myManualBlindsOrderDialog->sortBlindsList();
-
-	myManualBlindsOrderDialog->radioButton_alwaysDoubleBlinds->setChecked(myAfterMBAlwaysDoubleBlinds);
-	myManualBlindsOrderDialog->radioButton_alwaysRaiseAbout->setChecked(myAfterMBAlwaysRaiseAbout);
-	myManualBlindsOrderDialog->spinBox_alwaysRaiseValue->setValue(myAfterMBAlwaysRaiseValue);
-	myManualBlindsOrderDialog->radioButton_stayAtLastBlind->setChecked(myAfterMBStayAtLastBlind);
-
-	myManualBlindsOrderDialog->exec();
-	if(myManualBlindsOrderDialog->result() == QDialog::Accepted) {
-
-		bool ok = true;
-		int i;
-		myManualBlindsList.clear();
-		for(i=0; i<myManualBlindsOrderDialog->listWidget_blinds->count(); i++) {
-			myManualBlindsList.push_back(myManualBlindsOrderDialog->listWidget_blinds->item(i)->text().toInt(&ok,10));
-		}
-
-		myAfterMBAlwaysDoubleBlinds = myManualBlindsOrderDialog->radioButton_alwaysDoubleBlinds->isChecked();
-		myAfterMBAlwaysRaiseAbout = myManualBlindsOrderDialog->radioButton_alwaysRaiseAbout->isChecked();
-		myAfterMBAlwaysRaiseValue = myManualBlindsOrderDialog->spinBox_alwaysRaiseValue->value();
-		myAfterMBStayAtLastBlind = myManualBlindsOrderDialog->radioButton_stayAtLastBlind->isChecked();
-
-		setFirstSmallBlindMargin();
-	}
-}
 
 void settingsDialogImpl::callNetManualBlindsOrderDialog()
 {
@@ -1110,17 +1046,6 @@ void settingsDialogImpl::callNetManualBlindsOrderDialog()
 
 void settingsDialogImpl::setFirstSmallBlindMargin()
 {
-
-	if(radioButton_manualBlindsOrder->isChecked() && !myManualBlindsList.empty()) {
-		if(spinBox_firstSmallBlind->value() > myManualBlindsList.front()) {
-			MyMessageBox::warning(this, tr("Blinds Error"),
-								  tr("The first element in your manual-blinds-list \nis smaller than current first-small-blind!\nThis first-small-blind-value will be set to maximum allowed value."),
-								  QMessageBox::Close);
-		}
-		spinBox_firstSmallBlind->setMaximum(myManualBlindsList.front());
-	} else {
-		spinBox_firstSmallBlind->setMaximum(9999);
-	}
 	if(radioButton_netManualBlindsOrder->isChecked() && !myNetManualBlindsList.empty()) {
 		if(spinBox_netFirstSmallBlind->value() > myNetManualBlindsList.front()) {
 			MyMessageBox::warning(this, tr("Blinds Error"),
@@ -1131,8 +1056,6 @@ void settingsDialogImpl::setFirstSmallBlindMargin()
 	} else {
 		spinBox_netFirstSmallBlind->setMaximum(9999);
 	}
-
-
 }
 
 void settingsDialogImpl::setLanguageChanged(int index)

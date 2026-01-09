@@ -2809,7 +2809,7 @@ void gameTableImpl::postRiverRunAnimation6()
 
 		if( !DEBUG_MODE ) {
 
-			if(myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_LOCAL) {
+			/*if(myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_LOCAL) {
 				currentGameOver = true;
 #ifdef GUI_800x480
 				tabs.pushButton_break->setDisabled(false);
@@ -2826,9 +2826,9 @@ void gameTableImpl::postRiverRunAnimation6()
 				pushButton_break->setText(tr("Start"));
 #endif
 				blinkingStartButtonAnimationTimer->start(500);
-			}
+			}*/
 		} else {
-			myStartWindow->callNewGameDialog();
+			//myStartWindow->callNewGameDialog();
 			//Bei Cancel nichts machen!!!
 		}
 		return;
@@ -3119,7 +3119,7 @@ void gameTableImpl::breakButtonClicked()
 			mySoundEventHandler->newGameStarts();
 
 			currentGameOver = false;
-			myStartWindow->callNewGameDialog();
+			//myStartWindow->callNewGameDialog();
 			//Bei Cancel nichts machen!!!
 		} else {
 			startNewHand();
@@ -3745,38 +3745,21 @@ void gameTableImpl::showMaximized ()
 
 void gameTableImpl::closeGameTable()
 {
+	bool close = true;
 
-	if (myStartWindow->getMyServerGuiInterface() && myStartWindow->getMyServerGuiInterface()->getSession()->isNetworkServerRunning()) {
-
-		MyMessageBox msgBox(QMessageBox::Warning, tr("Closing PokerTH during network game"),
-							tr("You are the hosting server. Do you want to close PokerTH anyway?"), QMessageBox::Yes | QMessageBox::No, this);
-
-		if (msgBox.exec() == QMessageBox::Yes ) {
-			myStartWindow->getSession()->terminateNetworkClient();
-			stopTimer();
-			if (myStartWindow->getMyServerGuiInterface()) myStartWindow->getMyServerGuiInterface()->getSession()->terminateNetworkServer();
-			saveGameTableGeometry();
-			myStartWindow->show();
-			this->hide();
+	if(myUniversalMessageDialog->checkIfMesssageWillBeDisplayed(CLOSE_GAMETABLE_QUESTION ) && (myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_INTERNET || myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_NETWORK ) && this->isVisible()) {
+		if (myUniversalMessageDialog->exec(CLOSE_GAMETABLE_QUESTION , tr("Really want to exit?"), tr("PokerTH - Close Table?"), QPixmap(":/gfx/logoChip3D.png"), QDialogButtonBox::Yes|QDialogButtonBox::No, true) == QDialog::Rejected) {
+			close = false;
 		}
-	} else {
+	}
 
-		bool close = true;
-
-		if(myUniversalMessageDialog->checkIfMesssageWillBeDisplayed(CLOSE_GAMETABLE_QUESTION ) && (myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_INTERNET || myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_NETWORK ) && this->isVisible()) {
-			if (myUniversalMessageDialog->exec(CLOSE_GAMETABLE_QUESTION , tr("Really want to exit?"), tr("PokerTH - Close Table?"), QPixmap(":/gfx/logoChip3D.png"), QDialogButtonBox::Yes|QDialogButtonBox::No, true) == QDialog::Rejected) {
-				close = false;
-			}
-		}
-
-		if(close) {
-			//now really close the table
-			myStartWindow->getSession()->terminateNetworkClient();
-			stopTimer();
-			saveGameTableGeometry();
-			myStartWindow->show();
-			this->hide();
-		}
+	if(close) {
+		//now really close the table
+		myStartWindow->getSession()->terminateNetworkClient();
+		stopTimer();
+		saveGameTableGeometry();
+		myStartWindow->show();
+		this->hide();
 	}
 }
 

@@ -104,7 +104,6 @@ public slots:
 	void setAvatarFile8();
 	void setAvatarFile9();
 
-	void callManualBlindsOrderDialog();
 	void callNetManualBlindsOrderDialog();
 
 	void callSelectAvatarDialog()

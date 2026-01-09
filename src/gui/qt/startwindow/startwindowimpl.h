@@ -52,14 +52,10 @@ class Game;
 
 class ConfigFile;
 class gameTableImpl;
-class newGameDialogImpl;
 class settingsDialogImpl;
 class selectAvatarDialogImpl;
 class aboutPokerthImpl;
-class joinNetworkGameDialogImpl;
 class connectToServerDialogImpl;
-class createNetworkGameDialogImpl;
-class startNetworkGameDialogImpl;
 class changeHumanPlayerNameDialogImpl;
 class gameLobbyDialogImpl;
 class timeoutMsgBoxImpl;
@@ -84,10 +80,6 @@ public:
 	{
 		assert(mySession.get());
 		return mySession;
-	}
-	boost::shared_ptr< GuiInterface > getMyServerGuiInterface() const
-	{
-		return myServerGuiInterface;
 	}
 	connectToServerDialogImpl* getMyConnectToServerDialog() const
 	{
@@ -153,19 +145,14 @@ public slots:
 	void callAboutPokerthDialog();
 	void callSettingsDialog(bool);
 	void callSettingsDialogFromStartwindow();
-	void callNewGameDialog();
 	void callGameLobbyDialog();
-	void callCreateNetworkGameDialog();
-	void callJoinNetworkGameDialog();
 	void showLobbyDialog();
 	void callInternetGameLoginDialog();
 	void callRejoinPossibleDialog(unsigned);
 	void joinGameLobby();
 	void showClientDialog();
-	void showNetworkStartDialog();
 	void callLogFileDialog();
 
-	void startNewLocalGame(newGameDialogImpl* =0);
 
 	void showTimeoutDialog(int msgID, unsigned duration);
 	void hideTimeoutDialog();
@@ -187,17 +174,12 @@ private:
 
 	boost::shared_ptr<GuiInterface> myGuiInterface;
 	boost::shared_ptr<Session> mySession;
-	boost::shared_ptr<GuiInterface> myServerGuiInterface;
 
 	// 	Dialogs
 	aboutPokerthImpl *myAboutPokerthDialog;
-	newGameDialogImpl *myNewGameDialog;
 	settingsDialogImpl *mySettingsDialog;
 	selectAvatarDialogImpl *mySelectAvatarDialog;
-	joinNetworkGameDialogImpl *myJoinNetworkGameDialog;
 	connectToServerDialogImpl *myConnectToServerDialog;
-	startNetworkGameDialogImpl *myStartNetworkGameDialog;
-	createNetworkGameDialogImpl *myCreateNetworkGameDialog;
 	gameLobbyDialogImpl *myGameLobbyDialog;
 	timeoutMsgBoxImpl *myTimeoutDialog;
 	startWindowImpl *myStartWindow;

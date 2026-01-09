@@ -31,7 +31,6 @@
 #include "startwindowimpl.h"
 #include "playerinterface.h"
 #include <gamedata.h>
-#include <generic/serverguiwrapper.h>
 #include <net/socket_msg.h>
 #include "tools.h"
 #include "session.h"
@@ -39,16 +38,12 @@
 #include "guiwrapper.h"
 #include "configfile.h"
 #include "gametableimpl.h"
-#include "newgamedialogimpl.h"
 #include "aboutpokerthimpl.h"
 #include "mymessagedialogimpl.h"
 #include "mymessagebox.h"
 #include "settingsdialogimpl.h"
 #include "selectavatardialogimpl.h"
-#include "joinnetworkgamedialogimpl.h"
 #include "connecttoserverdialogimpl.h"
-#include "createnetworkgamedialogimpl.h"
-#include "startnetworkgamedialogimpl.h"
 #include "changecontentdialogimpl.h"
 #include "changecompleteblindsdialogimpl.h"
 #include "gamelobbydialogimpl.h"
@@ -154,10 +149,7 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 	this->menubar->setStyleSheet("QMenuBar { background-color: #505050; font-size:12px; border-width: 0px;} QMenuBar::item { background: transparent; color: #FDC942; } QMenuBar::item:selected { background: #787878; color: #FDC942; } QMenuBar::item:pressed { background: #FDC942; color: #505050; }");
 	centralwidget->setStyleSheet(".QWidget { background-image: url(\""+myAppDataPath+"gfx/gui/misc/startwindowbg10_desktop.png\"); background-position: bottom center; background-origin: content; background-repeat: no-repeat;}");
 
-	pushButtonStart_Local_Game->setStyleSheet("QPushButton { text-align:left; font-weight:bold; padding-left: 1px; padding-bottom: 3px; padding-top: 3px; padding-right: 3px; background-color: #505050; color: #FDC942; font-size:12px; border-width: 0px;}");
 	pushButtonInternet_Game->setStyleSheet("QPushButton { text-align:left; font-weight:bold; padding-left: 1px; padding-bottom: 3px; padding-top: 3px; padding-right: 3px; background-color: #505050; color: #FDC942; font-size:12px; border-width: 0px;}");
-	pushButton_Create_Network_Game->setStyleSheet("QPushButton { text-align:left; font-weight:bold; padding-left: 1px; padding-bottom: 3px; padding-top: 3px; padding-right: 3px; background-color: #505050; color: #FDC942; font-size:12px; border-width: 0px;}");
-	pushButton_Join_Network_Game->setStyleSheet("QPushButton { text-align:left; font-weight:bold; padding-left: 1px; padding-bottom: 3px; padding-top: 3px; padding-right: 3px; background-color: #505050; color: #FDC942; font-size:12px; border-width: 0px;}");
 	pushButton_Logs->setStyleSheet("QPushButton { text-align:left; font-weight:bold; padding-left: 1px; padding-bottom: 3px; padding-top: 3px; padding-right: 3px; background-color: #505050; color: #FDC942; font-size:12px; border-width: 0px;}");
 
 	connect( actionAbout_PokerTH, SIGNAL( triggered() ), this, SLOT( callAboutPokerthDialog() ) );
@@ -166,18 +158,13 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 #endif
 
 	// 	Dialogs
-	myNewGameDialog = new newGameDialogImpl(this, myConfig);
 	mySelectAvatarDialog = new selectAvatarDialogImpl(this, myConfig);
 	mySettingsDialog = new settingsDialogImpl(this, myConfig, mySelectAvatarDialog);
-	myJoinNetworkGameDialog = new joinNetworkGameDialogImpl(this, myConfig);
 	myConnectToServerDialog = new connectToServerDialogImpl(this);
-	myStartNetworkGameDialog = new startNetworkGameDialogImpl(this, myConfig);
-	myCreateNetworkGameDialog = new createNetworkGameDialogImpl(this, myConfig);
 	myAboutPokerthDialog = new aboutPokerthImpl(this, myConfig);
 	myGameLobbyDialog = new gameLobbyDialogImpl(this, myConfig);
 	myLogFileDialog = new LogFileDialog(this, myConfig);
 
-	myStartNetworkGameDialog->setMyW(myGuiInterface->getMyW());
 	myGameLobbyDialog->setMyW(myGuiInterface->getMyW());
 	mySettingsDialog->setGuiLog(myGuiLog);
 	myLogFileDialog->setGuiLog(myGuiLog);
@@ -186,20 +173,13 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 	myServerListDialog = new serverListDialogImpl(this, this, myConfig);
 	myInternetGameLoginDialog = new internetGameLoginDialogImpl(this, myConfig);
 
-	connect( actionStart_Local_Game, SIGNAL( triggered() ), this, SLOT( callNewGameDialog() ) );
-	connect( pushButtonStart_Local_Game, SIGNAL( clicked() ), this, SLOT( callNewGameDialog() ) );
 	connect( actionInternet_Game, SIGNAL( triggered() ), this, SLOT( joinGameLobby() ) );
 	connect( pushButtonInternet_Game, SIGNAL( clicked() ), this, SLOT( joinGameLobby() ) );
-	connect( actionCreate_Network_Game, SIGNAL( triggered() ), this, SLOT( callCreateNetworkGameDialog() ) );
-	connect( pushButton_Create_Network_Game, SIGNAL( clicked() ), this, SLOT( callCreateNetworkGameDialog() ) );
-	connect( actionJoin_Network_Game, SIGNAL( triggered() ), this, SLOT( callJoinNetworkGameDialog() ) );
-	connect( pushButton_Join_Network_Game, SIGNAL( clicked() ), this, SLOT( callJoinNetworkGameDialog() ) );
 	connect( pushButton_Logs, SIGNAL( clicked() ), this, SLOT( callLogFileDialog() ) );
 
 	connect(this, SIGNAL(signalShowClientDialog()), this, SLOT(showClientDialog()));
 
 	connect(this, SIGNAL(signalNetClientConnect(int)), myConnectToServerDialog, SLOT(refresh(int)));
-	connect(this, SIGNAL(signalNetClientGameInfo(int)), myStartNetworkGameDialog, SLOT(refresh(int)));
 	connect(this, SIGNAL(signalNetClientGameInfo(int)), myGameLobbyDialog, SLOT(refresh(int)));
 
 	connect(this, SIGNAL(signalNetClientServerListShow()), myServerListDialog, SLOT(exec()));
@@ -208,13 +188,6 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 
 	connect(this, SIGNAL(signalNetClientLoginShow()), this, SLOT(callInternetGameLoginDialog()));
 	connect(this, SIGNAL(signalNetClientRejoinPossible(unsigned)), this, SLOT(callRejoinPossibleDialog(unsigned)));
-
-	connect(this, SIGNAL(signalNetClientSelfJoined(unsigned, QString, bool)), myStartNetworkGameDialog, SLOT(joinedNetworkGame(unsigned, QString, bool)));
-	connect(this, SIGNAL(signalNetClientPlayerJoined(unsigned, QString, bool)), myStartNetworkGameDialog, SLOT(addConnectedPlayer(unsigned, QString, bool)));
-	connect(this, SIGNAL(signalNetClientPlayerChanged(unsigned, QString)), myStartNetworkGameDialog, SLOT(updatePlayer(unsigned, QString)));
-	connect(this, SIGNAL(signalNetClientPlayerLeft(unsigned, QString)), myStartNetworkGameDialog, SLOT(removePlayer(unsigned, QString)));
-	connect(this, SIGNAL(signalNetClientNewGameAdmin(unsigned, QString)), myStartNetworkGameDialog, SLOT(newGameAdmin(unsigned, QString)));
-	connect(this, SIGNAL(signalNetClientGameListNew(unsigned)), myStartNetworkGameDialog, SLOT(gameCreated(unsigned)));
 
 	connect(this, SIGNAL(signalNetClientSelfJoined(unsigned, QString, bool)), myGameLobbyDialog, SLOT(joinedNetworkGame(unsigned, QString, bool)));
 	connect(this, SIGNAL(signalNetClientPlayerJoined(unsigned, QString, bool)), myGameLobbyDialog, SLOT(addConnectedPlayer(unsigned, QString, bool)));
@@ -236,9 +209,7 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 	connect(this, SIGNAL(signalNetClientStatsUpdate(ServerStats)), myGameLobbyDialog, SLOT(updateStats(ServerStats)));
 
 	connect(this, SIGNAL(signalNetClientGameChatMsg(QString, QString)), myGuiInterface->getMyW()->getMyChat(), SLOT(receiveMessage(QString, QString)));
-	connect(this, SIGNAL(signalNetClientLobbyChatMsg(QString, QString)), myStartNetworkGameDialog->getMyChat(), SLOT(receiveMessage(QString, QString)));
 	connect(this, SIGNAL(signalNetClientLobbyChatMsg(QString, QString)), myGameLobbyDialog->getMyChat(), SLOT(receiveMessage(QString, QString)));
-	connect(this, SIGNAL(signalNetClientPrivateChatMsg(QString, QString)), myStartNetworkGameDialog->getMyChat(), SLOT(privateMessage(QString, QString)));
 	connect(this, SIGNAL(signalNetClientPrivateChatMsg(QString, QString)), myGameLobbyDialog->getMyChat(), SLOT(privateMessage(QString, QString)));
 	connect(this, SIGNAL(signalNetClientMsgBox(QString)), this, SLOT(networkMessage(QString)));
 	connect(this, SIGNAL(signalNetClientMsgBox(unsigned)), this, SLOT(networkMessage(unsigned)));
@@ -272,131 +243,7 @@ startWindowImpl::~startWindowImpl()
 {
 }
 
-void startWindowImpl::callNewGameDialog()
-{
 
-	//wenn Dialogfenster gezeigt werden soll
-	if(myConfig->readConfigInt("ShowGameSettingsDialogOnNewGame")) {
-
-#ifdef ANDROID
-		myGuiInterface->getMyW()->hide();
-#endif
-		myNewGameDialog->exec();
-		if (myNewGameDialog->result() == QDialog::Accepted ) {
-			startNewLocalGame(myNewGameDialog);
-		}
-	}
-	// sonst mit gespeicherten Werten starten
-	else {
-		startNewLocalGame();
-	}
-}
-
-void startWindowImpl::startNewLocalGame(newGameDialogImpl *v)
-{
-
-	this->hide();
-	myGuiInterface->getMyW()->show();
-
-	// Start new local game - terminate existing network game.
-	mySession->terminateNetworkClient();
-	if (myServerGuiInterface.get())
-		myServerGuiInterface->getSession()->terminateNetworkServer();
-
-	//get values from local game dialog
-	GameData gameData;
-	if(v) {
-		// Set Game Data
-		gameData.maxNumberOfPlayers = v->spinBox_quantityPlayers->value();
-		gameData.startMoney = v->spinBox_startCash->value();
-		gameData.firstSmallBlind = v->getChangeCompleteBlindsDialog()->spinBox_firstSmallBlind->value();
-
-		if(v->getChangeCompleteBlindsDialog()->radioButton_raiseBlindsAtHands->isChecked()) {
-			gameData.raiseIntervalMode = RAISE_ON_HANDNUMBER;
-			gameData.raiseSmallBlindEveryHandsValue = v->getChangeCompleteBlindsDialog()->spinBox_raiseSmallBlindEveryHands->value();
-		} else {
-			gameData.raiseIntervalMode = RAISE_ON_MINUTES;
-			gameData.raiseSmallBlindEveryMinutesValue = v->getChangeCompleteBlindsDialog()->spinBox_raiseSmallBlindEveryMinutes->value();
-		}
-
-		if(v->getChangeCompleteBlindsDialog()->radioButton_alwaysDoubleBlinds->isChecked()) {
-			gameData.raiseMode = DOUBLE_BLINDS;
-		} else {
-			gameData.raiseMode = MANUAL_BLINDS_ORDER;
-			list<int> tempBlindList;
-			int i;
-			bool ok = true;
-			for(i=0; i<v->getChangeCompleteBlindsDialog()->listWidget_blinds->count(); i++) {
-				tempBlindList.push_back(v->getChangeCompleteBlindsDialog()->listWidget_blinds->item(i)->text().toInt(&ok,10));
-			}
-			gameData.manualBlindsList = tempBlindList;
-
-			if(v->getChangeCompleteBlindsDialog()->radioButton_afterThisAlwaysDoubleBlinds->isChecked()) {
-				gameData.afterManualBlindsMode = AFTERMB_DOUBLE_BLINDS;
-			} else {
-				if(v->getChangeCompleteBlindsDialog()->radioButton_afterThisAlwaysRaiseAbout->isChecked()) {
-					gameData.afterManualBlindsMode = AFTERMB_RAISE_ABOUT;
-					gameData.afterMBAlwaysRaiseValue = v->getChangeCompleteBlindsDialog()->spinBox_afterThisAlwaysRaiseValue->value();
-				} else {
-					gameData.afterManualBlindsMode = AFTERMB_STAY_AT_LAST_BLIND;
-				}
-			}
-		}
-
-		//Speeds
-		gameData.guiSpeed = v->spinBox_gameSpeed->value();
-	}
-	// start with default values
-	else {
-		// Set Game Data
-		gameData.maxNumberOfPlayers = myConfig->readConfigInt("NumberOfPlayers");
-		gameData.startMoney = myConfig->readConfigInt("StartCash");
-		gameData.firstSmallBlind =  myConfig->readConfigInt("FirstSmallBlind");
-
-		if(myConfig->readConfigInt("RaiseBlindsAtHands")) {
-			gameData.raiseIntervalMode = RAISE_ON_HANDNUMBER;
-			gameData.raiseSmallBlindEveryHandsValue = myConfig->readConfigInt("RaiseSmallBlindEveryHands");
-		} else {
-			gameData.raiseIntervalMode = RAISE_ON_MINUTES;
-			gameData.raiseSmallBlindEveryMinutesValue = myConfig->readConfigInt("RaiseSmallBlindEveryMinutes");
-		}
-
-		if(myConfig->readConfigInt("AlwaysDoubleBlinds")) {
-			gameData.raiseMode = DOUBLE_BLINDS;
-		} else {
-			gameData.raiseMode = MANUAL_BLINDS_ORDER;
-			gameData.manualBlindsList = myConfig->readConfigIntList("ManualBlindsList");
-
-			if(myConfig->readConfigInt("AfterMBAlwaysDoubleBlinds")) {
-				gameData.afterManualBlindsMode = AFTERMB_DOUBLE_BLINDS;
-			} else {
-				if(myConfig->readConfigInt("AfterMBAlwaysRaiseAbout")) {
-					gameData.afterManualBlindsMode = AFTERMB_RAISE_ABOUT;
-					gameData.afterMBAlwaysRaiseValue = myConfig->readConfigInt("AfterMBAlwaysRaiseValue");
-				} else {
-					gameData.afterManualBlindsMode = AFTERMB_STAY_AT_LAST_BLIND;
-				}
-			}
-		}
-		//Speeds
-		gameData.guiSpeed = myConfig->readConfigInt("GameSpeed");
-	}
-	// Set dealer pos.
-	StartData startData;
-	int tmpDealerPos = 0;
-	startData.numberOfPlayers = gameData.maxNumberOfPlayers;
-	Tools::GetRand(0, startData.numberOfPlayers-1, 1, &tmpDealerPos);
-	//if(DEBUG_MODE) {
-	//    tmpDealerPos = 4;
-	//}
-	startData.startDealerPlayerId = static_cast<unsigned>(tmpDealerPos);
-
-	//some gui modifications
-	myGuiInterface->getMyW()->localGameModification();
-
-	//Start Game!!!
-	mySession->startLocalGame(gameData, startData);
-}
 
 void startWindowImpl::callGameLobbyDialog()
 {
@@ -420,11 +267,8 @@ void startWindowImpl::joinGameLobby()
 	myGuiInterface->getMyW()->stopTimer();
 
 	mySession->terminateNetworkClient();
-	if (myServerGuiInterface)
-		myServerGuiInterface->getSession()->terminateNetworkServer();
 
 	myGameLobbyDialog->setSession(getSession());
-	myStartNetworkGameDialog->setSession(getSession());
 
 	// Clear Lobby dialog.
 	myGameLobbyDialog->clearDialog();
@@ -496,141 +340,9 @@ void startWindowImpl::callRejoinPossibleDialog(unsigned gameId)
 }
 
 
-void startWindowImpl::callCreateNetworkGameDialog()
-{
-
-	myCreateNetworkGameDialog->exec();
-	//
-	if (myCreateNetworkGameDialog->result() == QDialog::Accepted ) {
-
-		// Stop local game.
-		myGuiInterface->getMyW()->stopTimer();
-
-		if (!myServerGuiInterface) {
-			// Create pseudo Gui Wrapper for the server.
-			myServerGuiInterface.reset(new ServerGuiWrapper(myConfig, mySession->getGui(), mySession->getGui()));
-			{
-				boost::shared_ptr<Session> session(new Session(myServerGuiInterface.get(), myConfig, 0));
-				session->init(mySession->getAvatarManager());
-				myServerGuiInterface->setSession(session);
-			}
-		}
-
-		// Terminate existing network games.
-		mySession->terminateNetworkClient();
-		myServerGuiInterface->getSession()->terminateNetworkServer();
-
-		GameData gameData;
-		gameData.maxNumberOfPlayers = myCreateNetworkGameDialog->spinBox_quantityPlayers->value();
-		gameData.startMoney = myCreateNetworkGameDialog->spinBox_startCash->value();
-		gameData.firstSmallBlind = myCreateNetworkGameDialog->getChangeCompleteBlindsDialog()->spinBox_firstSmallBlind->value();
-
-		if(myCreateNetworkGameDialog->getChangeCompleteBlindsDialog()->radioButton_raiseBlindsAtHands->isChecked()) {
-			gameData.raiseIntervalMode = RAISE_ON_HANDNUMBER;
-			gameData.raiseSmallBlindEveryHandsValue = myCreateNetworkGameDialog->getChangeCompleteBlindsDialog()->spinBox_raiseSmallBlindEveryHands->value();
-		} else {
-			gameData.raiseIntervalMode = RAISE_ON_MINUTES;
-			gameData.raiseSmallBlindEveryMinutesValue = myCreateNetworkGameDialog->getChangeCompleteBlindsDialog()->spinBox_raiseSmallBlindEveryMinutes->value();
-		}
-
-		if(myCreateNetworkGameDialog->getChangeCompleteBlindsDialog()->radioButton_alwaysDoubleBlinds->isChecked()) {
-			gameData.raiseMode = DOUBLE_BLINDS;
-		} else {
-			gameData.raiseMode = MANUAL_BLINDS_ORDER;
-			std::list<int> tempBlindList;
-			int i;
-			bool ok = true;
-			for(i=0; i<myCreateNetworkGameDialog->getChangeCompleteBlindsDialog()->listWidget_blinds->count(); i++) {
-				tempBlindList.push_back(myCreateNetworkGameDialog->getChangeCompleteBlindsDialog()->listWidget_blinds->item(i)->text().toInt(&ok,10));
-			}
-			gameData.manualBlindsList = tempBlindList;
-
-			if(myCreateNetworkGameDialog->getChangeCompleteBlindsDialog()->radioButton_afterThisAlwaysDoubleBlinds->isChecked()) {
-				gameData.afterManualBlindsMode = AFTERMB_DOUBLE_BLINDS;
-			} else {
-				if(myCreateNetworkGameDialog->getChangeCompleteBlindsDialog()->radioButton_afterThisAlwaysRaiseAbout->isChecked()) {
-					gameData.afterManualBlindsMode = AFTERMB_RAISE_ABOUT;
-					gameData.afterMBAlwaysRaiseValue = myCreateNetworkGameDialog->getChangeCompleteBlindsDialog()->spinBox_afterThisAlwaysRaiseValue->value();
-				} else {
-					gameData.afterManualBlindsMode = AFTERMB_STAY_AT_LAST_BLIND;
-				}
-			}
-		}
-
-		gameData.guiSpeed = myConfig->readConfigInt("GameSpeed");
-		gameData.delayBetweenHandsSec = myCreateNetworkGameDialog->spinBox_netDelayBetweenHands->value();
-		gameData.playerActionTimeoutSec = myCreateNetworkGameDialog->spinBox_netTimeOutPlayerAction->value();
-
-		myGameLobbyDialog->setSession(getSession());
-		myStartNetworkGameDialog->setSession(getSession());
-
-		// Clear network game dialog.
-		myStartNetworkGameDialog->clearDialog();
-
-		myServerGuiInterface->getSession()->startNetworkServer(false);
-		mySession->startNetworkClientForLocalServer(gameData);
-
-		myStartNetworkGameDialog->setMaxPlayerNumber(gameData.maxNumberOfPlayers);
-
-		myStartNetworkGameDialog->setWindowTitle(tr("Start Network Game"));
-
-		showNetworkStartDialog();
-	}
-
-}
-
-void startWindowImpl::callJoinNetworkGameDialog()
-{
-
-	myJoinNetworkGameDialog->exec();
-
-	if (myJoinNetworkGameDialog->result() == QDialog::Accepted ) {
-
-		// Stop local game.
-		myGuiInterface->getMyW()->stopTimer();
-
-		mySession->terminateNetworkClient();
-		if (myServerGuiInterface)
-			myServerGuiInterface->getSession()->terminateNetworkServer();
-
-		myGameLobbyDialog->setSession(getSession());
-		myStartNetworkGameDialog->setSession(getSession());
-		// Clear network game dialog
-		myStartNetworkGameDialog->clearDialog();
-		// Maybe use QUrl::toPunycode.
-		mySession->startNetworkClient(
-			myJoinNetworkGameDialog->lineEdit_ipAddress->text().toUtf8().constData(),
-			myJoinNetworkGameDialog->spinBox_port->value(),
-			myJoinNetworkGameDialog->checkBox_ipv6->isChecked(),
-			myJoinNetworkGameDialog->checkBox_sctp->isChecked());
-
-		//Dialog mit Statusbalken
-		myConnectToServerDialog->exec();
-
-		if (myConnectToServerDialog->result() == QDialog::Rejected ) {
-			mySession->terminateNetworkClient();
-			actionJoin_Network_Game->trigger(); // re-trigger
-		} else {
-			//needed for join and ready sounds - TODO
-			//myStartNetworkGameDialog->setMaxPlayerNumber(gameData.maxNumberOfPlayers);
-			myStartNetworkGameDialog->setWindowTitle(tr("Start Network Game"));
-
-			showNetworkStartDialog();
-		}
-	}
-}
-
-
 void startWindowImpl::showClientDialog()
 {
-	if (mySession->getGameType() == Session::GAME_TYPE_NETWORK) {
-		if (myGuiInterface->getMyW()->isVisible())
-			myGuiInterface->getMyW()->hide();
-		if (!this->isVisible())
-			this->show();
-		if (!myStartNetworkGameDialog->isVisible())
-			showNetworkStartDialog();
-	} else if (mySession->getGameType() == Session::GAME_TYPE_INTERNET) {
+	if (mySession->getGameType() == Session::GAME_TYPE_INTERNET) {
 		if (myGuiInterface->getMyW()->isVisible())
 			myGuiInterface->getMyW()->closeMessageBoxes();
 		myGuiInterface->getMyW()->hide();
@@ -671,21 +383,6 @@ void startWindowImpl::showLobbyDialog()
 		mySession->terminateNetworkClient();
 	}
 #endif
-}
-
-void startWindowImpl::showNetworkStartDialog()
-{
-	myStartNetworkGameDialog->exec();
-
-	if (myStartNetworkGameDialog->result() == QDialog::Accepted ) {
-		this->hide();
-		//some gui modifications
-		myGuiInterface->getMyW()->networkGameModification();
-	} else {
-		mySession->terminateNetworkClient();
-		if (myServerGuiInterface)
-			myServerGuiInterface->getSession()->terminateNetworkServer();
-	}
 }
 
 void startWindowImpl::callAboutPokerthDialog()
@@ -1029,7 +726,6 @@ void startWindowImpl::networkError(int errorID, int /*osErrorID*/)
 	// close dialogs
 	myGameLobbyDialog->reject();
 	myConnectToServerDialog->reject();
-	myStartNetworkGameDialog->reject();
 	myGuiInterface->getMyW()->close();
 	myInternetGameLoginDialog->reject();
 

@@ -24,17 +24,13 @@ set(POKERTH_CLIENT_SRC ../../pokerth.cpp
     gametable/log/guilog.cpp
     aboutpokerth/aboutpokerthimpl.cpp
     connecttoserverdialog/connecttoserverdialogimpl.cpp
-    createnetworkgamedialog/createnetworkgamedialogimpl.cpp
     createinternetgamedialog/createinternetgamedialogimpl.cpp
-    joinnetworkgamedialog/joinnetworkgamedialogimpl.cpp
-    newlocalgamedialog/newgamedialogimpl.cpp
     settingsdialog/settingsdialogimpl.cpp
     settingsdialog/myavatarbutton.cpp
     settingsdialog/myhpavatarbutton.cpp
     settingsdialog/selectavatardialog/selectavatardialogimpl.cpp
     settingsdialog/selectavatardialog/myavatarlistitem.cpp
     settingsdialog/manualblindsorderdialog/manualblindsorderdialogimpl.cpp
-    startnetworkgamedialog/startnetworkgamedialogimpl.cpp
     startwindow/startwindowimpl.cpp
     styles/gametablestylereader.cpp
     styles/carddeckstylereader.cpp
@@ -91,14 +87,10 @@ target_include_directories(pokerth_client PUBLIC
     gametable/startsplash
     gametable/log
     aboutpokerth
-    createnetworkgamedialog
     createinternetgamedialog
-    joinnetworkgamedialog
-    newlocalgamedialog
     settingsdialog
     settingsdialog/selectavatardialog
     settingsdialog/manualblindsorderdialog
-    startnetworkgamedialog
     startwindow
     serverlistdialog
     styles

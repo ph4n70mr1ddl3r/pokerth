@@ -298,6 +298,9 @@ export DISPLAY=:0
 
 ### Clean rebuild
 ```bash
+rm -rf ~/.pokerth
+rm -rf ~/pokerth/.pokerth_client1
+rm -rf ~/pokerth/.pokerth_client2
 rm -rf ~/pokerth/build
 cmake -DCMAKE_BUILD_TYPE:STRING=Release -S. -B./build -G Ninja
 cmake --build ./build --config Release --target all --

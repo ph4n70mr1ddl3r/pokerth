@@ -245,9 +245,9 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 	configList.push_back(ConfigInfo("ServerPutAvatarsUser", CONFIG_TYPE_STRING, ""));
 	configList.push_back(ConfigInfo("ServerPutAvatarsPassword", CONFIG_TYPE_STRING, ""));
 	configList.push_back(ConfigInfo("ServerBruteForceProtection", CONFIG_TYPE_INT, "1"));
-	configList.push_back(ConfigInfo("InternetServerConfigMode", CONFIG_TYPE_INT, "0"));
+	configList.push_back(ConfigInfo("InternetServerConfigMode", CONFIG_TYPE_INT, "1"));
 	configList.push_back(ConfigInfo("InternetServerListAddress", CONFIG_TYPE_STRING, "pokerth.net/serverlist.xml.z"));
-	configList.push_back(ConfigInfo("InternetServerAddress", CONFIG_TYPE_STRING, "pokerth.6dns.org"));
+	configList.push_back(ConfigInfo("InternetServerAddress", CONFIG_TYPE_STRING, "127.0.0.1"));
 	configList.push_back(ConfigInfo("InternetServerPort", CONFIG_TYPE_INT, "7234"));
 	configList.push_back(ConfigInfo("InternetServerUseIpv6", CONFIG_TYPE_INT, "0"));
 	configList.push_back(ConfigInfo("InternetServerUseSctp", CONFIG_TYPE_INT, "0"));
