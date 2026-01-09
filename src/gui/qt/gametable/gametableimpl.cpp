@@ -112,7 +112,7 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 #ifdef GUI_800x480
 	tabsDiag = new QDialog(this);
 	tabs.setupUi(tabsDiag);
-	textLabel_handLabel->hide();
+	// textLabel_handLabel->hide();
 #ifdef ANDROID
 	tabsDiag->setStyleSheet("QObject { font: 26px; } QDialog { background-image: url(:/android/android-data/gfx/gui/table/default_800x480/table_dark.png); background-position: bottom center; background-origin: content;  background-repeat: no-repeat;}");
 	this->setWindowState(Qt::WindowFullScreen);
@@ -1086,27 +1086,27 @@ void gameTableImpl::refreshGameLabels(int gameState)
 
 	switch(gameState) {
 	case 0: {
-		textLabel_handLabel->setText(PreflopString);
+		// textLabel_handLabel->setText(PreflopString);
 	}
 	break;
 	case 1: {
-		textLabel_handLabel->setText(FlopString);
+		// textLabel_handLabel->setText(FlopString);
 	}
 	break;
 	case 2: {
-		textLabel_handLabel->setText(TurnString);
+		// textLabel_handLabel->setText(TurnString);
 	}
 	break;
 	case 3: {
-		textLabel_handLabel->setText(RiverString);
+		// textLabel_handLabel->setText(RiverString);
 	}
 	break;
 	case 4: {
-		textLabel_handLabel->setText("");
+		// textLabel_handLabel->setText("");
 	}
 	break;
 	default: {
-		textLabel_handLabel->setText("!!! ERROR !!!");
+		// textLabel_handLabel->setText("!!! ERROR !!!");
 	}
 	}
 
@@ -2706,7 +2706,7 @@ void gameTableImpl::nextRoundCleanGui()
 		disableMyButtons();
 	}
 
-	textLabel_handLabel->setText("");
+	// textLabel_handLabel->setText("");
 
 	refreshAll();
 
@@ -3342,7 +3342,7 @@ void gameTableImpl::refreshGameTableStyle()
 	myGameTableStyle->setBigFontBoardStyle(label_gameNumber);
 	myGameTableStyle->setBigFontBoardStyle(label_handNumberValue);
 	myGameTableStyle->setBigFontBoardStyle(label_gameNumberValue);
-	myGameTableStyle->setBigFontBoardStyle(textLabel_handLabel);
+	// myGameTableStyle->setBigFontBoardStyle(textLabel_handLabel);
 #else
 	myGameTableStyle->setSmallFontBoardStyle(label_Sets);
 	myGameTableStyle->setSmallFontBoardStyle(label_Total);
@@ -3352,7 +3352,7 @@ void gameTableImpl::refreshGameTableStyle()
 	myGameTableStyle->setSmallFontBoardStyle(label_gameNumber);
 	myGameTableStyle->setSmallFontBoardStyle(label_handNumberValue);
 	myGameTableStyle->setSmallFontBoardStyle(label_gameNumberValue);
-	myGameTableStyle->setBigFontBoardStyle(textLabel_handLabel);
+	// myGameTableStyle->setBigFontBoardStyle(textLabel_handLabel);
 	myGameTableStyle->setBigFontBoardStyle(label_Pot);
 #endif
 	myGameTableStyle->setBigFontBoardStyle(label_WinningCombination);
