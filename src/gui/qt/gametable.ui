@@ -288,8 +288,8 @@
         <widget class="QGroupBox" name="groupBox_Board">
          <property name="minimumSize">
           <size>
-           <width>290</width>
-           <height>114</height>
+           <width>350</width>
+           <height>180</height>
           </size>
          </property>
          <property name="styleSheet">
@@ -300,17 +300,17 @@
            <widget class="QGroupBox" name="groupBox">
             <property name="minimumSize">
              <size>
-              <width>285</width>
-              <height>82</height>
+              <width>340</width>
+              <height>100</height>
              </size>
             </property>
             <widget class="MyCardsPixmapLabel" name="pixmapLabel_cardBoard4">
              <property name="geometry">
               <rect>
-               <x>230</x>
-               <y>3</y>
-               <width>48</width>
-               <height>76</height>
+               <x>270</x>
+               <y>5</y>
+               <width>60</width>
+               <height>90</height>
               </rect>
              </property>
              <property name="scaledContents"><bool>true</bool></property>
@@ -318,10 +318,10 @@
             <widget class="MyCardsPixmapLabel" name="pixmapLabel_cardBoard1">
              <property name="geometry">
               <rect>
-               <x>65</x>
-               <y>3</y>
-               <width>48</width>
-               <height>76</height>
+               <x>75</x>
+               <y>5</y>
+               <width>60</width>
+               <height>90</height>
               </rect>
              </property>
              <property name="scaledContents"><bool>true</bool></property>
@@ -330,9 +330,9 @@
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>3</y>
-               <width>48</width>
-               <height>76</height>
+               <y>5</y>
+               <width>60</width>
+               <height>90</height>
               </rect>
              </property>
              <property name="scaledContents"><bool>true</bool></property>
@@ -340,10 +340,10 @@
             <widget class="MyCardsPixmapLabel" name="pixmapLabel_cardBoard2">
              <property name="geometry">
               <rect>
-               <x>120</x>
-               <y>3</y>
-               <width>48</width>
-               <height>76</height>
+               <x>140</x>
+               <y>5</y>
+               <width>60</width>
+               <height>90</height>
               </rect>
              </property>
              <property name="scaledContents"><bool>true</bool></property>
@@ -351,20 +351,20 @@
             <widget class="MyCardsPixmapLabel" name="pixmapLabel_cardBoard3">
              <property name="geometry">
               <rect>
-               <x>175</x>
-               <y>3</y>
-               <width>48</width>
-               <height>76</height>
+               <x>205</x>
+               <y>5</y>
+               <width>60</width>
+               <height>90</height>
               </rect>
              </property>
              <property name="scaledContents"><bool>true</bool></property>
             </widget>
             
-            <widget class="QLabel" name="label_CardHolder0"><property name="geometry"><rect><x>10</x><y>3</y><width>48</width><height>76</height></rect></property></widget>
-            <widget class="QLabel" name="label_CardHolder1"><property name="geometry"><rect><x>65</x><y>3</y><width>48</width><height>76</height></rect></property></widget>
-            <widget class="QLabel" name="label_CardHolder2"><property name="geometry"><rect><x>120</x><y>3</y><width>48</width><height>76</height></rect></property></widget>
-            <widget class="QLabel" name="label_CardHolder3"><property name="geometry"><rect><x>175</x><y>3</y><width>48</width><height>76</height></rect></property></widget>
-            <widget class="QLabel" name="label_CardHolder4"><property name="geometry"><rect><x>230</x><y>3</y><width>48</width><height>76</height></rect></property></widget>
+            <widget class="QLabel" name="label_CardHolder0"><property name="geometry"><rect><x>10</x><y>5</y><width>60</width><height>90</height></rect></property></widget>
+            <widget class="QLabel" name="label_CardHolder1"><property name="geometry"><rect><x>75</x><y>5</y><width>60</width><height>90</height></rect></property></widget>
+            <widget class="QLabel" name="label_CardHolder2"><property name="geometry"><rect><x>140</x><y>5</y><width>60</width><height>90</height></rect></property></widget>
+            <widget class="QLabel" name="label_CardHolder3"><property name="geometry"><rect><x>205</x><y>5</y><width>60</width><height>90</height></rect></property></widget>
+            <widget class="QLabel" name="label_CardHolder4"><property name="geometry"><rect><x>270</x><y>5</y><width>60</width><height>90</height></rect></property></widget>
 
            </widget>
           </item>
@@ -651,7 +651,7 @@
         <widget class="QGroupBox" name="groupBoxControls">
          <property name="minimumSize">
           <size>
-           <width>280</width>
+           <width>350</width>
            <height>180</height>
           </size>
          </property>
