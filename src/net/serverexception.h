@@ -42,7 +42,7 @@ public:
 	ServerException(const char *sourcefile, int sourceline, int errorId, int osErrorCode)
 		: NetException(sourcefile, sourceline, errorId, osErrorCode) {}
 
-	virtual ~ServerException() throw();
+	virtual ~ServerException() noexcept;
 };
 
 #endif

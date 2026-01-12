@@ -32,7 +32,7 @@
 #include <net/clientexception.h>
 
 
-ClientException::~ClientException() throw()
+ClientException::~ClientException() noexcept
 {
 }
 

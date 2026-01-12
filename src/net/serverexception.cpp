@@ -32,7 +32,7 @@
 #include <net/serverexception.h>
 
 
-ServerException::~ServerException() throw()
+ServerException::~ServerException() noexcept
 {
 }
 

@@ -32,7 +32,7 @@
 #include <net/netexception.h>
 
 
-NetException::~NetException() throw()
+NetException::~NetException() noexcept
 {
 }
 

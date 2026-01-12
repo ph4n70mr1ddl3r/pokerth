@@ -47,7 +47,7 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 	  cardsShown(false)
 {
 
-	int i, j, k;
+	int i = 0, j = 0, k = 0;
 	PlayerListIterator it;
 
 	for(it=seatsList->begin(); it!=seatsList->end(); ++it) {

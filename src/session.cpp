@@ -64,9 +64,7 @@ Session::~Session()
 	terminateNetworkClient();
 	terminateNetworkServer();
 	delete myQtToolsInterface;
-	myQtToolsInterface = 0;
 	delete myLog;
-	myLog = 0;
 }
 
 bool Session::init()

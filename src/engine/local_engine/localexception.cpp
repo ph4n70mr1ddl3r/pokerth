@@ -32,7 +32,7 @@
 #include "localexception.h"
 
 
-LocalException::~LocalException() throw()
+LocalException::~LocalException() noexcept
 {
 }
 

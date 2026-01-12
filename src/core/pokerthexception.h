@@ -41,7 +41,7 @@ class PokerTHException : public std::exception
 public:
 
 	PokerTHException(const char *sourcefile, int sourceline, int errorId, int osErrorCode);
-	virtual ~PokerTHException() throw();
+	virtual ~PokerTHException() noexcept;
 
 	int GetErrorId() const
 	{
@@ -52,7 +52,7 @@ public:
 		return m_osErrorCode;
 	}
 
-	virtual const char *what() const throw();
+	virtual const char *what() const noexcept;
 
 private:
 	int m_errorId;

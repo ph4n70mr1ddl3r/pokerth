@@ -62,7 +62,7 @@ Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
 		dealerPosition = 4;
 	}
 
-	int i;
+	int i = 0;
 
 	// determine dealer position
 	PlayerDataList::const_iterator player_i = playerDataList.begin();
