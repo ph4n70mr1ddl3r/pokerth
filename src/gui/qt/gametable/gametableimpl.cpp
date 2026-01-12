@@ -2974,8 +2974,7 @@ void gameTableImpl::tabSwitchAction()
 
 void gameTableImpl::localGameModification()
 {
-	int i;
-	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++ ) {
+	for (int i = 0; i<MAX_NUMBER_OF_PLAYERS; i++ ) {
 		timeoutLabelArray[i]->stopTimeOutAnimation();
 		playerAvatarLabelArray[i]->setEnabledContextMenu(false);
 	}
@@ -2983,8 +2982,7 @@ void gameTableImpl::localGameModification()
 
 void gameTableImpl::networkGameModification()
 {
-	int i;
-	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++ ) {
+	for (int i = 0; i<MAX_NUMBER_OF_PLAYERS; i++ ) {
 		timeoutLabelArray[i]->stopTimeOutAnimation();
 		playerAvatarLabelArray[i]->setEnabledContextMenu(true);
 	}
@@ -3224,8 +3222,7 @@ void gameTableImpl::changeVoteOnKickButtonsState(bool showHide)
 void gameTableImpl::endVoteOnKick()
 {
 	stopVoteOnKickTimeout();
-	int i;
-	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++ ) {
+	for (int i = 0; i<MAX_NUMBER_OF_PLAYERS; i++ ) {
 		playerAvatarLabelArray[i]->setVoteRunning(false);
 	}
 }
@@ -3309,7 +3306,7 @@ void gameTableImpl::refreshGameTableStyle()
 //	myGameTableStyle->setChatInputStyle(lineEdit_ChatInput);
 #endif
 
-	int i;
+	int i = 0;
 	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 
 		myGameTableStyle->setCashLabelStyle(cashLabelArray[i]);

@@ -14,6 +14,8 @@ cmake --build ./build --config Release --target all --
 
 # Build specific target
 cmake --build ./build --target pokerth_lib
+cmake --build ./build --target pokerth_official_server
+cmake --build ./build --target pokerth_client
 
 # Clean rebuild
 rm -rf ./build && cmake -DCMAKE_BUILD_TYPE:STRING=Release -S. -B./build -G Ninja
@@ -40,6 +42,18 @@ ln -sf ./build/share/pokerth/data ./build/bin/data
 ./run_client1.sh             # First client instance
 ./run_client2.sh             # Second client instance
 ```
+
+### Debug Build
+```bash
+cmake -DCMAKE_BUILD_TYPE:STRING=Debug -S. -B./build -G Ninja
+cmake --build ./build --config Debug --target all --
+```
+
+## Tests and Linting
+
+**Note:** This codebase has no formal test suite. Manual testing via client/server instances is required.
+
+**Linting:** No linting tools are currently configured. Manual code review is required.
 
 ## Code Style Guidelines
 
@@ -68,6 +82,7 @@ All source files must include the AGPL header:
 ### C++ Standard
 - Use C++23 (set in CMakeLists.txt: `set(CMAKE_CXX_STANDARD 23)`)
 - Enable exceptions and RTTI: `-fexceptions -frtti`
+- Compilation flags: `-Wno-stringop-overflow -DENABLE_IPV6 -DHAVE_OPENSSL -DBOOST_FILESYSTEM_DEPRECATED`
 
 ### Naming Conventions
 - **Classes**: PascalCase (e.g., `Game`, `PlayerInterface`, `ClientCallback`)
@@ -99,12 +114,13 @@ All source files must include the AGPL header:
 - Use exceptions for exceptional conditions (see `LocalException`, `NetException`)
 - Throw with file/line info: `throw LocalException(__FILE__, __LINE__, ERR_DEALER_NOT_FOUND);`
 - Use custom exception classes from `src/core/pokerthexception.h` and `src/net/netexception.h`
-- Check for null pointers and invalid states
+- Modernize exception specs: use `noexcept` instead of `throw()`
+- Initialize all variables at declaration: `int i = 0;`
 
 ### Qt Conventions
 - Qt6 required (minimum 6.7.0)
 - Use Qt's signal/slot mechanism for GUI events
-- Prefix member variables with `m_` for Qt widgets
+- Prefix member variables with `m_` for Qt widgets (exception to `my` rule)
 - Use `Q_OBJECT` macro in classes with signals/slots
 - Follow Qt naming for UI elements
 
@@ -112,6 +128,7 @@ All source files must include the AGPL header:
 - Use `boost::shared_ptr<T>` for shared ownership
 - Use raw pointers for non-owning references
 - Avoid raw `new`/`delete`; use smart pointers or Qt's parent system for widgets
+- Do not assign null after delete (e.g., `ptr = 0;` after `delete ptr;` is redundant)
 
 ### Protobuf
 - Protocol files: `pokerth.proto`, `chatcleaner.proto`
@@ -121,11 +138,6 @@ All source files must include the AGPL header:
 ### Logging
 - Use the `Log` class from `src/engine/log.h`
 - Check `DEBUG_MODE` flag for debug-only code paths
-
-### Compilation Flags
-- `-Wno-stringop-overflow` (used in project)
-- `-fexceptions -frtti` (required)
-- `-DENABLE_IPV6 -DHAVE_OPENSSL -DBOOST_FILESYSTEM_DEPRECATED` (defines)
 
 ### Common Issues
 - **Avatar directory missing**: Ensure data symlink is created after build

@@ -71,7 +71,7 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 	int tempPlayerArray[2];
 	int tempPlayerAndBoardArray[7];
 	int bestHandPos[5];
-	int sBluff;
+	int sBluff = 0;
 	for(i=0; i<5; i++) {
 		tempBoardArray[i] = cardsArray[i];
 		tempPlayerAndBoardArray[i+2] = cardsArray[i];
