@@ -95,7 +95,7 @@ public slots:
 	void removeGame(unsigned gameId);
 	void gameAddPlayer(unsigned gameId, unsigned playerId);
 	void gameRemovePlayer(unsigned gameId, unsigned playerId);
-	void playerJoinedLobby(unsigned playerId, QString playerName);
+	void playerJoinedLobby(unsigned playerId);
 	void playerLeftLobby(unsigned playerId);
 	void updateStats(ServerStats stats);
 	void refreshGameStats();

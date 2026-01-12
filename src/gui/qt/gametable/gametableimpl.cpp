@@ -245,9 +245,8 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	playerTipLabelArray[1] = label_playerTip1;
 
 #ifdef GUI_800x480
-	int j;
-	for (i=0; i<MAX_NUMBER_OF_PLAYERS; ++i) {
-		for (j=1; j<=5; ++j) {
+	for (int i=0; i<MAX_NUMBER_OF_PLAYERS; ++i) {
+		for (int j=1; j<=5; ++j) {
 			playerStarsArray[j][i]->hide();
 		}
 		playerTipLabelArray[i]->hide();
@@ -560,9 +559,8 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 	} else {
 		flipside = QPixmap::fromImage(QImage(myCardDeckStyle->getCurrentDir()+"flipside.png"));
 	}
-	int j,k;
-	for (j=1; j<MAX_NUMBER_OF_PLAYERS; j++ ) {
-		for ( k=0; k<=1; k++ ) {
+	for (int j=1; j<MAX_NUMBER_OF_PLAYERS; j++ ) {
+		for (int k=0; k<=1; k++ ) {
 			if (holeCardsArray[j][k]->getIsFlipside()) {
 				holeCardsArray[j][k]->setPixmap(flipside, true);
 			}
@@ -820,10 +818,8 @@ void gameTableImpl::refreshPlayerAvatar()
 		QPixmap onePix = QPixmap::fromImage(QImage(myAppDataPath +"gfx/gui/misc/1px.png"));
 
 		boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
-		int seatPlace;
-		PlayerListConstIterator it_c;
 		PlayerList seatsList = currentGame->getSeatsList();
-		for (it_c=seatsList->begin(), seatPlace=0; it_c!=seatsList->end(); ++it_c, seatPlace++) {
+		for (PlayerListConstIterator it_c = seatsList->begin(), seatPlace = 0; it_c != seatsList->end(); ++it_c, seatPlace++) {
 
 			//set uniqueID
 			playerAvatarLabelArray[(*it_c)->getMyID()]->setMyUniqueId((*it_c)->getMyUniqueID());
@@ -990,8 +986,6 @@ void gameTableImpl::refreshCash()
 
 void gameTableImpl::refreshGroupbox(int playerID, int status)
 {
-
-	int j;
 
 	if(playerID == -1 || status == -1) {
 
@@ -1162,9 +1156,8 @@ void gameTableImpl::waitForGuiUpdateDone()
 void gameTableImpl::dealHoleCards()
 {
 
-	int i,k;
-	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++ ) {
-		for ( k=0; k<=1; k++ ) {
+	for (int i=0; i<MAX_NUMBER_OF_PLAYERS; i++ ) {
+		for (int k=0; k<=1; k++ ) {
 			holeCardsArray[i][k]->setFadeOutAction(false);
 			holeCardsArray[i][k]->stopFlipCardsAnimation();
 		}
@@ -1819,9 +1812,7 @@ int gameTableImpl::getMyBetAmount()
 	boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 
 	int betValue = getBetRaisePushButtonValue();
-	int minimum;
-
-	minimum = currentHand->getCurrentBeRo()->getHighestSet() - humanPlayer->getMySet() + currentHand->getCurrentBeRo()->getMinimumRaise();
+	int minimum = currentHand->getCurrentBeRo()->getHighestSet() - humanPlayer->getMySet() + currentHand->getCurrentBeRo()->getMinimumRaise();
 
 	if(betValue < minimum) {
 		return min(minimum,humanPlayer->getMyCash());
@@ -2339,12 +2330,11 @@ void gameTableImpl::postRiverRunAnimation3()
 			//show winnercards if more than one player is active TODO
 			if ( nonfoldPlayerCounter != 1 && myConfig->readConfigInt("ShowFadeOutCardsAnimation")) {
 
-				int j;
 				int bestHandPos[5];
 				(*it_c)->getMyBestHandPosition(bestHandPos);
 
 				bool index0 = true;
-				for(j=0; j<5; j++) {
+				for(int j=0; j<5; j++) {
 					if (bestHandPos[j] == 0 ) {
 						index0 = false;
 					}
@@ -2580,7 +2570,6 @@ void gameTableImpl::showHoleCards(unsigned playerId, bool allIn)
 	QPixmap tempCardsPixmapArray[2];
 	int tempCardsIntArray[2];
 	int showFlipcardAnimation = myConfig->readConfigInt("ShowFlipCardsAnimation");
-	int j;
 	PlayerListConstIterator it_c;
 	PlayerList activePlayerList = currentHand->getActivePlayerList();
 	for (it_c=activePlayerList->begin(); it_c!=activePlayerList->end(); ++it_c) {
@@ -2588,7 +2577,7 @@ void gameTableImpl::showHoleCards(unsigned playerId, bool allIn)
 		if((*it_c)->getMyUniqueID() == playerId) {
 
 			(*it_c)->getMyCards(tempCardsIntArray);
-			for(j=0; j<2; j++) {
+			for(int j=0; j<2; j++) {
 
 				if(showFlipcardAnimation) { // with Eye-Candy
 					holeCardsArray[(*it_c)->getMyID()][j]->startFlipCards(guiGameSpeed, QPixmap::fromImage(QImage(myCardDeckStyle->getCurrentDir()+QString::number(tempCardsIntArray[j], 10)+".png")), flipside);
@@ -2676,19 +2665,16 @@ void gameTableImpl::handSwitchRounds()
 void gameTableImpl::nextRoundCleanGui()
 {
 
-	int i,j;
-
-	// GUI bereinigen - Bilder löschen, Animationen unterbrechen
 	QPixmap onePix = QPixmap::fromImage(QImage(myAppDataPath +"gfx/gui/misc/1px.png"));
-	for (i=0; i<5; i++ ) {
+	for (int i=0; i<5; i++ ) {
 		boardCardsArray[i]->setPixmap(onePix, false);
 		boardCardsArray[i]->setFadeOutAction(false);
 		boardCardsArray[i]->stopFlipCardsAnimation();
 
 	}
-	for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++ ) {
+	for (int i=0; i<MAX_NUMBER_OF_PLAYERS; i++ ) {
 		timeoutLabelArray[i]->stopTimeOutAnimation();
-		for ( j=0; j<=1; j++ ) {
+		for (int j=0; j<=1; j++ ) {
 			holeCardsArray[i][j]->setFadeOutAction(false);
 			holeCardsArray[i][j]->stopFlipCardsAnimation();
 		}
@@ -3132,7 +3118,7 @@ void gameTableImpl::changeSpinBoxBetValue(int value)
 			spinBox_betValue->setValue(horizontalSlider_bet->value());
 		} else {
 
-			int temp;
+			int temp = 0;
 			if(horizontalSlider_bet->maximum() <= 1000 ) {
 				temp = (int)((value/10)*10);
 			} else if(horizontalSlider_bet->maximum() > 1000 && horizontalSlider_bet->maximum() <= 10000) {
@@ -3634,9 +3620,8 @@ void gameTableImpl::tabsButtonClose()
 void gameTableImpl::checkActionLabelPosition()
 {
 #ifndef GUI_800x480
-	int i;
 	if(myCardDeckStyle->getBigIndexesActionBottom() == "1") {
-		for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
+		for (int i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 			if(i>=3 && i<=7) {
 				if(actionLabelArray[i]->y() == 56) {
 					actionLabelArray[i]->move(actionLabelArray[i]->x(), 80);

@@ -1061,7 +1061,7 @@ void gameLobbyDialogImpl::playerLeftLobby(unsigned playerId)
 	refreshPlayerStats();
 }
 
-void gameLobbyDialogImpl::playerJoinedLobby(unsigned playerId, QString /*playerName TODO remove*/)
+void gameLobbyDialogImpl::playerJoinedLobby(unsigned playerId)
 {
 	PlayerInfo playerInfo(mySession->getClientPlayerInfo(playerId));
 	QString countryString = QString::fromUtf8(playerInfo.countryCode.c_str()).toLower();
