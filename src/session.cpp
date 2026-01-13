@@ -460,7 +460,7 @@ void Session::kickPlayer(const string &playerName)
 {
 	if (!myNetClient)
 		return; // only act if client is running.
-	unsigned playerId;
+	unsigned playerId = 0;
 	if (myNetClient->GetPlayerIdFromName(playerName, playerId))
 		kickPlayer(playerId);
 }
