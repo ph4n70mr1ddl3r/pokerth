@@ -29,10 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 
-#include <boost/asio.hpp>
-#include <boost/bind/bind.hpp>
-#include <algorithm>
-
 #include <net/servergame.h>
 #include <net/servergamestate.h>
 #include <net/serverlobbythread.h>
@@ -46,6 +42,11 @@
 #include <localenginefactory.h>
 #include <tools.h>
 #include <configfile.h>
+
+#include <boost/asio.hpp>
+#include <boost/bind/bind.hpp>
+#include <algorithm>
+
 #include <random>
 
 

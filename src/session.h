@@ -135,7 +135,7 @@ public:
 
 private:
 
-	int currentGameNum;
+	int myCurrentGameNum;
 
 	std::string myIrcNick;
 
@@ -146,7 +146,7 @@ private:
 
 	boost::shared_ptr<AvatarManager> myAvatarManager;
 
-	boost::shared_ptr<Game> currentGame;
+	boost::shared_ptr<Game> myCurrentGame;
 	GuiInterface *myGui;
 	ConfigFile *myConfig;
 	Log *myLog;

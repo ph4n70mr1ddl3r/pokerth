@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 {
     QGuiApplication::setApplicationName("PokerTH");
     QGuiApplication::setOrganizationName("PokerTH");
- 	QGuiApplication::setOrganizationDomain("pokerth.net");
+  	QGuiApplication::setOrganizationDomain("pokerth.net");
 
     QApplication app(argc, argv);
 
@@ -298,6 +298,8 @@ int main( int argc, char **argv )
 	int retVal = a.exec();
 	curl_global_cleanup();
 	socket_cleanup();
+	delete myLog;
+	delete myConfig;
 	return retVal;
 }
 

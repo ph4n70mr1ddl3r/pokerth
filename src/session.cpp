@@ -28,19 +28,20 @@
  * shall include the source code for the parts of OpenSSL used as well       *
  * as that of the covered work.                                              *
  *****************************************************************************/
-#include <boost/asio.hpp>
-#include <net/socket_helper.h>
 #include "session.h"
 #include "game.h"
 #include "log.h"
 #include "guiinterface.h"
 #include "configfile.h"
+#include <net/socket_helper.h>
 #include <qttoolsinterface.h>
 #include <localenginefactory.h>
 #include <clientenginefactory.h>
 #include <net/clientthread.h>
 #include <core/avatarmanager.h>
 #include <net/servermanagerfactory.h>
+
+#include <boost/asio.hpp>
 
 #include <sstream>
 
@@ -53,7 +54,7 @@
 using namespace std;
 
 Session::Session(GuiInterface *g, ConfigFile *c, Log *l)
-	: currentGameNum(0), myGui(g), myConfig(c), myLog(l), myGameType(GAME_TYPE_NONE)
+	: myCurrentGameNum(0), myGui(g), myConfig(c), myLog(l), myGameType(GAME_TYPE_NONE)
 {
 	myQtToolsInterface = CreateQtToolsWrapper();
 }
@@ -100,9 +101,9 @@ void Session::startLocalGame(const GameData &gameData, const StartData &startDat
 
 	myGameType = GAME_TYPE_LOCAL;
 
-	currentGame.reset();
+	myCurrentGame.reset();
 
-	currentGameNum++;
+	myCurrentGameNum++;
 
 	myGui->initGui(gameData.guiSpeed);
 
@@ -139,24 +140,24 @@ void Session::startLocalGame(const GameData &gameData, const StartData &startDat
 	// EngineFactory erstellen
 	boost::shared_ptr<EngineFactory> factory(new LocalEngineFactory(myConfig)); // LocalEngine erstellen
 
-	currentGame.reset(new Game(myGui, factory, playerDataList, gameData, startData, currentGameNum, myLog));
+	myCurrentGame.reset(new Game(myGui, factory, playerDataList, gameData, startData, myCurrentGameNum, myLog));
 
 	//// SPIEL-SCHLEIFE
-	currentGame->initHand();
-	currentGame->startHand();
+	myCurrentGame->initHand();
+	myCurrentGame->startHand();
 	// SPIEL-SCHLEIFE
 }
 
 void Session::startClientGame(boost::shared_ptr<Game> game)
 {
-	currentGameNum++;
+	myCurrentGameNum++;
 
-	currentGame = game;
+	myCurrentGame = game;
 }
 
 boost::shared_ptr<Game> Session::getCurrentGame()
 {
-	return currentGame;
+	return myCurrentGame;
 }
 
 GuiInterface *Session::getGui()
