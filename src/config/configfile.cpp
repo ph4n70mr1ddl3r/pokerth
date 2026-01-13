@@ -366,13 +366,14 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 					if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 					{
 						qDebug("Failed to open file for writing.");
+						file.close();
 					}
 					else
 					{
 						QTextStream stream(&file);
 						stream << xmlDoc.toString();
+						file.close();
 					}
-					file.close();
 				}
 			}
 			if (tempRevision < configRev)
@@ -585,8 +586,8 @@ void ConfigFile::updateConfig(ConfigState myConfigState)
 		{
 			QTextStream stream(&file);
 			stream << xmlDoc.toString();
+			file.close();
 		}
-		file.close();
 	}
 
 	if (myConfigState == OLD)
@@ -735,8 +736,8 @@ void ConfigFile::updateConfig(ConfigState myConfigState)
 			{
 				QTextStream stream(&file);
 				stream << newDoc.toString();
+				file.close();
 			}
-			file.close();
 		}
 		else
 		{

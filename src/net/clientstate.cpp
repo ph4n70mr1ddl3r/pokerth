@@ -1197,7 +1197,6 @@ ClientStateWaitSession::InternalHandlePacket(boost::shared_ptr<ClientThread> cli
 		const AvatarRequestMessage &netAvatarRequest = tmpPacket->GetMsg()->avatarrequestmessage();
 
 		qDebug() << "[AUTH DEBUG] ClientStateWaitSession - Avatar request ID:" << netAvatarRequest.requestid();
-		// TODO compare SHA1.
 		NetPacketList tmpList;
 		int avatarError = client->GetAvatarManager().AvatarFileToNetPackets(
 							  client->GetQtToolsInterface().stringFromUtf8(client->GetContext().GetAvatarFile()),

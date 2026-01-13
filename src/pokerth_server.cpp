@@ -75,7 +75,6 @@ TerminateHandler(int /*signal*/)
 	g_pokerthTerminate = 1;
 }
 
-// TODO: Hack
 #ifdef _WIN32
 #include <process.h>
 #else
@@ -141,7 +140,6 @@ main(int argc, char *argv[])
 	boost::shared_ptr<ConfigFile> myConfig(new ConfigFile(argv[0], readonlyConfig));
 	loghelper_init(myQtToolsInterface->stringFromUtf8(myConfig->readConfigString("LogDir")), logLevel);
 
-	// TODO: Hack
 #ifndef _WIN32
 #ifdef QT_NO_DEBUG
 	if (daemon(0, 0) != 0) {

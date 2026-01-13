@@ -41,7 +41,7 @@ public:
 
 	NetException(const char *sourcefile, int sourceline, int errorId, int osErrorCode)
 		: PokerTHException(sourcefile, sourceline, errorId, osErrorCode) {}
-	virtual ~NetException() noexcept;
+	virtual ~NetException() noexcept override;
 };
 
 #endif

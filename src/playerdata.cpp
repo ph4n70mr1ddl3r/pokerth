@@ -271,28 +271,20 @@ bool
 PlayerData::IsPlayerAllowedToJoinCreateLimitRank(std::string num, std::string period)
 {
 	bool retVal = false;
-LOG_ERROR("checking IsPlayerAllowedToJoinCreateLimitRank() ");
-LOG_ERROR("num = " <<  num << " period " << period);
 	boost::mutex::scoped_lock lock(m_dataMutex);
 
 	long then = (long)time(NULL) - (long)(stoi(period) * 60);
 
 	int count = 0;
-	int i=0;
 	for(std::vector<long>::iterator timeStamp = m_last_games.begin(); timeStamp != m_last_games.end(); ++timeStamp) {
-		LOG_ERROR("timeStamp " << *timeStamp);
 		time_t ts = (time_t)*timeStamp;
-		LOG_ERROR("comparing ts  " <<  (long)ts << " with " << then);
 		if((long)ts > then){
-			LOG_ERROR("counting timeStamp in time  " <<  ctime(&ts));
 			count++;
 		}else{
-			LOG_ERROR("erasing overdued timestamp " << ctime(&ts));
-			timeStamp = m_last_games.erase(timeStamp); // erase overdued entries
+			timeStamp = m_last_games.erase(timeStamp);
 			if( timeStamp == m_last_games.end())
 				break;
 		}
-		i++;
 	}
 
 	if(count < stoi(num))

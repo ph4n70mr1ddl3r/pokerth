@@ -70,7 +70,7 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 	myGuiInterface.reset(new GuiWrapper(myConfig, this));
 	{
 		mySession.reset(new Session(myGuiInterface.get(), myConfig, myLog));
-		mySession->init(); // TODO handle error
+		mySession->init();
 		myLog->init();
 		// 		myGuiInterface->setSession(session);
 	}
