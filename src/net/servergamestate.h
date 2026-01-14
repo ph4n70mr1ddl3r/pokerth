@@ -53,7 +53,7 @@ class ServerCallback;
 class ServerGameState
 {
 public:
-	virtual ~ServerGameState();
+	virtual ~ServerGameState() noexcept;
 	virtual void Enter(boost::shared_ptr<ServerGame> server) = 0;
 	virtual void Exit(boost::shared_ptr<ServerGame> server) = 0;
 
@@ -67,11 +67,10 @@ public:
 	virtual void ProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) = 0;
 };
 
-// Abstract State: Receiving.
 class AbstractServerGameStateReceiving : public ServerGameState
 {
 public:
-	virtual ~AbstractServerGameStateReceiving();
+	virtual ~AbstractServerGameStateReceiving() noexcept;
 
 	// Globally handle packets which are allowed in all running states.
 	// Calls InternalProcess if packet has not been processed.
@@ -88,7 +87,6 @@ protected:
 	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) = 0;
 };
 
-// State: Initialization.
 class ServerGameStateInit : public AbstractServerGameStateReceiving
 {
 public:
@@ -96,7 +94,7 @@ public:
 	virtual void Enter(boost::shared_ptr<ServerGame> server);
 	virtual void Exit(boost::shared_ptr<ServerGame> server);
 
-	virtual ~ServerGameStateInit();
+	virtual ~ServerGameStateInit() noexcept;
 
 	virtual void NotifyGameAdminChanged(boost::shared_ptr<ServerGame> server);
 	virtual void NotifySessionRemoved(boost::shared_ptr<ServerGame> server);
@@ -121,7 +119,6 @@ private:
 	static ServerGameStateInit s_state;
 };
 
-// Wait for Ack of start event and start game.
 class ServerGameStateStartGame : public AbstractServerGameStateReceiving
 {
 public:
@@ -129,7 +126,7 @@ public:
 	virtual void Enter(boost::shared_ptr<ServerGame> server);
 	virtual void Exit(boost::shared_ptr<ServerGame> server);
 
-	virtual ~ServerGameStateStartGame();
+	virtual ~ServerGameStateStartGame() noexcept;
 
 	virtual void NotifyGameAdminChanged(boost::shared_ptr<ServerGame> /*server*/) {}
 	virtual void NotifySessionRemoved(boost::shared_ptr<ServerGame> /*server*/) {}
@@ -149,7 +146,7 @@ private:
 class AbstractServerGameStateRunning : public AbstractServerGameStateReceiving
 {
 public:
-	virtual ~AbstractServerGameStateRunning();
+	virtual ~AbstractServerGameStateRunning() noexcept;
 
 	virtual void HandleNewPlayer(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session);
 
@@ -157,7 +154,6 @@ protected:
 	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
 };
 
-// State: Within hand.
 class ServerGameStateHand : public AbstractServerGameStateRunning
 {
 public:
@@ -165,7 +161,7 @@ public:
 	virtual void Enter(boost::shared_ptr<ServerGame> server);
 	virtual void Exit(boost::shared_ptr<ServerGame> server);
 
-	virtual ~ServerGameStateHand();
+	virtual ~ServerGameStateHand() noexcept;
 
 	virtual void NotifyGameAdminChanged(boost::shared_ptr<ServerGame> /*server*/) {}
 	virtual void NotifySessionRemoved(boost::shared_ptr<ServerGame> /*server*/) {}
@@ -195,7 +191,6 @@ private:
 	friend class ServerGameStateWaitNextHand;
 };
 
-// State: Wait for a player action.
 class ServerGameStateWaitPlayerAction : public AbstractServerGameStateRunning
 {
 public:
@@ -203,7 +198,7 @@ public:
 	virtual void Enter(boost::shared_ptr<ServerGame> server);
 	virtual void Exit(boost::shared_ptr<ServerGame> server);
 
-	virtual ~ServerGameStateWaitPlayerAction();
+	virtual ~ServerGameStateWaitPlayerAction() noexcept;
 
 	virtual void NotifyGameAdminChanged(boost::shared_ptr<ServerGame> /*server*/) {}
 	virtual void NotifySessionRemoved(boost::shared_ptr<ServerGame> /*server*/) {}
@@ -218,7 +213,6 @@ private:
 	static ServerGameStateWaitPlayerAction s_state;
 };
 
-// State: Wait for the next hand.
 class ServerGameStateWaitNextHand : public AbstractServerGameStateRunning
 {
 public:
@@ -226,7 +220,7 @@ public:
 	virtual void Enter(boost::shared_ptr<ServerGame> server);
 	virtual void Exit(boost::shared_ptr<ServerGame> server);
 
-	virtual ~ServerGameStateWaitNextHand();
+	virtual ~ServerGameStateWaitNextHand() noexcept;
 
 	virtual void NotifyGameAdminChanged(boost::shared_ptr<ServerGame> /*server*/) {}
 	virtual void NotifySessionRemoved(boost::shared_ptr<ServerGame> /*server*/) {}
@@ -246,7 +240,7 @@ class ServerGameStateFinal : public ServerGameState
 public:
 	static ServerGameStateFinal &Instance();
 
-	virtual ~ServerGameStateFinal() {}
+	virtual ~ServerGameStateFinal() noexcept {}
 	virtual void Enter(boost::shared_ptr<ServerGame> /*server*/) {}
 	virtual void Exit(boost::shared_ptr<ServerGame> /*server*/) {}
 

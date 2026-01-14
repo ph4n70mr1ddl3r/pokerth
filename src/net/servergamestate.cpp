@@ -228,13 +228,13 @@ SetPlayerResult(PlayerResult &playerResult, boost::shared_ptr<PlayerInterface> t
 
 //-----------------------------------------------------------------------------
 
-ServerGameState::~ServerGameState()
+ServerGameState::~ServerGameState() noexcept
 {
 }
 
 //-----------------------------------------------------------------------------
 
-AbstractServerGameStateReceiving::~AbstractServerGameStateReceiving()
+AbstractServerGameStateReceiving::~AbstractServerGameStateReceiving() noexcept
 {
 }
 
@@ -477,7 +477,7 @@ ServerGameStateInit::ServerGameStateInit()
 {
 }
 
-ServerGameStateInit::~ServerGameStateInit()
+ServerGameStateInit::~ServerGameStateInit() noexcept
 {
 }
 
@@ -717,7 +717,7 @@ ServerGameStateStartGame::ServerGameStateStartGame()
 {
 }
 
-ServerGameStateStartGame::~ServerGameStateStartGame()
+ServerGameStateStartGame::~ServerGameStateStartGame() noexcept
 {
 }
 
@@ -805,7 +805,7 @@ ServerGameStateStartGame::DoStart(boost::shared_ptr<ServerGame> server)
 
 //-----------------------------------------------------------------------------
 
-AbstractServerGameStateRunning::~AbstractServerGameStateRunning()
+AbstractServerGameStateRunning::~AbstractServerGameStateRunning() noexcept
 {
 }
 
@@ -861,7 +861,7 @@ ServerGameStateHand::ServerGameStateHand()
 {
 }
 
-ServerGameStateHand::~ServerGameStateHand()
+ServerGameStateHand::~ServerGameStateHand() noexcept
 {
 }
 
@@ -1413,7 +1413,7 @@ ServerGameStateWaitPlayerAction::ServerGameStateWaitPlayerAction()
 {
 }
 
-ServerGameStateWaitPlayerAction::~ServerGameStateWaitPlayerAction()
+ServerGameStateWaitPlayerAction::~ServerGameStateWaitPlayerAction() noexcept
 {
 }
 
@@ -1547,7 +1547,7 @@ ServerGameStateWaitNextHand::ServerGameStateWaitNextHand()
 {
 }
 
-ServerGameStateWaitNextHand::~ServerGameStateWaitNextHand()
+ServerGameStateWaitNextHand::~ServerGameStateWaitNextHand() noexcept
 {
 }
 

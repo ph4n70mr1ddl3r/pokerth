@@ -74,7 +74,7 @@ using namespace boost::chrono;
 #define CLIENT_CONNECT_TIMEOUT_SEC	10
 
 
-ClientState::~ClientState()
+ClientState::~ClientState() noexcept
 {
 }
 
@@ -91,7 +91,7 @@ ClientStateInit::ClientStateInit()
 {
 }
 
-ClientStateInit::~ClientStateInit()
+ClientStateInit::~ClientStateInit() noexcept
 {
 }
 
@@ -134,7 +134,7 @@ ClientStateStartResolve::ClientStateStartResolve()
 {
 }
 
-ClientStateStartResolve::~ClientStateStartResolve()
+ClientStateStartResolve::~ClientStateStartResolve() noexcept
 {
 }
 
@@ -189,7 +189,7 @@ ClientStateStartServerListDownload::ClientStateStartServerListDownload()
 {
 }
 
-ClientStateStartServerListDownload::~ClientStateStartServerListDownload()
+ClientStateStartServerListDownload::~ClientStateStartServerListDownload() noexcept
 {
 }
 
@@ -240,7 +240,7 @@ ClientStateDownloadingServerList::ClientStateDownloadingServerList()
 {
 }
 
-ClientStateDownloadingServerList::~ClientStateDownloadingServerList()
+ClientStateDownloadingServerList::~ClientStateDownloadingServerList() noexcept
 {
 }
 
@@ -294,7 +294,7 @@ ClientStateReadingServerList::ClientStateReadingServerList()
 {
 }
 
-ClientStateReadingServerList::~ClientStateReadingServerList()
+ClientStateReadingServerList::~ClientStateReadingServerList() noexcept
 {
 }
 
@@ -412,7 +412,7 @@ ClientStateWaitChooseServer::ClientStateWaitChooseServer()
 {
 }
 
-ClientStateWaitChooseServer::~ClientStateWaitChooseServer()
+ClientStateWaitChooseServer::~ClientStateWaitChooseServer() noexcept
 {
 }
 
@@ -462,7 +462,7 @@ ClientStateStartConnect::ClientStateStartConnect()
 {
 }
 
-ClientStateStartConnect::~ClientStateStartConnect()
+ClientStateStartConnect::~ClientStateStartConnect() noexcept
 {
 }
 
@@ -474,7 +474,7 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
         boost::bind(
             &ClientStateStartConnect::TimerTimeout, this, boost::asio::placeholders::error, client));
 
-    boost::asio::ip::tcp::endpoint endpoint = m_remoteEndpointIterator->endpoint();
+    boost::asio::ip::tcp::endpoint endpoint = myRemoteEndpointIterator->endpoint();
 
     if (client->GetContext().GetSessionData()->IsSsl()) {
         client->GetContext().GetSessionData()->GetSslStream()->lowest_layer().async_connect(
@@ -482,7 +482,7 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
             boost::bind(&ClientStateStartConnect::HandleConnect,
                         this,
                         boost::asio::placeholders::error,
-                        ++m_remoteEndpointIterator,
+                        ++myRemoteEndpointIterator,
                         client));
     } else {
         client->GetContext().GetSessionData()->GetAsioSocket()->async_connect(
@@ -490,7 +490,7 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
             boost::bind(&ClientStateStartConnect::HandleConnect,
                         this,
                         boost::asio::placeholders::error,
-                        ++m_remoteEndpointIterator,
+                        ++myRemoteEndpointIterator,
                         client));
     }
 }
@@ -504,8 +504,8 @@ ClientStateStartConnect::Exit(boost::shared_ptr<ClientThread> client)
 void
 ClientStateStartConnect::SetRemoteEndpoint(boost::asio::ip::tcp::resolver::results_type endpointIterator)
 {
-	m_remoteEndpointIterator = endpointIterator.begin();
-	m_remoteEndpoint = endpointIterator;
+	myRemoteEndpointIterator = endpointIterator.begin();
+	myRemoteEndpoint = endpointIterator;
 }
 
 void
@@ -525,7 +525,7 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
                 client->GetCallback().SignalNetClientConnect(MSG_SOCK_CONNECT_DONE);
                 client->SetState(ClientStateStartSession::Instance());
             }
-        } else if (endpoint_iterator != m_remoteEndpoint.end()) {
+        } else if (endpoint_iterator != myRemoteEndpoint.end()) {
             // Try next resolve entry.
             ClientContext &context = client->GetContext();
             boost::system::error_code closeEc;
@@ -538,7 +538,7 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
                     boost::bind(&ClientStateStartConnect::HandleConnect,
                                 this,
                                 boost::asio::placeholders::error,
-                                ++m_remoteEndpointIterator,
+                                ++myRemoteEndpointIterator,
                                 client));
             } else {
                 context.GetSessionData()->GetAsioSocket()->close(closeEc);
@@ -547,7 +547,7 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
                     boost::bind(&ClientStateStartConnect::HandleConnect,
                                 this,
                                 boost::asio::placeholders::error,
-                                ++m_remoteEndpointIterator,
+                                ++myRemoteEndpointIterator,
                                 client));
             }
         } else {
@@ -606,7 +606,7 @@ AbstractClientStateReceiving::AbstractClientStateReceiving()
 {
 }
 
-AbstractClientStateReceiving::~AbstractClientStateReceiving()
+AbstractClientStateReceiving::~AbstractClientStateReceiving() noexcept
 {
 }
 
@@ -922,7 +922,7 @@ ClientStateStartSession::ClientStateStartSession()
 {
 }
 
-ClientStateStartSession::~ClientStateStartSession()
+ClientStateStartSession::~ClientStateStartSession() noexcept
 {
 }
 
@@ -972,7 +972,7 @@ ClientStateWaitEnterLogin::ClientStateWaitEnterLogin()
 {
 }
 
-ClientStateWaitEnterLogin::~ClientStateWaitEnterLogin()
+ClientStateWaitEnterLogin::~ClientStateWaitEnterLogin() noexcept
 {
 }
 
@@ -1065,7 +1065,7 @@ ClientStateWaitAuthChallenge::ClientStateWaitAuthChallenge()
 {
 }
 
-ClientStateWaitAuthChallenge::~ClientStateWaitAuthChallenge()
+ClientStateWaitAuthChallenge::~ClientStateWaitAuthChallenge() noexcept
 {
 }
 
@@ -1112,7 +1112,7 @@ ClientStateWaitAuthVerify::ClientStateWaitAuthVerify()
 {
 }
 
-ClientStateWaitAuthVerify::~ClientStateWaitAuthVerify()
+ClientStateWaitAuthVerify::~ClientStateWaitAuthVerify() noexcept
 {
 }
 
@@ -1154,7 +1154,7 @@ ClientStateWaitSession::ClientStateWaitSession()
 {
 }
 
-ClientStateWaitSession::~ClientStateWaitSession()
+ClientStateWaitSession::~ClientStateWaitSession() noexcept
 {
 }
 
@@ -1228,7 +1228,7 @@ ClientStateWaitJoin::ClientStateWaitJoin()
 {
 }
 
-ClientStateWaitJoin::~ClientStateWaitJoin()
+ClientStateWaitJoin::~ClientStateWaitJoin() noexcept
 {
 }
 
@@ -1328,7 +1328,7 @@ ClientStateWaitGame::ClientStateWaitGame()
 {
 }
 
-ClientStateWaitGame::~ClientStateWaitGame()
+ClientStateWaitGame::~ClientStateWaitGame() noexcept
 {
 }
 
@@ -1381,7 +1381,7 @@ ClientStateSynchronizeStart::ClientStateSynchronizeStart()
 {
 }
 
-ClientStateSynchronizeStart::~ClientStateSynchronizeStart()
+ClientStateSynchronizeStart::~ClientStateSynchronizeStart() noexcept
 {
 }
 
@@ -1451,7 +1451,7 @@ ClientStateWaitStart::ClientStateWaitStart()
 {
 }
 
-ClientStateWaitStart::~ClientStateWaitStart()
+ClientStateWaitStart::~ClientStateWaitStart() noexcept
 {
 }
 
@@ -1549,7 +1549,7 @@ ClientStateWaitHand::ClientStateWaitHand()
 {
 }
 
-ClientStateWaitHand::~ClientStateWaitHand()
+ClientStateWaitHand::~ClientStateWaitHand() noexcept
 {
 }
 
@@ -1713,7 +1713,7 @@ ClientStateRunHand::ClientStateRunHand()
 {
 }
 
-ClientStateRunHand::~ClientStateRunHand()
+ClientStateRunHand::~ClientStateRunHand() noexcept
 {
 }
 
