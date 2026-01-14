@@ -182,7 +182,6 @@ void Game::initHand()
 	// create Hand
 	currentHand = myFactory->createHand(myFactory, myGui, currentBoard, myLog, seatsList, activePlayerList, runningPlayerList, currentHandID, startQuantityPlayers, dealerPosition, currentSmallBlind, startCash);
 
-	// shifting dealer button -> TODO exception-rule !!!
 	bool nextDealerFound = false;
 	PlayerListConstIterator dealerPositionIt = currentHand->getSeatIt(dealerPosition);
 	if(dealerPositionIt == seatsList->end()) {
