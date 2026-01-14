@@ -262,15 +262,15 @@ ClientStateDownloadingServerList::Exit(boost::shared_ptr<ClientThread> client)
 void
 ClientStateDownloadingServerList::SetDownloadHelper(boost::shared_ptr<DownloadHelper> helper)
 {
-	m_downloadHelper = helper;
+	myDownloadHelper = helper;
 }
 
 void
 ClientStateDownloadingServerList::TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client)
 {
 	if (!ec && &client->GetState() == this) {
-		if (m_downloadHelper->Process()) {
-			m_downloadHelper.reset();
+		if (myDownloadHelper->Process()) {
+			myDownloadHelper.reset();
 			client->SetState(ClientStateReadingServerList::Instance());
 		} else {
 			client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));

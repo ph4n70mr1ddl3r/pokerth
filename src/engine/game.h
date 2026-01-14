@@ -55,7 +55,7 @@ public:
 		 const PlayerDataList &playerDataList, const GameData &gameData,
 		 const StartData &startData, int gameId, Log *myLog);
 
-	~Game();
+	~Game() noexcept;
 
 	void initHand();
 	void startHand();

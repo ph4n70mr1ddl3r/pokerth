@@ -45,20 +45,20 @@ public:
 
 	int GetErrorId() const
 	{
-		return m_errorId;
+		return myErrorId;
 	}
 	int GetOsErrorCode() const
 	{
-		return m_osErrorCode;
+		return myOsErrorCode;
 	}
 
 	virtual const char *what() const noexcept;
 
 private:
-	int m_errorId;
-	int m_osErrorCode;
+	int myErrorId;
+	int myOsErrorCode;
 
-	std::string m_msg;
+	std::string myMsg;
 };
 
 #endif

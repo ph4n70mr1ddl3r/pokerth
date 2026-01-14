@@ -60,7 +60,7 @@ Session::Session(GuiInterface *g, ConfigFile *c, Log *l)
 }
 
 
-Session::~Session()
+Session::~Session() noexcept
 {
 	terminateNetworkClient();
 	terminateNetworkServer();

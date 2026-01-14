@@ -47,7 +47,7 @@ PlayerData::PlayerData(const PlayerData &other)
 {
 }
 
-PlayerData::~PlayerData()
+PlayerData::~PlayerData() noexcept
 {
 }
 

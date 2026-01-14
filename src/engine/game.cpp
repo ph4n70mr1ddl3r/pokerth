@@ -133,7 +133,7 @@ Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
 	blindsTimer.start();
 }
 
-Game::~Game()
+Game::~Game() noexcept
 {
 }
 

@@ -45,9 +45,9 @@ using namespace boost::filesystem;
 
 
 DownloaderThread::DownloaderThread()
-	: m_downloadInProgress(false)
+	: myDownloadInProgress(false)
 {
-	m_downloadHelper.reset(new DownloadHelper());
+	myDownloadHelper.reset(new DownloadHelper());
 }
 
 DownloaderThread::~DownloaderThread()
@@ -57,27 +57,27 @@ DownloaderThread::~DownloaderThread()
 void
 DownloaderThread::QueueDownload(unsigned downloadId, const std::string &url, const std::string &filename)
 {
-	boost::mutex::scoped_lock lock(m_downloadQueueMutex);
-	m_downloadQueue.push(DownloadData(downloadId, url, filename));
+	boost::mutex::scoped_lock lock(myDownloadQueueMutex);
+	myDownloadQueue.push(DownloadData(downloadId, url, filename));
 }
 
 bool
 DownloaderThread::HasDownloadResult() const
 {
-	boost::mutex::scoped_lock lock(m_downloadDoneQueueMutex);
-	return !m_downloadDoneQueue.empty();
+	boost::mutex::scoped_lock lock(myDownloadDoneQueueMutex);
+	return !myDownloadDoneQueue.empty();
 }
 
 bool
 DownloaderThread::GetDownloadResult(unsigned &downloadId, std::vector<unsigned char> &filedata)
 {
 	bool result = false;
-	boost::mutex::scoped_lock lock(m_downloadDoneQueueMutex);
-	if (!m_downloadDoneQueue.empty()) {
-		const ResultData &d = m_downloadDoneQueue.front();
+	boost::mutex::scoped_lock lock(myDownloadDoneQueueMutex);
+	if (!myDownloadDoneQueue.empty()) {
+		const ResultData &d = myDownloadDoneQueue.front();
 		downloadId = d.id;
 		filedata = d.data;
-		m_downloadDoneQueue.pop();
+		myDownloadDoneQueue.pop();
 		result = true;
 	}
 	return result;
@@ -88,14 +88,14 @@ DownloaderThread::Main()
 {
 	while (!ShouldTerminate()) {
 		try {
-			if (m_downloadInProgress) {
-				m_downloadInProgress = !m_downloadHelper->Process();
+			if (myDownloadInProgress) {
+				myDownloadInProgress = !myDownloadHelper->Process();
 			}
 
-			if (!m_downloadInProgress) {
+			if (!myDownloadInProgress) {
 				// Previous download was finished.
-				if (m_curDownloadData) {
-					path filepath(m_curDownloadData->filename);
+				if (myCurDownloadData) {
+					path filepath(myCurDownloadData->filename);
 					std::ifstream instream(filepath.string().c_str(), ios_base::in | ios_base::binary);
 					// Find out file size.
 					// Not fully portable, but works on win/linux/mac.
@@ -113,10 +113,10 @@ DownloaderThread::Main()
 					remove(filepath);
 
 					{
-						boost::mutex::scoped_lock lock(m_downloadDoneQueueMutex);
-						m_downloadDoneQueue.push(ResultData(m_curDownloadData->id, fileData));
+						boost::mutex::scoped_lock lock(myDownloadDoneQueueMutex);
+						myDownloadDoneQueue.push(ResultData(myCurDownloadData->id, fileData));
 					}
-					m_curDownloadData.reset();
+					myCurDownloadData.reset();
 				}
 
 				// Take a break.
@@ -124,22 +124,22 @@ DownloaderThread::Main()
 
 				// Start next download.
 				{
-					boost::mutex::scoped_lock lock(m_downloadQueueMutex);
-					if (!m_downloadQueue.empty()) {
-						m_curDownloadData.reset(new DownloadData(m_downloadQueue.front()));
-						m_downloadQueue.pop();
+					boost::mutex::scoped_lock lock(myDownloadQueueMutex);
+					if (!myDownloadQueue.empty()) {
+						myCurDownloadData.reset(new DownloadData(myDownloadQueue.front()));
+						myDownloadQueue.pop();
 					}
 				}
-				if (m_curDownloadData && !m_curDownloadData->filename.empty()) {
-					path filepath(m_curDownloadData->filename);
-					m_downloadHelper->Init(m_curDownloadData->address, filepath.string());
-					m_downloadInProgress = true;
+				if (myCurDownloadData && !myCurDownloadData->filename.empty()) {
+					path filepath(myCurDownloadData->filename);
+					myDownloadHelper->Init(myCurDownloadData->address, filepath.string());
+					myDownloadInProgress = true;
 				}
 			}
 		} catch (const NetException &e) {
 			LOG_ERROR("Download failed: " << e.what());
-			m_downloadInProgress = false;
-			m_curDownloadData.reset();
+			myDownloadInProgress = false;
+			myCurDownloadData.reset();
 		}
 	}
 }

@@ -146,7 +146,7 @@ protected:
 
 private:
 
-	boost::shared_ptr<DownloadHelper> m_downloadHelper;
+	boost::shared_ptr<DownloadHelper> myDownloadHelper;
 };
 
 // State: Reading the server list.

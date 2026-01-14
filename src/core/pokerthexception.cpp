@@ -35,13 +35,13 @@
 using namespace std;
 
 PokerTHException::PokerTHException(const char *sourcefile, int sourceline, int errorId, int osErrorCode)
-	: m_errorId(errorId), m_osErrorCode(osErrorCode)
+	: myErrorId(errorId), myOsErrorCode(osErrorCode)
 {
 	ostringstream msgStream;
 	msgStream << sourcefile << " (" << sourceline << "): Error " << errorId;
 	if (osErrorCode)
 		msgStream << " (system error " << osErrorCode << ")";
-	m_msg = msgStream.str();
+	myMsg = msgStream.str();
 }
 
 PokerTHException::~PokerTHException() noexcept
@@ -51,6 +51,6 @@ PokerTHException::~PokerTHException() noexcept
 const char *
 PokerTHException::what() const noexcept
 {
-	return m_msg.c_str();
+	return myMsg.c_str();
 }
 

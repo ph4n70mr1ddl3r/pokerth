@@ -85,7 +85,7 @@ class PlayerData
 public:
 	PlayerData(unsigned uniqueId, int number, PlayerType type, PlayerRights rights, bool isGameAdmin);
 	PlayerData(const PlayerData &other);
-	~PlayerData();
+	~PlayerData() noexcept;
 
 	std::string GetName() const;
 	void SetName(const std::string &name);

@@ -80,16 +80,16 @@ protected:
 
 private:
 
-	DownloadDataQueue m_downloadQueue;
-	mutable boost::mutex m_downloadQueueMutex;
+	DownloadDataQueue myDownloadQueue;
+	mutable boost::mutex myDownloadQueueMutex;
 
-	DownloadDoneQueue m_downloadDoneQueue;
-	mutable boost::mutex m_downloadDoneQueueMutex;
+	DownloadDoneQueue myDownloadDoneQueue;
+	mutable boost::mutex myDownloadDoneQueueMutex;
 
-	boost::shared_ptr<DownloadHelper> m_downloadHelper;
-	bool m_downloadInProgress;
+	boost::shared_ptr<DownloadHelper> myDownloadHelper;
+	bool myDownloadInProgress;
 
-	boost::shared_ptr<DownloadData> m_curDownloadData;
+	boost::shared_ptr<DownloadData> myCurDownloadData;
 };
 
 #endif

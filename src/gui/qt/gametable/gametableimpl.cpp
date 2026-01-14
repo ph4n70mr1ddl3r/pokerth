@@ -819,7 +819,8 @@ void gameTableImpl::refreshPlayerAvatar()
 
 		boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 		PlayerList seatsList = currentGame->getSeatsList();
-		for (PlayerListConstIterator it_c = seatsList->begin(), seatPlace = 0; it_c != seatsList->end(); ++it_c, seatPlace++) {
+		int seatPlace = 0;
+		for (PlayerListConstIterator it_c = seatsList->begin(); it_c != seatsList->end(); ++it_c, seatPlace++) {
 
 			//set uniqueID
 			playerAvatarLabelArray[(*it_c)->getMyID()]->setMyUniqueId((*it_c)->getMyUniqueID());
@@ -986,6 +987,7 @@ void gameTableImpl::refreshCash()
 
 void gameTableImpl::refreshGroupbox(int playerID, int status)
 {
+	int j = 0;
 
 	if(playerID == -1 || status == -1) {
 
@@ -2311,6 +2313,7 @@ void gameTableImpl::postRiverRunAnimation3()
 
 	int nonfoldPlayerCounter = 0;
 	PlayerListConstIterator it_c;
+	int j = 0;
 
 	PlayerList activePlayerList = currentHand->getActivePlayerList();
 	for(it_c=activePlayerList->begin(); it_c!=activePlayerList->end(); ++it_c) {
@@ -3620,8 +3623,9 @@ void gameTableImpl::tabsButtonClose()
 void gameTableImpl::checkActionLabelPosition()
 {
 #ifndef GUI_800x480
+	int i = 0;
 	if(myCardDeckStyle->getBigIndexesActionBottom() == "1") {
-		for (int i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
+		for (i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 			if(i>=3 && i<=7) {
 				if(actionLabelArray[i]->y() == 56) {
 					actionLabelArray[i]->move(actionLabelArray[i]->x(), 80);

@@ -57,7 +57,7 @@ public:
 
 	Session(GuiInterface*, ConfigFile*, Log*);
 
-	~Session();
+	~Session() noexcept;
 
 	enum GameType { GAME_TYPE_NONE, GAME_TYPE_LOCAL, GAME_TYPE_NETWORK, GAME_TYPE_INTERNET };
 
