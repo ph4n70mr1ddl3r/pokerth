@@ -30,7 +30,6 @@
  *****************************************************************************/
 #include <playerdata.h>
 #include <ctime>
-#include <core/loghelper.h> // @TODO: remove in productive
 
 using namespace std;
 

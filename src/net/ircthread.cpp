@@ -32,6 +32,7 @@
 #include <net/socket_helper.h>
 #include <net/ircthread.h>
 #include <net/socket_msg.h>
+#include <core/pokerthexception.h>
 #ifdef _WIN32
 #include <libircclient/libircclient.h>
 #else
@@ -325,8 +326,12 @@ IrcThread::~IrcThread()
 void
 IrcThread::Init(const std::string &serverAddress, unsigned serverPort, bool ipv6, const std::string &nick, const std::string &channel, const std::string &channelPassword)
 {
-	if (IsRunning() || serverAddress.empty() || nick.empty() || channel.empty())
-		return; // TODO: throw exception
+	if (IsRunning()) {
+		throw PokerTHException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
+	}
+	if (serverAddress.empty() || nick.empty() || channel.empty()) {
+		throw PokerTHException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
+	}
 
 	IrcContext &context = GetContext();
 

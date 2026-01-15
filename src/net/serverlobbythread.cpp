@@ -201,9 +201,8 @@ public:
 		// Nothing to do.
 	}
 
-	virtual void CreateGameFailed(unsigned requestId)
+	virtual void CreateGameFailed(unsigned requestId) override
 	{
-		// TODO maybe handle request id.
 		LOG_ERROR("DB create game failed for request " << requestId);
 	}
 

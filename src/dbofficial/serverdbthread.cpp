@@ -48,8 +48,6 @@
 #include <sstream>
 #include <dbofficial/mysqlpp_compat.h>
 
-#include <core/loghelper.h> // @TODO: remove in productive
-
 #define QUERY_NICK_PREPARE				"nick_template"
 #define QUERY_LOGIN_PREPARE				"login_template"
 #define QUERY_AVATAR_BLACKLIST_PREPARE	"avatar_blacklist_template"

@@ -415,7 +415,6 @@ NetPacketValidator::ValidatePlayerInfoReplyMessage(const NetPacket &packet)
 	if (packet.GetMsg()->has_playerinforeplymessage()) {
 		const PlayerInfoReplyMessage &msg = packet.GetMsg()->playerinforeplymessage();
 		if (msg.playerid() != 0) {
-			// TODO maybe additional checks.
 			retVal = true;
 		}
 	}
