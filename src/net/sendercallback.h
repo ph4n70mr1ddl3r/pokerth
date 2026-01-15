@@ -39,7 +39,7 @@
 class SenderCallback
 {
 public:
-	virtual ~SenderCallback();
+	virtual ~SenderCallback() noexcept;
 
 	virtual void SignalNetError(SessionId session, int errorID, int osErrorID) = 0;
 };

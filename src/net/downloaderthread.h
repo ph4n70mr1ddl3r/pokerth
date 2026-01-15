@@ -47,7 +47,7 @@ class DownloaderThread : public Thread
 public:
 
 	DownloaderThread();
-	virtual ~DownloaderThread();
+	virtual ~DownloaderThread() noexcept;
 
 	void QueueDownload(unsigned downloadId, const std::string &url, const std::string &filename);
 	bool HasDownloadResult() const;

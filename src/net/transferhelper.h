@@ -43,7 +43,7 @@ class TransferHelper
 {
 public:
 	TransferHelper();
-	virtual ~TransferHelper();
+	virtual ~TransferHelper() noexcept;
 
 	// Set the parameters. Does not do any error checking.
 	// Throws an exception on failure.

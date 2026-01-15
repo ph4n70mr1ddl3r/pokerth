@@ -43,7 +43,7 @@ class NetPacket;
 class SendBuffer : public boost::enable_shared_from_this<SendBuffer>
 {
 public:
-	virtual ~SendBuffer();
+	virtual ~SendBuffer() noexcept;
 
 	virtual void SetCloseAfterSend() = 0;
 

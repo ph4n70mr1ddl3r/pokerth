@@ -58,7 +58,7 @@ public:
 	ServerGame(
 		boost::shared_ptr<ServerLobbyThread> lobbyThread, u_int32_t id, const std::string &name, const std::string &pwd, const GameData &gameData,
 		unsigned adminPlayerId, unsigned creatorPlayerDBId, GuiInterface &gui, ConfigFile &playerConfig);
-	virtual ~ServerGame();
+	virtual ~ServerGame() noexcept;
 
 	void Init();
 	void Exit();

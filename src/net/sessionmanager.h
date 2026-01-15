@@ -48,7 +48,7 @@ class SessionManager
 {
 public:
 	SessionManager();
-	virtual ~SessionManager();
+	virtual ~SessionManager() noexcept;
 
 	void AddSession(boost::shared_ptr<SessionData> sessionData);
 	void SetSessionPlayerData(SessionId session, boost::shared_ptr<PlayerData> playerData);

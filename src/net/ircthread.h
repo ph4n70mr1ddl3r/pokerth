@@ -46,7 +46,7 @@ class IrcThread : public Thread
 public:
 	IrcThread(const IrcThread &other);
 	IrcThread(IrcCallback *callback);
-	virtual ~IrcThread();
+	virtual ~IrcThread() noexcept;
 
 	// Set the parameters.
 	void Init(const std::string &serverAddress, unsigned serverPort, bool ipv6, const std::string &nick, const std::string &channel, const std::string &channelPassword);

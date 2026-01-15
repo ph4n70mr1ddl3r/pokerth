@@ -51,7 +51,7 @@ class ServerManager
 public:
 	ServerManager(ConfigFile &config, GuiInterface &gui);
 	ServerManager(ConfigFile &config, GuiInterface &gui, ServerMode mode, AvatarManager &avatarManager);
-	virtual ~ServerManager();
+	virtual ~ServerManager() noexcept;
 
 	// Set the parameters.
 	virtual void Init(unsigned serverPort, unsigned websocketPort, bool ipv6, bool serverTls, bool websocketTls, int proto, const std::string &logDir,

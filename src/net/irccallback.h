@@ -38,7 +38,7 @@
 class IrcCallback
 {
 public:
-	virtual ~IrcCallback();
+	virtual ~IrcCallback() noexcept;
 
 	virtual void SignalIrcConnect(const std::string &server) = 0;
 	virtual void SignalIrcSelfJoined(const std::string &nickName, const std::string &channel) = 0;

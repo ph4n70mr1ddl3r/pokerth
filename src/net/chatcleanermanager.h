@@ -49,7 +49,7 @@ class ChatCleanerManager : public boost::enable_shared_from_this<ChatCleanerMana
 {
 public:
 	ChatCleanerManager(ChatCleanerCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService);
-	virtual ~ChatCleanerManager();
+	virtual ~ChatCleanerManager() noexcept;
 
 	void Init(const std::string &serverAddr, int port, bool ipv6,
 			  const std::string &clientSecret, const std::string &serverSecret);

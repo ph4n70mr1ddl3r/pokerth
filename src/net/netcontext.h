@@ -42,7 +42,7 @@
 class NetContext
 {
 public:
-	virtual ~NetContext();
+	virtual ~NetContext() noexcept;
 
 	virtual SOCKET GetSocket() const = 0;
 };

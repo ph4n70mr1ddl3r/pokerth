@@ -45,7 +45,7 @@ class Game;
 class ClientCallback
 {
 public:
-	virtual ~ClientCallback();
+	virtual ~ClientCallback() noexcept;
 
 	virtual void SignalNetClientConnect(int actionID) = 0;
 	virtual void SignalNetClientGameInfo(int actionID) = 0;

@@ -47,7 +47,7 @@ class ServerBanManager : public boost::enable_shared_from_this<ServerBanManager>
 {
 public:
 	ServerBanManager(boost::shared_ptr<boost::asio::io_context> ioService);
-	virtual ~ServerBanManager();
+	virtual ~ServerBanManager() noexcept;
 
 	void SetAdminPlayerIds(const std::list<DB_id> &adminList);
 

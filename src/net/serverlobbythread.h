@@ -65,7 +65,7 @@ class ServerLobbyThread : public Thread, public boost::enable_shared_from_this<S
 public:
 	ServerLobbyThread(GuiInterface &gui, ServerMode mode, ConfigFile &serverConfig, AvatarManager &avatarManager,
 					  boost::shared_ptr<boost::asio::io_context> ioService);
-	virtual ~ServerLobbyThread();
+	virtual ~ServerLobbyThread() noexcept;
 
 	void Init(const std::string &logDir);
 	virtual void SignalTermination();

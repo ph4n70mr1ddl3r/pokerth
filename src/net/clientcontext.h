@@ -43,7 +43,7 @@ class ClientContext
 {
 public:
 	ClientContext();
-	virtual ~ClientContext();
+	virtual ~ClientContext() noexcept;
 
 	boost::shared_ptr<SessionData> GetSessionData() const;
 	void SetSessionData(boost::shared_ptr<SessionData> sessionData);

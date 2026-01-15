@@ -43,7 +43,7 @@ class SessionData;
 class ReceiveBuffer : public boost::enable_shared_from_this<ReceiveBuffer>
 {
 public:
-	virtual ~ReceiveBuffer();
+	virtual ~ReceiveBuffer() noexcept;
 
 	virtual void StartAsyncRead(boost::shared_ptr<SessionData> session) = 0;
 	virtual void HandleRead(boost::shared_ptr<SessionData> session, const boost::system::error_code &error, size_t bytesRead) = 0;

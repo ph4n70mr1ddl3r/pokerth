@@ -38,7 +38,7 @@
 class ServerCallback
 {
 public:
-	virtual ~ServerCallback();
+	virtual ~ServerCallback() noexcept;
 
 	virtual void SignalNetServerSuccess(int actionID) = 0;
 	virtual void SignalNetServerError(int errorID, int osErrorID) = 0;

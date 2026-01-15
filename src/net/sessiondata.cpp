@@ -410,6 +410,7 @@ SessionData::GetRemoteIPAddressFromSocket() const
             auto ep = lowest.remote_endpoint(ec);
             if (!ec) return ep.address().to_string();
         } catch (...) {
+            LOG_ERROR("Exception while getting SSL remote endpoint");
         }
     }
 
@@ -419,6 +420,7 @@ SessionData::GetRemoteIPAddressFromSocket() const
             auto ep = sock->remote_endpoint(ec);
             if (!ec) return ep.address().to_string();
         } catch (...) {
+            LOG_ERROR("Exception while getting socket remote endpoint");
         }
     }
     return std::string();

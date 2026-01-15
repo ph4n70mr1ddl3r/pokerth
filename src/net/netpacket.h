@@ -61,7 +61,7 @@ class NetPacket
 public:
 	NetPacket();
 	NetPacket(PokerTHMessage *msg);
-	~NetPacket();
+	~NetPacket() noexcept;
 
 	static boost::shared_ptr<NetPacket> Create(const char *data, size_t dataSize);
 

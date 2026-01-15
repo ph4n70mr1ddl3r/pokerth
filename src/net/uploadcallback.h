@@ -38,7 +38,7 @@
 class UploadCallback
 {
 public:
-	virtual ~UploadCallback();
+	virtual ~UploadCallback() noexcept;
 
 	virtual void UploadCompleted(const std::string &filename, const std::string &returnMessage) = 0;
 	virtual void UploadError(const std::string &filename, const std::string &errorMessage) = 0;

@@ -590,6 +590,7 @@ ClientStateStartConnect::TimerTimeout(const boost::system::error_code& ec, boost
             try {
                 context.GetSessionData()->CloseSocketHandle();
             } catch (...) {
+                LOG_ERROR("Exception in TimerTimeout while closing socket handle");
             }
         }
 

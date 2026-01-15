@@ -254,9 +254,10 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 				} else
 					m_ircAdminThread->SendChatMessage(nickName + ": Invalid command \"" + command + "\".");
 			}
-		} catch (...) {
-			m_ircAdminThread->SendChatMessage(nickName + ": Syntax error. Please check the command.");
-		}
+			} catch (...) {
+				LOG_ERROR("Exception in IRC admin bot chat message handler");
+				m_ircAdminThread->SendChatMessage(nickName + ": Syntax error. Please check the command.");
+			}
 	}
 }
 
