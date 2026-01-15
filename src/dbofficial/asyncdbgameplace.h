@@ -40,7 +40,7 @@ class AsyncDBGamePlace : public SingleAsyncDBQuery
 {
 public:
 	AsyncDBGamePlace(unsigned queryId, const std::string &preparedName, const std::list<std::string> &params);
-	virtual ~AsyncDBGamePlace();
+	virtual ~AsyncDBGamePlace() noexcept;
 
 	virtual void Init(DBIdManager& idManager);
 

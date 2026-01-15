@@ -40,7 +40,7 @@ class AsyncDBReportAvatar : public SingleAsyncDBQuery
 {
 public:
 	AsyncDBReportAvatar(unsigned queryId, unsigned replyId, const std::string &preparedName, const std::list<std::string> &params);
-	virtual ~AsyncDBReportAvatar();
+	virtual ~AsyncDBReportAvatar() noexcept;
 
 	virtual void Init(DBIdManager& /*idManager*/) {}
 

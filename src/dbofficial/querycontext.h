@@ -36,7 +36,7 @@
 class QueryContext
 {
 public:
-	virtual ~QueryContext();
+	virtual ~QueryContext() noexcept;
 
 	virtual unsigned GetLastGameDBId() const = 0;
 	virtual void SetLastGameDBId(unsigned id) = 0;

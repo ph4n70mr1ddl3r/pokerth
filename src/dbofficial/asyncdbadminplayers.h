@@ -40,7 +40,7 @@ class AsyncDBAdminPlayers : public SingleAsyncDBQuery
 {
 public:
 	AsyncDBAdminPlayers(unsigned queryId, const std::string &preparedName);
-	virtual ~AsyncDBAdminPlayers();
+	virtual ~AsyncDBAdminPlayers() noexcept;
 
 	virtual void Init(DBIdManager& idManager);
 

@@ -91,7 +91,7 @@ public:
          }
      }
 
-    virtual ~ServerAcceptHelper()
+    virtual ~ServerAcceptHelper() noexcept
     {
     }
 

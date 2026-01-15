@@ -39,7 +39,7 @@
 class ChatCleanerCallback
 {
 public:
-	virtual ~ChatCleanerCallback();
+	virtual ~ChatCleanerCallback() noexcept;
 
 	virtual void SignalChatBotMessage(const std::string &msg) = 0;
 	virtual void SignalChatBotMessage(unsigned gameId, const std::string &msg) = 0;

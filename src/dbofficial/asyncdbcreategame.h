@@ -40,7 +40,7 @@ class AsyncDBCreateGame : public SingleAsyncDBQuery
 {
 public:
 	AsyncDBCreateGame(unsigned queryId, const std::string &preparedName, const std::list<std::string> &params);
-	virtual ~AsyncDBCreateGame();
+	virtual ~AsyncDBCreateGame() noexcept;
 
 	virtual void Init(DBIdManager& /*idManager*/) {}
 

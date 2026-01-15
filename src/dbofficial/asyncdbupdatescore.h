@@ -40,7 +40,7 @@ class AsyncDBUpdateScore : public SingleAsyncDBQuery
 {
 public:
 	AsyncDBUpdateScore(unsigned queryId, const std::string &preparedName, const std::list<std::string> &params);
-	virtual ~AsyncDBUpdateScore();
+	virtual ~AsyncDBUpdateScore() noexcept;
 
 	virtual void Init(DBIdManager& idManager);
 

@@ -43,7 +43,7 @@ public:
 	typedef std::list<boost::shared_ptr<AsyncDBQuery> > AsyncQueryList;
 	// Note: This list must contain at least one query.
 	CompositeAsyncDBQuery(const AsyncQueryList &queries);
-	virtual ~CompositeAsyncDBQuery();
+	virtual ~CompositeAsyncDBQuery() noexcept;
 
 	virtual void Init(DBIdManager& idManager);
 

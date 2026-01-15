@@ -42,7 +42,7 @@ class SessionData;
 class SessionDataCallback
 {
 public:
-	virtual ~SessionDataCallback();
+	virtual ~SessionDataCallback() noexcept;
 
 	virtual void CloseSession(boost::shared_ptr<SessionData> session) = 0;
 	virtual void SessionError(boost::shared_ptr<SessionData> session, int errorCode) = 0;

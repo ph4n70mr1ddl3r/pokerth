@@ -50,7 +50,7 @@ class ServerDBThread : public ServerDBInterface, public Thread, public boost::en
 {
 public:
 	ServerDBThread(ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService);
-	virtual ~ServerDBThread();
+	virtual ~ServerDBThread() noexcept;
 
 	virtual void SignalTermination();
 

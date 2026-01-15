@@ -41,7 +41,7 @@ class PlayerInterface
 {
 public:
 
-	virtual ~PlayerInterface() =0;
+	virtual ~PlayerInterface() noexcept =0;
 
 	virtual void setHand(HandInterface *) =0;
 

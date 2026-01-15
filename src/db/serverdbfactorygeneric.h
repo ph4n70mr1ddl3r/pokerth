@@ -42,7 +42,7 @@ class ServerDBFactoryGeneric
 {
 public:
 	ServerDBFactoryGeneric();
-	virtual ~ServerDBFactoryGeneric();
+	virtual ~ServerDBFactoryGeneric() noexcept;
 
 	virtual boost::shared_ptr<ServerDBInterface> CreateServerDBObject(
 		ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService);

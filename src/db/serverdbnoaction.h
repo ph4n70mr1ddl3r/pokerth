@@ -40,7 +40,7 @@ class ServerDBNoAction : public ServerDBInterface
 {
 public:
 	ServerDBNoAction();
-	virtual ~ServerDBNoAction();
+	virtual ~ServerDBNoAction() noexcept;
 
 	virtual void Init(const std::string &/*host*/, const std::string &/*user*/, const std::string &/*pwd*/,
 					  const std::string &/*database*/, const std::string &/*encryptionKey*/) {}

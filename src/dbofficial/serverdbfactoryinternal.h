@@ -42,7 +42,7 @@ class ServerDBFactoryInternal
 {
 public:
 	ServerDBFactoryInternal();
-	virtual ~ServerDBFactoryInternal();
+	virtual ~ServerDBFactoryInternal() noexcept;
 
 	virtual boost::shared_ptr<ServerDBInterface> CreateServerDBObject(
 		ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService);

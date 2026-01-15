@@ -41,7 +41,7 @@ class ServerLobbyThread;
 class ServerAcceptInterface
 {
 public:
-	virtual ~ServerAcceptInterface();
+	virtual ~ServerAcceptInterface() noexcept;
 
 	virtual void Listen(unsigned serverPort, bool ipv6, const std::string &logDir,
 						boost::shared_ptr<ServerLobbyThread> lobbyThread) = 0;

@@ -41,7 +41,7 @@ class BoardInterface
 
 public:
 
-	virtual ~BoardInterface();
+	virtual ~BoardInterface() noexcept;
 //
 	virtual void setPlayerLists(PlayerList, PlayerList, PlayerList) =0;
 //

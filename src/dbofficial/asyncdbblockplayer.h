@@ -40,7 +40,7 @@ class AsyncDBBlockPlayer : public SingleAsyncDBQuery
 {
 public:
 	AsyncDBBlockPlayer(unsigned queryId, unsigned replyId, const std::string &preparedName, const std::list<std::string> &params);
-	virtual ~AsyncDBBlockPlayer();
+	virtual ~AsyncDBBlockPlayer() noexcept;
 
 	virtual void Init(DBIdManager& idManager);
 

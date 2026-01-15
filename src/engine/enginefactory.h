@@ -42,7 +42,7 @@ class EngineFactory
 {
 public:
 
-	virtual ~EngineFactory();
+	virtual ~EngineFactory() noexcept;
 
 	virtual boost::shared_ptr<HandInterface> createHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost::shared_ptr<BoardInterface> b, Log *l, PlayerList sl, PlayerList apl, PlayerList rpl, int id, int sP, int dP, int sB,int sC) =0;
 	virtual boost::shared_ptr<BoardInterface> createBoard() =0;

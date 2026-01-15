@@ -42,7 +42,7 @@ class ServerDBGeneric : public ServerDBInterface
 {
 public:
 	ServerDBGeneric(ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService);
-	virtual ~ServerDBGeneric();
+	virtual ~ServerDBGeneric() noexcept;
 
 	virtual void Init(const std::string &host, const std::string &user, const std::string &pwd,
 					  const std::string &database, const std::string &encryptionKey);

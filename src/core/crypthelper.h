@@ -45,7 +45,7 @@
 class HashBuf
 {
 public:
-	virtual ~HashBuf();
+	virtual ~HashBuf() noexcept;
 
 	std::string ToString() const;
 	bool FromString(const std::string &text);

@@ -43,7 +43,7 @@
 class ServerDBCallback
 {
 public:
-	virtual ~ServerDBCallback();
+	virtual ~ServerDBCallback() noexcept;
 
 	virtual void ConnectSuccess() = 0;
 	virtual void ConnectFailed(std::string error) = 0;

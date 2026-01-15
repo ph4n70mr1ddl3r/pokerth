@@ -38,7 +38,7 @@
 class ServerIrcBotCallback
 {
 public:
-	virtual ~ServerIrcBotCallback();
+	virtual ~ServerIrcBotCallback() noexcept;
 
 	virtual void SignalLobbyMessage(unsigned playerId, const std::string &playerName, const std::string &msg) = 0;
 };

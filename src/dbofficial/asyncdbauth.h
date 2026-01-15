@@ -40,7 +40,7 @@ class AsyncDBAuth : public SingleAsyncDBQuery
 {
 public:
 	AsyncDBAuth(unsigned queryId, const std::string &preparedName, const std::list<std::string> &params);
-	virtual ~AsyncDBAuth();
+	virtual ~AsyncDBAuth() noexcept;
 
 	virtual void Init(DBIdManager& /*idManager*/) {}
 

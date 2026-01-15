@@ -39,7 +39,7 @@ class BeRoInterface
 {
 public:
 
-	virtual ~BeRoInterface();
+	virtual ~BeRoInterface() noexcept;
 
 	virtual GameState getMyBeRoID() const =0;
 

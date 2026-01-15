@@ -42,7 +42,7 @@ class ServerManagerIrc : public ServerManager
 {
 public:
 	ServerManagerIrc(ConfigFile &config, GuiInterface &gui, ServerMode mode, AvatarManager &avatarManager);
-	virtual ~ServerManagerIrc();
+	virtual ~ServerManagerIrc() noexcept;
 
 	// Set the parameters.
 	virtual void Init(unsigned serverPort, unsigned websocketPort, bool ipv6, int proto, const std::string &logDir,

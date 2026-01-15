@@ -39,7 +39,7 @@ class SingleAsyncDBQuery : public AsyncDBQuery
 {
 public:
 	SingleAsyncDBQuery(unsigned queryId, const std::string &preparedName, const std::list<std::string> &params);
-	virtual ~SingleAsyncDBQuery();
+	virtual ~SingleAsyncDBQuery() noexcept;
 
 	unsigned GetId() const;
 	virtual std::string GetPreparedName() const;

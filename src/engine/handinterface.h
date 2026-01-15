@@ -42,7 +42,7 @@ class HandInterface
 {
 public:
 
-	virtual ~HandInterface();
+	virtual ~HandInterface() noexcept;
 
 	virtual void start() = 0;
 

@@ -43,7 +43,7 @@ typedef std::list<DB_id> db_list;
 class ServerDBInterface
 {
 public:
-	virtual ~ServerDBInterface();
+	virtual ~ServerDBInterface() noexcept;
 
 	virtual void Init(const std::string &host, const std::string &user, const std::string &pwd,
 					  const std::string &database, const std::string &encryptionKey) = 0;
