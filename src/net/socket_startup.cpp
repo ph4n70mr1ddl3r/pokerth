@@ -49,22 +49,22 @@ extern "C" {
 	}
 	int gcry_bmutex_init(void **obj)
 	{
-		*obj = (void*)(new boost::mutex);
+		*obj = static_cast<void*>(new boost::mutex);
 		return 0;
 	}
 	int gcry_bmutex_destroy(void **obj)
 	{
-		delete (boost::mutex *)(*obj);
+		delete static_cast<boost::mutex*>(*obj);
 		return 0;
 	}
 	int gcry_bmutex_lock(void **obj)
 	{
-		((boost::mutex *)(*obj))->lock();
+		static_cast<boost::mutex*>(*obj)->lock();
 		return 0;
 	}
 	int gcry_bmutex_unlock(void **obj)
 	{
-		((boost::mutex *)(*obj))->unlock();
+		static_cast<boost::mutex*>(*obj)->unlock();
 		return 0;
 	}
 

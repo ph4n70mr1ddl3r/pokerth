@@ -35,6 +35,7 @@
 
 #include <string>
 #include <list>
+#include <memory>
 
 #include <third_party/protobuf/pokerth.pb.h>
 #include <gamedata.h>
@@ -67,11 +68,11 @@ public:
 
 	const PokerTHMessage *GetMsg() const
 	{
-		return m_msg;
+		return m_msg.get();
 	}
 	PokerTHMessage *GetMsg()
 	{
-		return m_msg;
+		return m_msg.get();
 	}
 
 	bool IsClientActivity() const;
@@ -85,7 +86,7 @@ public:
 	static ErrorMessage::ErrorReason GameErrorToNetError(int gameErrorReason);
 
 private:
-	PokerTHMessage *m_msg;
+	std::unique_ptr<PokerTHMessage> m_msg;
 };
 
 typedef std::list<boost::shared_ptr<NetPacket> > NetPacketList;

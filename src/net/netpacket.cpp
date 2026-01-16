@@ -34,9 +34,11 @@
 
 #include <boost/foreach.hpp>
 
+#include <string>
+
 NetPacket::NetPacket()
+	: m_msg(PokerTHMessage::default_instance().New())
 {
-	m_msg = PokerTHMessage::default_instance().New();
 }
 
 NetPacket::NetPacket(PokerTHMessage *msg)
@@ -46,7 +48,6 @@ NetPacket::NetPacket(PokerTHMessage *msg)
 
 NetPacket::~NetPacket()
 {
-	delete m_msg;
 }
 
 boost::shared_ptr<NetPacket>
@@ -59,8 +60,6 @@ NetPacket::Create(const char *data, size_t dataSize)
 		PokerTHMessage *msg = PokerTHMessage::default_instance().New();
 		if (msg->ParseFromArray(data, static_cast<int>(dataSize))) {
 			tmpPacket.reset(new NetPacket(msg));
-		} else {
-			delete msg;
 		}
 	}
 	return tmpPacket;
