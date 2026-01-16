@@ -60,6 +60,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <array>
 
 using namespace std;
 using namespace boost::filesystem;
@@ -1571,7 +1572,7 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		// Hand was started.
 		// These are the cards. Good luck.
 		const HandStartMessage &netHandStart = tmpPacket->GetMsg()->handstartmessage();
-		int myCards[2];
+		std::array<int, 2> myCards;
 		string userPassword(client->GetContext().GetPassword());
 		if (netHandStart.has_plaincards() && userPassword.empty()) {
 			const HandStartMessage::PlainCards &plainCards = netHandStart.plaincards();
@@ -1662,8 +1663,8 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		if (!tmpPlayer)
 			throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 
-		int tmpCards[2];
-		int bestHandPos[5];
+		std::array<int, 2> tmpCards;
+		std::array<int, 5> bestHandPos;
 		tmpCards[0] = static_cast<int>(r.resultcard1());
 		tmpCards[1] = static_cast<int>(r.resultcard2());
 		tmpPlayer->setMyCards(tmpCards);
@@ -1847,7 +1848,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_DealFlopCardsMessage) {
 		const DealFlopCardsMessage &netDealFlop = tmpPacket->GetMsg()->dealflopcardsmessage();
 
-		int tmpCards[5];
+		std::array<int, 5> tmpCards;
 		tmpCards[0] = static_cast<int>(netDealFlop.flopcard1());
 		tmpCards[1] = static_cast<int>(netDealFlop.flopcard2());
 		tmpCards[2] = static_cast<int>(netDealFlop.flopcard3());
@@ -1870,7 +1871,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_DealTurnCardMessage) {
 		const DealTurnCardMessage &netDealTurn = tmpPacket->GetMsg()->dealturncardmessage();
 
-		int tmpCards[5];
+		std::array<int, 5> tmpCards;
 		curGame->getCurrentHand()->getBoard()->getMyCards(tmpCards);
 		tmpCards[3] = static_cast<int>(netDealTurn.turncard());
 		curGame->getCurrentHand()->getBoard()->setMyCards(tmpCards);
@@ -1891,7 +1892,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_DealRiverCardMessage) {
 		const DealRiverCardMessage &netDealRiver = tmpPacket->GetMsg()->dealrivercardmessage();
 
-		int tmpCards[5];
+		std::array<int, 5> tmpCards;
 		curGame->getCurrentHand()->getBoard()->getMyCards(tmpCards);
 		tmpCards[4] = static_cast<int>(netDealRiver.rivercard());
 		curGame->getCurrentHand()->getBoard()->setMyCards(tmpCards);
@@ -1924,7 +1925,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 			if (!tmpPlayer)
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 
-			int tmpCards[2];
+			std::array<int, 2> tmpCards;
 			tmpCards[0] = static_cast<int>(p.allincard1());
 			tmpCards[1] = static_cast<int>(p.allincard2());
 			tmpPlayer->setMyCards(tmpCards);
@@ -1995,8 +1996,8 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 			if (!tmpPlayer)
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 
-			int tmpCards[2];
-			int bestHandPos[5];
+			std::array<int, 2> tmpCards;
+			std::array<int, 5> bestHandPos;
 			tmpCards[0] = static_cast<int>(r.resultcard1());
 			tmpCards[1] = static_cast<int>(r.resultcard2());
 			tmpPlayer->setMyCards(tmpCards);

@@ -23,6 +23,7 @@
 #include "game_defs.h"
 
 #include <string>
+#include <array>
 #include <boost/filesystem.hpp>
 
 #include <QSqlDatabase>
@@ -44,7 +45,7 @@ public:
     void logPlayerAction(std::string playerName, PlayerActionLog action, int amount = 0);
     void logPlayerAction(int seat, PlayerActionLog action, int amount = 0);
     PlayerActionLog transformPlayerActionLog(PlayerAction action);
-    void logBoardCards(int boardCards[5]);
+    void logBoardCards(std::array<int, 5> boardCards);
     void logHoleCardsHandName(PlayerList activePlayerList);
     void logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerInterface> player, bool forceExecLog = 0);
     void logHandWinner(PlayerList activePlayerList, int highestCardsValue, std::list<unsigned> winners);

@@ -34,6 +34,7 @@
 
 #include <iostream>
 #include <vector>
+#include <array>
 #include <boost/shared_ptr.hpp>
 
 #include <boardinterface.h>
@@ -50,15 +51,13 @@ public:
 
 	void setPlayerLists(PlayerList, PlayerList, PlayerList);
 
-	void setMyCards(int* theValue)
+	void setMyCards(const std::array<int, 5> &theValue)
 	{
-		int i;
-		for(i=0; i<5; i++) myCards[i] = theValue[i];
+		myCards = theValue;
 	}
-	void getMyCards(int* theValue)
+	void getMyCards(std::array<int, 5> &theValue)
 	{
-		int i;
-		for(i=0; i<5; i++) theValue[i] = myCards[i];
+		theValue = myCards;
 	}
 
 	void setAllInCondition(bool theValue)
@@ -120,7 +119,7 @@ private:
 	std::list<unsigned> winners;
 	std::list<unsigned> playerNeedToShowCards;
 
-	int myCards[5];
+	std::array<int, 5> myCards;
 	int pot;
 	int sets;
 	bool allInCondition;

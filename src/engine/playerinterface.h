@@ -34,6 +34,7 @@
 
 #include "handinterface.h"
 #include <playerdata.h>
+#include <array>
 
 class SessionData;
 
@@ -87,8 +88,8 @@ public:
 	virtual void setMyStayOnTableStatus(bool theValue) =0;
 	virtual bool getMyStayOnTableStatus() const =0;
 
-	virtual void setMyCards(int* theValue) =0;
-	virtual void getMyCards(int* theValue) const =0;
+	virtual void setMyCards(const std::array<int, 2> &theValue) =0;
+	virtual void getMyCards(std::array<int, 2> &theValue) const =0;
 
 	virtual void setMyTurn(bool theValue) =0;
 	virtual bool getMyTurn() const =0;
@@ -102,8 +103,8 @@ public:
 	virtual void setLogHoleCardsDone(bool theValue) =0;
 	virtual bool getLogHoleCardsDone() const =0;
 
-	virtual void setMyBestHandPosition(int* theValue) =0;
-	virtual void getMyBestHandPosition(int* theValue) const =0;
+	virtual void setMyBestHandPosition(const std::array<int, 5> &theValue) =0;
+	virtual void getMyBestHandPosition(std::array<int, 5> &theValue) const =0;
 
 	virtual void setMyRoundStartCash(int theValue) =0;
 	virtual int getMyRoundStartCash() const =0;

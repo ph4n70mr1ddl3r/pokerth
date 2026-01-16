@@ -39,6 +39,7 @@
 #include "engine_msg.h"
 
 #include <iostream>
+#include <array>
 
 using namespace std;
 
@@ -67,10 +68,10 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 		50, 51
 	};
 	Tools::ShuffleArrayNonDeterministic(cardsArray, NumCards);
-	int tempBoardArray[5];
-	int tempPlayerArray[2];
+	std::array<int, 5> tempBoardArray;
+	std::array<int, 2> tempPlayerArray;
 	int tempPlayerAndBoardArray[7];
-	int bestHandPos[5];
+	std::array<int, 5> bestHandPos;
 	int sBluff = 0;
 	for(i=0; i<5; i++) {
 		tempBoardArray[i] = cardsArray[i];
@@ -89,7 +90,7 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 		}
 
 		(*it)->setMyCards(tempPlayerArray);
-		(*it)->setMyCardsValueInt(CardsValue::cardsValue(tempPlayerAndBoardArray, bestHandPos));
+		(*it)->setMyCardsValueInt(CardsValue::cardsValue(tempPlayerAndBoardArray, bestHandPos.data()));
 		(*it)->setMyBestHandPosition(bestHandPos);
 		(*it)->setMyRoundStartCash((*it)->getMyCash());
 

@@ -33,6 +33,7 @@
 #define BOARDINTERFACE_H
 
 #include <engine_defs.h>
+#include <array>
 
 class HandInterface;
 
@@ -45,8 +46,8 @@ public:
 //
 	virtual void setPlayerLists(PlayerList, PlayerList, PlayerList) =0;
 //
-	virtual void setMyCards(int* theValue) =0;
-	virtual void getMyCards(int* theValue) =0;
+	virtual void setMyCards(const std::array<int, 5> &theValue) =0;
+	virtual void getMyCards(std::array<int, 5> &theValue) =0;
 //
 	virtual int getPot() const=0;
 	virtual void setPot(int theValue) =0;

@@ -37,6 +37,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <string>
+#include <array>
 
 class ConfigFile;
 class HandInterface;
@@ -89,8 +90,8 @@ public:
 	void setMyStayOnTableStatus(bool theValue);
 	bool getMyStayOnTableStatus() const;
 
-	void setMyCards(int* theValue);
-	void getMyCards(int* theValue) const;
+	void setMyCards(const std::array<int, 2> &theValue);
+	void getMyCards(std::array<int, 2> &theValue) const;
 
 	void setMyTurn(bool theValue);
 	bool getMyTurn() const;
@@ -104,8 +105,8 @@ public:
 	void setLogHoleCardsDone(bool theValue);
 	bool getLogHoleCardsDone() const;
 
-	void setMyBestHandPosition(int* theValue);
-	void getMyBestHandPosition(int* theValue) const;
+	void setMyBestHandPosition(const std::array<int, 5> &theValue);
+	void getMyBestHandPosition(std::array<int, 5> &theValue) const;
 
 	void setMyRoundStartCash(int theValue);
 	int getMyRoundStartCash() const;
@@ -180,12 +181,12 @@ private:
 
 	// Laufvariablen
 	int myCardsValueInt;
-	int myBestHandPosition[5];
+	std::array<int, 5> myBestHandPosition;
 	double myOdds;
-	int myNiveau[3];
+	std::array<int, 3> myNiveau;
 	bool logHoleCardsDone;
 
-	int myCards[2];
+	std::array<int, 2> myCards;
 	int myCash;
 	int mySet;
 	int myLastRelativeSet;
@@ -198,8 +199,8 @@ private:
 	int myRoundStartCash;
 	int lastMoneyWon;
 
-	int myAverageSets[4];
-	bool myAggressive[7];
+	std::array<int, 4> myAverageSets;
+	std::array<bool, 7> myAggressive;
 
 	int sBluff;
 	bool sBluffStatus;

@@ -39,7 +39,7 @@ using namespace std;
 ClientBoard::ClientBoard()
 	: pot(0), sets(0), allInCondition(false), lastActionPlayerID(0)
 {
-	myCards[0] = myCards[1] = myCards[2] = myCards[3] = myCards[4] = 0;
+	myCards.fill(0);
 }
 
 
@@ -57,19 +57,17 @@ ClientBoard::setPlayerLists(PlayerList sl,  PlayerList apl, PlayerList rpl)
 }
 
 void
-ClientBoard::setMyCards(int* theValue)
+ClientBoard::setMyCards(const std::array<int, 5> &theValue)
 {
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
-	for (int i = 0; i < 5; i++)
-		myCards[i] = theValue[i];
+	myCards = theValue;
 }
 
 void
-ClientBoard::getMyCards(int* theValue)
+ClientBoard::getMyCards(std::array<int, 5> &theValue)
 {
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
-	for (int i = 0; i < 5; i++)
-		theValue[i] = myCards[i];
+	theValue = myCards;
 }
 
 int

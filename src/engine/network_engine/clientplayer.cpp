@@ -264,19 +264,17 @@ ClientPlayer::getMyStayOnTableStatus() const
 }
 
 void
-ClientPlayer::setMyCards(int* theValue)
+ClientPlayer::setMyCards(const std::array<int, 2> &theValue)
 {
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
-	for (int i = 0; i < 2; i++)
-		myCards[i] = theValue[i];
+	myCards = theValue;
 }
 
 void
-ClientPlayer::getMyCards(int* theValue) const
+ClientPlayer::getMyCards(std::array<int, 2> &theValue) const
 {
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
-	for (int i = 0; i < 2; i++)
-		theValue[i] = myCards[i];
+	theValue = myCards;
 }
 
 void
@@ -352,19 +350,17 @@ ClientPlayer::getLogHoleCardsDone() const
 }
 
 void
-ClientPlayer::setMyBestHandPosition(int* theValue)
+ClientPlayer::setMyBestHandPosition(const std::array<int, 5> &theValue)
 {
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
-	for (int i = 0; i < 5; i++)
-		myBestHandPosition[i] = theValue[i];
+	myBestHandPosition = theValue;
 }
 
 void
-ClientPlayer::getMyBestHandPosition(int* theValue) const
+ClientPlayer::getMyBestHandPosition(std::array<int, 5> &theValue) const
 {
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
-	for (int i = 0; i < 5; i++)
-		theValue[i] = myBestHandPosition[i];
+	theValue = myBestHandPosition;
 }
 
 void

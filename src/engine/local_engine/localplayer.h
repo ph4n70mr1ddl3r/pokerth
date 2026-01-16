@@ -36,6 +36,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <string>
+#include <array>
 
 
 class ConfigFile;
@@ -185,15 +186,13 @@ public:
 		return myStayOnTableStatus;
 	}
 
-	void setMyCards(int* theValue)
+	void setMyCards(const std::array<int, 2> &theValue)
 	{
-		int i;
-		for(i=0; i<2; i++) myCards[i] = theValue[i];
+		myCards = theValue;
 	}
-	void getMyCards(int* theValue) const
+	void getMyCards(std::array<int, 2> &theValue) const
 	{
-		int i;
-		for(i=0; i<2; i++) theValue[i] = myCards[i];
+		theValue = myCards;
 	}
 
 	void setMyTurn(bool theValue)
@@ -249,15 +248,13 @@ public:
 		return logHoleCardsDone;
 	}
 
-	void setMyBestHandPosition(int* theValue)
+	void setMyBestHandPosition(const std::array<int, 5> &theValue)
 	{
-		for (int i = 0; i < 5; i++)
-			myBestHandPosition[i] = theValue[i];
+		myBestHandPosition = theValue;
 	}
-	void getMyBestHandPosition(int* theValue) const
+	void getMyBestHandPosition(std::array<int, 5> &theValue) const
 	{
-		for (int i = 0; i < 5; i++)
-			theValue[i] = myBestHandPosition[i];
+		theValue = myBestHandPosition;
 	}
 
 	void setMyRoundStartCash(int theValue)
@@ -376,12 +373,12 @@ private:
 
 	// Laufvariablen
 	int myCardsValueInt;
-	int myBestHandPosition[5];
+	std::array<int, 5> myBestHandPosition;
 	double myOdds;
-	int myNiveau[3];
+	std::array<int, 3> myNiveau;
 	bool logHoleCardsDone;
 
-	int myCards[2];
+	std::array<int, 2> myCards;
 	int myCash;
 	int mySet;
 	int myLastRelativeSet;
@@ -394,8 +391,8 @@ private:
 	int myRoundStartCash;
 	int lastMoneyWon;
 
-	int myAverageSets[4];
-	bool myAggressive[7];
+	std::array<int, 4> myAverageSets;
+	std::array<bool, 7> myAggressive;
 
 	int sBluff;
 	bool sBluffStatus;

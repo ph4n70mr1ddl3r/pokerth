@@ -476,7 +476,7 @@ Log::transformPlayerActionLog(PlayerAction action)
 }
 
 void
-Log::logBoardCards(int boardCards[5])
+Log::logBoardCards(std::array<int, 5> boardCards)
 {
     if(SQLITE_LOG) {
 

@@ -35,6 +35,7 @@
 #include <boardinterface.h>
 #include <boost/thread.hpp>
 #include <vector>
+#include <array>
 
 
 class PlayerInterface;
@@ -49,8 +50,8 @@ public:
 
 	void setPlayerLists(PlayerList, PlayerList, PlayerList);
 
-	void setMyCards(int* theValue);
-	void getMyCards(int* theValue);
+	void setMyCards(const std::array<int, 5> &theValue);
+	void getMyCards(std::array<int, 5> &theValue);
 
 	int getPot() const;
 	void setPot(int theValue);
@@ -82,7 +83,7 @@ private:
 	std::list<unsigned> winners;
 	std::list<unsigned> playerNeedToShowCards;
 
-	int myCards[5];
+	std::array<int, 5> myCards;
 	int pot;
 	int sets;
 	bool allInCondition;
