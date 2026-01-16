@@ -44,6 +44,7 @@
 #include <boost/asio.hpp>
 
 #include <sstream>
+#include <memory>
 
 #define NET_CLIENT_TERMINATE_TIMEOUT_MSEC	2000
 #define NET_IRC_TERMINATE_TIMEOUT_MSEC		2000
@@ -56,7 +57,7 @@ using namespace std;
 Session::Session(GuiInterface *g, ConfigFile *c, Log *l)
 	: myCurrentGameNum(0), myGui(g), myConfig(c), myLog(l), myGameType(GAME_TYPE_NONE)
 {
-	myQtToolsInterface = CreateQtToolsWrapper();
+	myQtToolsInterface.reset(CreateQtToolsWrapper());
 }
 
 
@@ -64,8 +65,6 @@ Session::~Session() noexcept
 {
 	terminateNetworkClient();
 	terminateNetworkServer();
-	delete myQtToolsInterface;
-	delete myLog;
 }
 
 bool Session::init()

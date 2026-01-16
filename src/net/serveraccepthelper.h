@@ -91,7 +91,7 @@ public:
          }
      }
 
-    virtual ~ServerAcceptHelper() noexcept
+    virtual ~ServerAcceptHelper() noexcept override
     {
     }
 

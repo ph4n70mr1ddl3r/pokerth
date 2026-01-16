@@ -112,20 +112,8 @@ int main(int argc, char *argv[])
 // START OF OLD QT-WIDGETS GUI SECTION
 
 
-#include <boost/asio.hpp>
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include <qapplication.h>
-
-#include <QtWidgets>
-#include <QtGui>
-#include <QtCore>
-#include <QDebug>
-#include <QScreen>
-#include <QGuiApplication>
-
-#include <curl/curl.h>
+#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "session.h"
 #include "startwindowimpl.h"
@@ -199,8 +187,8 @@ int main( int argc, char **argv )
 #endif
 
 	//create defaultconfig
-	ConfigFile *myConfig = new ConfigFile(argv[0], false);
-	Log *myLog = new Log(myConfig);
+	unique_ptr<ConfigFile> myConfig(new ConfigFile(argv[0], false));
+	unique_ptr<Log> myLog(new Log(myConfig.get()));
 
 	// set PlastiqueStyle even for mac-version to prevent artefacts on styled widgets
 
@@ -298,8 +286,6 @@ int main( int argc, char **argv )
 	int retVal = a.exec();
 	curl_global_cleanup();
 	socket_cleanup();
-	delete myLog;
-	delete myConfig;
 	return retVal;
 }
 

@@ -57,26 +57,19 @@ enum OffenceType {
 
 MessageFilter::MessageFilter(CleanerConfig *c): config(c)
 {
-	myBadWordCheck = new BadWordCheck;
-	myTextFloodCheck = new TextFloodCheck;
-	myCapsFloodCheck = new CapsFloodCheck;
-	myLetterRepeatingCheck = new LetterRepeatingCheck;
-	myUrlCheck = new UrlCheck;
+	myBadWordCheck = std::make_unique<BadWordCheck>();
+	myTextFloodCheck = std::make_unique<TextFloodCheck>();
+	myCapsFloodCheck = std::make_unique<CapsFloodCheck>();
+	myLetterRepeatingCheck = std::make_unique<LetterRepeatingCheck>();
+	myUrlCheck = std::make_unique<UrlCheck>();
 
-	cleanTimer = new QTimer();
-	connect(cleanTimer, SIGNAL(timeout()), this, SLOT(cleanKickCounterList()));
+	cleanTimer = std::make_unique<QTimer>();
+	connect(cleanTimer.get(), SIGNAL(timeout()), this, SLOT(cleanKickCounterList()));
 	cleanTimer->start(30000);
 }
 
 MessageFilter::~MessageFilter()
 {
-
-	delete myBadWordCheck;
-	delete myTextFloodCheck;
-	delete myCapsFloodCheck;
-	delete myLetterRepeatingCheck;
-	delete myUrlCheck;
-	delete cleanTimer;
 }
 
 QStringList MessageFilter::check(unsigned gameId, unsigned playerId, QString nick, QString msg)

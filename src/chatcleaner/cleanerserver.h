@@ -34,6 +34,8 @@
 #include <QtCore>
 #include <QtNetwork>
 
+#include <memory>
+
 #define CLEANER_NET_HEADER_SIZE		4
 #define MAX_CLEANER_PACKET_SIZE		512
 #define CLEANER_PROTOCOL_VERSION	2
@@ -59,10 +61,10 @@ private slots:
 	void sendMessageToClient(ChatCleanerMessage &msg);
 
 private:
-	QTcpServer *tcpServer;
+	std::unique_ptr<QTcpServer> tcpServer;
 	QTcpSocket *tcpSocket;
-	QTimer *configRefreshTimer;
-	MessageFilter *myMessageFilter;
+	std::unique_ptr<QTimer> configRefreshTimer;
+	std::unique_ptr<MessageFilter> myMessageFilter;
 
 	CleanerConfig *config;
 	bool blockConnection;

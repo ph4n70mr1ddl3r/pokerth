@@ -37,6 +37,8 @@
 #include <third_party/boost/timers.hpp>
 #endif
 
+#include <memory>
+
 class BadWordCheck;
 class TextFloodCheck;
 class CleanerConfig;
@@ -48,7 +50,7 @@ class MessageFilter: public QObject
 {
 	Q_OBJECT
 public:
-	MessageFilter(CleanerConfig*);
+	explicit MessageFilter(CleanerConfig*);
 	~MessageFilter();
 
 	QStringList check(unsigned, unsigned, QString, QString);
@@ -58,11 +60,11 @@ public slots:
 	void cleanKickCounterList();
 
 private:
-	BadWordCheck *myBadWordCheck;
-	TextFloodCheck *myTextFloodCheck;
-	CapsFloodCheck *myCapsFloodCheck;
-	LetterRepeatingCheck *myLetterRepeatingCheck;
-	UrlCheck *myUrlCheck;
+	std::unique_ptr<BadWordCheck> myBadWordCheck;
+	std::unique_ptr<TextFloodCheck> myTextFloodCheck;
+	std::unique_ptr<CapsFloodCheck> myCapsFloodCheck;
+	std::unique_ptr<LetterRepeatingCheck> myLetterRepeatingCheck;
+	std::unique_ptr<UrlCheck> myUrlCheck;
 
 	struct ClientWarnInfos {
 		QString nick;
@@ -84,7 +86,7 @@ private:
 	CleanerConfig *config;
 
 	boost::timers::portable::second_timer timer;
-	QTimer *cleanTimer;
+	std::unique_ptr<QTimer> cleanTimer;
 };
 
 #endif // MESSAGEFILTER_H

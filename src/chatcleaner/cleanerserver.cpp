@@ -49,8 +49,8 @@ CleanerServer::CleanerServer(): config(0), blockConnection(false), m_recvBufUsed
 	clientSecret = QString::fromUtf8(config->readConfigString("ClientAuthString").c_str());
 	serverSecret = QString::fromUtf8(config->readConfigString("ServerAuthString").c_str());
 
-	myMessageFilter = new MessageFilter(config);
-	tcpServer = new QTcpServer();
+	myMessageFilter = std::make_unique<MessageFilter>(config);
+	tcpServer = std::make_unique<QTcpServer>();
 	tcpServer->setMaxPendingConnections(1);
 
 	if (!tcpServer->listen(QHostAddress(QString::fromUtf8(config->readConfigString("HostAddress").c_str())), config->readConfigInt("DefaultListenPort")) ) {
@@ -59,10 +59,10 @@ CleanerServer::CleanerServer(): config(0), blockConnection(false), m_recvBufUsed
 	}
 	qDebug() << QString("The server is running on port %1.").arg(tcpServer->serverPort());
 
-	configRefreshTimer = new QTimer();
+	configRefreshTimer = std::make_unique<QTimer>();
 
-	connect(configRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshConfig()));
-	connect(tcpServer, SIGNAL(newConnection()), this, SLOT(newCon()));
+	connect(configRefreshTimer.get(), SIGNAL(timeout()), this, SLOT(refreshConfig()));
+	connect(tcpServer.get(), SIGNAL(newConnection()), this, SLOT(newCon()));
 
 	refreshConfig();
 	configRefreshTimer->start(10000);
@@ -70,10 +70,6 @@ CleanerServer::CleanerServer(): config(0), blockConnection(false), m_recvBufUsed
 
 CleanerServer::~CleanerServer()
 {
-	delete config;
-	delete myMessageFilter;
-	delete tcpServer;
-	delete configRefreshTimer;
 }
 
 void CleanerServer::newCon()

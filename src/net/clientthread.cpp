@@ -29,10 +29,8 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 
-#include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
-#include <net/socket_helper.h>
 #include <net/clientthread.h>
+#include <net/socket_helper.h>
 #include <net/clientstate.h>
 #include <net/clientcontext.h>
 #include <net/senderhelper.h>
@@ -48,9 +46,12 @@
 #include <log.h>
 #include <qttoolsinterface.h>
 
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
+
 #include <QDebug>
 #include <sstream>
 #include <fstream>

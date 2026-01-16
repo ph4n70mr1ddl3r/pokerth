@@ -151,7 +151,7 @@ private:
 	ConfigFile *myConfig;
 	Log *myLog;
 	GameType myGameType;
-	QtToolsInterface *myQtToolsInterface;
+	std::unique_ptr<QtToolsInterface> myQtToolsInterface;
 };
 
 #endif

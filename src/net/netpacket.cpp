@@ -148,7 +148,7 @@ NetPacket::GetGameData(const NetGameInfo &inData, GameData &outData)
 int
 NetPacket::NetErrorToGameError(ErrorMessage::ErrorReason netErrorReason)
 {
-	int retVal;
+	int retVal = ERR_SOCK_INTERNAL;
 	switch(netErrorReason) {
 	case ErrorMessage::initVersionNotSupported :
 		retVal = ERR_NET_VERSION_NOT_SUPPORTED;

@@ -50,16 +50,17 @@
 #include <configfile.h>
 #include <playerinterface.h>
 
-#include <fstream>
-#include <sstream>
-#include <algorithm>
-#include <cctype>
 #include <boost/lambda/lambda.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/algorithm/string.hpp>
+
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <cctype>
 #include <ctime>
 #include <string>  
 
