@@ -131,7 +131,7 @@ main(int argc, char *argv[])
 			readonlyConfig = true;
 	}
 
-	boost::shared_ptr<QtToolsInterface> myQtToolsInterface(boost::shared_ptr<QtToolsInterface>(CreateQtToolsWrapper()));
+	boost::shared_ptr<QtToolsInterface> myQtToolsInterface(CreateQtToolsWrapper());
 
 	// Some Qt classes used by the DB wrapper (QSqlDatabase) require a QCoreApplication
 	// to be instantiated before use. Create a minimal QCoreApplication for the server.

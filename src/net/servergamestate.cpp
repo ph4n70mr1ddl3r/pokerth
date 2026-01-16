@@ -115,7 +115,7 @@ static void SendPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInterfa
 
 static void SendNewRoundCards(ServerGame &server, Game &curGame, int state)
 {
-	int cards[5];
+	int cards[5]{};
 	curGame.getCurrentHand()->getBoard()->getMyCards(cards);
 	switch(state) {
 	case GAME_STATE_PREFLOP: {
@@ -209,8 +209,8 @@ static void
 SetPlayerResult(PlayerResult &playerResult, boost::shared_ptr<PlayerInterface> tmpPlayer, GameState roundBeforePostRiver)
 {
 	playerResult.set_playerid(tmpPlayer->getMyUniqueID());
-	int tmpCards[2];
-	int bestHandPos[5];
+	int tmpCards[2]{};
+	int bestHandPos[5]{};
 	tmpPlayer->getMyCards(tmpCards);
 	playerResult.set_resultcard1(tmpCards[0]);
 	playerResult.set_resultcard2(tmpCards[1]);
@@ -935,7 +935,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 			while (i != end) {
 				AllInShowCardsMessage::PlayerAllIn *playerAllIn = netAllInShow->add_playersallin();
 				playerAllIn->set_playerid((*i)->getMyUniqueID());
-				int tmpCards[2];
+				int tmpCards[2]{};
 				(*i)->getMyCards(tmpCards);
 				playerAllIn->set_allincard1(tmpCards[0]);
 				playerAllIn->set_allincard2(tmpCards[1]);

@@ -44,14 +44,14 @@ using namespace std;
 size_t
 readFunction(char *bufptr, size_t size, size_t nitems, void *userp)
 {
-	return fread(bufptr, size, nitems, (FILE *)userp);
+	return fread(bufptr, size, nitems, static_cast<FILE*>(userp));
 }
 
 size_t
 writeFunction(char *bufptr, size_t size, size_t nitems, void *userp)
 {
 	string msgPart(bufptr, size * nitems);
-	((string *)userp)->append(msgPart);
+	static_cast<string*>(userp)->append(msgPart);
 	return size * nitems;
 }
 

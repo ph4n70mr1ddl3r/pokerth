@@ -55,7 +55,7 @@ public:
 
 	AvatarManager(bool useExternalServer = false, const std::string &externalServerAddress = "",
 				  const std::string &externalServerUser = "", const std::string &externalServerPassword = "");
-	~AvatarManager();
+	~AvatarManager() noexcept;
 
 	bool Init(const std::string &dataDir, const std::string &cacheDir);
 

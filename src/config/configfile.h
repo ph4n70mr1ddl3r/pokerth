@@ -61,7 +61,7 @@ class ConfigFile
 public:
 	ConfigFile(char *argv0, bool readonly);
 
-	~ConfigFile();
+	~ConfigFile() noexcept;
 
 	void fillBuffer();
 	void checkAndCorrectBuffer();

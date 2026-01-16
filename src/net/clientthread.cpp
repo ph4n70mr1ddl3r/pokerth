@@ -443,7 +443,7 @@ ClientThread::SetLogin(const std::string &userName, const std::string &password)
 ServerInfo
 ClientThread::GetServerInfo(unsigned serverId) const
 {
-	ServerInfo tmpInfo;
+	ServerInfo tmpInfo{};
 	boost::mutex::scoped_lock lock(m_serverInfoMapMutex);
 	ServerInfoMap::const_iterator pos = m_serverInfoMap.find(serverId);
 	if (pos != m_serverInfoMap.end()) {
@@ -455,7 +455,7 @@ ClientThread::GetServerInfo(unsigned serverId) const
 GameInfo
 ClientThread::GetGameInfo(unsigned gameId) const
 {
-	GameInfo tmpInfo;
+	GameInfo tmpInfo{};
 	boost::mutex::scoped_lock lock(m_gameInfoMapMutex);
 	GameInfoMap::const_iterator pos = m_gameInfoMap.find(gameId);
 	if (pos != m_gameInfoMap.end()) {
@@ -467,9 +467,9 @@ ClientThread::GetGameInfo(unsigned gameId) const
 PlayerInfo
 ClientThread::GetPlayerInfo(unsigned playerId) const
 {
-	PlayerInfo info;
+	PlayerInfo info{};
 	if (!GetCachedPlayerInfo(playerId, info)) {
-		ostringstream name;
+		std::ostringstream name;
 		name << "#" << playerId;
 
 		info.playerName = name.str();
@@ -811,10 +811,9 @@ ClientThread::RetrieveAvatarIfNeeded(unsigned id, const PlayerInfo &info)
 std::string
 ClientThread::GetPlayerName(unsigned id)
 {
-	PlayerInfo info;
+	PlayerInfo info{};
 	if (!GetCachedPlayerInfo(id, info)) {
-		// Request player info.
-		ostringstream name;
+		std::ostringstream name;
 		name << "#" << id;
 		info.playerName = name.str();
 		RequestPlayerInfo(id);
@@ -1162,11 +1161,11 @@ ClientThread::GetQtToolsInterface()
 	return *myQtToolsInterface;
 }
 
-boost::shared_ptr<PlayerData>
+	boost::shared_ptr<PlayerData>
 ClientThread::CreatePlayerData(unsigned playerId, bool isGameAdmin)
 {
 	boost::shared_ptr<PlayerData> playerData;
-	PlayerInfo info;
+	PlayerInfo info{};
 	if (GetCachedPlayerInfo(playerId, info)) {
 		playerData.reset(
 			new PlayerData(playerId, 0, info.ptype,
@@ -1180,7 +1179,7 @@ ClientThread::CreatePlayerData(unsigned playerId, bool isGameAdmin)
 				RetrieveAvatarIfNeeded(playerId, info);
 		}
 	} else {
-		ostringstream name;
+		std::ostringstream name;
 		name << "#" << playerId;
 
 		// Request player info.

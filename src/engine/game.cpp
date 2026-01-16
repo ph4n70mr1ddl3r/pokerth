@@ -80,9 +80,9 @@ Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
 	currentBoard = myFactory->createBoard();
 
 	// create player lists
-	seatsList.reset(new std::list<boost::shared_ptr<PlayerInterface> >);
-	activePlayerList.reset(new std::list<boost::shared_ptr<PlayerInterface> >);
-	runningPlayerList.reset(new std::list<boost::shared_ptr<PlayerInterface> >);
+	seatsList = boost::make_shared<std::list<boost::shared_ptr<PlayerInterface>>>();
+	activePlayerList = boost::make_shared<std::list<boost::shared_ptr<PlayerInterface>>>();
+	runningPlayerList = boost::make_shared<std::list<boost::shared_ptr<PlayerInterface>>>();
 
 	// create player
 	player_i = playerDataList.begin();

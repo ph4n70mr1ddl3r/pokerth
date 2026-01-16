@@ -73,13 +73,13 @@ public:
 	boost::shared_ptr<Game> getCurrentGame();
 
 	GuiInterface *getGui();
-	Log* getMyLog()
+	Log* getMyLog() const
 	{
 		return myLog;
 	}
-	GameType getGameType();
+	GameType getGameType() const;
 
-	boost::shared_ptr<AvatarManager> getAvatarManager();
+	boost::shared_ptr<AvatarManager> getAvatarManager() const;
 
 	void startInternetClient();
 	void startNetworkClient(const std::string &serverAddress, unsigned serverPort, bool ipv6, bool sctp);

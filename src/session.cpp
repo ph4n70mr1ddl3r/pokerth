@@ -69,12 +69,12 @@ Session::~Session() noexcept
 
 bool Session::init()
 {
-	myAvatarManager.reset(new AvatarManager(
+	myAvatarManager = boost::make_shared<AvatarManager>(
 							  myConfig->readConfigInt("ServerUsePutAvatars") == 1,
 							  myConfig->readConfigString("ServerPutAvatarsAddress"),
 							  myConfig->readConfigString("ServerPutAvatarsUser"),
 							  myConfig->readConfigString("ServerPutAvatarsPassword")
-						  ));
+						  );
 	bool retVal = myAvatarManager->Init(
 					  myQtToolsInterface->stringFromUtf8(myConfig->readConfigString("AppDataDir")),
 					  myQtToolsInterface->stringFromUtf8(myConfig->readConfigString("CacheDir")));
@@ -125,21 +125,21 @@ void Session::startLocalGame(const GameData &gameData, const StartData &startDat
 
 		//PlayerData erzeugen
 		// UniqueId = PlayerNumber for local games.
-		boost::shared_ptr<PlayerData> playerData(new PlayerData(
+		auto playerData = boost::make_shared<PlayerData>(
 					i,
 					i,
 					i == 0 ? PLAYER_TYPE_HUMAN : PLAYER_TYPE_COMPUTER,
 					PLAYER_RIGHTS_NORMAL,
-					i == 0));
+					i == 0);
 		playerData->SetName(myConfig->readConfigString(myName.str()));
 		playerData->SetAvatarFile(myConfig->readConfigString(myAvatar.str()));
 
 		playerDataList.push_back(playerData);
 	}
 	// EngineFactory erstellen
-	boost::shared_ptr<EngineFactory> factory(new LocalEngineFactory(myConfig)); // LocalEngine erstellen
+	auto factory = boost::make_shared<LocalEngineFactory>(myConfig); // LocalEngine erstellen
 
-	myCurrentGame.reset(new Game(myGui, factory, playerDataList, gameData, startData, myCurrentGameNum, myLog));
+	myCurrentGame = boost::make_shared<Game>(myGui, factory, playerDataList, gameData, startData, myCurrentGameNum, myLog);
 
 	//// SPIEL-SCHLEIFE
 	myCurrentGame->initHand();
@@ -182,7 +182,7 @@ void Session::startInternetClient()
 	}
 	myGameType = GAME_TYPE_INTERNET;
 
-	myNetClient.reset(new ClientThread(*myGui, *myAvatarManager, myLog));
+	myNetClient = boost::make_shared<ClientThread>(*myGui, *myAvatarManager, myLog);
 	bool useAvatarServer = myConfig->readConfigInt("UseAvatarServer") != 0;
 
 	myNetClient->Init(
@@ -211,7 +211,7 @@ void Session::startNetworkClient(const string &serverAddress, unsigned serverPor
 	}
 	myGameType = GAME_TYPE_NETWORK;
 
-	myNetClient.reset(new ClientThread(*myGui, *myAvatarManager, myLog));
+	myNetClient = boost::make_shared<ClientThread>(*myGui, *myAvatarManager, myLog);
 	myNetClient->Init(
 		serverAddress,
 		"",
@@ -240,7 +240,7 @@ void Session::startNetworkClientForLocalServer(const GameData &gameData)
 	}
 	myGameType = GAME_TYPE_NETWORK;
 
-	myNetClient.reset(new ClientThread(*myGui, *myAvatarManager, myLog));
+	myNetClient = boost::make_shared<ClientThread>(*myGui, *myAvatarManager, myLog);
 	bool useIpv6 = myConfig->readConfigInt("ServerUseIpv6") == 1;
 	const char *loopbackAddr = useIpv6 ? "::1" : "127.0.0.1";
 	myNetClient->Init(

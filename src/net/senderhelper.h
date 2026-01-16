@@ -43,7 +43,7 @@ class SenderHelper
 {
 public:
 	SenderHelper(boost::shared_ptr<boost::asio::io_context> ioService);
-	~SenderHelper();
+	~SenderHelper() noexcept;
 
 	void Send(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
 	void Send(boost::shared_ptr<SessionData> session, const NetPacketList &packetList);

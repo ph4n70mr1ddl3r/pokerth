@@ -272,12 +272,12 @@ PlayerData::IsPlayerAllowedToJoinCreateLimitRank(std::string num, std::string pe
 	bool retVal = false;
 	boost::mutex::scoped_lock lock(m_dataMutex);
 
-	long then = (long)time(NULL) - (long)(stoi(period) * 60);
+	long then = static_cast<long>(time(NULL)) - static_cast<long>(stoi(period) * 60);
 
 	int count = 0;
 	for(std::vector<long>::iterator timeStamp = m_last_games.begin(); timeStamp != m_last_games.end(); ++timeStamp) {
-		time_t ts = (time_t)*timeStamp;
-		if((long)ts > then){
+		time_t ts = static_cast<time_t>(*timeStamp);
+		if(static_cast<long>(ts) > then){
 			count++;
 		}else{
 			timeStamp = m_last_games.erase(timeStamp);
