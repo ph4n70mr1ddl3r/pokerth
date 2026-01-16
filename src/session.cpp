@@ -542,13 +542,13 @@ void Session::showMyCards()
 
 bool Session::isNetworkClientRunning() const
 {
-	return myNetClient.get() != NULL;
+	return myNetClient != nullptr;
 }
 
 bool Session::isNetworkServerRunning() const
 {
 #ifdef POKERTH_DEDICATED_SERVER	
-	return myNetServer.get() != NULL;
+	return myNetServer != nullptr;
 #else
 	return false;
 #endif

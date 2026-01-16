@@ -131,13 +131,13 @@ main(int argc, char *argv[])
 			readonlyConfig = true;
 	}
 
-	boost::shared_ptr<QtToolsInterface> myQtToolsInterface(CreateQtToolsWrapper());
+	boost::shared_ptr<QtToolsInterface> myQtToolsInterface(boost::shared_ptr<QtToolsInterface>(CreateQtToolsWrapper()));
 
 	// Some Qt classes used by the DB wrapper (QSqlDatabase) require a QCoreApplication
 	// to be instantiated before use. Create a minimal QCoreApplication for the server.
 	QCoreApplication qtCoreApp(argc, argv);
 	//create defaultconfig
-	boost::shared_ptr<ConfigFile> myConfig(new ConfigFile(argv[0], readonlyConfig));
+	boost::shared_ptr<ConfigFile> myConfig = boost::make_shared<ConfigFile>(argv[0], readonlyConfig);
 	loghelper_init(myQtToolsInterface->stringFromUtf8(myConfig->readConfigString("LogDir")), logLevel);
 
 #ifndef _WIN32
@@ -172,8 +172,8 @@ main(int argc, char *argv[])
 	}
 
 	// Create pseudo Gui Wrapper for the server.
-	boost::shared_ptr<GuiInterface> myServerGuiInterface(new ServerGuiWrapper(myConfig.get(), NULL, NULL));
-	boost::shared_ptr<Session> session(new Session(myServerGuiInterface.get(), myConfig.get(), NULL));
+	boost::shared_ptr<GuiInterface> myServerGuiInterface = boost::make_shared<ServerGuiWrapper>(myConfig.get(), nullptr, nullptr);
+	boost::shared_ptr<Session> session = boost::make_shared<Session>(myServerGuiInterface.get(), myConfig.get(), nullptr);
 	if (!session->init())
 		LOG_ERROR("Missing files - please check your directory settings!");
 	myServerGuiInterface->setSession(session);

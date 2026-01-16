@@ -62,7 +62,7 @@ Thread::Run()
 	boost::mutex::scoped_lock threadLock(m_threadObjMutex);
 
 	// Create the boost thread object.
-	if (!m_threadObj.get()) {
+	if (!m_threadObj) {
 		m_threadObj.reset(new boost::thread(ThreadStarter(*this)));
 	}
 }
@@ -124,6 +124,6 @@ bool
 Thread::IsRunning() const
 {
 	boost::mutex::scoped_lock threadLock(m_threadObjMutex);
-	return (m_threadObj.get() != NULL);
+	return m_threadObj != nullptr;
 }
 
