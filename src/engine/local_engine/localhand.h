@@ -47,7 +47,7 @@ class LocalHand : public HandInterface
 {
 public:
 	LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface*, boost::shared_ptr<BoardInterface>, Log*, PlayerList, PlayerList, PlayerList, int, int, unsigned, int, int);
-	~LocalHand();
+	~LocalHand() noexcept;
 
 	void start();
 

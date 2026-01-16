@@ -34,8 +34,6 @@
 
 #include <boost/foreach.hpp>
 
-using namespace std;
-
 NetPacket::NetPacket()
 {
 	m_msg = PokerTHMessage::default_instance().New();

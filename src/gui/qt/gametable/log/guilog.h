@@ -64,7 +64,7 @@ class guiLog : public QObject
 public:
 	guiLog(gameTableImpl*, ConfigFile *c);
 
-	~guiLog();
+	~guiLog() noexcept;
 
 public slots:
 

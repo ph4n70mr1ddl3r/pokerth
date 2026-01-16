@@ -56,7 +56,7 @@ class GameTableStyleReader : public QObject
 	Q_OBJECT
 public:
 	GameTableStyleReader(ConfigFile *c, QWidget *w);
-	~GameTableStyleReader();
+	~GameTableStyleReader() noexcept;
 
 	void readStyleFile(QString);
 

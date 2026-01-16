@@ -19,11 +19,11 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include <string>
-#include <boost/filesystem.hpp>
-
 #include "engine_defs.h"
 #include "game_defs.h"
+
+#include <string>
+#include <boost/filesystem.hpp>
 
 #include <QSqlDatabase>
 #include <QString>
@@ -36,7 +36,7 @@ class Log
 public:
     Log(ConfigFile *c);
 
-    ~Log();
+    ~Log() noexcept;
 
     void init();
     void logNewGameMsg(int gameID, int startCash, int startSmallBlind, unsigned dealerPosition, PlayerList seatsList);

@@ -38,8 +38,6 @@
 #include <game_defs.h>
 #include "gametablestylereader.h"
 
-using namespace std;
-
 #include <cstring>
 
 // Provide a tiny compatibility layer so guilog.cpp can keep using the old

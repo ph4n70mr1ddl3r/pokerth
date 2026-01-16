@@ -33,13 +33,6 @@
 #ifndef _SERVERACCEPTHELPER_H_
 #define _SERVERACCEPTHELPER_H_
 
-#include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
-#include <string>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <sstream>
-
 #include <net/serveracceptinterface.h>
 #include <net/serverlobbythread.h>
 #include <net/serverexception.h>
@@ -48,6 +41,13 @@
 #include <game_defs.h>
 #include <gui/guiinterface.h>
 #include <core/loghelper.h>
+
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
+#include <string>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <sstream>
 
 template <typename P>
 class ServerAcceptHelper : public ServerAcceptInterface

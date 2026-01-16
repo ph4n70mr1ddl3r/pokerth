@@ -66,15 +66,7 @@
 #define CLIENT_AVATAR_LOOP_MSEC	100
 #define CLIENT_SEND_LOOP_MSEC	50
 
-using namespace std;
-using namespace boost::filesystem;
 using boost::asio::ip::tcp;
-
-#ifdef BOOST_ASIO_HAS_STD_CHRONO
-using namespace std::chrono;
-#else
-using namespace boost::chrono;
-#endif
 
 ClientThread::ClientThread(GuiInterface &gui, AvatarManager &avatarManager, Log *myLog)
 	: m_ioService(new boost::asio::io_context), m_clientLog(myLog), m_curState(NULL), m_gui(gui),

@@ -51,7 +51,7 @@ class CardDeckStyleReader : public QObject
 	Q_OBJECT
 public:
 	CardDeckStyleReader(ConfigFile *c, QWidget *w );
-	~CardDeckStyleReader();
+	~CardDeckStyleReader() noexcept;
 
 	void readStyleFile(QString);
 

@@ -40,8 +40,6 @@
 #include "soundevents.h"
 #include <net/socket_msg.h>
 
-using namespace std;
-
 
 GuiWrapper::GuiWrapper(ConfigFile *c, startWindowImpl *s) : myGuiLog(NULL), myW(NULL), myConfig(c), myStartWindow(s)
 {

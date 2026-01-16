@@ -81,7 +81,7 @@ class gameTableImpl: public QMainWindow, public Ui::gameTable
 public:
 	gameTableImpl(ConfigFile *c = 0, QMainWindow *parent = 0);
 
-	~gameTableImpl();
+	~gameTableImpl() noexcept;
 
 	boost::shared_ptr<Session> getSession();
 

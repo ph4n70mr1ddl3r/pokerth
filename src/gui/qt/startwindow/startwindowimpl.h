@@ -70,7 +70,7 @@ class startWindowImpl: public QMainWindow, public Ui::startWindow
 	Q_OBJECT
 public:
 	startWindowImpl(ConfigFile *c, Log *l);
-	~startWindowImpl();
+	~startWindowImpl() noexcept;
 
 	void setSession(boost::shared_ptr<Session> session)
 	{

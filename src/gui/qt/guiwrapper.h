@@ -47,7 +47,7 @@ class GuiWrapper : public GuiInterface
 public:
 	GuiWrapper(ConfigFile*, startWindowImpl*);
 
-	~GuiWrapper();
+	~GuiWrapper() noexcept;
 
 	void initGui(int speed);
 
