@@ -46,19 +46,19 @@ Convert(const std::string &inStr, int fromCP, int toCP)
 	string retStr(inStr);
 
 	if (!inStr.empty()) {
-		int len = (int)inStr.length() + 1;
-		int reqLen = ::MultiByteToWideChar(fromCP, 0, inStr.c_str(), len, NULL, 0);
+		int len = static_cast<int>(inStr.length()) + 1;
+		int reqLen = ::MultiByteToWideChar(fromCP, 0, inStr.c_str(), len, nullptr, 0);
 
 		if (reqLen) {
 			wchar_t *wstr = new wchar_t[reqLen];
 			wstr[0] = L'\0';
-			if (::MultiByteToWideChar(fromCP, 0, inStr.c_str(), len, wstr, reqLen) == (int)reqLen) {
+			if (::MultiByteToWideChar(fromCP, 0, inStr.c_str(), len, wstr, reqLen) == static_cast<int>(reqLen)) {
 				len = reqLen;
 				reqLen = ::WideCharToMultiByte(toCP, 0, wstr, len, nullptr, 0, nullptr, nullptr);
 
 				if (reqLen) {
 					char *str = new char[reqLen];
-					if (::WideCharToMultiByte(toCP, 0, wstr, len, str, reqLen, nullptr, nullptr) == (int)reqLen)
+					if (::WideCharToMultiByte(toCP, 0, wstr, len, str, reqLen, nullptr, nullptr) == static_cast<int>(reqLen))
 						retStr = str;
 					delete[] str;
 				}

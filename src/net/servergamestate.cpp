@@ -1206,12 +1206,12 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 						<< curGame.getCurrentHandID() << " "
 						<< cards[0] << " "
 						<< cards[1];
-				if (CryptHelper::AES128Encrypt((const unsigned char *)tmpPassword.c_str(),
-											   (unsigned)tmpPassword.size(),
+				if (CryptHelper::AES128Encrypt(reinterpret_cast<const unsigned char*>(tmpPassword.c_str()),
+											   static_cast<unsigned>(tmpPassword.size()),
 											   cardDataStream.str(),
 											   tmpCipher)
 						&& !tmpCipher.empty()) {
-					netHandStart->set_encryptedcards((const char *)&tmpCipher[0], tmpCipher.size());
+					netHandStart->set_encryptedcards(static_cast<const char*>(&tmpCipher[0]), tmpCipher.size());
 				} else {
 					server->RemovePlayer(tmpPlayer->getMyUniqueID(), ERR_SOCK_INVALID_STATE);
 					errorFlag = true;
@@ -1289,7 +1289,7 @@ ServerGameStateHand::CheckPlayerTimeouts(boost::shared_ptr<ServerGame> server)
 		while (i != end) {
 			boost::shared_ptr<PlayerInterface> tmpPlayer = *i;
 			if (tmpPlayer->getMyType() == PLAYER_TYPE_HUMAN
-					&& (int)tmpPlayer->getTimeSecSinceLastRemoteAction() >= actionTimeout * SERVER_GAME_AUTOFOLD_TIMEOUT_FACTOR) {
+					&& static_cast<int>(tmpPlayer->getTimeSecSinceLastRemoteAction()) >= actionTimeout * SERVER_GAME_AUTOFOLD_TIMEOUT_FACTOR) {
 				if (tmpPlayer->isSessionActive()) {
 					tmpPlayer->setIsSessionActive(false);
 					boost::shared_ptr<SessionData> session = server->GetSessionManager().GetSessionByUniquePlayerId(tmpPlayer->getMyUniqueID());
@@ -1302,7 +1302,7 @@ ServerGameStateHand::CheckPlayerTimeouts(boost::shared_ptr<ServerGame> server)
 						server->GetLobbyThread().GetSender().Send(session, packet);
 					}
 				}
-				if ((int)tmpPlayer->getTimeSecSinceLastRemoteAction() >= actionTimeout * SERVER_GAME_FORCED_TIMEOUT_FACTOR) {
+				if (static_cast<int>(tmpPlayer->getTimeSecSinceLastRemoteAction()) >= actionTimeout * SERVER_GAME_FORCED_TIMEOUT_FACTOR) {
 					server->KickPlayer(tmpPlayer->getMyUniqueID());
 				}
 			}

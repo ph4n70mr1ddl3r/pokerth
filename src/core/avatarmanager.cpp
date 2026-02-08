@@ -153,11 +153,11 @@ AvatarManager::OpenAvatarFileForChunkRead(const std::string &fileName, unsigned 
 			std::streampos endPos = fileState->inputStream.tellg();
 			fileState->inputStream.seekg(0, ios_base::beg);
 			std::streamoff posDiff(endPos - startPos);
-			outFileSize = (unsigned)posDiff;
+			outFileSize = static_cast<unsigned>(posDiff);
 			if (outFileSize >= MIN_AVATAR_FILE_SIZE && outFileSize <= MAX_AVATAR_FILE_SIZE) {
 				// Validate type of file by verifying image header.
 				unsigned char fileHeader[MAX_HEADER_SIZE];
-				fileState->inputStream.read((char *)fileHeader, sizeof(fileHeader));
+				fileState->inputStream.read(reinterpret_cast<char*>(fileHeader), sizeof(fileHeader));
 				fileState->inputStream.seekg(0, ios_base::beg);
 
 				if (IsValidAvatarFileType(outFileType, fileHeader, sizeof(fileHeader)))
@@ -177,7 +177,7 @@ AvatarManager::ChunkReadAvatarFile(boost::shared_ptr<AvatarFileState> fileState,
 	if (fileState.get()) {
 		try {
 			if (!fileState->inputStream.fail() && !fileState->inputStream.eof()) {
-				fileState->inputStream.read((char *)data, chunkSize);
+				fileState->inputStream.read(reinterpret_cast<char*>(data), chunkSize);
 				retVal = static_cast<unsigned>(fileState->inputStream.gcount());
 			}
 		} catch (...) {

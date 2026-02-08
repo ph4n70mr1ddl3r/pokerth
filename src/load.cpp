@@ -62,8 +62,8 @@ struct NetSession {
 static int
 net_packet_print_to_string(const void *buffer, size_t size, void *packetStr)
 {
-	string *tmpString = (string *)packetStr;
-	*tmpString += string((const char *)buffer, size);
+	string *tmpString = static_cast<string*>(packetStr);
+	*tmpString += string(static_cast<const char*>(buffer), size);
 	return 0;
 }
 
@@ -76,7 +76,7 @@ receiveMessage(NetSession *session)
 {
 	PokerTHMessage_t *msg = nullptr;
 	do {
-		asn_dec_rval_t retVal = ber_decode(0, &asn_DEF_PokerTHMessage, (void **)&msg, session->recBuf.data(), session->recBufPos);
+		asn_dec_rval_t retVal = ber_decode(0, &asn_DEF_PokerTHMessage, static_cast<void**>(&msg), session->recBuf.data(), session->recBufPos);
 		if(retVal.code == RC_OK && msg != nullptr) {
 			if (retVal.consumed < session->recBufPos) {
 				session->recBufPos -= retVal.consumed;
@@ -210,7 +210,7 @@ main(int argc, char *argv[])
 				ASN_STRUCT_FREE(asn_DEF_PokerTHMessage, msg);
 
 				// Send init
-				msg = (PokerTHMessage_t *)calloc(1, sizeof(PokerTHMessage_t));
+				msg = static_cast<PokerTHMessage_t*>(calloc(1, sizeof(PokerTHMessage_t)));
 				msg->present = PokerTHMessage_PR_initMessage;
 				InitMessage_t *netInit = &msg->choice.initMessage;
 				netInit->requestedVersion.major = 2;
@@ -268,7 +268,7 @@ main(int argc, char *argv[])
 				}
 				gsasl_free(tmpOut);
 				ASN_STRUCT_FREE(asn_DEF_PokerTHMessage, msg);
-				msg = (PokerTHMessage_t *)calloc(1, sizeof(PokerTHMessage_t));
+				msg = static_cast<PokerTHMessage_t*>(calloc(1, sizeof(PokerTHMessage_t)));
 				msg->present = PokerTHMessage_PR_authMessage;
 				AuthMessage_t *outAuth = &msg->choice.authMessage;
 				outAuth->present = AuthMessage_PR_authClientResponse;
@@ -315,7 +315,7 @@ main(int argc, char *argv[])
 			NetSession *session = sessionArray[g * 10];
 			// Send create game
 			cout << "Player " << session->name << " creating game " << g+1 << endl;
-			msg = (PokerTHMessage_t *)calloc(1, sizeof(PokerTHMessage_t));
+			msg = static_cast<PokerTHMessage_t*>(calloc(1, sizeof(PokerTHMessage_t)));
 			msg->present = PokerTHMessage_PR_joinGameRequestMessage;
 			JoinGameRequestMessage_t *netJoinGame = &msg->choice.joinGameRequestMessage;
 			string tmpGamePassword("blah123");
@@ -379,7 +379,7 @@ main(int argc, char *argv[])
 				NetSession *session = sessionArray[i];
 
 				cout << "Player " << session->name << " joining game " << (i / 10)+1 << endl;
-				msg = (PokerTHMessage_t *)calloc(1, sizeof(PokerTHMessage_t));
+				msg = static_cast<PokerTHMessage_t*>(calloc(1, sizeof(PokerTHMessage_t)));
 				msg->present = PokerTHMessage_PR_joinGameRequestMessage;
 				JoinGameRequestMessage_t *netJoinGame = &msg->choice.joinGameRequestMessage;
 				string tmpGamePassword("blah123");

@@ -623,7 +623,7 @@ ClientThread::InitGame()
 	boost::shared_ptr<EngineFactory> factory(new ClientEngineFactory); // LocalEngine erstellen
 
 	MapPlayerDataList();
-	m_startData.numberOfPlayers = (int)GetPlayerDataList().size();
+	m_startData.numberOfPlayers = static_cast<int>(GetPlayerDataList().size());
 	m_game.reset(new Game(&m_gui, factory, GetPlayerDataList(), GetGameData(), GetStartData(), m_curGameNum++, m_clientLog.get()));
 	// Initialize Minimum GUI speed.
 	int minimumGuiSpeed = 1;

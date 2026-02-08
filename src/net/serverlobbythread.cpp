@@ -1638,7 +1638,7 @@ ServerLobbyThread::EstablishSession(boost::shared_ptr<SessionData> session)
 
 	// Generate a new GUID.
 	boost::uuids::uuid sessionGuid(m_sessionIdGenerator());
-	session->GetPlayerData()->SetGuid(string((char *)&sessionGuid, boost::uuids::uuid::static_size()));
+	session->GetPlayerData()->SetGuid(string(reinterpret_cast<char*>(&sessionGuid), boost::uuids::uuid::static_size()));
 
 	// Send ACK to client.
 	boost::shared_ptr<NetPacket> ack(new NetPacket);

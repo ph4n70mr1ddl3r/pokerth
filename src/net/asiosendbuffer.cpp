@@ -159,7 +159,7 @@ AsioSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> /*session*/, 
 {
 	uint32_t packetSize = packet->GetMsg()->ByteSizeLong();
 	google::protobuf::uint8 *buf = new google::protobuf::uint8[packetSize + NET_HEADER_SIZE];
-	*((uint32_t *)buf) = htonl(packetSize);
+	*reinterpret_cast<uint32_t*>(buf) = htonl(packetSize);
 	packet->GetMsg()->SerializeWithCachedSizesToArray(&buf[NET_HEADER_SIZE]);
 	EncodeToBuf(buf, packetSize + NET_HEADER_SIZE);
 	delete[] buf;
@@ -175,7 +175,7 @@ AsioSendBuffer::EncodeToBuf(const void *data, size_t size)
         }
     }
 
-    AppendToSendBufWithoutCheck((const char*)data, size);
+    AppendToSendBufWithoutCheck(static_cast<const char*>(data), size);
 
     return 0;
 }

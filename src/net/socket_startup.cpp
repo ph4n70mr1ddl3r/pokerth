@@ -143,7 +143,7 @@ socket_has_dual_stack()
 
 	if (test != boost::asio::detail::invalid_socket) {
 		int ipv6only = 0;
-		if (setsockopt(test, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&ipv6only, sizeof(ipv6only)) == 0)
+		if (setsockopt(test, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<char*>(&ipv6only), sizeof(ipv6only)) == 0)
 			retVal = true;
 #ifdef _WIN32
 		closesocket(test);
