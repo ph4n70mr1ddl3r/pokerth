@@ -54,11 +54,11 @@ Convert(const std::string &inStr, int fromCP, int toCP)
 			wstr[0] = L'\0';
 			if (::MultiByteToWideChar(fromCP, 0, inStr.c_str(), len, wstr, reqLen) == (int)reqLen) {
 				len = reqLen;
-				reqLen = ::WideCharToMultiByte(toCP, 0, wstr, len, NULL, 0, NULL, NULL);
+				reqLen = ::WideCharToMultiByte(toCP, 0, wstr, len, nullptr, 0, nullptr, nullptr);
 
 				if (reqLen) {
 					char *str = new char[reqLen];
-					if (::WideCharToMultiByte(toCP, 0, wstr, len, str, reqLen, NULL, NULL) == (int)reqLen)
+					if (::WideCharToMultiByte(toCP, 0, wstr, len, str, reqLen, nullptr, nullptr) == (int)reqLen)
 						retStr = str;
 					delete[] str;
 				}

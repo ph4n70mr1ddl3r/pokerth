@@ -1186,7 +1186,7 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 		boost::shared_ptr<PlayerInterface> tmpPlayer = *i;
 		boost::shared_ptr<SessionData> tmpSession = server->GetSessionManager().GetSessionByUniquePlayerId(tmpPlayer->getMyUniqueID());
 		if (tmpSession) {
-			int cards[2];
+			int cards[2]{};
 			bool errorFlag = false;
 			tmpPlayer->getMyCards(cards);
 

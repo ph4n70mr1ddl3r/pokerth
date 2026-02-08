@@ -113,8 +113,8 @@ TransferHelper::Process()
 		}
 	} else {
 		// Retrieve actual error code.
-		int numMsgs;
-		CURLMsg *tmpMsg;
+		int numMsgs = 0;
+		CURLMsg *tmpMsg = nullptr;
 		CURLcode code = CURLE_FAILED_INIT;
 		do {
 			tmpMsg = curl_multi_info_read(m_data->curlMultiHandle, &numMsgs);

@@ -368,7 +368,7 @@ ClientStateReadingServerList::Enter(boost::shared_ptr<ClientThread> client)
 			if (!countryNode.isNull())
 				serverInfo.country = countryNode.attribute("value").toStdString();
 			if (!sctpNode.isNull()) {
-				int tmpSctp;
+				int tmpSctp = 0;
 				tmpSctp = sctpNode.attribute("value").toInt();
 				serverInfo.supportsSctp = tmpSctp == 1 ? true : false;
 			}
@@ -646,7 +646,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		client->ResubscribeLobbyMsg();
 		// Show Lobby.
 		client->GetCallback().SignalNetClientWaitDialog();
-		int removeReason;
+		int removeReason = 0;
 		switch (netRemoved.removedfromgamereason()) {
 		case RemovedFromGameMessage::kickedFromGame :
 			removeReason = NTF_NET_REMOVED_KICKED;

@@ -182,9 +182,9 @@ main(int argc, char *argv[])
 		}
 
 		PokerTHMessage_t *msg = nullptr;
-		int errorCode;
-		char *tmpOut;
-		size_t tmpOutSize;
+		int errorCode = 0;
+		char *tmpOut = nullptr;
+		size_t tmpOutSize = 0;
 		string nextGsaslMsg;
 		NetSession **sessionArray = new NetSession *[numGames * 10];
 		unsigned *gameId = new unsigned[numGames];
@@ -344,7 +344,7 @@ main(int argc, char *argv[])
 				cout << "Create game failed" << endl;
 				return 1;
 			}
-			msg = NULL;
+			msg = nullptr;
 			// Receive join game ack
 			do {
 				ASN_STRUCT_FREE(asn_DEF_PokerTHMessage, msg);
@@ -419,7 +419,7 @@ main(int argc, char *argv[])
 					return 1;
 				}
 				ASN_STRUCT_FREE(asn_DEF_PokerTHMessage, msg);
-				msg = NULL;
+				msg = nullptr;
 			}
 		}
 		bool terminated = false;
@@ -441,6 +441,12 @@ main(int argc, char *argv[])
 			boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 		}
 		gsasl_done(authContext);
+
+		for (int i = 0; i < numGames * 10; i++) {
+			delete sessionArray[i];
+		}
+		delete[] sessionArray;
+		delete[] gameId;
 
 	} catch (const exception &e) {
 		cout << "Exception caught " << e.what() << endl;

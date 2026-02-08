@@ -61,7 +61,7 @@ Log::init()
 
             DIR *logDir;
             logDir = opendir((myConfig->readConfigString("LogDir")).c_str());
-            bool dirExists = logDir != NULL;
+            bool dirExists = logDir != nullptr;
             closedir(logDir);
 
             // check if logging path exist
@@ -237,7 +237,7 @@ Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned
 
 			if( mySqliteLogDb.isValid() && mySqliteLogDb.isOpen() ) {
 				// sqlite-db is open
-			 int i;
+			 int i = 0;
 
 				sql += "INSERT INTO Hand (";
 				sql += "HandID";

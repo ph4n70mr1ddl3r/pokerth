@@ -697,7 +697,7 @@ ServerGame::GetPlayerInterfaceFromGame(unsigned playerId)
 bool
 ServerGame::IsRunning() const
 {
-	return m_game.get() != NULL;
+	return m_game.get() != nullptr;
 }
 
 unsigned
