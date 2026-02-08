@@ -42,7 +42,7 @@
 
 using namespace std;
 
-CleanerServer::CleanerServer(): config(0), blockConnection(false), m_recvBufUsed(0), secondsSinceLastConfigChange(0)
+CleanerServer::CleanerServer(): config(nullptr), blockConnection(false), m_recvBufUsed(0), secondsSinceLastConfigChange(0)
 {
 	config = new CleanerConfig;
 
@@ -70,6 +70,7 @@ CleanerServer::CleanerServer(): config(0), blockConnection(false), m_recvBufUsed
 
 CleanerServer::~CleanerServer()
 {
+	delete config;
 }
 
 void CleanerServer::newCon()

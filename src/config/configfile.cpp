@@ -391,7 +391,6 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 ConfigFile::~ConfigFile()
 {
 	delete myQtToolsInterface;
-	myQtToolsInterface = 0;
 }
 
 void ConfigFile::fillBuffer()

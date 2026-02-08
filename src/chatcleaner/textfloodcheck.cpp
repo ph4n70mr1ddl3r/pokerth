@@ -36,9 +36,9 @@ TextFloodCheck::TextFloodCheck()
 	timer.reset();
 	timer.start();
 
-	cleanTimer = new QTimer();
+	cleanTimer = std::make_unique<QTimer>();
 
-	connect(cleanTimer, SIGNAL(timeout()), this, SLOT(cleanMsgTimesList()));
+	connect(cleanTimer.get(), SIGNAL(timeout()), this, SLOT(cleanMsgTimesList()));
 
 	cleanTimer->start(4000);
 
@@ -46,7 +46,6 @@ TextFloodCheck::TextFloodCheck()
 
 TextFloodCheck::~TextFloodCheck()
 {
-	delete cleanTimer;
 }
 
 bool TextFloodCheck::run(unsigned playerId)

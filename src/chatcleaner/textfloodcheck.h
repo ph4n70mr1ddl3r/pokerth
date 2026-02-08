@@ -57,7 +57,7 @@ public slots:
 	void removeNickFromList(unsigned);
 
 private:
-	QTimer *cleanTimer;
+	std::unique_ptr<QTimer> cleanTimer;
 	boost::timers::portable::second_timer timer;
 	struct TextFloodInfos {
 		int floodLevel;
