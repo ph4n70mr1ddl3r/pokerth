@@ -145,7 +145,7 @@ void CardDeckStyleReader::readStyleFile(QString file)
 
 			//check if all files are there
 			cardsLeft.clear();
-			int i;
+			int i = 0;
 			for(i=0; i<52; i++) {
 				QString cardString(QString::number(i)+".png");
 				if(!QDir(currentDir).exists(cardString)) {

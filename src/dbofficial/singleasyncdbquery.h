@@ -42,9 +42,9 @@ public:
 	virtual ~SingleAsyncDBQuery() noexcept;
 
 	unsigned GetId() const;
-	virtual std::string GetPreparedName() const;
-	virtual void GetParams(std::list<std::string> &params) const;
-	virtual void SetParams(const std::list<std::string> &params);
+	virtual std::string GetPreparedName() const override;
+	virtual void GetParams(std::list<std::string> &params) const override;
+	virtual void SetParams(const std::list<std::string> &params) override;
 
 	virtual bool Next() noexcept
 	{

@@ -178,7 +178,7 @@ ChatCleanerManager::HandleRead(const boost::system::error_code &ec, size_t bytes
 		bool error = false;
 		m_recvBufUsed += bytesRead;
 
-		bool valid;
+		bool valid = false;
 		do {
 			valid = false;
 			if (m_recvBufUsed >= CLEANER_NET_HEADER_SIZE) {

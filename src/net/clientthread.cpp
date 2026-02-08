@@ -894,7 +894,7 @@ ClientThread::TimerCheckAvatarDownloads(const boost::system::error_code& ec)
 {
 	if (!ec) {
 		if (m_avatarDownloader && m_avatarDownloader->HasDownloadResult()) {
-			unsigned playerId;
+			unsigned playerId = 0;
 			boost::shared_ptr<AvatarFile> tmpAvatar(new AvatarFile);
 			m_avatarDownloader->GetDownloadResult(playerId, tmpAvatar->fileData);
 			tmpAvatar->reportedSize = tmpAvatar->fileData.size();
@@ -1498,7 +1498,7 @@ ClientThread::StartPetition(unsigned petitionId, unsigned proposingPlayerId, uns
 void
 ClientThread::UpdatePetition(unsigned petitionId, int /*numVotesAgainstKicking*/, int numVotesInFavourOfKicking, int numVotesToKick)
 {
-	bool isCurPetition;
+	bool isCurPetition = false;
 	{
 		boost::mutex::scoped_lock lock(m_curPetitionIdMutex);
 		isCurPetition = m_curPetitionId == petitionId;
@@ -1511,7 +1511,7 @@ ClientThread::UpdatePetition(unsigned petitionId, int /*numVotesAgainstKicking*/
 void
 ClientThread::EndPetition(unsigned petitionId)
 {
-	bool isCurPetition;
+	bool isCurPetition = false;
 	{
 		boost::mutex::scoped_lock lock(m_curPetitionIdMutex);
 		isCurPetition = m_curPetitionId == petitionId;

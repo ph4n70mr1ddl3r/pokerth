@@ -1172,7 +1172,7 @@ void gameTableImpl::dealHoleCards()
 	int tempCardsIntArray[2];
 
 	// Karten der Gegner und eigene Karten austeilen
-	int j;
+	int j = 0;
 	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 
 	PlayerListConstIterator it_c;

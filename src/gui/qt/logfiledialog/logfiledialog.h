@@ -64,8 +64,8 @@ public:
 	}
 	int exec();
 
-	virtual void UploadCompleted(const std::string &filename, const std::string &returnMessage);
-	virtual void UploadError(const std::string &filename, const std::string &errorMessage);
+	virtual void UploadCompleted(const std::string &filename, const std::string &returnMessage) override;
+	virtual void UploadError(const std::string &filename, const std::string &errorMessage) override;
 
 signals:
 	void signalUploadCompleted(QString filename, QString returnMessage);

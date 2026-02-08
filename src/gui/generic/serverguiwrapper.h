@@ -50,11 +50,11 @@ public:
 
 	gameTableImpl* getMyW() const
 	{
-		return NULL;
+		return nullptr;
 	}
 	guiLog* getMyGuiLog() const
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	void refreshSet() const;

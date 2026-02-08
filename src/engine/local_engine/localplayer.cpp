@@ -921,7 +921,7 @@ LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType ty
 	}
 	////////////////////////////
 
-	int i;
+	int i = 0;
 	for(i=0; i<3; i++) {
 		myNiveau[i] = 0;
 	}
@@ -1512,9 +1512,9 @@ void LocalPlayer::flopEngine()
 	int raise = 0;
 	int bet = 0;
 	// 	int i;
-	int cBluff;
-	int pBluff;
-	int rand;
+	int cBluff = 0;
+	int pBluff = 0;
+	int rand = 0;
 	PlayerListConstIterator it_c;
 
 	// übergang solange preflopValue und flopValue noch nicht bereinigt
@@ -2215,9 +2215,9 @@ void LocalPlayer::turnEngine()
 	int raise = 0;
 	int bet = 0;
 	// 	int i;
-	int cBluff;
-	int pBluff;
-	int rand;
+	int cBluff = 0;
+	int pBluff = 0;
+	int rand = 0;
 	PlayerListConstIterator it_c;
 
 	calcMyOdds();
@@ -2742,8 +2742,8 @@ void LocalPlayer::riverEngine()
 	int raise = 0;
 	int bet = 0;
 	// 	int i;
-	int rand;
-	int pBluff;
+	int rand = 0;
+	int pBluff = 0;
 	PlayerListConstIterator it_c;
 
 	calcMyOdds();
@@ -4012,7 +4012,7 @@ void LocalPlayer::calcMyOdds()
 		int tempArray[5];
 		int boardCards[5];
 
-		int i;
+		int i = 0;
 
 		for(i=0; i<2; i++) tempArray[i] = myCards[i];
 		currentHand->getBoard()->getMyCards(boardCards);
@@ -4056,7 +4056,7 @@ void LocalPlayer::calcMyOdds()
 
 		// Prozent ausrechnen
 
-		int i, j, k;
+		int i = 0, j = 0, k = 0;
 		int tempBoardCardsArray[5];
 		int tempMyCardsArray[7];
 		int tempOpponentCardsArray[7];
@@ -4074,8 +4074,8 @@ void LocalPlayer::calcMyOdds()
 		tempOpponentCardsArray[4] = tempBoardCardsArray[2];
 		tempOpponentCardsArray[5] = tempBoardCardsArray[3];
 
-		int tempMyCardsValue;
-		int tempOpponentCardsValue;
+		int tempMyCardsValue = 0;
+		int tempOpponentCardsValue = 0;
 
 		int countAll = 0;
 		int countMy = 0;
@@ -4112,7 +4112,7 @@ void LocalPlayer::calcMyOdds()
 
 		// Prozent ausrechnen
 
-		int i, j;
+		int i = 0, j = 0;
 		int tempBoardCardsArray[5];
 		int tempMyCardsArray[7];
 		int tempOpponentCardsArray[7];
@@ -4132,8 +4132,8 @@ void LocalPlayer::calcMyOdds()
 		tempOpponentCardsArray[5] = tempBoardCardsArray[3];
 		tempOpponentCardsArray[6] = tempBoardCardsArray[4];
 
-		int tempMyCardsValue;
-		int tempOpponentCardsValue;
+		int tempMyCardsValue = 0;
+		int tempOpponentCardsValue = 0;
 
 		int countAll = 0;
 		int countMy = 0;
@@ -4184,9 +4184,10 @@ int LocalPlayer::turnCardsValue(int* cards)
 {
 
 	int array[6][3];
-	int j1, j2, j3, j4, j5, k1, k2, ktemp[3];
+	int j1 = 0, j2 = 0, j3 = 0, j4 = 0, j5 = 0, k1 = 0, k2 = 0;
+	int ktemp[3] = {0};
 
-	// Kartenwerte umwandeln (z.B. [ 11 (Karo K�ig) -> 0 11 ] oder [ 31 (Pik 7) -> 2 5 ] )
+	// Kartenwerte umwandeln (z.B. [ 11 (Daro Kï¿œig) -> 0 11 ] oder [ 31 (Pik 7) -> 2 5 ] )
 	for(j1=0; j1<6; j1++) {
 		array[j1][0] = cards[j1]/13;
 		array[j1][1] = cards[j1]%13;
@@ -4615,17 +4616,17 @@ void LocalPlayer::flopEngine3()
 	tempMyCardsArray[3] = tempBoardCardsArray[1];
 	tempMyCardsArray[4] = tempBoardCardsArray[2];
 
-	tempOpponentCardsArray[2] = tempBoardCardsArray[0];
-	tempOpponentCardsArray[3] = tempBoardCardsArray[1];
-	tempOpponentCardsArray[4] = tempBoardCardsArray[2];
+		tempOpponentCardsArray[2] = tempBoardCardsArray[0];
+		tempOpponentCardsArray[3] = tempBoardCardsArray[1];
+		tempOpponentCardsArray[4] = tempBoardCardsArray[2];
 
-	int tempMyCardsValue;
-	int tempOpponentCardsValue;
+		int tempMyCardsValue = 0;
+		int tempOpponentCardsValue = 0;
 
-	int countAll = 0;
-	int countMy = 0;
+		int countAll = 0;
+		int countMy = 0;
 
-	for(i=0; i<49; i++) {
+		for(i=0; i<49; i++) {
 		if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2]) {
 			for(j=i+1; j<50; j++) {
 				if(j != myCards[0] && j != myCards[1] && j != tempBoardCardsArray[0] && j != tempBoardCardsArray[1] && j != tempBoardCardsArray[2]) {
@@ -4659,12 +4660,12 @@ void LocalPlayer::flopEngine3()
 	double percent = (countMy*1.0)/(countAll*1.0);
 	// 	cout << "Prozent: " << percent << endl;
 
-	// 	Bauchgefhl (zufÃ¯Â¿Ålig)
-	int tempRand;
+	// 	Bauchgefhl (zufï¿œlig)
+	int tempRand = 0;
 	Tools::GetRand((int)(percent*10.)-2, (int)(percent*10.)+2, 1, &tempRand);
 
 	// bluff, checkbluff
-	int bluff;
+	int bluff = 0;
 	Tools::GetRand(1, 100, 1, &bluff);
 
 	// 	cout << "flop-bluff " << bluff << endl;
@@ -4675,7 +4676,7 @@ void LocalPlayer::flopEngine3()
 	int setToHighest = currentHand->getCurrentBeRo()->getHighestSet() - mySet;
 
 	// temp fr das Vielfache des Small Blind, sodass HighestSet zu hoch ist
-	int tempFold;
+	int tempFold = 0;
 	// 	tempFold = (currentHand->getPlayerArray()[0]->getMyAverageSets())/(8*currentHand->getSmallBlind());
 	Tools::GetRand(2, 3, 1, &tempFold);
 
@@ -4940,7 +4941,7 @@ void LocalPlayer::riverEngine3()
 
 	// Prozent ausrechnen
 
-	int i, j;
+	int i = 0, j = 0;
 	int tempBoardCardsArray[5];
 	int tempMyCardsArray[7];
 	int tempOpponentCardsArray[7];
@@ -4960,8 +4961,8 @@ void LocalPlayer::riverEngine3()
 	tempOpponentCardsArray[5] = tempBoardCardsArray[3];
 	tempOpponentCardsArray[6] = tempBoardCardsArray[4];
 
-	int tempMyCardsValue;
-	int tempOpponentCardsValue;
+	int tempMyCardsValue = 0;
+	int tempOpponentCardsValue = 0;
 
 	int countAll = 0;
 	int countMy = 0;

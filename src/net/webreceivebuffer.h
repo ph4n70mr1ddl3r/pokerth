@@ -40,9 +40,9 @@ class WebReceiveBuffer : public ReceiveBuffer
 public:
 	WebReceiveBuffer();
 
-	virtual void StartAsyncRead(boost::shared_ptr<SessionData> session);
-	virtual void HandleRead(boost::shared_ptr<SessionData> session, const boost::system::error_code &error, size_t bytesRead);
-	virtual void HandleMessage(boost::shared_ptr<SessionData> session, const std::string &msg);
+	virtual void StartAsyncRead(boost::shared_ptr<SessionData> session) override;
+	virtual void HandleRead(boost::shared_ptr<SessionData> session, const boost::system::error_code &error, size_t bytesRead) override;
+	virtual void HandleMessage(boost::shared_ptr<SessionData> session, const std::string &msg) override;
 };
 
 #endif

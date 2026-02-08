@@ -67,8 +67,8 @@ protected:
 
 	typedef std::queue<UploadData> UploadDataQueue;
 
-	// Main function of the thread.
-	virtual void Main();
+	// Main function of thread.
+	virtual void Main() override;
 
 private:
 

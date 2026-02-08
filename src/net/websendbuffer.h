@@ -41,12 +41,12 @@ class WebSendBuffer : public SendBuffer
 public:
 	WebSendBuffer();
 
-	virtual void SetCloseAfterSend();
+	virtual void SetCloseAfterSend() override;
 
-	virtual void AsyncSendNextPacket(boost::shared_ptr<SessionData> session);
-	virtual void InternalStorePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
+	virtual void AsyncSendNextPacket(boost::shared_ptr<SessionData> session) override;
+	virtual void InternalStorePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) override;
 
-	virtual void HandleWrite(boost::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code &error);
+	virtual void HandleWrite(boost::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code &error) override;
 
 private:
 	bool closeAfterSend;

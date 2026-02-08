@@ -190,7 +190,7 @@ void selectAvatarDialogImpl::refreshAvatarView()
 
 	listWidget->clear();
 
-	int i;
+	int i = 0;
 	QStringList currentViewList;
 
 	switch(comboBox_avatarViewCategorie->currentIndex()) {

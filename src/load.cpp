@@ -40,7 +40,7 @@
 #include <iostream>
 #include <sstream>
 
-#define STL_STRING_FROM_OCTET_STRING(_a) (string((const char *)(_a).buf, (_a).size))
+#define STL_STRING_FROM_OCTET_STRING(_a) (string(static_cast<const char*>((_a).buf), (_a).size))
 
 using namespace std;
 using boost::asio::ip::tcp;

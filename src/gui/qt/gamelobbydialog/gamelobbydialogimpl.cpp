@@ -324,7 +324,7 @@ void gameLobbyDialogImpl::createGame()
 		} else {
 			gameData.raiseMode = MANUAL_BLINDS_ORDER;
 			std::list<int> tempBlindList;
-			int i;
+			int i = 0;
 			bool ok = true;
 			for(i=0; i<myCreateInternetGameDialog->getChangeCompleteBlindsDialog()->listWidget_blinds->count(); i++) {
 				tempBlindList.push_back(myCreateInternetGameDialog->getChangeCompleteBlindsDialog()->listWidget_blinds->item(i)->text().toInt(&ok,10));

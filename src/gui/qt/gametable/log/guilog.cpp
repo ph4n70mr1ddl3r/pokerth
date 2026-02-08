@@ -100,7 +100,7 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 	int nRow = rows.size();
 	// total entries = (nRow + 1) * nCol
 	int total = (nRow + 1) * nCol;
-	char **result = (char**)malloc(sizeof(char*) * (total + 1));
+	char **result = static_cast<char**>(malloc(sizeof(char*) * (total + 1)));
 	if(!result) {
 		*pazResult = nullptr;
 		*pnRow = 0;
@@ -192,7 +192,7 @@ guiLog::guiLog(gameTableImpl* w, ConfigFile *c) : myW(w), myConfig(c), myLogDir(
 
 		if(myConfig->readConfigString("LogDir") != "" && logDir.exists()) {
 
-			int i;
+			int i = 0;
 
 			myLogDir = new QDir(QString::fromUtf8(myConfig->readConfigString("LogDir").c_str()));
 
@@ -1587,7 +1587,7 @@ void guiLog::cleanUp(result_struct &results, sqlite3 *mySqliteLogDb)
 int guiLog::convertCardStringToInt(string val, string col)
 {
 
-	int tmp;
+	int tmp = 0;
 
 	switch(*col.c_str()) {
 	case 'd':

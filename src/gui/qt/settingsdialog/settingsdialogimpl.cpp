@@ -342,7 +342,7 @@ void settingsDialogImpl::prepareDialog()
 	GameTableStyleReader currentGameTableStyle(myConfig, this);
 	currentGameTableStyle.readStyleFile(QString::fromUtf8(myConfig->readConfigString("CurrentGameTableStyle").c_str()));
 	if(currentGameTableStyle.getLoadedSuccessfull()) {
-		int i;
+		int i = 0;
 		bool currentGameTableFound(false);
 		for(i=0; i < treeWidget_gameTableStyles->topLevelItemCount(); i++) {
 			QTreeWidgetItem *item = treeWidget_gameTableStyles->topLevelItem(i);
@@ -443,7 +443,7 @@ void settingsDialogImpl::prepareDialog()
 	CardDeckStyleReader currentCardDeckStyle(myConfig, this);
 	currentCardDeckStyle.readStyleFile(QString::fromUtf8(myConfig->readConfigString("CurrentCardDeckStyle").c_str()));
 	if(currentCardDeckStyle.getLoadedSuccessfull()) {
-		int j;
+		int j = 0;
 		bool currentCardDeckFound(false);
 		for(j=0; j < treeWidget_cardDeckStyles->topLevelItemCount(); j++) {
 			QTreeWidgetItem *item = treeWidget_cardDeckStyles->topLevelItem(j);
@@ -682,7 +682,7 @@ void settingsDialogImpl::isAccepted()
 	// 	TABLE
 	//save game table styles list
 	myGameTableStylesList.clear();
-	int i;
+	int i = 0;
 	for(i=0; i < treeWidget_gameTableStyles->topLevelItemCount(); i++) {
 		QTreeWidgetItem *item = treeWidget_gameTableStyles->topLevelItem(i);
 		if(item->data(0, 16).toInt() == ADDITIONAL_STYLE) {
@@ -699,7 +699,7 @@ void settingsDialogImpl::isAccepted()
 	// 	CARDS
 	//save card deck styles list
 	myCardDeckStylesList.clear();
-	int j;
+	int j = 0;
 	for(j=0; j < treeWidget_cardDeckStyles->topLevelItemCount(); j++) {
 		QTreeWidgetItem *item = treeWidget_cardDeckStyles->topLevelItem(j);
 		if(item->data(0, 16).toInt() == ADDITIONAL_STYLE) {
@@ -863,7 +863,7 @@ void settingsDialogImpl::callNetManualBlindsOrderDialog()
 	if(myManualBlindsOrderDialog->result() == QDialog::Accepted) {
 
 		bool ok = true;
-		int i;
+		int i = 0;
 		myNetManualBlindsList.clear();
 		for(i=0; i<myManualBlindsOrderDialog->listWidget_blinds->count(); i++) {
 			myNetManualBlindsList.push_back(myManualBlindsOrderDialog->listWidget_blinds->item(i)->text().toInt(&ok,10));

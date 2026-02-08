@@ -2117,7 +2117,7 @@ ServerLobbyThread::ReadStatisticsFile()
 		boost::mutex::scoped_lock lock(m_statMutex);
 		do {
 			string statisticsType;
-			unsigned statisticsValue;
+			unsigned statisticsValue = 0;
 			i >> statisticsType;
 			i >> statisticsValue;
 			if (statisticsType == SERVER_STATISTICS_STR_TOTAL_PLAYERS)

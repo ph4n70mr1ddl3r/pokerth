@@ -124,7 +124,7 @@ public:
 		const std::string &playerName,
 		const std::string &avatarFile,
 		const std::string &cacheDir);
-	virtual void SignalTermination();
+	virtual void SignalTermination() override;
 
 	void SendKickPlayer(unsigned playerId);
 	void SendLeaveCurrentGame();
@@ -149,10 +149,10 @@ public:
 	void SendAdminBanPlayer(unsigned playerId);
 
 	void StartAsyncRead();
-	virtual void CloseSession(boost::shared_ptr<SessionData> session);
+	virtual void CloseSession(boost::shared_ptr<SessionData> session) override;
 	virtual void SessionError(boost::shared_ptr<SessionData> /*session*/, int /*errorCode*/) {}
 	virtual void SessionTimeoutWarning(boost::shared_ptr<SessionData> /*session*/, unsigned /*remainingSec*/) {}
-	virtual void HandlePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
+	virtual void HandlePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) override;
 
 	static void SslInfoCallback(const SSL *ssl, int where, int ret);
 

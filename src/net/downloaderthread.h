@@ -76,7 +76,7 @@ protected:
 	typedef std::queue<ResultData> DownloadDoneQueue;
 
 	// Main function of the thread.
-	virtual void Main();
+	virtual void Main() override;
 
 private:
 

@@ -41,7 +41,7 @@ public:
 	MyStyleListItem(QStringList, QTreeWidget *);
 	~MyStyleListItem() noexcept;
 
-	virtual bool operator<( const QTreeWidgetItem &) const;
+	virtual bool operator<( const QTreeWidgetItem &) const override;
 };
 
 #endif // MYSTYLELISTITEM_H

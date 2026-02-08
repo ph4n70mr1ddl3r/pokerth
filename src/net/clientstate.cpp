@@ -436,7 +436,7 @@ void
 ClientStateWaitChooseServer::TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client)
 {
 	if (!ec && &client->GetState() == this) {
-		unsigned serverId;
+		unsigned serverId = 0;
 		if (client->GetSelectedServer(serverId)) {
 			client->UseServer(serverId);
 			client->GetCallback().SignalNetClientConnect(MSG_SOCK_SERVER_LIST_DONE);
@@ -683,7 +683,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 			}
 		}
 		// Signal to GUI and remove from data list.
-		int removeReason;
+		int removeReason = 0;
 		switch (netLeft.gameplayerleftreason()) {
 		case GamePlayerLeftMessage::leftKicked :
 			removeReason = NTF_NET_REMOVED_KICKED;
@@ -830,7 +830,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		client->SetUnknownAvatar(netUnknownAvatar.requestid());
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_ReportAvatarAckMessage) {
 		const ReportAvatarAckMessage &netReportAck = tmpPacket->GetMsg()->reportavatarackmessage();
-		unsigned msgCode;
+		unsigned msgCode = 0;
 		switch (netReportAck.reportavatarresult()) {
 		case ReportAvatarAckMessage::avatarReportAccepted:
 			msgCode = MSG_NET_AVATAR_REPORT_ACCEPTED;
@@ -845,7 +845,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		client->GetCallback().SignalNetClientMsgBox(msgCode);
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_ReportGameAckMessage) {
 		const ReportGameAckMessage &netReportAck = tmpPacket->GetMsg()->reportgameackmessage();
-		unsigned msgCode;
+		unsigned msgCode = 0;
 		switch (netReportAck.reportgameresult()) {
 		case ReportGameAckMessage::gameReportAccepted:
 			msgCode = MSG_NET_GAMENAME_REPORT_ACCEPTED;
@@ -860,7 +860,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		client->GetCallback().SignalNetClientMsgBox(msgCode);
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_AdminRemoveGameAckMessage) {
 		const AdminRemoveGameAckMessage &netRemoveAck = tmpPacket->GetMsg()->adminremovegameackmessage();
-		unsigned msgCode;
+		unsigned msgCode = 0;
 		switch (netRemoveAck.removegameresult()) {
 		case AdminRemoveGameAckMessage::gameRemoveAccepted:
 			msgCode = MSG_NET_ADMIN_REMOVE_GAME_ACCEPTED;
@@ -872,7 +872,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		client->GetCallback().SignalNetClientMsgBox(msgCode);
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_AdminBanPlayerAckMessage) {
 		const AdminBanPlayerAckMessage &netBanAck = tmpPacket->GetMsg()->adminbanplayerackmessage();
-		unsigned msgCode;
+		unsigned msgCode = 0;
 		switch (netBanAck.banplayerresult()) {
 		case AdminBanPlayerAckMessage::banPlayerAccepted:
 			msgCode = MSG_NET_ADMIN_BAN_PLAYER_ACCEPTED;
@@ -1271,7 +1271,7 @@ ClientStateWaitJoin::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		// Failed to join a game.
 		const JoinGameFailedMessage &netJoinFailed = tmpPacket->GetMsg()->joingamefailedmessage();
 
-		int failureCode;
+		int failureCode = 0;
 		switch (netJoinFailed.joingamefailurereason()) {
 		case JoinGameFailedMessage::invalidGame :
 			failureCode = NTF_NET_JOIN_GAME_INVALID;
@@ -1587,11 +1587,11 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 											(unsigned)encryptedCards.size(),
 											plainCards)) {
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
-			}
-			istringstream cardDataStream(plainCards);
-			unsigned tmpPlayerId, tmpGameId;
-			int tmpHandNum;
-			cardDataStream >> tmpPlayerId;
+		}
+		istringstream cardDataStream(plainCards);
+		unsigned tmpPlayerId = 0, tmpGameId = 0;
+		int tmpHandNum = 0;
+		cardDataStream >> tmpPlayerId;
 			cardDataStream >> tmpGameId;
 			cardDataStream >> tmpHandNum;
 			if (tmpPlayerId != client->GetGuiPlayerId()

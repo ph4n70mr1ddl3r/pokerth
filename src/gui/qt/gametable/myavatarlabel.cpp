@@ -195,7 +195,7 @@ void MyAvatarLabel::refreshStars()
 
 	boost::shared_ptr<Game> curGame = myW->myStartWindow->getSession()->getCurrentGame();
 	PlayerListConstIterator it_c;
-	int seatPlace;
+	int seatPlace = 0;
 	PlayerList seatsList = curGame->getSeatsList();
 	for (seatPlace=0,it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
 		for(int i=1; i<=5; i++)myW->playerStarsArray[i][seatPlace]->setText("");

@@ -68,7 +68,7 @@ public:
 	virtual ~ServerLobbyThread() noexcept;
 
 	void Init(const std::string &logDir);
-	virtual void SignalTermination();
+	virtual void SignalTermination() override;
 
 	void AddConnection(boost::shared_ptr<SessionData> sessionData);
 	void ReAddSession(boost::shared_ptr<SessionData> session, int reason, unsigned gameId);
@@ -139,7 +139,7 @@ protected:
 	typedef std::list<unsigned> RemoveGameList;
 
 	// Main function of the thread.
-	virtual void Main();
+	virtual void Main() override;
 	void RegisterTimers();
 	void CancelTimers();
 	void InitAuthContext();

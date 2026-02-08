@@ -56,14 +56,14 @@ public:
 	void SendPing();
 	void FlushQueue();
 
-	virtual void SignalTermination();
+	virtual void SignalTermination() override;
 
 	IrcCallback &GetCallback();
 
 protected:
 
 	// Main function of the thread.
-	virtual void Main();
+	virtual void Main() override;
 	bool IrcInit();
 	void IrcMain();
 

@@ -79,7 +79,7 @@ void manualBlindsOrderDialogImpl::removeBlindFromList()
 void manualBlindsOrderDialogImpl::sortBlindsList()
 {
 
-	int i;
+	int i = 0;
 	QList<int> tempIntList;
 	QStringList tempStringList;
 	bool ok = true;

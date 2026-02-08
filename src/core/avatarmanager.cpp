@@ -82,7 +82,7 @@ bool
 AvatarManager::Init(const string &dataDir, const string &cacheDir)
 {
 	bool retVal = true;
-	bool tmpRet;
+	bool tmpRet = false;
 	path tmpCachePath(cacheDir);
 	path tmpDataPath(dataDir);
 	{

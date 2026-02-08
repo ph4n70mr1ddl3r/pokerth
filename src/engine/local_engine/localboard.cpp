@@ -83,7 +83,7 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 
 	winners.clear();
 
-	size_t i,j,k,l;
+	size_t i = 0, j = 0, k = 0, l = 0;
 	PlayerListIterator it;
 	PlayerListConstIterator it_c;
 
@@ -106,12 +106,12 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 	std::vector<unsigned> potLevel;
 
 	// temp var
-	int highestCardsValue;
-	size_t winnerCount;
-	bool finalPot;
+	int highestCardsValue = 0;
+	size_t winnerCount = 0;
+	bool finalPot = false;
 	int potCarryOver = 0;
-	size_t mod;
-	bool winnerHit;
+	size_t mod = 0;
+	bool winnerHit = false;
 
 	// level loop
 	for(i=0; i<playerSetsSort.size(); i++) {
