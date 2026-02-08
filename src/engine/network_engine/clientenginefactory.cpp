@@ -63,7 +63,7 @@ ClientEngineFactory::createBoard()
 boost::shared_ptr<PlayerInterface>
 ClientEngineFactory::createPlayer(int id, unsigned uniqueId, PlayerType type, std::string name, std::string avatar, int sC, bool aS, bool sotS, int mB)
 {
-	return boost::shared_ptr<PlayerInterface>(new ClientPlayer(NULL, id, uniqueId, type, name, avatar, sC, aS, sotS, mB));
+	return 	boost::shared_ptr<PlayerInterface>(new ClientPlayer(nullptr, id, uniqueId, type, name, avatar, sC, aS, sotS, mB));
 }
 
 std::vector<boost::shared_ptr<BeRoInterface> >

@@ -46,7 +46,7 @@ using namespace std;
 
 
 gameLobbyDialogImpl::gameLobbyDialogImpl(startWindowImpl *parent, ConfigFile *c)
-	: QDialog(parent), myW(NULL), myStartWindow(parent), myConfig(c), currentGameName(""), myPlayerId(0), isGameAdministrator(false), inGame(false), blinkingButtonAnimationState(true), myChat(NULL), keyUpCounter(0), infoMsgToShowId(0), currentInvitationGameId(0), inviteDialogIsCurrentlyShown(false), autoStartTimerCounter(0), lastNickListFilterState(0)
+	: QDialog(parent), myW(nullptr), myStartWindow(parent), myConfig(c), currentGameName(""), myPlayerId(0), isGameAdministrator(false), inGame(false), blinkingButtonAnimationState(true), myChat(nullptr), keyUpCounter(0), infoMsgToShowId(0), currentInvitationGameId(0), inviteDialogIsCurrentlyShown(false), autoStartTimerCounter(0), lastNickListFilterState(0)
 {
 
 #ifdef __APPLE__
@@ -283,10 +283,8 @@ int gameLobbyDialogImpl::exec()
 gameLobbyDialogImpl::~gameLobbyDialogImpl()
 {
 	delete myChat;
-	myChat = NULL;
 
 	delete inviteOnlyInfoMsgBox;
-	inviteOnlyInfoMsgBox = NULL;
 }
 
 void gameLobbyDialogImpl::setSession(boost::shared_ptr<Session> session)

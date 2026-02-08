@@ -38,7 +38,7 @@
 
 
 struct TransferData {
-	TransferData() : curlHandle(NULL), curlMultiHandle(NULL), targetFile(NULL), post(NULL) {}
+	TransferData() : curlHandle(nullptr), curlMultiHandle(nullptr), targetFile(nullptr), post(nullptr) {}
 	CURL *curlHandle;
 	CURLM *curlMultiHandle;
 	FILE *targetFile;

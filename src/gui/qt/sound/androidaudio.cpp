@@ -35,7 +35,7 @@
 #include <QDebug>
 
 AndroidAudio::AndroidAudio(ConfigFile *c, QObject *parent) :
-	QObject(parent), mEngineObject(NULL), mEngineEngine(NULL), mOutputMixObject(NULL), mSounds(), mSoundCount(0), mPlayerObject(NULL), myConfig(c), audioEnabled(false)
+	QObject(parent), mEngineObject(nullptr), mEngineEngine(nullptr), mOutputMixObject(nullptr), mSounds(), mSoundCount(0), mPlayerObject(nullptr), myConfig(c), audioEnabled(false)
 {
 	initAudio();
 }
@@ -78,7 +78,7 @@ void AndroidAudio::createEngine()
 	SLresult result;
 
 	// create engine
-	result = slCreateEngine(&mEngineObject, 0, NULL, 0, NULL, NULL);
+	result = slCreateEngine(&mEngineObject, 0, nullptr, 0, nullptr, nullptr);
 	Q_ASSERT(SL_RESULT_SUCCESS == result);
 
 	// realize the engine
@@ -104,15 +104,15 @@ void AndroidAudio::createEngine()
 
 void AndroidAudio::destroyEngine()
 {
-	if (mOutputMixObject != NULL) {
+	if (mOutputMixObject != nullptr) {
 		(*mOutputMixObject)->Destroy(mOutputMixObject);
 	}
 
-	if (mEngineObject != NULL) {
+	if (mEngineObject != nullptr) {
 		(*mEngineObject)->Destroy(mEngineObject);
 	}
 
-	if (mPlayerObject != NULL) {
+	if (mPlayerObject != nullptr) {
 		(*mPlayerObject)->Destroy(mPlayerObject);
 	}
 
@@ -166,7 +166,7 @@ void AndroidAudio::startSoundPlayer()
 
 	SLDataSink lDataSink;
 	lDataSink.pLocator = &lDataLocatorOut;
-	lDataSink.pFormat = NULL;
+	lDataSink.pFormat = nullptr;
 
 	//Create the sound player
 	const SLuint32 lSoundPlayerIIDCount = 2;

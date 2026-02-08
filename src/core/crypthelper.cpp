@@ -184,7 +184,7 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 	#if OPENSSL_VERSION_NUMBER >= 0x30000000L
 		EVP_MD_CTX *context = EVP_MD_CTX_new();
 		unsigned int md5_digest_len = EVP_MD_size(EVP_md5());
-		EVP_DigestInit_ex(context, EVP_md5(), NULL);
+		EVP_DigestInit_ex(context, EVP_md5(), nullptr);
 		while ((numBytes = fread(readBuf, 1, sizeof(readBuf), file)) > 0) {
 			EVP_DigestUpdate(context, readBuf, numBytes);
 		}
@@ -221,7 +221,7 @@ CryptHelper::SHA1Hash(const unsigned char *data, unsigned dataSize, SHA1Buf &buf
 {
 	bool retVal;
 #ifdef HAVE_OPENSSL
-	retVal = SHA1(data, dataSize, buf.GetData()) != NULL;
+	retVal = SHA1(data, dataSize, buf.GetData()) != nullptr;
 #else
 	// We use the shortcut since we assume that the system supports SHA1.
 	// This call has no error return value.

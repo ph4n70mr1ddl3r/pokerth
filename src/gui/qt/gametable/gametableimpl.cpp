@@ -77,7 +77,7 @@
 using namespace std;
 
 gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
-	: QMainWindow(parent), myChat(NULL), myConfig(c), gameSpeed(0), myActionIsBet(0), myActionIsRaise(0), pushButtonBetRaiseIsChecked(false), pushButtonCallCheckIsChecked(false), pushButtonFoldIsChecked(false), pushButtonAllInIsChecked(false), myButtonsAreCheckable(false), breakAfterCurrentHand(false), currentGameOver(false), betSliderChangedByInput(false), myLastPreActionBetValue(0)
+	: QMainWindow(parent), myChat(nullptr), myConfig(c), gameSpeed(0), myActionIsBet(0), myActionIsRaise(0), pushButtonBetRaiseIsChecked(false), pushButtonCallCheckIsChecked(false), pushButtonFoldIsChecked(false), pushButtonAllInIsChecked(false), myButtonsAreCheckable(false), breakAfterCurrentHand(false), currentGameOver(false), betSliderChangedByInput(false), myLastPreActionBetValue(0)
 {
 	int i = 0;
 
@@ -338,7 +338,7 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	this->setWindowIcon(QIcon(myAppDataPath+"gfx/gui/misc/windowicon.png"));
 
 	// 	Dialogs
-	myChat = new ChatTools(NULL, myConfig, INGAME_CHAT, NULL);
+	myChat = new ChatTools(nullptr, myConfig, INGAME_CHAT, nullptr);
 	myChat->setMyStyle(myGameTableStyle);
 //	lineEdit_ChatInput->installEventFilter(this);
 

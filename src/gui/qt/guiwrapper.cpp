@@ -41,7 +41,7 @@
 #include <net/socket_msg.h>
 
 
-GuiWrapper::GuiWrapper(ConfigFile *c, startWindowImpl *s) : myGuiLog(NULL), myW(NULL), myConfig(c), myStartWindow(s)
+GuiWrapper::GuiWrapper(ConfigFile *c, startWindowImpl *s) : myGuiLog(nullptr), myW(nullptr), myConfig(c), myStartWindow(s)
 {
 
 

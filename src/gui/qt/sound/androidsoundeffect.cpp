@@ -36,7 +36,7 @@
 #include <QFile>
 
 AndroidSoundEffect::AndroidSoundEffect(const QString& path, QObject *parent) :
-	QObject(parent), mBuffer(NULL), mLength(0), mPath(path)
+	QObject(parent), mBuffer(nullptr), mLength(0), mPath(path)
 {
 }
 
@@ -124,7 +124,6 @@ bool AndroidSoundEffect::load()
 		qDebug() << "didn't read correct amount of data' :" << mPath;
 		lSoundFile.close();
 		delete [] mBuffer;
-		mBuffer = NULL;
 		return false;
 	}
 
@@ -137,8 +136,6 @@ bool AndroidSoundEffect::load()
 bool AndroidSoundEffect::unload()
 {
 	delete[] mBuffer;
-	mBuffer = NULL;
-	mLength = 0;
 	return true;
 }
 

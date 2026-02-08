@@ -33,7 +33,7 @@
 // using namespace std;
 
 MyCardsPixmapLabel::MyCardsPixmapLabel(QGroupBox* parent)
-	: QLabel(parent), myW(NULL)
+	: QLabel(parent), myW(nullptr)
 {
 
 	this->setMouseTracking(true);

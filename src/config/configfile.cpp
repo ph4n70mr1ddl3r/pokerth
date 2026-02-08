@@ -127,7 +127,7 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 #else
 	// define app-dir
 	const char *homePath = getenv("XDG_CONFIG_HOME");
-	if (homePath == NULL)
+	if (homePath == nullptr)
 	{
 		homePath = getenv("HOME");
 	}

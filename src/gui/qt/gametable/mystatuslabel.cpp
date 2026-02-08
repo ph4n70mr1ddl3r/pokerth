@@ -34,7 +34,7 @@
 using namespace std;
 
 MyStatusLabel::MyStatusLabel(QGroupBox* parent)
-	: QLabel(parent), myW(NULL), mousePress(false)
+	: QLabel(parent), myW(nullptr), mousePress(false)
 {
 
 	mousePress = false;

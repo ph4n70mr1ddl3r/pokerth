@@ -46,7 +46,7 @@ class UploaderThread : public Thread
 {
 public:
 
-	UploaderThread(UploadCallback *callback = NULL);
+	UploaderThread(UploadCallback *callback = nullptr);
 	virtual ~UploaderThread() noexcept;
 
 	void QueueUpload(const std::string &url, const std::string &user, const std::string &pwd, const std::string &filename, size_t filesize, const std::string &httpPost = "");
