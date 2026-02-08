@@ -46,7 +46,7 @@ public:
 	virtual void GetParams(std::list<std::string> &params) const;
 	virtual void SetParams(const std::list<std::string> &params);
 
-	virtual bool Next()
+	virtual bool Next() noexcept
 	{
 		return false;
 	}

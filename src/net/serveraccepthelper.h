@@ -114,7 +114,7 @@ public:
         }
     }
 
-    virtual void Close()
+    virtual void Close() noexcept
     {
         boost::system::error_code ec;
         m_acceptor->close(ec);
