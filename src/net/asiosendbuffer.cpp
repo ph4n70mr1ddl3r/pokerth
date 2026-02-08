@@ -47,7 +47,7 @@ using namespace std;
 
 
 AsioSendBuffer::AsioSendBuffer()
-	: sendBuf(NULL), curWriteBuf(NULL), sendBufAllocated(0), sendBufUsed(0),
+	: sendBuf(nullptr), curWriteBuf(nullptr), sendBufAllocated(0), sendBufUsed(0),
 	  curWriteBufAllocated(0), curWriteBufUsed(0), closeAfterSend(false)
 {
 }
@@ -198,7 +198,7 @@ AsioSendBuffer::ReallocSendBuf()
     if (newSize <= sendBufAllocated)
         return false;
 
-    char *newBuf = (char*)realloc(sendBuf, newSize);
+    char *newBuf = static_cast<char*>(realloc(sendBuf, newSize));
     if (!newBuf)
         return false;
 

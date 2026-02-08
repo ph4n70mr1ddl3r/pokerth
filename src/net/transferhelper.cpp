@@ -143,20 +143,20 @@ TransferHelper::Cleanup()
 {
 	if (m_data->post) {
 		curl_mime_free(m_data->post);
-		m_data->post = NULL;
+		m_data->post = nullptr;
 	}
 	if (m_data->curlMultiHandle) {
 		curl_multi_cleanup(m_data->curlMultiHandle);
-		m_data->curlMultiHandle = NULL;
+		m_data->curlMultiHandle = nullptr;
 	}
 	if (m_data->curlHandle) {
 		curl_easy_cleanup(m_data->curlHandle);
-		m_data->curlHandle = NULL;
+		m_data->curlHandle = nullptr;
 	}
 	if (m_data->targetFile) {
 		fflush(m_data->targetFile);
 		fclose(m_data->targetFile);
-		m_data->targetFile = NULL;
+		m_data->targetFile = nullptr;
 	}
 }
 

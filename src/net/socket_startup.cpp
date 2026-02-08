@@ -71,7 +71,7 @@ extern "C" {
 	static struct gcry_thread_cbs gcry_threads_boost = {
 		GCRY_THREAD_OPTION_USER, gcry_bthread_init, gcry_bmutex_init,
 		gcry_bmutex_destroy, gcry_bmutex_lock, gcry_bmutex_unlock,
-		NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+		nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
 	};
 }
 
@@ -88,7 +88,7 @@ socket_startup()
 #if GCRYPT_VERSION_NUMBER < 0x010600
 	gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_boost);
 #endif
-	gcry_check_version(NULL);
+	gcry_check_version(nullptr);
 	gcry_control(GCRYCTL_ENABLE_QUICK_RANDOM, 0);
 	gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 	return true;

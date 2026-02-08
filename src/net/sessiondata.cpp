@@ -51,7 +51,7 @@ using namespace boost::chrono;
 SessionData::SessionData(boost::shared_ptr<boost::asio::ip::tcp::socket> sock, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService)
 	: m_socket(sock), m_id(id), m_state(SessionData::Init), m_readyFlag(false), m_wantsLobbyMsg(true),
 	  m_activityTimeoutSec(0), m_activityWarningRemainingSec(0), m_initTimeoutTimer(ioService), m_globalTimeoutTimer(ioService),
-	  m_activityTimeoutTimer(ioService), m_callback(cb), m_authSession(NULL), m_curAuthStep(0)
+	  m_activityTimeoutTimer(ioService), m_callback(cb), m_authSession(nullptr), m_curAuthStep(0)
 {
 	m_receiveBuffer.reset(new AsioReceiveBuffer);
 	m_sendBuffer.reset(new AsioSendBuffer);
@@ -60,7 +60,7 @@ SessionData::SessionData(boost::shared_ptr<boost::asio::ip::tcp::socket> sock, S
 SessionData::SessionData(boost::shared_ptr<WebSocketData> webData, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int /*filler*/)
 	: m_webData(webData), m_id(id), m_state(SessionData::Init), m_readyFlag(false), m_wantsLobbyMsg(true),
 	  m_activityTimeoutSec(0), m_activityWarningRemainingSec(0), m_initTimeoutTimer(ioService), m_globalTimeoutTimer(ioService),
-	  m_activityTimeoutTimer(ioService), m_callback(cb), m_authSession(NULL), m_curAuthStep(0)
+	  m_activityTimeoutTimer(ioService), m_callback(cb), m_authSession(nullptr), m_curAuthStep(0)
 {
 	m_receiveBuffer.reset(new WebReceiveBuffer);
 	m_sendBuffer.reset(new WebSendBuffer);
@@ -71,7 +71,7 @@ SessionData::SessionData(boost::shared_ptr<boost::asio::ssl::stream<boost::asio:
       m_receiveBuffer(), m_sendBuffer(), m_readyFlag(false), m_wantsLobbyMsg(true),
       m_activityTimeoutSec(0), m_activityWarningRemainingSec(0),
       m_initTimeoutTimer(ioService), m_globalTimeoutTimer(ioService), m_activityTimeoutTimer(ioService),
-      m_callback(cb), m_authSession(NULL), m_curAuthStep(0)
+      m_callback(cb), m_authSession(nullptr), m_curAuthStep(0)
 {
     m_sslStream = sslStream;
     m_receiveBuffer.reset(new AsioReceiveBuffer);
@@ -149,7 +149,7 @@ SessionData::CreateServerAuthSession(Gsasl *context)
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);
 	InternalClearAuthSession();
-	m_authSession = NULL;
+	m_authSession = nullptr;
 	m_curAuthStep = 0;
 	return true;
 }
@@ -160,7 +160,7 @@ SessionData::CreateClientAuthSession(Gsasl *context, const string &userName, con
 	boost::mutex::scoped_lock lock(m_dataMutex);
 	InternalClearAuthSession();
 	m_password = password;
-	m_authSession = NULL;
+	m_authSession = nullptr;
 	m_curAuthStep = 0;
 	(void)context; (void)userName;
 	return true;
@@ -213,7 +213,7 @@ SessionData::AuthGetCurStepNum() const
 void
 SessionData::InternalClearAuthSession()
 {
-    m_authSession = NULL;
+    m_authSession = nullptr;
     m_curAuthStep = 0;
     m_nextGsaslMsg.clear();
 }

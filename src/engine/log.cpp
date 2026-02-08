@@ -71,7 +71,7 @@ Log::init()
                 char curDateTime[20];
                 char curDate[11];
                 char curTime[9];
-                time_t now = time(NULL);
+                time_t now = time(nullptr);
                 tm *z = localtime(&now);
                 strftime(curDateTime,20,"%Y-%m-%d_%H%M%S",z);
                 strftime(curDate,11,"%Y-%m-%d",z);
@@ -87,7 +87,7 @@ Log::init()
 
                 if (mySqliteLogDb.open()) {
 
-                    int i;
+                    int i = 0;
                     // create session table
                     sql += "CREATE TABLE Session (";
                     sql += "PokerTH_Version TEXT NOT NULL";
@@ -181,7 +181,7 @@ Log::logNewGameMsg(int gameID, int startCash, int startSmallBlind, unsigned deal
 
 			if( mySqliteLogDb.isValid() && mySqliteLogDb.isOpen() ) {
 				// sqlite-db is open
-				int i;
+				int i = 0;
 
 				sql += "INSERT INTO Game (";
 				sql += "UniqueGameID";

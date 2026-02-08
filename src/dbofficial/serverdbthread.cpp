@@ -267,7 +267,7 @@ ServerDBThread::EndGame(unsigned requestId)
 	// Set the end time of the game.
 	{
 		list<string> params;
-		params.push_back(mysqlpp::DateTime(time(NULL)));
+ 	params.push_back(mysqlpp::DateTime(time(nullptr)));
 		boost::shared_ptr<AsyncDBQuery> asyncQuery(
 			new AsyncDBEndGame(
 				requestId,

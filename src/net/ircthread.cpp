@@ -70,7 +70,7 @@ using namespace std;
 
 
 struct IrcContext {
-	IrcContext(IrcThread &t) : ircThread(t), session(NULL), serverPort(0), useIPv6(false), renameTries(0), sendingBlocked(false), sendCounter(0) {}
+	IrcContext(IrcThread &t) : ircThread(t), session(nullptr), serverPort(0), useIPv6(false), renameTries(0), sendingBlocked(false), sendCounter(0) {}
 	IrcThread &ircThread;
 	irc_session_t *session;
 	string serverAddress;
@@ -111,7 +111,7 @@ void irc_auto_rename_nick(irc_session_t *session)
 		irc_cmd_nick(session, context->nick.c_str());
 		context->renameTries++;
 	} else
-		irc_cmd_quit(session, NULL);
+		irc_cmd_quit(session, nullptr);
 }
 
 void irc_notify_player_list(irc_session_t *session, const char *players)
@@ -372,7 +372,7 @@ void
 IrcThread::SignalTermination()
 {
 	Thread::SignalTermination();
-	irc_cmd_quit(GetContext().session, NULL);
+	irc_cmd_quit(GetContext().session, nullptr);
 }
 
 void
@@ -392,7 +392,7 @@ IrcThread::IrcInit()
 	IrcContext &context = GetContext();
 	if (context.session) {
 		irc_destroy_session(context.session);
-		context.session = NULL;
+		context.session = nullptr;
 	}
 	// Initialize libirc stuff.
 	irc_callbacks_t callbacks;

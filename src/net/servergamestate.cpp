@@ -347,7 +347,7 @@ AbstractServerGameStateReceiving::ProcessPacket(boost::shared_ptr<ServerGame> se
 					tmpPlayer->GetDBId(),
 					tmpPlayer->GetAvatarMD5().ToString(),
 					tmpAvatarType,
-					myDBid != 0 ? &myDBid : NULL
+					myDBid != 0 ? &myDBid : nullptr
 				);
 			} else {
 				boost::shared_ptr<NetPacket> packet(new NetPacket);

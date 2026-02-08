@@ -69,7 +69,7 @@
 using boost::asio::ip::tcp;
 
 ClientThread::ClientThread(GuiInterface &gui, AvatarManager &avatarManager, Log *myLog)
-	: m_ioService(new boost::asio::io_context), m_clientLog(myLog), m_curState(NULL), m_gui(gui),
+	: m_ioService(new boost::asio::io_context), m_clientLog(myLog), m_curState(nullptr), m_gui(gui),
 	  m_avatarManager(avatarManager), m_isServerSelected(false),
 	  m_curGameId(0), m_curGameNum(1), m_guiPlayerId(0), m_sessionEstablished(false),
 	  m_stateTimer(*m_ioService), m_avatarTimer(*m_ioService)
@@ -603,14 +603,14 @@ ClientThread::CancelTimers()
 void
 ClientThread::InitAuthContext()
 {
-    m_authContext = NULL;
+    m_authContext = nullptr;
 }
 
 void
 ClientThread::ClearAuthContext()
 {
     // GSASL entfernt: nichts zu räumen.
-    m_authContext = NULL;
+    m_authContext = nullptr;
 }
 
 void

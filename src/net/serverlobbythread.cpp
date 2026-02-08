@@ -249,7 +249,7 @@ private:
 
 ServerLobbyThread::ServerLobbyThread(GuiInterface &gui, ServerMode mode, ConfigFile &serverConfig,
 									 AvatarManager &avatarManager, boost::shared_ptr<boost::asio::io_context> ioService)
-	: m_ioService(ioService), m_authContext(NULL), m_gui(gui), m_avatarManager(avatarManager),
+	: m_ioService(ioService), m_authContext(nullptr), m_gui(gui), m_avatarManager(avatarManager),
 	  m_mode(mode), m_serverConfig(serverConfig), m_curGameId(0), m_curUniquePlayerId(0), m_curSessionId(INVALID_SESSION + 1),
 	  m_statDataChanged(false), m_removeGameTimer(*ioService),
 	  m_saveStatisticsTimer(*ioService), m_loginLockTimer(*ioService),
@@ -867,15 +867,15 @@ void
 ServerLobbyThread::InitAuthContext()
 {
 	// GSASL removed: no SCRAM negotiation performed anymore.
-	// Keep m_authContext NULL for compatibility with older code paths.
-	m_authContext = NULL;
+	// Keep m_authContext nullptr for compatibility with older code paths.
+	m_authContext = nullptr;
 }
 
 void
 ServerLobbyThread::ClearAuthContext()
 {
 	// nothing to clear (gsasl removed)
-	m_authContext = NULL;
+	m_authContext = nullptr;
 }
 
 void

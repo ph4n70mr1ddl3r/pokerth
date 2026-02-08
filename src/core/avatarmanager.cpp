@@ -488,7 +488,7 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 			}
 
 			// Get reference time.
-			time_t curTime = time(NULL);
+			time_t curTime = time(nullptr);
 			while (!timeMap.empty() && !m_cachedAvatars.empty()) {
 				TimeAvatarMap::iterator i = timeMap.begin();
 				if (curTime - i->first < (int)MAX_AVATAR_CACHE_AGE)

@@ -70,7 +70,7 @@ static bool LessThanPlayerHandStartMoney(const boost::shared_ptr<PlayerInterface
 ServerGame::ServerGame(boost::shared_ptr<ServerLobbyThread> lobbyThread, u_int32_t id, const string &name, const string &pwd, const GameData &gameData,
 					   unsigned adminPlayerId, unsigned creatorPlayerDBId, GuiInterface &gui, ConfigFile &playerConfig)
 	: m_adminPlayerId(adminPlayerId), m_lobbyThread(lobbyThread), m_gui(gui),
-	  m_gameData(gameData), m_curState(NULL), m_id(id), m_name(name),
+	  m_gameData(gameData), m_curState(nullptr), m_id(id), m_name(name),
 	  m_password(pwd), m_creatorPlayerDBId(creatorPlayerDBId), m_playerConfig(playerConfig),
 	  m_gameNum(1), m_curPetitionId(1), m_voteKickTimer(lobbyThread->GetIOService()),
 	  m_stateTimer1(lobbyThread->GetIOService()), m_stateTimer2(lobbyThread->GetIOService()),
@@ -328,12 +328,10 @@ ServerGame::InternalStartGame()
 		SetStartData(startData);
 
 		GuiInterface &gui = GetGui();
-		m_game.reset(new Game(&gui, factory, playerData, GetGameData(), GetStartData(), GetNextGameNum(), NULL));
+		m_game.reset(new Game(&gui, factory, playerData, GetGameData(), GetStartData(), GetNextGameNum(), nullptr));
 
 		GetDatabase().AsyncCreateGame(GetId(), GetName());
 		InitRankingMap(playerData);
-
-		// @TODO: here to save last_games with mysql per player
 
 		if (GetGameData().gameType == GAME_TYPE_RANKING)
 			StoreLastGames(playerData);
@@ -443,7 +441,7 @@ ServerGame::StoreLastGames(const PlayerDataList &playerDataList)
 	while (i != end) {
 		boost::shared_ptr<PlayerData> tmpPlayer(*i);
 		// tmpPlayer->GetUniqueId()
-		tmpPlayer->AddPlayerLastGame((long)time(NULL));
+		tmpPlayer->AddPlayerLastGame((long)time(nullptr));
 		LOG_ERROR("TimeStamp stored: " << tmpPlayer->GetPlayerLastGames().back());
 		std::vector<long> last_games = tmpPlayer->GetPlayerLastGames();
 		LOG_ERROR("Ready for storing vector for player " << tmpPlayer->GetDBId() << " - lastGameTs " << last_games.back());

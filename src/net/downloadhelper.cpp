@@ -58,7 +58,7 @@ DownloadHelper::InternalInit(const string &/*url*/, const string &targetFileName
 
 	// Assume that the following calls never fail.
 	// NOTE: A writefunction needs to be set if a DLL version of curl is used on Windows.
-	curl_easy_setopt(GetData()->curlHandle, CURLOPT_WRITEFUNCTION, NULL);
+	curl_easy_setopt(GetData()->curlHandle, CURLOPT_WRITEFUNCTION, nullptr);
 	curl_easy_setopt(GetData()->curlHandle, CURLOPT_WRITEDATA, GetData()->targetFile);
 }
 

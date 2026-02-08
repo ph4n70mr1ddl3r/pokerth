@@ -50,7 +50,7 @@ namespace po = boost::program_options;
 #define BUF_SIZE 1024
 
 struct NetSession {
-	NetSession(boost::asio::io_context &ioService) : recBufPos(0), authSession(NULL), socket(ioService) {}
+	NetSession(boost::asio::io_context &ioService) : recBufPos(0), authSession(nullptr), socket(ioService) {}
 	boost::array<char, BUF_SIZE> recBuf;
 	size_t recBufPos;
 	boost::array<char, BUF_SIZE> sendBuf;
@@ -74,17 +74,17 @@ cout << packetString << endl;*/
 PokerTHMessage_t *
 receiveMessage(NetSession *session)
 {
-	PokerTHMessage_t *msg = NULL;
+	PokerTHMessage_t *msg = nullptr;
 	do {
 		asn_dec_rval_t retVal = ber_decode(0, &asn_DEF_PokerTHMessage, (void **)&msg, session->recBuf.data(), session->recBufPos);
-		if(retVal.code == RC_OK && msg != NULL) {
+		if(retVal.code == RC_OK && msg != nullptr) {
 			if (retVal.consumed < session->recBufPos) {
 				session->recBufPos -= retVal.consumed;
 				memmove(session->recBuf.c_array(), session->recBuf.c_array() + retVal.consumed, session->recBufPos);
 			} else {
 				session->recBufPos = 0;
 			}
-			if (asn_check_constraints(&asn_DEF_PokerTHMessage, msg, NULL, NULL) != 0) {
+			if (asn_check_constraints(&asn_DEF_PokerTHMessage, msg, nullptr, nullptr) != 0) {
 				cerr << "Invalid packet received:" << endl;
 				string packetString;
 				xer_encode(&asn_DEF_PokerTHMessage, msg, XER_F_BASIC, &net_packet_print_to_string, &packetString);
@@ -93,10 +93,10 @@ receiveMessage(NetSession *session)
 		} else {
 			// Free the partially decoded message (if applicable).
 			ASN_STRUCT_FREE(asn_DEF_PokerTHMessage, msg);
-			msg = NULL;
+			msg = nullptr;
 			session->recBufPos += session->socket.receive(boost::asio::buffer(session->recBuf.c_array() + session->recBufPos, BUF_SIZE - session->recBufPos));
 		}
-	} while (msg == NULL);
+	} while (msg == nullptr);
 	return msg;
 }
 
@@ -181,7 +181,7 @@ main(int argc, char *argv[])
 			return 1;
 		}
 
-		PokerTHMessage_t *msg = NULL;
+		PokerTHMessage_t *msg = nullptr;
 		int errorCode;
 		char *tmpOut;
 		size_t tmpOutSize;
@@ -230,7 +230,7 @@ main(int argc, char *argv[])
 				netInit->login.present = login_PR_authenticatedLogin;
 				AuthenticatedLogin_t *authLogin = &netInit->login.choice.authenticatedLogin;
 
-				errorCode = gsasl_step(session->authSession, NULL, 0, &tmpOut, &tmpOutSize);
+				errorCode = gsasl_step(session->authSession, nullptr, 0, &tmpOut, &tmpOutSize);
 				if (errorCode == GSASL_NEEDS_MORE) {
 					nextGsaslMsg = string(tmpOut, tmpOutSize);
 				} else {
@@ -394,7 +394,7 @@ main(int argc, char *argv[])
 					cout << "Join game failed" << endl;
 					return 1;
 				}
-				msg = NULL;
+				msg = nullptr;
 			}
 			for (int i = startNum; i < endNum; i++) {
 				if (i % 10 == 0) {

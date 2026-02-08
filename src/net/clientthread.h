@@ -77,7 +77,7 @@ public:
 	}
 	unsigned AveragePing()
 	{
-		return pingValues.empty() ? 0 : (std::accumulate(pingValues.begin(), pingValues.end(), 0) / (unsigned)pingValues.size());
+		return pingValues.empty() ? 0 : (std::accumulate(pingValues.begin(), pingValues.end(), 0) / static_cast<unsigned>(pingValues.size()));
 	}
 	void StartPing()
 	{
