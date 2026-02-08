@@ -38,7 +38,7 @@ class MyNickListSortFilterProxyModel : public QSortFilterProxyModel
 	Q_OBJECT
 
 public:
-	MyNickListSortFilterProxyModel(QObject *parent = 0);
+	MyNickListSortFilterProxyModel(QObject *parent = nullptr);
 
 	void setFilterState(int state);
 	void setLastFilterStateCountry( bool country )

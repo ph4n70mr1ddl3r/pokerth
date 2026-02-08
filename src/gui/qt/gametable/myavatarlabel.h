@@ -45,7 +45,7 @@ class MyAvatarLabel : public QLabel
 	Q_OBJECT
 public:
 	MyAvatarLabel(QGroupBox*);
-	~MyAvatarLabel();
+	~MyAvatarLabel() noexcept;
 
 	void setMyW(gameTableImpl* theValue)
 	{

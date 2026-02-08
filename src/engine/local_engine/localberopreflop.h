@@ -42,7 +42,7 @@ class LocalBeRoPreflop : public LocalBeRo
 
 public:
 	LocalBeRoPreflop(HandInterface*, unsigned, int);
-	~LocalBeRoPreflop();
+	~LocalBeRoPreflop() noexcept;
 
 	void run();
 

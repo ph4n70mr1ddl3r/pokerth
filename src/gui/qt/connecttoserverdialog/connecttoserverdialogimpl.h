@@ -45,7 +45,7 @@ class connectToServerDialogImpl: public QDialog, public Ui::connectToServerDialo
 {
 	Q_OBJECT
 public:
-	connectToServerDialogImpl(QWidget *parent = 0);
+	connectToServerDialogImpl(QWidget *parent = nullptr);
 
 	int exec();
 

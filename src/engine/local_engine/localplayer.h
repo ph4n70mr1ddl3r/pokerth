@@ -47,7 +47,7 @@ class LocalPlayer : public PlayerInterface
 public:
 	LocalPlayer(ConfigFile*, int id, unsigned uniqueId, PlayerType type, std::string name, std::string avatar, int sC, bool aS, bool sotS, int mB);
 
-	~LocalPlayer();
+	~LocalPlayer() noexcept;
 
 	void setHand(HandInterface *);
 

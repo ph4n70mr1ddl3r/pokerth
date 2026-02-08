@@ -44,7 +44,7 @@ class CleanerConfig
 public:
 	CleanerConfig();
 
-	~CleanerConfig();
+	~CleanerConfig() noexcept;
 
 	std::string getConfigFileName() const
 	{

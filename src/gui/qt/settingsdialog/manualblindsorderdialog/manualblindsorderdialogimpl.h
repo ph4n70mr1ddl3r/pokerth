@@ -46,7 +46,7 @@ class manualBlindsOrderDialogImpl: public QDialog, public Ui::manualBlindsOrderD
 {
 	Q_OBJECT
 public:
-	manualBlindsOrderDialogImpl(QWidget *parent = 0, ConfigFile *c = 0);
+	manualBlindsOrderDialogImpl(QWidget *parent = nullptr, ConfigFile *c = nullptr);
 
 	int exec();
 

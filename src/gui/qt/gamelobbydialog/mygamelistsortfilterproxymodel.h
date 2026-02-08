@@ -38,7 +38,7 @@ class MyGameListSortFilterProxyModel : public QSortFilterProxyModel
 	Q_OBJECT
 
 public:
-	MyGameListSortFilterProxyModel(QObject *parent = 0);
+	MyGameListSortFilterProxyModel(QObject *parent = nullptr);
 	void setColumn1RegExp(QRegularExpression column1)
 	{
 		column1RegExp = column1;

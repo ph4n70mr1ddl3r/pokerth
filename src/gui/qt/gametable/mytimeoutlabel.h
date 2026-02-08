@@ -48,7 +48,7 @@ class MyTimeoutLabel : public QLabel
 public:
 	MyTimeoutLabel(QGroupBox*);
 
-	~MyTimeoutLabel();
+	~MyTimeoutLabel() noexcept;
 
 
 	void setMyW ( gameTableImpl* theValue )

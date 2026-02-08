@@ -49,9 +49,9 @@ class ChatTools : public QObject
 	Q_OBJECT
 
 public:
-	ChatTools(QLineEdit*, ConfigFile*, ChatType, QTextBrowser *b = NULL, QStandardItemModel *m = NULL, gameLobbyDialogImpl *lo = NULL);
+	ChatTools(QLineEdit*, ConfigFile*, ChatType, QTextBrowser *b = nullptr, QStandardItemModel *m = nullptr, gameLobbyDialogImpl *lo = nullptr);
 
-	~ChatTools();
+	~ChatTools() noexcept;
 
 	void setSession(boost::shared_ptr<Session> session)
 	{

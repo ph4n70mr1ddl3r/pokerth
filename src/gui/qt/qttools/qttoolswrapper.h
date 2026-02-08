@@ -42,7 +42,7 @@ class QtToolsWrapper : public QtToolsInterface
 public:
 	QtToolsWrapper();
 
-	~QtToolsWrapper();
+	~QtToolsWrapper() noexcept;
 
 	std::string stringToUtf8(const std::string &myString);
 	std::string stringFromUtf8(const std::string &myString);

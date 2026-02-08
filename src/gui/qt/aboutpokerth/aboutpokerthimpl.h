@@ -43,7 +43,7 @@ class aboutPokerthImpl: public QDialog, public Ui::aboutPokerth
 {
 	Q_OBJECT
 public:
-	aboutPokerthImpl(QWidget *parent = 0, ConfigFile *c =0);
+	aboutPokerthImpl(QWidget *parent = nullptr, ConfigFile *c = nullptr);
 
 private:
 

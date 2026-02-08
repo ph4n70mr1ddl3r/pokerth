@@ -41,7 +41,7 @@ class MyLeftTabWidget : public QTabWidget
 public:
 	MyLeftTabWidget(QGroupBox*);
 
-	~MyLeftTabWidget();
+	~MyLeftTabWidget() noexcept;
 
 
 	void paintEvent(QPaintEvent * event);

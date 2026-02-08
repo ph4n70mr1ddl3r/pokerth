@@ -38,8 +38,8 @@ class AndroidApi8Dummy : public QObject
 {
 	Q_OBJECT
 public:
-	explicit AndroidApi8Dummy(ConfigFile *c, QObject *parent = 0);
-	~AndroidApi8Dummy();
+	explicit 	AndroidApi8Dummy(ConfigFile *c, QObject *parent = nullptr);
+	~AndroidApi8Dummy() noexcept;
 
 signals:
 

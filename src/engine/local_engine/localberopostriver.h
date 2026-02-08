@@ -42,7 +42,7 @@ class LocalBeRoPostRiver : public LocalBeRo
 {
 public:
 	LocalBeRoPostRiver(HandInterface*, int, int);
-	~LocalBeRoPostRiver();
+	~LocalBeRoPostRiver() noexcept;
 
 	void setHighestCardsValue(int theValue)
 	{

@@ -55,8 +55,8 @@ class LogFileDialog : public QDialog, public UploadCallback
 	Q_OBJECT
 
 public:
-	explicit LogFileDialog(QWidget *parent = 0, ConfigFile *c = 0);
-	~LogFileDialog();
+	explicit LogFileDialog(QWidget *parent = nullptr, ConfigFile *c = nullptr);
+	~LogFileDialog() noexcept;
 
 	void setGuiLog(guiLog *g)
 	{

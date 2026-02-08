@@ -47,7 +47,7 @@ class selectAvatarDialogImpl: public QDialog, public Ui::selectAvatarDialog
 {
 	Q_OBJECT
 public:
-	selectAvatarDialogImpl(QWidget *parent = 0, ConfigFile *c = 0);
+	selectAvatarDialogImpl(QWidget *parent = nullptr, ConfigFile *c = nullptr);
 
 	int exec();
 

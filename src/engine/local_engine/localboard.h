@@ -47,7 +47,7 @@ class LocalBoard : public BoardInterface
 {
 public:
 	LocalBoard();
-	~LocalBoard();
+	~LocalBoard() noexcept;
 
 	void setPlayerLists(PlayerList, PlayerList, PlayerList);
 

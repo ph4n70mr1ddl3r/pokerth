@@ -48,7 +48,7 @@ class createInternetGameDialogImpl: public QDialog, public Ui::createInternetGam
 {
 	Q_OBJECT
 public:
-	createInternetGameDialogImpl(QWidget *parent = 0, ConfigFile *c = 0);
+	createInternetGameDialogImpl(QWidget *parent = nullptr, ConfigFile *c = nullptr);
 
 	void exec(QString playerName);
 	changeCompleteBlindsDialogImpl* getChangeCompleteBlindsDialog()

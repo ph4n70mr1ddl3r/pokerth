@@ -45,7 +45,7 @@ class MySetLabel : public QLabel
 public:
 	MySetLabel(QGroupBox*);
 
-	~MySetLabel();
+	~MySetLabel() noexcept;
 
 
 	void setMyW ( gameTableImpl* theValue )

@@ -45,7 +45,7 @@ class MyCardsPixmapLabel : public QLabel
 public:
 	MyCardsPixmapLabel(QGroupBox*);
 
-	~MyCardsPixmapLabel();
+	~MyCardsPixmapLabel() noexcept;
 
 	void setMyW ( gameTableImpl* theValue )
 	{

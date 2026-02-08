@@ -44,7 +44,7 @@ class MyNameLabel : public QLabel
 	Q_OBJECT
 public:
 	MyNameLabel(QGroupBox*);
-	~MyNameLabel();
+	~MyNameLabel() noexcept;
 
 	void setMyW(gameTableImpl* theValue)
 	{

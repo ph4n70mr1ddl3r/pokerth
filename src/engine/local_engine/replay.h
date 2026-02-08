@@ -38,7 +38,7 @@ class Replay
 {
 public:
 	Replay();
-	~Replay();
+	~Replay() noexcept;
 
 private:
 	QSqlDatabase *replaySqliteLogDb;

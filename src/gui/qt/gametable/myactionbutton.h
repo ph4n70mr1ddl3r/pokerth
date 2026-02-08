@@ -42,7 +42,7 @@ class MyActionButton : public QPushButton
 public:
 	MyActionButton(QGroupBox*);
 
-	~MyActionButton();
+	~MyActionButton() noexcept;
 
 	void paintEvent(QPaintEvent * event);
 	void setFKeyText ( const QString& theValue )

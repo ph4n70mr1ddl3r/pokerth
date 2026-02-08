@@ -46,7 +46,7 @@ class ClientBoard : public BoardInterface
 {
 public:
 	ClientBoard();
-	~ClientBoard();
+	~ClientBoard() noexcept;
 
 	void setPlayerLists(PlayerList, PlayerList, PlayerList);
 

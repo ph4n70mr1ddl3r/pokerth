@@ -41,7 +41,7 @@ class ServerGuiWrapper : public GuiInterface
 {
 public:
 	ServerGuiWrapper(ConfigFile *config, ClientCallback *clientcb, ServerCallback *servercb);
-	~ServerGuiWrapper();
+	~ServerGuiWrapper() noexcept;
 
 	void initGui(int speed);
 

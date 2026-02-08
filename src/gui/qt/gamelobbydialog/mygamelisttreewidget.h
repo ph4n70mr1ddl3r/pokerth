@@ -41,7 +41,7 @@ class MyGameListTreeWidget : public QTreeWidget
 public:
 	MyGameListTreeWidget(QDialog*);
 
-	~MyGameListTreeWidget();
+	~MyGameListTreeWidget() noexcept;
 
 
 public slots:

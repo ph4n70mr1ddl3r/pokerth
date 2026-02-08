@@ -48,7 +48,7 @@ class serverListDialogImpl: public QDialog, public Ui::ServerListDialog
 {
 	Q_OBJECT
 public:
-	serverListDialogImpl(startWindowImpl *sw, QMainWindow *parent = 0, ConfigFile* = 0 );
+	serverListDialogImpl(startWindowImpl *sw, QMainWindow *parent = nullptr, ConfigFile* = nullptr );
 
 public slots:
 

@@ -60,7 +60,7 @@ class gameLobbyDialogImpl: public QDialog, public Ui::gameLobbyDialog
 {
 	Q_OBJECT
 public:
-	gameLobbyDialogImpl(startWindowImpl *parent = 0, ConfigFile* = 0);
+	gameLobbyDialogImpl(startWindowImpl *parent = nullptr, ConfigFile* = nullptr);
 
 	~gameLobbyDialogImpl() noexcept;
 

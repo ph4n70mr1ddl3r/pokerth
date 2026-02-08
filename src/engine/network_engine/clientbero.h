@@ -44,7 +44,7 @@ class ClientBeRo : public BeRoInterface
 {
 public:
 	ClientBeRo(HandInterface* hi, unsigned dP, int sB, GameState gS);
-	~ClientBeRo();
+	~ClientBeRo() noexcept;
 
 	GameState getMyBeRoID() const;
 

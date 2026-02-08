@@ -79,7 +79,7 @@ class gameTableImpl: public QMainWindow, public Ui::gameTable
 	Q_OBJECT
 
 public:
-	gameTableImpl(ConfigFile *c = 0, QMainWindow *parent = 0);
+	gameTableImpl(ConfigFile *c = nullptr, QMainWindow *parent = nullptr);
 
 	~gameTableImpl() noexcept;
 

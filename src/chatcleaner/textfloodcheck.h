@@ -43,7 +43,7 @@ class TextFloodCheck: public QObject
 	Q_OBJECT
 public:
 	TextFloodCheck();
-	~TextFloodCheck();
+	~TextFloodCheck() noexcept;
 
 	void setTextFloodLevelToTrigger(int level)
 	{

@@ -46,7 +46,7 @@ class MyChanceLabel : public QLabel
 public:
 	MyChanceLabel(QWidget*);
 
-	~MyChanceLabel();
+	~MyChanceLabel() noexcept;
 
 	void setMyW ( gameTableImpl* theValue )
 	{

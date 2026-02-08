@@ -50,7 +50,7 @@ class CleanerServer: public QObject
 
 public:
 	CleanerServer();
-	~CleanerServer();
+	~CleanerServer() noexcept;
 
 private slots:
 	void newCon();

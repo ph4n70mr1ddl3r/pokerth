@@ -44,7 +44,7 @@ class internetGameLoginDialogImpl : public QDialog, public Ui::internetGameLogin
 	Q_OBJECT
 
 public:
-	internetGameLoginDialogImpl(QWidget *parent = 0, ConfigFile *c =0);
+	internetGameLoginDialogImpl(QWidget *parent = nullptr, ConfigFile *c = nullptr);
 
 	int exec();
 	void accept();

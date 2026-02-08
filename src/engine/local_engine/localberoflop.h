@@ -42,7 +42,7 @@ class LocalBeRoFlop : public LocalBeRo
 
 public:
 	LocalBeRoFlop(HandInterface*, unsigned, int);
-	~LocalBeRoFlop();
+	~LocalBeRoFlop() noexcept;
 
 };
 

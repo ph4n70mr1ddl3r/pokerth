@@ -42,7 +42,7 @@ class LocalBeRo : public BeRoInterface
 {
 public:
 	LocalBeRo(HandInterface* hi, unsigned dP, int sB, GameState gS);
-	~LocalBeRo();
+	~LocalBeRo() noexcept;
 
 	GameState getMyBeRoID() const
 	{

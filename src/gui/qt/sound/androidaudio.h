@@ -49,7 +49,7 @@ class AndroidAudio : public QObject
 {
 	Q_OBJECT
 public:
-	explicit AndroidAudio(ConfigFile *c, QObject *parent = 0);
+	explicit AndroidAudio(ConfigFile *c, QObject *parent = nullptr);
 	~AndroidAudio() noexcept;
 
 signals:

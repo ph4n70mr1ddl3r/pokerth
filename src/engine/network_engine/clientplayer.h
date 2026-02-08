@@ -46,7 +46,7 @@ class ClientPlayer : public PlayerInterface
 {
 public:
 	ClientPlayer(ConfigFile*, int id, unsigned uniqueId, PlayerType type, std::string name, std::string avatar, int sC, bool aS, bool sotS, int mB);
-	~ClientPlayer();
+	~ClientPlayer() noexcept;
 
 	void setHand(HandInterface *);
 

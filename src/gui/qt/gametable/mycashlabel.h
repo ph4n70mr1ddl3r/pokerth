@@ -44,7 +44,7 @@ class MyCashLabel : public QLabel
 	Q_OBJECT
 public:
 	MyCashLabel(QGroupBox*);
-	~MyCashLabel();
+	~MyCashLabel() noexcept;
 
 	void setMyW(gameTableImpl* theValue)
 	{

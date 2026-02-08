@@ -45,7 +45,7 @@ class MyStatusLabel : public QLabel
 public:
 	MyStatusLabel(QGroupBox*);
 
-	~MyStatusLabel();
+	~MyStatusLabel() noexcept;
 
 
 	void setMyW ( gameTableImpl* theValue )

@@ -60,7 +60,7 @@ class myMessageDialogImpl: public QDialog, public Ui::myMessageDialog
 	Q_OBJECT
 public:
 
-	myMessageDialogImpl(ConfigFile *, QWidget *parent = 0);
+	myMessageDialogImpl(ConfigFile *, QWidget *parent = nullptr);
 
 public slots:
 
