@@ -40,7 +40,7 @@ class MyHPAvatarButton : public QPushButton
 public:
 	MyHPAvatarButton(QWidget*);
 
-	~MyHPAvatarButton();
+	~MyHPAvatarButton() noexcept;
 
 	void setMyLink(QString theValue)
 	{

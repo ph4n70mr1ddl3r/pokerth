@@ -44,7 +44,7 @@ class NonQtHelper
 public:
 	NonQtHelper();
 
-	~NonQtHelper();
+	~NonQtHelper() noexcept;
 
 	std::string stringToUtf8(const std::string &);
 	std::string stringFromUtf8(const std::string &);

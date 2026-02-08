@@ -60,7 +60,7 @@ class settingsDialogImpl: public QDialog, public Ui::settingsDialog
 public:
 	settingsDialogImpl(QWidget *parent = 0, ConfigFile *c = 0, selectAvatarDialogImpl *s = 0);
 
-	~settingsDialogImpl();
+	~settingsDialogImpl() noexcept;
 
 	void prepareDialog();
 	void exec(bool ingame);

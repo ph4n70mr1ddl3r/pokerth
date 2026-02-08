@@ -45,7 +45,7 @@ class AndroidSoundEffect : public QObject
 	Q_OBJECT
 public:
 	explicit AndroidSoundEffect(const QString& pPath, QObject *parent = 0);
-	~AndroidSoundEffect();
+	~AndroidSoundEffect() noexcept;
 
 	const char* getPath();
 	bool load();

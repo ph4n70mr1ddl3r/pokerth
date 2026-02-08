@@ -1444,10 +1444,10 @@ ServerLobbyThread::HandleNetPacketReportGame(boost::shared_ptr<SessionData> sess
 			GetDatabase()->AsyncReportGame(
 				session->GetPlayerData()->GetUniqueId(),
 				tmpGame->GetId(),
-				creatorDBId != 0 ? &creatorDBId : NULL,
+				creatorDBId != 0 ? &creatorDBId : nullptr,
 				tmpGame->GetId(),
 				tmpGame->GetName(),
-				reporterDBId != 0 ? &reporterDBId : NULL
+				reporterDBId != 0 ? &reporterDBId : nullptr
 			);
 		} else {
 			boost::shared_ptr<NetPacket> packet(new NetPacket);
@@ -1934,7 +1934,7 @@ ServerLobbyThread::InternalResubscribeMsg(boost::shared_ptr<SessionData> session
 				packet->GetMsg()->present = PokerTHMessage_PR_statisticsMessage;
 				StatisticsMessage_t *netStatistics = &packet->GetMsg()->choice.statisticsMessage;
 
-				StatisticsData_t *data = (StatisticsData_t *)calloc(1, sizeof(struct StatisticsData));
+				StatisticsData_t *data = static_cast<StatisticsData_t *>(calloc(1, sizeof(struct StatisticsData)));
 				data->statisticsType = statisticsType_statNumberOfPlayers;
 				data->statisticsValue = m_sessionManager.GetRawSessionCount() + m_gameSessionManager.GetRawSessionCount();
 				ASN_SEQUENCE_ADD(&netStatistics->statisticsData.list, data);

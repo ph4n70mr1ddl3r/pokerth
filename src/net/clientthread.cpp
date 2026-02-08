@@ -970,7 +970,7 @@ ClientThread::GetCacheServerListFileName()
 void
 ClientThread::SslInfoCallback(const SSL *ssl, int where, int ret)
 {
-    const char *state = SSL_state_string_long((SSL*)ssl);
+    const char *state = SSL_state_string_long(const_cast<SSL*>(ssl));
     
     if (where & SSL_CB_LOOP) {
         qDebug() << "[TLS-HANDSHAKE] Loop:" << (state ? state : "unknown");

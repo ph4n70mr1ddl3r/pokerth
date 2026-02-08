@@ -45,7 +45,7 @@ class SoundEvents
 {
 public:
 	SoundEvents(ConfigFile*);
-	~SoundEvents();
+	~SoundEvents() noexcept;
 
 	void blindsWereSet(int sB);
 	void newGameStarts();

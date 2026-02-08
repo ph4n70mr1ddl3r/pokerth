@@ -39,7 +39,7 @@ class MyStyleListItem : public QTreeWidgetItem
 {
 public:
 	MyStyleListItem(QStringList, QTreeWidget *);
-	~MyStyleListItem();
+	~MyStyleListItem() noexcept;
 
 	virtual bool operator<( const QTreeWidgetItem &) const;
 };

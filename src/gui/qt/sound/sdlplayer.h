@@ -52,7 +52,7 @@ class SDLPlayer : public QObject
 public:
 	SDLPlayer(ConfigFile*);
 
-	~SDLPlayer();
+	~SDLPlayer() noexcept;
 
 	void initAudio();
 	void playSound(std::string, int playerID);

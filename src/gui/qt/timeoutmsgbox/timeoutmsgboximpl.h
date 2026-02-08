@@ -51,7 +51,7 @@ class timeoutMsgBoxImpl : public QMessageBox
 public:
 	timeoutMsgBoxImpl(QMainWindow*);
 
-	~timeoutMsgBoxImpl();
+	~timeoutMsgBoxImpl() noexcept;
 
 public slots:
 

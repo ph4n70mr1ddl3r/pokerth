@@ -9,7 +9,7 @@ class QtAudioPlayer : public QObject
     Q_OBJECT
 public:
     QtAudioPlayer(ConfigFile* config);
-    ~QtAudioPlayer();
+    ~QtAudioPlayer() noexcept;
 
     void initAudio();
     void playSound(std::string audioName, int playerID);

@@ -39,7 +39,7 @@
 using namespace std;
 
 SDLPlayer::SDLPlayer(ConfigFile *c)
-	: sound(NULL), soundData(NULL), currentChannel(0), audioEnabled(false), myConfig(c)
+	: sound(nullptr), soundData(nullptr), currentChannel(0), audioEnabled(false), myConfig(c)
 {
 	myAppDataPath = QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str());
 	SDL_Init(SDL_INIT_AUDIO);
@@ -60,7 +60,7 @@ void SDLPlayer::initAudio()
 		Uint16	audio_format = AUDIO_S16; /* 16-bit stereo */
 		int		audio_channels = 2;
 		int		audio_buffers = 4096;
-		sound = NULL;
+		sound = nullptr;
 
 		if( Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) == 0) {
 			Mix_QuerySpec(&audio_rate, &audio_format, &audio_channels);
@@ -150,9 +150,9 @@ void SDLPlayer::closeAudio()
 	if(audioEnabled) {
 		Mix_HaltChannel(currentChannel);
 		Mix_FreeChunk(sound);
-		sound = NULL;
+		sound = nullptr;
 		delete[] soundData;
-		soundData = NULL;
+		soundData = nullptr;
 		Mix_CloseAudio();
 		qDebug() << "Mix_CloseAudio()";
 		audioEnabled = false;

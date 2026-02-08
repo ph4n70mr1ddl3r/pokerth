@@ -45,7 +45,7 @@ class QtHelper
 public:
 	QtHelper();
 
-	~QtHelper();
+	~QtHelper() noexcept;
 
 	std::string stringToUtf8(const std::string &);
 	std::string stringFromUtf8(const std::string &);

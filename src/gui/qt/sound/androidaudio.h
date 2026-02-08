@@ -50,7 +50,7 @@ class AndroidAudio : public QObject
 	Q_OBJECT
 public:
 	explicit AndroidAudio(ConfigFile *c, QObject *parent = 0);
-	~AndroidAudio();
+	~AndroidAudio() noexcept;
 
 signals:
 

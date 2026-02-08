@@ -215,7 +215,7 @@ AvatarManager::AvatarFileToNetPackets(const string &fileName, unsigned requestId
 				avatarFile->GetMsg()->set_messagetype(PokerTHMessage::Type_AvatarDataMessage);
 				AvatarDataMessage *netFile = avatarFile->GetMsg()->mutable_avatardatamessage();
 				netFile->set_requestid(requestId);
-				netFile->set_avatarblock((const char *)&tmpData[0], numBytes);
+				netFile->set_avatarblock(reinterpret_cast<const char *>(tmpData.data()), numBytes);
 				packets.push_back(avatarFile);
 			}
 		} while (numBytes);

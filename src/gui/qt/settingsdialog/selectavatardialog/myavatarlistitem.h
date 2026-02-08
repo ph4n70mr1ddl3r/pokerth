@@ -40,7 +40,7 @@ class MyAvatarListItem : public QListWidgetItem
 public:
 	MyAvatarListItem(QListWidget*);
 
-	~MyAvatarListItem();
+	~MyAvatarListItem() noexcept;
 
 	void setMyLink(QString theValue)
 	{

@@ -40,7 +40,7 @@ class MyAvatarButton : public QPushButton
 public:
 	MyAvatarButton(QGroupBox*);
 
-	~MyAvatarButton();
+	~MyAvatarButton() noexcept;
 
 	void setMyLink(QString theValue)
 	{
