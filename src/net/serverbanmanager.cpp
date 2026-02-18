@@ -216,8 +216,8 @@ ServerBanManager::IsIPAddressBanned(const std::string &ipAddress) const
 void
 ServerBanManager::InitGameNameBadWordList(const std::list<string> &badWordList)
 {
-	list<string>::const_iterator i = badWordList.begin();
-	list<string>::const_iterator end = badWordList.end();
+	auto i = badWordList.begin();
+	auto end = badWordList.end();
 	while (i != end) {
 		m_gameNameBadWordFilter.push_back(boost::regex(*i, boost::regex::extended | boost::regex::icase));
 		++i;

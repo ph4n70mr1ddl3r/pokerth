@@ -317,8 +317,7 @@ void CleanerConfig::writeBuffer() const
 
 			tmpElement.setAttribute("type", "list");
 			list<string> tempList = configBufferList[i].defaultListValue;
-			list<string>::iterator it;
-			for (it = tempList.begin(); it != tempList.end(); ++it)
+			for (auto it = tempList.begin(); it != tempList.end(); ++it)
 			{
 
 				QDomElement tmpSubElement = xmlDoc.createElement(QString::fromStdString(configBufferList[i].defaultValue));
@@ -369,8 +368,7 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 
 				tmpElement.setAttribute("type", "list");
 				list<string> tempList = configList[i].defaultListValue;
-				list<string>::iterator it;
-				for (it = tempList.begin(); it != tempList.end(); ++it)
+				for (auto it = tempList.begin(); it != tempList.end(); ++it)
 				{
 
 					QDomElement tmpSubElement = xmlDoc.createElement(QString::fromStdString(configBufferList[i].defaultValue));
@@ -453,10 +451,9 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 									tempStringList2.push_back(n.attribute("value").toStdString());
 								}
 
-								tmpElement.setAttribute("type", "list");
-								list<string> tempList = tempStringList2;
-								list<string>::iterator it;
-								for (it = tempList.begin(); it != tempList.end(); ++it)
+						tmpElement.setAttribute("type", "list");
+						list<string> tempList = tempStringList2;
+						for (auto it = tempList.begin(); it != tempList.end(); ++it)
 								{
 									QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(tempString1));
 									tmpElement.appendChild(tmpSubElement);
@@ -477,10 +474,7 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 
 						tmpElement.setAttribute("type", "list");
 						list<string> tempList = configList[i].defaultListValue;
-						list<string>::iterator it;
-						// for(it = tempList.begin(); it != tempList.end(); ++it) {
-
-						for (it = tempList.begin(); it != tempList.end(); ++it)
+						for (auto it = tempList.begin(); it != tempList.end(); ++it)
 						{
 
 							QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(configList[i].defaultValue));
@@ -587,8 +581,7 @@ list<int> CleanerConfig::readConfigIntList(string varName) const
 
 	istringstream isst;
 	int tempInt;
-	list<string>::iterator it;
-	for (it = tempStringList.begin(); it != tempStringList.end(); ++it)
+	for (auto it = tempStringList.begin(); it != tempStringList.end(); ++it)
 	{
 
 		isst.str(*it);
@@ -630,8 +623,7 @@ void CleanerConfig::writeConfigIntList(string varName, list<int> varCont)
 
 		if (configBufferList[i].name == varName)
 		{
-			list<int>::iterator it;
-			for (it = varCont.begin(); it != varCont.end(); ++it)
+			for (auto it = varCont.begin(); it != varCont.end(); ++it)
 			{
 
 				intToString << (*it);

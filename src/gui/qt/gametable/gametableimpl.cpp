@@ -2430,11 +2430,10 @@ void gameTableImpl::postRiverRunAnimation3()
 	}
 
 	// log side pot winners -> TODO
-	list<unsigned>::iterator it_int;
-	for(it_c=activePlayerList->begin(); it_c!=activePlayerList->end(); ++it_c) {
+	for(auto it_c=activePlayerList->begin(); it_c!=activePlayerList->end(); ++it_c) {
 		if((*it_c)->getMyAction() != PLAYER_ACTION_FOLD && (*it_c)->getMyCardsValueInt() != currentHand->getCurrentBeRo()->getHighestCardsValue() ) {
 
-			for(it_int = winners.begin(); it_int != winners.end(); ++it_int) {
+			for(auto it_int = winners.begin(); it_int != winners.end(); ++it_int) {
 				if((*it_int) == (*it_c)->getMyUniqueID()) {
 					myGuiLog->logPlayerWinsMsg(QString::fromUtf8((*it_c)->getMyName().c_str()), (*it_c)->getLastMoneyWon(), false);
 				}

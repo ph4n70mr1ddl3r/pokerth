@@ -325,8 +325,8 @@ void LocalBoard::determinePlayerNeedToShowCards()
 
 		level.push_back(level_tmp);
 
-		std::list<std::pair<int,int> >::iterator level_it;
-		std::list<std::pair<int,int> >::iterator next_level_it;
+		auto level_it = level.begin();
+		auto next_level_it = level.begin();
 
 		it_c = lastActionPlayerIt;
 		++it_c;

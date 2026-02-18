@@ -5131,7 +5131,7 @@ bool LocalPlayer::isMuted() const
 bool LocalPlayer::checkIfINeedToShowCards()
 {
 	std::list<unsigned> playerNeedToShowCardsList = currentHand->getBoard()->getPlayerNeedToShowCards();
-	for(std::list<unsigned>::iterator it = playerNeedToShowCardsList.begin(); it != playerNeedToShowCardsList.end(); ++it) {
+	for(auto it = playerNeedToShowCardsList.begin(); it != playerNeedToShowCardsList.end(); ++it) {
 		if(*it == myUniqueID) return true;
 	}
 

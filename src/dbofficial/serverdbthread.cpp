@@ -580,9 +580,9 @@ ServerDBThread::HandleNextQuery()
 					mysqlpp::Query paramQuery = m_connData->conn.query();
 					paramQuery << "SET ";
 					unsigned counter = 1;
-					list<string>::iterator i = paramList.begin();
-					list<string>::iterator end = paramList.end();
-					while (i != end) {
+				auto i = paramList.begin();
+				auto end = paramList.end();
+				while (i != end) {
 						if (counter > 1) {
 							paramQuery << ", ";
 							executeQuery << ", ";

@@ -62,12 +62,11 @@ HashBuf::ToString() const
 {
 	// Create a hex-based string from the MD5 data.
 	string retValue;
-	char tmpBuf[2 + 1];
-	tmpBuf[sizeof(tmpBuf) - 1] = 0;
 	const unsigned char *tmpData = GetData();
 	for (int i = 0; i < GetDataSize(); i++) {
-		snprintf(tmpBuf, sizeof(tmpBuf), "%02x", tmpData[i]);
-		retValue += tmpBuf;
+		char buf[3];
+		std::snprintf(buf, sizeof(buf), "%02x", tmpData[i]);
+		retValue += buf;
 	}
 	return retValue;
 }
@@ -125,48 +124,48 @@ HashBuf::operator<(const HashBuf &other) const
 
 MD5Buf::MD5Buf()
 {
-	memset(m_data, 0, sizeof(m_data));
+	m_data.fill(0);
 }
 
 unsigned char *
 MD5Buf::GetData()
 {
-	return m_data;
+	return m_data.data();
 }
 
 const unsigned char *
 MD5Buf::GetData() const
 {
-	return m_data;
+	return m_data.data();
 }
 
 int
 MD5Buf::GetDataSize() const
 {
-	return sizeof(m_data);
+	return static_cast<int>(m_data.size());
 }
 
 SHA1Buf::SHA1Buf()
 {
-	memset(m_data, 0, sizeof(m_data));
+	m_data.fill(0);
 }
 
 unsigned char *
 SHA1Buf::GetData()
 {
-	return m_data;
+	return m_data.data();
 }
 
 const unsigned char *
 SHA1Buf::GetData() const
 {
-	return m_data;
+	return m_data.data();
 }
 
 int
 SHA1Buf::GetDataSize() const
 {
-	return sizeof(m_data);
+	return static_cast<int>(m_data.size());
 }
 
 bool

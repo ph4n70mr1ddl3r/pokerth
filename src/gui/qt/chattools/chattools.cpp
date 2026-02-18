@@ -147,8 +147,7 @@ void ChatTools::receiveMessage(QString playerName, QString message, bool pm)
 
 		bool nickFoundOnIgnoreList = false;
 		bool chatBotWarnNickFoundOnIgnoreList = false;
-		list<std::string>::iterator it1;
-		for(it1=ignoreList.begin(); it1 != ignoreList.end(); ++it1) {
+		for(auto it1=ignoreList.begin(); it1 != ignoreList.end(); ++it1) {
 			if(playerName == QString::fromUtf8(it1->c_str())) {
 				nickFoundOnIgnoreList = true;
 			}

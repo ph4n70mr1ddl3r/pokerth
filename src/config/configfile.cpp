@@ -508,10 +508,9 @@ void ConfigFile::writeBuffer() const
 			if (configBufferList[i].type == CONFIG_TYPE_INT_LIST || configBufferList[i].type == CONFIG_TYPE_STRING_LIST)
 			{
 
-				tmpElement.setAttribute("type", "list");
-				list<string> tempList = configBufferList[i].defaultListValue;
-				list<string>::iterator it;
-				for (it = tempList.begin(); it != tempList.end(); ++it)
+			tmpElement.setAttribute("type", "list");
+			list<string> tempList = configBufferList[i].defaultListValue;
+			for (auto it = tempList.begin(); it != tempList.end(); ++it)
 				{
 
 					QDomElement tmpSubElement = xmlDoc.createElement(QString::fromStdString(configBufferList[i].defaultValue));
@@ -566,8 +565,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState)
 
 				tmpElement.setAttribute("type", "list");
 				list<string> tempList = configList[i].defaultListValue;
-				list<string>::iterator it;
-				for (it = tempList.begin(); it != tempList.end(); ++it)
+				for (auto it = tempList.begin(); it != tempList.end(); ++it)
 				{
 
 					QDomElement tmpSubElement = xmlDoc.createElement(QString::fromStdString(configBufferList[i].defaultValue));
@@ -690,8 +688,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState)
 
 								tmpElement.setAttribute("type", "list");
 								list<string> tempList = tempStringList2;
-								list<string>::iterator it;
-								for (it = tempList.begin(); it != tempList.end(); ++it)
+				for (auto it2 = tempList.begin(); it2 != tempList.end(); ++it2)
 								{
 
 									QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(tempString1));
@@ -711,12 +708,9 @@ void ConfigFile::updateConfig(ConfigState myConfigState)
 					if (configList[i].type == CONFIG_TYPE_INT_LIST || configBufferList[i].type == CONFIG_TYPE_STRING_LIST)
 					{
 
-						tmpElement.setAttribute("type", "list");
-						list<string> tempList = configList[i].defaultListValue;
-						list<string>::iterator it;
-						// for(it = tempList.begin(); it != tempList.end(); ++it) {
-
-						for (it = tempList.begin(); it != tempList.end(); ++it)
+					tmpElement.setAttribute("type", "list");
+					list<string> tempList = configList[i].defaultListValue;
+					for (auto it = tempList.begin(); it != tempList.end(); ++it)
 						{
 
 							QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(configList[i].defaultValue));
@@ -812,8 +806,7 @@ list<int> ConfigFile::readConfigIntList(string varName) const
 
 	istringstream isst;
 	int tempInt;
-	list<string>::iterator it;
-	for (it = tempStringList.begin(); it != tempStringList.end(); ++it)
+	for (auto it = tempStringList.begin(); it != tempStringList.end(); ++it)
 	{
 
 		isst.str(*it);
@@ -876,8 +869,7 @@ void ConfigFile::writeConfigIntList(string varName, list<int> varCont)
 
 		if (configBufferList[i].name == varName)
 		{
-			list<int>::iterator it;
-			for (it = varCont.begin(); it != varCont.end(); ++it)
+			for (auto it = varCont.begin(); it != varCont.end(); ++it)
 			{
 
 				intToString << (*it);

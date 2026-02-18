@@ -231,9 +231,8 @@ void settingsDialogImpl::prepareDialog()
 	}
 
 	std::list<std::string> playerIgnoreList = myConfig->readConfigStringList("PlayerIgnoreList");
-	std::list<std::string>::iterator it5;
 	treeWidget_internetGameIgnoredPlayers->clear();
-	for(it5= playerIgnoreList.begin(); it5 != playerIgnoreList.end(); ++it5) {
+	for(auto it5= playerIgnoreList.begin(); it5 != playerIgnoreList.end(); ++it5) {
 		QTreeWidgetItem *item = new QTreeWidgetItem(treeWidget_internetGameIgnoredPlayers);
 		item->setText(0, QString::fromUtf8(it5->c_str()));
 	}
@@ -319,8 +318,7 @@ void settingsDialogImpl::prepareDialog()
 
 	//load secondary styles into list (if fallback no entry)
 	myGameTableStylesList = myConfig->readConfigStringList("GameTableStylesList");
-	list<std::string>::iterator it1;
-	for(it1= myGameTableStylesList.begin(); it1 != myGameTableStylesList.end(); ++it1) {
+	for(auto it1= myGameTableStylesList.begin(); it1 != myGameTableStylesList.end(); ++it1) {
 		GameTableStyleReader nextStyle(myConfig, this);
 		nextStyle.readStyleFile(QString::fromUtf8(it1->c_str()));
 		if(!nextStyle.getFallBack() && nextStyle.getLoadedSuccessfull()) {
@@ -420,8 +418,7 @@ void settingsDialogImpl::prepareDialog()
 #endif
 	//load secondary card styles into list (if fallback no entry)
 	myCardDeckStylesList = myConfig->readConfigStringList("CardDeckStylesList");
-	list<std::string>::iterator it2;
-	for(it2= myCardDeckStylesList.begin(); it2 != myCardDeckStylesList.end(); ++it2) {
+	for(auto it2= myCardDeckStylesList.begin(); it2 != myCardDeckStylesList.end(); ++it2) {
 		CardDeckStyleReader nextStyle(myConfig, this);
 		nextStyle.readStyleFile(QString::fromUtf8(it2->c_str()));
 		if(!nextStyle.getFallBack() && nextStyle.getLoadedSuccessfull()) {
@@ -848,8 +845,7 @@ void settingsDialogImpl::callNetManualBlindsOrderDialog()
 	myManualBlindsOrderDialog->listWidget_blinds->clear();
 	myManualBlindsOrderDialog->spinBox_input->setMinimum(spinBox_netFirstSmallBlind->value());
 
-	list<int>::iterator it1;
-	for(it1= myNetManualBlindsList.begin(); it1 != myNetManualBlindsList.end(); ++it1) {
+	for(auto it1= myNetManualBlindsList.begin(); it1 != myNetManualBlindsList.end(); ++it1) {
 		myManualBlindsOrderDialog->listWidget_blinds->addItem(QString::number(*it1,10));
 	}
 	myManualBlindsOrderDialog->sortBlindsList();

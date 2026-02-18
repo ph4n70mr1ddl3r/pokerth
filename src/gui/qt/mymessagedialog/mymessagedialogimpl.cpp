@@ -64,8 +64,7 @@ int myMessageDialogImpl::exec(int messageId, QString msg, QString title, QPixmap
 	currentMsgId = messageId;
 
 	currentMsgShowList = myConfig->readConfigStringList("IfInfoMessageShowList");
-	list<std::string>::iterator it1;
-	for(it1= currentMsgShowList.begin(); it1 != currentMsgShowList.end(); ++it1) {
+	for(auto it1= currentMsgShowList.begin(); it1 != currentMsgShowList.end(); ++it1) {
 
 		QString tmpString = QString::fromUtf8(it1->c_str());
 		if(QString("%1").arg(messageId) ==  tmpString.split(",").at(1)) {
@@ -107,8 +106,7 @@ void myMessageDialogImpl::show(int messageId, QString msg, QString title, QPixma
 	currentMsgId = messageId;
 
 	currentMsgShowList = myConfig->readConfigStringList("IfInfoMessageShowList");
-	list<std::string>::iterator it1;
-	for(it1= currentMsgShowList.begin(); it1 != currentMsgShowList.end(); ++it1) {
+	for(auto it1= currentMsgShowList.begin(); it1 != currentMsgShowList.end(); ++it1) {
 
 		QString tmpString = QString::fromUtf8(it1->c_str());
 		if(QString("%1").arg(messageId) ==  tmpString.split(",").at(1)) {
@@ -154,8 +152,7 @@ void myMessageDialogImpl::writeConfig()
 {
 	if(checkBox->isChecked()) {
 
-		list<std::string>::iterator it1;
-		for(it1= currentMsgShowList.begin(); it1 != currentMsgShowList.end(); ++it1) {
+		for(auto it1= currentMsgShowList.begin(); it1 != currentMsgShowList.end(); ++it1) {
 
 			QString tmpString = QString::fromUtf8(it1->c_str());
 			if(QString("%1").arg(currentMsgId) == tmpString.split(",").at(1)) {
@@ -176,8 +173,7 @@ bool myMessageDialogImpl::checkIfMesssageWillBeDisplayed(int id)
 	bool show = true;
 
 	currentMsgShowList = myConfig->readConfigStringList("IfInfoMessageShowList");
-	list<std::string>::iterator it1;
-	for(it1= currentMsgShowList.begin(); it1 != currentMsgShowList.end(); ++it1) {
+	for(auto it1= currentMsgShowList.begin(); it1 != currentMsgShowList.end(); ++it1) {
 
 		QString tmpString = QString::fromUtf8(it1->c_str());
 		if(QString("%1").arg(id) ==  tmpString.split(",").at(1)) {

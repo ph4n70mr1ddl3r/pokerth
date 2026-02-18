@@ -587,7 +587,6 @@ Log::logHandWinner(PlayerList activePlayerList, int highestCardsValue, std::list
 
 
 	PlayerListConstIterator it_c;
-	list<unsigned>::iterator it_int;
 
 	// log winner
 	for(it_c=activePlayerList->begin(); it_c!=activePlayerList->end(); ++it_c) {
@@ -600,7 +599,7 @@ Log::logHandWinner(PlayerList activePlayerList, int highestCardsValue, std::list
 	for(it_c=activePlayerList->begin(); it_c!=activePlayerList->end(); ++it_c) {
 		if((*it_c)->getMyAction() != PLAYER_ACTION_FOLD && (*it_c)->getMyCardsValueInt() != highestCardsValue ) {
 
-			for(it_int = winners.begin(); it_int != winners.end(); ++it_int) {
+			for(auto it_int = winners.begin(); it_int != winners.end(); ++it_int) {
 				if((*it_int) == (*it_c)->getMyUniqueID()) {
 					logPlayerAction((*it_c)->getMyName(),LOG_ACTION_WIN_SIDE_POT,(*it_c)->getLastMoneyWon());
 				}

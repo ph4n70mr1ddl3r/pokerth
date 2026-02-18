@@ -1222,8 +1222,7 @@ void gameLobbyDialogImpl::updateDialogBlinds(const GameData &gameData)
 		label_gameDesc6->show();
 
 		QString blindsListString;
-		std::list<int>::const_iterator it1;
-		for(it1= gameData.manualBlindsList.begin(); it1 != gameData.manualBlindsList.end(); ++it1) {
+		for(auto it1= gameData.manualBlindsList.begin(); it1 != gameData.manualBlindsList.end(); ++it1) {
 			blindsListString.append(QString("%L1").arg(*it1)).append(", ");
 		}
 		blindsListString.remove(blindsListString.length()-2,2);
@@ -1685,8 +1684,7 @@ bool gameLobbyDialogImpl::playerIsOnIgnoreList(unsigned playerId)
 {
 
 	list<std::string> playerIgnoreList = myConfig->readConfigStringList("PlayerIgnoreList");
-	list<std::string>::iterator it1;
-	for(it1= playerIgnoreList.begin(); it1 != playerIgnoreList.end(); ++it1) {
+	for(auto it1= playerIgnoreList.begin(); it1 != playerIgnoreList.end(); ++it1) {
 
 		if(QString::fromUtf8(mySession->getClientPlayerInfo(playerId).playerName.c_str()) == QString::fromUtf8(it1->c_str())) {
 			return true;

@@ -150,13 +150,11 @@ void MyAvatarLabel::setPlayerRating(QString playerInfo)
 	std::list<std::string> tipsList = myW->getMyConfig()->readConfigStringList("PlayerTooltips");
 	std::list<std::string> result;
 	std::string separator="(!#$%)";
-	std::list<std::string>::iterator iterator;
-
 	// Bug #319: https://github.com/pokerth/pokerth/issues/319
 	QString playerName = playerInfoList.at(0);
 	playerName = QUrl::fromPercentEncoding(playerName.toUtf8());
 
-	for(iterator = tipsList.begin(); iterator != tipsList.end(); ++iterator) {
+	for(auto iterator = tipsList.begin(); iterator != tipsList.end(); ++iterator) {
 		tipInfo=QString::fromUtf8(iterator->c_str()).split("(!#$%)", Qt::KeepEmptyParts, Qt::CaseSensitive);
 		if(tipInfo.at(0)==playerName) {
 			result.push_back(tipInfo.at(0).toUtf8().constData()+separator+tipInfo.at(1).toUtf8().constData()+separator+playerInfoList.at(1).toUtf8().constData()+separator);
@@ -254,10 +252,9 @@ void MyAvatarLabel::refreshTooltips()
 int MyAvatarLabel::getPlayerRating(QString playerName)
 {
 	std::list<std::string> tipsList = myW->getMyConfig()->readConfigStringList("PlayerTooltips");
-	std::list<std::string>::iterator iterator;
 	QStringList playerInfo;
 	QString result="0";
-	for(iterator = tipsList.begin(); iterator != tipsList.end(); ++iterator) {
+	for(auto iterator = tipsList.begin(); iterator != tipsList.end(); ++iterator) {
 		playerInfo=QString::fromUtf8(iterator->c_str()).split("(!#$%)", Qt::KeepEmptyParts, Qt::CaseSensitive);
 		if(playerInfo.at(0)==playerName) {
 			result=playerInfo.at(2);
@@ -271,9 +268,8 @@ int MyAvatarLabel::getPlayerRating(QString playerName)
 QString MyAvatarLabel::getPlayerTip(QString playerName)
 {
 	std::list<std::string> tipsList = myW->getMyConfig()->readConfigStringList("PlayerTooltips");
-	std::list<std::string>::iterator iterator;
 	QStringList playerInfo;
-	for(iterator = tipsList.begin(); iterator != tipsList.end(); ++iterator) {
+	for(auto iterator = tipsList.begin(); iterator != tipsList.end(); ++iterator) {
 		playerInfo=QString::fromUtf8(iterator->c_str()).split("(!#$%)", Qt::KeepEmptyParts, Qt::CaseSensitive);
 		if(playerInfo.at(0)==playerName)return playerInfo.at(1);
 	}
@@ -404,8 +400,7 @@ bool MyAvatarLabel::playerIsOnIgnoreList(QString playerName)
 {
 
 	list<std::string> playerIgnoreList = myW->getMyConfig()->readConfigStringList("PlayerIgnoreList");
-	list<std::string>::iterator it1;
-	for(it1= playerIgnoreList.begin(); it1 != playerIgnoreList.end(); ++it1) {
+	for(auto it1= playerIgnoreList.begin(); it1 != playerIgnoreList.end(); ++it1) {
 
 		if(playerName == QString::fromUtf8(it1->c_str())) {
 			return true;

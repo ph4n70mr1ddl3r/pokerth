@@ -159,9 +159,9 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 				} else if (command == "listban") {
 					list<string> banList;
 					GetLobbyThread().GetBanManager().GetBanList(banList);
-					list<string>::const_iterator i = banList.begin();
-					list<string>::const_iterator end = banList.end();
-					while (i != end) {
+				auto i = banList.begin();
+				auto end = banList.end();
+				while (i != end) {
 						m_ircAdminThread->SendChatMessage(*i);
 						++i;
 					}

@@ -35,11 +35,12 @@
 
 #include <string>
 #include <vector>
+#include <array>
 
-#define MD5_DATA_SIZE		16
-#define SHA1_DATA_SIZE		20
+constexpr int MD5_DATA_SIZE = 16;
+constexpr int SHA1_DATA_SIZE = 20;
 
-#define AES_BLOCK_SIZE		16
+constexpr int AES_BLOCK_SIZE = 16;
 #define ADD_PADDING(x) ((((x) + 15) >> 4) << 4)
 
 class HashBuf
@@ -64,12 +65,12 @@ class MD5Buf : public HashBuf
 public:
 	MD5Buf();
 
-	virtual unsigned char *GetData();
-	virtual const unsigned char *GetData() const;
-	virtual int GetDataSize() const;
+	unsigned char *GetData() override;
+	const unsigned char *GetData() const override;
+	int GetDataSize() const override;
 
 private:
-	unsigned char m_data[MD5_DATA_SIZE];
+	std::array<unsigned char, MD5_DATA_SIZE> m_data;
 };
 
 class SHA1Buf : public HashBuf
@@ -77,11 +78,12 @@ class SHA1Buf : public HashBuf
 public:
 	SHA1Buf();
 
-	virtual unsigned char *GetData();
-	virtual const unsigned char *GetData() const;
-	virtual int GetDataSize() const;
+	unsigned char *GetData() override;
+	const unsigned char *GetData() const override;
+	int GetDataSize() const override;
 
-	unsigned char m_data[SHA1_DATA_SIZE];
+private:
+	std::array<unsigned char, SHA1_DATA_SIZE> m_data;
 };
 
 class CryptHelper

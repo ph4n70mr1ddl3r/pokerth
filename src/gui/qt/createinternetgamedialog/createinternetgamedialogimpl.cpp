@@ -221,9 +221,7 @@ void createInternetGameDialogImpl::gameTypeChanged()
 		myChangeCompleteBlindsDialog->spinBox_input->setMinimum(myChangeCompleteBlindsDialog->spinBox_firstSmallBlind->value()+1);
 
 		std::list<int> myBlindsList = myConfig->readConfigIntList("NetManualBlindsList");
-		std::list<int>::iterator it1;
-
-		for(it1= myBlindsList.begin(); it1 != myBlindsList.end(); ++it1) {
+		for(auto it1= myBlindsList.begin(); it1 != myBlindsList.end(); ++it1) {
 			myChangeCompleteBlindsDialog->listWidget_blinds->addItem(QString::number(*it1,10));
 		}
 		myChangeCompleteBlindsDialog->sortBlindsList();

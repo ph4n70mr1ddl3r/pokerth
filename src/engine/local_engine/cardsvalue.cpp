@@ -742,8 +742,7 @@ std::string CardsValue::determineHandName(int myCardsValueInt, PlayerList active
 	}
 
 	// erase own cardsValueInt
-	std::list<int>::iterator it;
-	for(it = shownCardsValueInt.begin(); it != shownCardsValueInt.end(); ++it) {
+	for(auto it = shownCardsValueInt.begin(); it != shownCardsValueInt.end(); ++it) {
 		if((*it) == myCardsValueInt) {
 			shownCardsValueInt.erase(it);
 			break;
@@ -751,7 +750,7 @@ std::string CardsValue::determineHandName(int myCardsValueInt, PlayerList active
 	}
 
 	std::list<std::string> cardString = translateCardsValueCode(myCardsValueInt);
-	std::list<std::string>::const_iterator cardStringIt_c = cardString.begin();
+	auto cardStringIt_c = cardString.begin();
 
 	std::string handName;
 
