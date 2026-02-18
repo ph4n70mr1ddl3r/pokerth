@@ -217,12 +217,12 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 						}
 
 						if(j<mod) {
-							(*it)->setMyCash( (*it)->getMyCash() + (int)((potLevel[1])/winnerCount) + 1);
+							(*it)->setMyCash( (*it)->getMyCash() + static_cast<int>((potLevel[1])/winnerCount) + 1);
 							// filling winners vector
 							winners.push_back((*it)->getMyUniqueID());
 							(*it)->setLastMoneyWon( (*it)->getLastMoneyWon() + ((potLevel[1])/winnerCount) + 1 );
 						} else {
-							(*it)->setMyCash( (*it)->getMyCash() + (int)((potLevel[1])/winnerCount));
+							(*it)->setMyCash( (*it)->getMyCash() + static_cast<int>((potLevel[1])/winnerCount));
 							// filling winners vector
 							winners.push_back((*it)->getMyUniqueID());
 							(*it)->setLastMoneyWon( (*it)->getLastMoneyWon() + (potLevel[1])/winnerCount );

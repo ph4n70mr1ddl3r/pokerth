@@ -128,8 +128,8 @@ void SDLPlayer::playSound(string audioString, int playerID)
 			}
 
 			QDataStream in(&myFile);
-			soundData = new Uint8[(int)myFile.size()];
-			in.readRawData( (char*)soundData, (int)myFile.size() );
+			soundData = new Uint8[static_cast<int>(myFile.size())];
+			in.readRawData( reinterpret_cast<char*>(soundData), static_cast<int>(myFile.size()) );
 			sound = Mix_QuickLoad_WAV(soundData);
 
 			// set channel 0 to settings volume

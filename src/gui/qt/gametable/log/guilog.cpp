@@ -56,7 +56,7 @@ extern "C" int sqlite3_open(const char *filename, sqlite3 **ppDb)
 {
 	if (!ppDb) return SQLITE_ERROR;
 	sqlite3 *p = new sqlite3();
-	p->connName = QString("guilog_conn_%1").arg((qulonglong)QDateTime::currentMSecsSinceEpoch());
+	p->connName = QString("guilog_conn_%1").arg(static_cast<qulonglong>(QDateTime::currentMSecsSinceEpoch()));
 	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", p->connName);
 	db.setDatabaseName(QString::fromUtf8(filename));
 	if (!db.open()) {

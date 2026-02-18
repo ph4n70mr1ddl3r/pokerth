@@ -68,7 +68,7 @@ bool AndroidSoundEffect::load()
 	}
 
 	int size = 0;
-	lSoundFile.read((char *)&size, 4);
+	lSoundFile.read(reinterpret_cast<char *>(&size), 4);
 //    qDebug() << "    size:" << size;
 
 	lSoundFile.read(id, 4);
@@ -81,29 +81,29 @@ bool AndroidSoundEffect::load()
 	lSoundFile.read(id, 4); // "fmt "
 
 	int format_length = 0;
-	lSoundFile.read((char *)&format_length, 4);
+	lSoundFile.read(reinterpret_cast<char *>(&format_length), 4);
 //    qDebug() << "    format_length:" << format_length;
 
 	short format_tag = 0;
-	lSoundFile.read((char *)&format_tag, 2);
+	lSoundFile.read(reinterpret_cast<char *>(&format_tag), 2);
 
 	short n_channels = 0;
-	lSoundFile.read((char *)&n_channels, 2);
+	lSoundFile.read(reinterpret_cast<char *>(&n_channels), 2);
 //    qDebug() << "    n_channels:" << n_channels;
 
 	int sample_rate = 0;
-	lSoundFile.read((char *)&sample_rate, 4);
+	lSoundFile.read(reinterpret_cast<char *>(&sample_rate), 4);
 //    qDebug() << "    sample_rate:" << sample_rate;
 
 	int avg_bytes_sec = 0;
-	lSoundFile.read((char *)&avg_bytes_sec, 4);
+	lSoundFile.read(reinterpret_cast<char *>(&avg_bytes_sec), 4);
 //    qDebug() << "    avg_bytes_sec:" << avg_bytes_sec;
 
 	short block_align = 0;
-	lSoundFile.read((char *)&block_align, 2);
+	lSoundFile.read(reinterpret_cast<char *>(&block_align), 2);
 
 	short bits_per_sample = 0;
-	lSoundFile.read((char *)&bits_per_sample, 2);
+	lSoundFile.read(reinterpret_cast<char *>(&bits_per_sample), 2);
 //    qDebug() << "    bits_per_sample:" << bits_per_sample;
 
 	lSoundFile.read(id, 4);
@@ -113,7 +113,7 @@ bool AndroidSoundEffect::load()
 		return false;
 	}
 
-	lSoundFile.read((char *)&mLength, 4);
+	lSoundFile.read(reinterpret_cast<char *>(&mLength), 4);
 
 //    qDebug() << "    reading data:" << mLength;
 

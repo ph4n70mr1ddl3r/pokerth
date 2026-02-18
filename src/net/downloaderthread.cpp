@@ -108,7 +108,7 @@ DownloaderThread::Main()
 					unsigned fileSize = static_cast<unsigned>(posDiff);
 
 					vector<unsigned char> fileData(fileSize);
-					instream.read((char *)&fileData[0], fileSize);
+					instream.read(reinterpret_cast<char *>(&fileData[0]), fileSize);
 					instream.close();
 					remove(filepath);
 

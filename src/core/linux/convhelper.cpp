@@ -67,7 +67,7 @@ ConvHelper::NativeToUtf8(const std::string &inStr)
 	//nl_langinfo(CODESET)
 	iconv_t conversion = iconv_open("UTF-8", "ISO-8859-1");
 
-	if (conversion == (iconv_t)(-1))
+	if (conversion == reinterpret_cast<iconv_t>(-1))
 		LOG_ERROR("iconv_open() failed: " << strerror(errno));
 	else {
 		size_t retval = iconv(conversion, &inbuf, &insize, &outbuf, &outsize);
@@ -100,7 +100,7 @@ ConvHelper::Utf8ToNative(const std::string &inStr)
 
 	iconv_t conversion = iconv_open("ISO-8859-1", "UTF-8");
 
-	if (conversion == (iconv_t)(-1))
+	if (conversion == reinterpret_cast<iconv_t>(-1))
 		LOG_ERROR("iconv_open() failed: " << strerror(errno));
 	else {
 		size_t retval = iconv(conversion, &inbuf, &insize, &outbuf, &outsize);

@@ -1751,7 +1751,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 			isBigBlind = true;
 		} else { // no blind -> log
 			if (netActionDone.playeraction()) {
-				assert((int)netActionDone.totalplayerbet() >= tmpPlayer->getMySet());
+				assert(static_cast<int>(netActionDone.totalplayerbet()) >= tmpPlayer->getMySet());
 				client->GetGui().logPlayerActionMsg(
 					tmpPlayer->getMyName(),
 					netActionDone.playeraction(),

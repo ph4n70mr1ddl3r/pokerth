@@ -1193,7 +1193,7 @@ void LocalPlayer::preflopEngine()
 
 			for(it_c=currentHand->getActivePlayerList()->begin(); it_c!=currentHand->getActivePlayerList()->end(); ++it_c) {
 				if((*it_c)->getMyType() == PLAYER_TYPE_HUMAN &&  (*it_c)->getMyAction() != PLAYER_ACTION_FOLD) {
-					int aggValue = (int)((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
+					int aggValue = static_cast<int>((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
 					myNiveau[0] -= aggValue;
 					myNiveau[2] -= aggValue;
 				}
@@ -1212,7 +1212,7 @@ void LocalPlayer::preflopEngine()
 	// 	it_c = currentHand->getActivePlayerIt(0);
 	// 	if( it_c != currentHand->getActivePlayerList()->end() ) {
 	// 		if( (*it_c)->getMyAction() != PLAYER_ACTION_FOLD ) {
-	// 			int aggValue = (int)((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
+	// 			int aggValue = static_cast<int>((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
 	// 			myNiveau[0] -= aggValue;
 	// 			myNiveau[2] -= aggValue;
 	// 		}
@@ -1311,7 +1311,7 @@ void LocalPlayer::preflopEngine()
 	// 	cout << sBluff << endl;
 
 	// auf sBluff testen --> raise statt call oder fold
-	if((sBluff < 100/((((int)currentHand->getActivePlayerList()->size()-2)*6)+3) && myOdds < myNiveau[2] && currentHand->getCurrentBeRo()->getHighestSet() == 2*currentHand->getSmallBlind() && !sBluffStatus) || sBluffStatus) {
+	if((sBluff < 100/((static_cast<int>(currentHand->getActivePlayerList()->size())-2)*6)+3) && myOdds < myNiveau[2] && currentHand->getCurrentBeRo()->getHighestSet() == 2*currentHand->getSmallBlind() && !sBluffStatus) || sBluffStatus) {
 
 		// 		cout << "sBLUFF!" << endl;
 		sBluffStatus = true;
@@ -1331,7 +1331,7 @@ void LocalPlayer::preflopEngine()
 		// Standard-Raise-Routine
 		else {
 			// raise-Betrag ermitteln
-			raise = (sBluff/(8-min(7,(int)(currentHand->getActivePlayerList()->size()))))*currentHand->getSmallBlind();
+			raise = (sBluff/(8-min(7,static_cast<int>(currentHand->getActivePlayerList()->size()))))*currentHand->getSmallBlind();
 			// raise-Betrag zu klein -> mindestens Standard-raise
 			// 			if(raise < currentHand->getCurrentBeRo()->getHighestSet()) {
 			// 				raise = currentHand->getCurrentBeRo()->getHighestSet();
@@ -1549,7 +1549,7 @@ void LocalPlayer::flopEngine()
 
 			for(it_c=currentHand->getActivePlayerList()->begin(); it_c!=currentHand->getActivePlayerList()->end(); ++it_c) {
 				if((*it_c)->getMyType() == PLAYER_TYPE_HUMAN &&  (*it_c)->getMyAction() != PLAYER_ACTION_FOLD) {
-					int aggValue = (int)((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
+					int aggValue = static_cast<int>((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
 					myNiveau[0] -= aggValue;
 					myNiveau[1] -= aggValue;
 					myNiveau[2] -= aggValue;
@@ -1568,7 +1568,7 @@ void LocalPlayer::flopEngine()
 	// 	it_c = currentHand->getActivePlayerIt(0);
 	// 	if( it_c != currentHand->getActivePlayerList()->end() ) {
 	// 		if( (*it_c)->getMyAction() != PLAYER_ACTION_FOLD ) {
-	// 			int aggValue = (int)((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
+	// 			int aggValue = static_cast<int>((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
 	// 			for(i=0; i<3; i++) {
 	// 				myNiveau[i] -= aggValue;
 	// 			}
@@ -1619,7 +1619,7 @@ void LocalPlayer::flopEngine()
 				// Standard-Raise-Routine
 			} else {
 				// raise-Betrag ermitteln
-				raise = (((int)myOdds-myNiveau[2])/5)*2*currentHand->getSmallBlind();
+				raise = ((static_cast<int>(myOdds)-myNiveau[2])/5)*2*currentHand->getSmallBlind();
 				// raise-Betrag zu klein -> mindestens Standard-raise
 				// 				if(raise < currentHand->getCurrentBeRo()->getHighestSet()) {
 				// 					raise = currentHand->getCurrentBeRo()->getHighestSet();
@@ -1654,7 +1654,7 @@ void LocalPlayer::flopEngine()
 	} else {
 		// bet
 		if(myOdds >= myNiveau[1]) {
-			bet = (((int)myOdds-myNiveau[1])/8)*2*currentHand->getSmallBlind();
+			bet = ((static_cast<int>(myOdds)-myNiveau[1])/8)*2*currentHand->getSmallBlind();
 			// bet zu klein
 			if(bet == 0) {
 				bet = 2*currentHand->getSmallBlind();
@@ -2243,7 +2243,7 @@ void LocalPlayer::turnEngine()
 
 			for(it_c=currentHand->getActivePlayerList()->begin(); it_c!=currentHand->getActivePlayerList()->end(); ++it_c) {
 				if((*it_c)->getMyType() == PLAYER_TYPE_HUMAN &&  (*it_c)->getMyAction() != PLAYER_ACTION_FOLD) {
-					int aggValue = (int)((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
+					int aggValue = static_cast<int>((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
 					myNiveau[0] -= aggValue;
 					myNiveau[1] -= aggValue;
 					myNiveau[2] -= aggValue;
@@ -2262,7 +2262,7 @@ void LocalPlayer::turnEngine()
 	// 	it_c = currentHand->getActivePlayerIt(0);
 	// 	if( it_c != currentHand->getActivePlayerList()->end() ) {
 	// 		if( (*it_c)->getMyAction() != PLAYER_ACTION_FOLD ) {
-	// 			int aggValue = (int)((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
+	// 			int aggValue = static_cast<int>((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
 	// 			for(i=0; i<3; i++) {
 	// 				myNiveau[i] -= aggValue;
 	// 			}
@@ -2321,7 +2321,7 @@ void LocalPlayer::turnEngine()
 				// Standard-Raise-Routine
 			} else {
 				// raise-Betrag ermitteln
-				raise = (((int)myOdds-myNiveau[2])/4)*2*currentHand->getSmallBlind();
+				raise = ((static_cast<int>(myOdds)-myNiveau[2])/4)*2*currentHand->getSmallBlind();
 				// raise-Betrag zu klein -> mindestens Standard-raise
 				// 				if(raise < currentHand->getCurrentBeRo()->getHighestSet()) {
 				// 					raise = currentHand->getCurrentBeRo()->getHighestSet();
@@ -2356,7 +2356,7 @@ void LocalPlayer::turnEngine()
 	else {
 		// bet
 		if(myOdds >= myNiveau[1]) {
-			bet = (((int)myOdds-myNiveau[1])/6)*2*currentHand->getSmallBlind();
+			bet = ((static_cast<int>(myOdds)-myNiveau[1])/6)*2*currentHand->getSmallBlind();
 			if(bet == 0) {
 				bet = 2*currentHand->getSmallBlind();
 			}
@@ -2770,7 +2770,7 @@ void LocalPlayer::riverEngine()
 
 			for(it_c=currentHand->getActivePlayerList()->begin(); it_c!=currentHand->getActivePlayerList()->end(); ++it_c) {
 				if((*it_c)->getMyType() == PLAYER_TYPE_HUMAN &&  (*it_c)->getMyAction() != PLAYER_ACTION_FOLD) {
-					int aggValue = (int)((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
+					int aggValue = static_cast<int>((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
 					myNiveau[0] -= aggValue;
 					myNiveau[1] -= aggValue;
 					myNiveau[2] -= aggValue;
@@ -2788,7 +2788,7 @@ void LocalPlayer::riverEngine()
 	// 	it_c = currentHand->getActivePlayerIt(0);
 	// 	if( it_c != currentHand->getActivePlayerList()->end() ) {
 	// 		if( (*it_c)->getMyAction() != PLAYER_ACTION_FOLD ) {
-	// 			int aggValue = (int)((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
+	// 			int aggValue = static_cast<int>((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
 	// 			for(i=0; i<3; i++) {
 	// 				myNiveau[i] -= aggValue;
 	// 			}
@@ -2842,7 +2842,7 @@ void LocalPlayer::riverEngine()
 			// Standard-Raise-Routine
 			else {
 				// raise-Betrag ermitteln
-				raise = (((int)myOdds-myNiveau[2])/2)*2*currentHand->getSmallBlind();
+raise = ((static_cast<int>(myOdds)-myNiveau[2])/2)*2*currentHand->getSmallBlind();
 				// raise-Betrag zu klein -> mindestens Standard-raise
 				// 				if(raise < currentHand->getCurrentBeRo()->getHighestSet()) {
 				// 					raise = currentHand->getCurrentBeRo()->getHighestSet();
@@ -2870,7 +2870,7 @@ void LocalPlayer::riverEngine()
 	} else {
 		// bet
 		if(myOdds >= myNiveau[1]) {
-			bet = (((int)myOdds-myNiveau[1])/3)*2*currentHand->getSmallBlind();
+			bet = ((static_cast<int>(myOdds)-myNiveau[1])/3)*2*currentHand->getSmallBlind();
 			if(bet == 0) {
 				bet = 2*currentHand->getSmallBlind();
 			}
@@ -3942,14 +3942,14 @@ int LocalPlayer::flopCardsValue(int* cards)
 					}
 				}
 			} else {
-				// STraight (==4)
-				if(((int)(tempValue/10000)) == 4) {
-					return (((int)(tempValue/1000))*1000 + 200+ (tempValue - ((int)(tempValue/100))*100));
-				}
-				// Flush Anteil 1 (==5)
-				else {
-					return (((int)(tempValue/10000))*10000 + 3000 + (tempValue - ((int)(tempValue/1000))*1000));
-				}
+			// STraight (==4)
+			if(static_cast<int>(tempValue/10000) == 4) {
+				return (static_cast<int>(tempValue/1000)*1000 + 200+ (tempValue - static_cast<int>(tempValue/100)*100));
+			}
+			// Flush Anteil 1 (==5)
+			else {
+				return (static_cast<int>(tempValue/10000)*10000 + 3000 + (tempValue - static_cast<int>(tempValue/1000)*1000));
+			}
 			}
 		}
 	}
@@ -4662,7 +4662,7 @@ void LocalPlayer::flopEngine3()
 
 	// 	Bauchgefhl (zufï¿œlig)
 	int tempRand = 0;
-	Tools::GetRand((int)(percent*10.)-2, (int)(percent*10.)+2, 1, &tempRand);
+	Tools::GetRand(static_cast<int>(percent*10.)-2, static_cast<int>(percent*10.)+2, 1, &tempRand);
 
 	// bluff, checkbluff
 	int bluff = 0;
@@ -4671,7 +4671,7 @@ void LocalPlayer::flopEngine3()
 	// 	cout << "flop-bluff " << bluff << endl;
 
 	// 	Potential
-	int potential = (10*(5*(int)(percent*100.)+10*tempRand*2))/700-myDude;
+	int potential = (10*(5*static_cast<int>(percent*100.)+10*tempRand*2))/700-myDude;
 
 	int setToHighest = currentHand->getCurrentBeRo()->getHighestSet() - mySet;
 
@@ -4828,7 +4828,7 @@ void LocalPlayer::turnEngine3()
 
 	// 	Bauchgefhl (zufÃ¯Â¿Ålig)
 	int tempRand;
-	Tools::GetRand((int)(percent*10.)-2, (int)(percent*10.)+2, 1, &tempRand);
+	Tools::GetRand(static_cast<int>(percent*10.)-2, static_cast<int>(percent*10.)+2, 1, &tempRand);
 
 	// bluff, checkbluff
 	int bluff;
@@ -4837,7 +4837,7 @@ void LocalPlayer::turnEngine3()
 	// 	cout << "turn-bluff " << bluff << endl;
 
 	// 	Potential
-	int potential = (10*(5*(int)(percent*100.)+10*tempRand*2))/700-myDude;
+	int potential = (10*(5*static_cast<int>(percent*100.)+10*tempRand*2))/700-myDude;
 
 	int setToHighest = currentHand->getCurrentBeRo()->getHighestSet() - mySet;
 
@@ -4990,7 +4990,7 @@ void LocalPlayer::riverEngine3()
 
 	// 	Bauchgefhl (zufÃ¯Â¿Ålig)
 	int tempRand;
-	Tools::GetRand((int)(percent*10.)-2, (int)(percent*10.)+2, 1, &tempRand);
+	Tools::GetRand(static_cast<int>(percent*10.)-2, static_cast<int>(percent*10.)+2, 1, &tempRand);
 
 	// bluff, checkbluff
 	int bluff;
@@ -4999,7 +4999,7 @@ void LocalPlayer::riverEngine3()
 	// 	cout << "river-bluff " << bluff << endl;
 
 	// 	Potential
-	int potential = (10*(5*(int)(percent*100.)+10*tempRand*1))/600-myDude;
+	int potential = (10*(5*static_cast<int>(percent*100.)+10*tempRand*1))/600-myDude;
 
 	int setToHighest = currentHand->getCurrentBeRo()->getHighestSet() - mySet;
 

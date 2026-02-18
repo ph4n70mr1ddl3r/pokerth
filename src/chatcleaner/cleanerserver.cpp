@@ -86,7 +86,7 @@ void CleanerServer::newCon()
 
 void CleanerServer::onRead()
 {
-	qint64 bytesRead = tcpSocket->read((char *)m_recvBuf + m_recvBufUsed, sizeof(m_recvBuf) - m_recvBufUsed);
+	qint64 bytesRead = tcpSocket->read(reinterpret_cast<char *>(m_recvBuf) + m_recvBufUsed, sizeof(m_recvBuf) - m_recvBufUsed);
 	bool error = bytesRead < 1;
 	if (!error) {
 		m_recvBufUsed += bytesRead;
