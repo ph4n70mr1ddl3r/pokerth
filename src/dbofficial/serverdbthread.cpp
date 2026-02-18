@@ -165,7 +165,7 @@ void
 ServerDBThread::PlayerPostLogin(DB_id playerId, const std::string &avatarHash, const std::string &avatarType)
 {
 	list<string> params;
-	params.push_back(mysqlpp::DateTime(time(NULL)));
+	params.push_back(mysqlpp::DateTime(time(nullptr)));
 	params.push_back(avatarHash);
 	params.push_back(avatarType);
 	ostringstream paramStream;
@@ -194,7 +194,7 @@ ServerDBThread::AsyncCreateGame(unsigned requestId, const string &gameName)
 {
 	list<string> params;
 	params.push_back(gameName);
-	params.push_back(mysqlpp::DateTime(time(NULL)));
+	params.push_back(mysqlpp::DateTime(time(nullptr)));
 	boost::shared_ptr<AsyncDBQuery> asyncQuery(
 		new AsyncDBCreateGame(
 			requestId,
@@ -315,7 +315,7 @@ ServerDBThread::AsyncReportAvatar(unsigned requestId, unsigned replyId, DB_id re
 	} else {
 		params.push_back("NULL");
 	}
-	params.push_back(mysqlpp::DateTime(time(NULL)));
+	params.push_back(mysqlpp::DateTime(time(nullptr)));
 
 	boost::shared_ptr<AsyncDBQuery> asyncQuery(
 		new AsyncDBReportAvatar(
@@ -351,7 +351,7 @@ ServerDBThread::AsyncReportGame(unsigned requestId, unsigned replyId, DB_id *cre
 	} else {
 		params.push_back("NULL");
 	}
-	params.push_back(mysqlpp::DateTime(time(NULL)));
+	params.push_back(mysqlpp::DateTime(time(nullptr)));
 
 	boost::shared_ptr<AsyncDBQuery> asyncQuery(
 		new AsyncDBReportGame(
