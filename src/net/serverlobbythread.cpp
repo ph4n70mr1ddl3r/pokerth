@@ -1134,7 +1134,7 @@ ServerLobbyThread::HandleNetPacketAvatarEnd(boost::shared_ptr<SessionData> sessi
 		boost::shared_ptr<AvatarFile> tmpAvatar = session->GetPlayerData()->GetNetAvatarFile();
 		MD5Buf avatarMD5 = session->GetPlayerData()->GetAvatarMD5();
 		if (!avatarMD5.IsZero() && tmpAvatar.get()) {
-			unsigned avatarSize = (unsigned)tmpAvatar->fileData.size();
+			unsigned avatarSize = static_cast<unsigned>(tmpAvatar->fileData.size());
 			if (avatarSize == tmpAvatar->reportedSize) {
 				if (!GetAvatarManager().StoreAvatarInCache(avatarMD5, tmpAvatar->fileType, &tmpAvatar->fileData[0], avatarSize, true)) {
 					session->GetPlayerData()->SetAvatarMD5(MD5Buf());
@@ -1808,7 +1808,7 @@ ServerLobbyThread::TimerUpdateClientLoginLock(const boost::system::error_code &e
 		while (i != end) {
 			TimerClientAddressMap::iterator next = i;
 			++next;
-			if (i->second.elapsed().total_seconds() > (int)SERVER_INIT_LOGIN_CLIENT_LOCK_SEC)
+			if (i->second.elapsed().total_seconds() > static_cast<int>(SERVER_INIT_LOGIN_CLIENT_LOCK_SEC))
 				m_timerClientAddressMap.erase(i);
 			i = next;
 		}

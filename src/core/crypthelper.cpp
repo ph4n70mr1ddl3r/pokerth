@@ -78,7 +78,7 @@ HashBuf::FromString(const std::string &text)
 	// Convert hex-based string to MD5 data.
 	bool retVal = false;
 	int tmpSize = GetDataSize();
-	if (text.size() == 2 * (unsigned)tmpSize) {
+	if (text.size() == 2 * static_cast<unsigned>(tmpSize)) {
 		unsigned char *tmpData = GetData();
 		const char *t = text.c_str();
 		int i = 0;
@@ -101,7 +101,7 @@ HashBuf::IsZero() const
 {
 	int dataSize = GetDataSize();
 	const unsigned char *tmpData = GetData();
-	int i;
+	int i = 0;
 	for (i = 0; i < dataSize; i++) {
 		if (tmpData[i] != 0)
 			break;
@@ -219,7 +219,7 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 bool
 CryptHelper::SHA1Hash(const unsigned char *data, unsigned dataSize, SHA1Buf &buf)
 {
-	bool retVal;
+	bool retVal = false;
 #ifdef HAVE_OPENSSL
 	retVal = SHA1(data, dataSize, buf.GetData()) != nullptr;
 #else
@@ -234,11 +234,11 @@ CryptHelper::SHA1Hash(const unsigned char *data, unsigned dataSize, SHA1Buf &buf
 bool
 CryptHelper::HMACSha1(const unsigned char *keyData, unsigned keySize, const unsigned char *plainData, unsigned plainSize, SHA1Buf &buf)
 {
-	bool retVal;
+	bool retVal = false;
 #ifdef HAVE_OPENSSL
 	unsigned hashLen = 0;
 	HMAC(EVP_sha1(), keyData, keySize, plainData, plainSize, buf.GetData(), &hashLen);
-	retVal = hashLen == (unsigned)buf.GetDataSize();
+	retVal = hashLen == static_cast<unsigned>(buf.GetDataSize());
 #else
 	retVal = false;
 	gcry_md_hd_t hd;

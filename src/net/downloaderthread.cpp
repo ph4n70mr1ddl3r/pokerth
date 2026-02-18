@@ -105,7 +105,7 @@ DownloaderThread::Main()
 					std::streampos endPos = instream.tellg();
 					instream.seekg(0, ios_base::beg);
 					std::streamoff posDiff(endPos - startPos);
-					unsigned fileSize = (unsigned)posDiff;
+					unsigned fileSize = static_cast<unsigned>(posDiff);
 
 					vector<unsigned char> fileData(fileSize);
 					instream.read((char *)&fileData[0], fileSize);

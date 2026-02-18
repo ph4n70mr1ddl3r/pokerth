@@ -66,15 +66,15 @@ public:
 	void SignalTermination();
 	bool Join(bool wait);
 
-	virtual void SignalIrcConnect(const std::string &server);
-	virtual void SignalIrcSelfJoined(const std::string &nickName, const std::string &channel);
-	virtual void SignalIrcPlayerJoined(const std::string & /*nickName*/) {}
-	virtual void SignalIrcPlayerChanged(const std::string & /*oldNick*/, const std::string & /*newNick*/) {}
-	virtual void SignalIrcPlayerKicked(const std::string & /*nickName*/, const std::string & /*byWhom*/, const std::string & /*reason*/) {}
-	virtual void SignalIrcPlayerLeft(const std::string & /*nickName*/) {}
-	virtual void SignalIrcChatMsg(const std::string &nickName, const std::string &msg);
-	virtual void SignalIrcError(int errorCode);
-	virtual void SignalIrcServerError(int errorCode);
+	virtual void SignalIrcConnect(const std::string &server) override;
+	virtual void SignalIrcSelfJoined(const std::string &nickName, const std::string &channel) override;
+	virtual void SignalIrcPlayerJoined(const std::string & /*nickName*/) override {}
+	virtual void SignalIrcPlayerChanged(const std::string & /*oldNick*/, const std::string & /*newNick*/) override {}
+	virtual void SignalIrcPlayerKicked(const std::string & /*nickName*/, const std::string & /*byWhom*/, const std::string & /*reason*/) override {}
+	virtual void SignalIrcPlayerLeft(const std::string & /*nickName*/) override {}
+	virtual void SignalIrcChatMsg(const std::string &nickName, const std::string &msg) override;
+	virtual void SignalIrcError(int errorCode) override;
+	virtual void SignalIrcServerError(int errorCode) override;
 
 	virtual void SignalLobbyMessage(unsigned playerId, const std::string &playerName, const std::string &msg);
 

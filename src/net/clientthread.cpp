@@ -849,7 +849,7 @@ ClientThread::CompleteTempAvatarFile(unsigned playerId)
 	if (pos == m_tempAvatarMap.end())
 		throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_REQUEST_ID, 0);
 	boost::shared_ptr<AvatarFile> tmpAvatar = pos->second;
-	unsigned avatarSize = (unsigned)tmpAvatar->fileData.size();
+	unsigned avatarSize = static_cast<unsigned>(tmpAvatar->fileData.size());
 	if (avatarSize != tmpAvatar->reportedSize)
 		LOG_ERROR("Client received invalid avatar file size!");
 	else
@@ -1368,7 +1368,7 @@ ClientThread::UseServer(unsigned serverId)
 	else
 		context.SetServerAddr(useInfo.ipv4addr);
 
-	context.SetServerPort((unsigned)useInfo.port);
+	context.SetServerPort(static_cast<unsigned>(useInfo.port));
 	context.SetAvatarServerAddr(useInfo.avatarServerAddr);
 }
 

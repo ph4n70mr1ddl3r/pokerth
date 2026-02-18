@@ -491,7 +491,7 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 			time_t curTime = time(nullptr);
 			while (!timeMap.empty() && !m_cachedAvatars.empty()) {
 				TimeAvatarMap::iterator i = timeMap.begin();
-				if (curTime - i->first < (int)MAX_AVATAR_CACHE_AGE)
+				if (curTime - i->first < static_cast<int>(MAX_AVATAR_CACHE_AGE))
 					break;
 				AvatarMap::iterator pos = m_cachedAvatars.find(i->second);
 				if (pos != m_cachedAvatars.end()) {

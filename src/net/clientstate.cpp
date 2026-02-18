@@ -341,7 +341,7 @@ ClientStateReadingServerList::Enter(boost::shared_ptr<ClientThread> client)
 			{
 				int tmpId = nextServer.attribute("id").toInt();
 				// nextServer->QueryIntAttribute("id", &tmpId);
-				serverInfo.id = (unsigned)tmpId;
+				serverInfo.id = static_cast<unsigned>(tmpId);
 			}
 			QDomElement nameNode = nextServer.firstChildElement("Name");
 			QDomElement sponsorNode = nextServer.firstChildElement("Sponsor");
@@ -1576,15 +1576,15 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		string userPassword(client->GetContext().GetPassword());
 		if (netHandStart.has_plaincards() && userPassword.empty()) {
 			const HandStartMessage::PlainCards &plainCards = netHandStart.plaincards();
-			myCards[0] = (int)plainCards.plaincard1();
-			myCards[1] = (int)plainCards.plaincard2();
+			myCards[0] = static_cast<int>(plainCards.plaincard1());
+			myCards[1] = static_cast<int>(plainCards.plaincard2());
 		} else if (netHandStart.has_encryptedcards() && !userPassword.empty()) {
 			const string &encryptedCards = netHandStart.encryptedcards();
 			string plainCards;
 			if (!CryptHelper::AES128Decrypt((const unsigned char *)userPassword.c_str(),
-											(unsigned)userPassword.size(),
+											static_cast<unsigned>(userPassword.size()),
 											(const unsigned char *)encryptedCards.data(),
-											(unsigned)encryptedCards.size(),
+											static_cast<unsigned>(encryptedCards.size()),
 											plainCards)) {
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 		}
@@ -1605,7 +1605,7 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		// Retrieve state for each seat (not based on player id).
 		unsigned numPlayers = netHandStart.seatstates_size();
 		// Request player info for players if needed.
-		for (int i = 0; i < (int)numPlayers; i++) {
+		for (int i = 0; i < static_cast<int>(numPlayers); i++) {
 			NetPlayerState seatState = netHandStart.seatstates(i);
 			int numberDiff = client->GetStartData().numberOfPlayers - client->GetOrigGuiPlayerNum();
 			boost::shared_ptr<PlayerInterface> tmpPlayer = client->GetGame()->getPlayerByNumber((i + numberDiff) % client->GetStartData().numberOfPlayers);

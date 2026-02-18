@@ -3123,13 +3123,13 @@ void gameTableImpl::changeSpinBoxBetValue(int value)
 
 			int temp = 0;
 			if(horizontalSlider_bet->maximum() <= 1000 ) {
-				temp = (int)((value/10)*10);
+				temp = static_cast<int>((value/10)*10);
 			} else if(horizontalSlider_bet->maximum() > 1000 && horizontalSlider_bet->maximum() <= 10000) {
-				temp = (int)((value/50)*50);
+				temp = static_cast<int>((value/50)*50);
 			} else if(horizontalSlider_bet->maximum() > 10000 && horizontalSlider_bet->maximum() <= 100000) {
-				temp = (int)((value/500)*500);
+				temp = static_cast<int>((value/500)*500);
 			} else {
-				temp = (int)((value/5000)*5000);
+				temp = static_cast<int>((value/5000)*5000);
 			}
 
 			if(temp < horizontalSlider_bet->minimum())

@@ -150,8 +150,8 @@ public:
 
 	void StartAsyncRead();
 	virtual void CloseSession(boost::shared_ptr<SessionData> session) override;
-	virtual void SessionError(boost::shared_ptr<SessionData> /*session*/, int /*errorCode*/) {}
-	virtual void SessionTimeoutWarning(boost::shared_ptr<SessionData> /*session*/, unsigned /*remainingSec*/) {}
+	virtual void SessionError(boost::shared_ptr<SessionData> /*session*/, int /*errorCode*/) override {}
+	virtual void SessionTimeoutWarning(boost::shared_ptr<SessionData> /*session*/, unsigned /*remainingSec*/) override {}
 	virtual void HandlePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) override;
 
 	static void SslInfoCallback(const SSL *ssl, int where, int ret);
