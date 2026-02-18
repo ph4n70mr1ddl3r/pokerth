@@ -117,7 +117,7 @@ bool AndroidSoundEffect::load()
 
 //    qDebug() << "    reading data:" << mLength;
 
-	mBuffer = (char*)malloc((mLength));
+	mBuffer = static_cast<char*>(malloc(mLength));
 
 	int dataRead = lSoundFile.read(mBuffer, mLength);
 	if (dataRead != mLength) {
