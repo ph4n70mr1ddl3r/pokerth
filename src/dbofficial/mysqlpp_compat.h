@@ -112,7 +112,9 @@ private:
         std::string out;
         out.reserve(in.size()*2);
         for (char c : in) {
-            if (c == '\'') out.push_back('\\');
+            if (c == '\\' || c == '\'') {
+                out.push_back('\\');
+            }
             out.push_back(c);
         }
         return out;

@@ -44,6 +44,7 @@
 #include <dbofficial/asyncdbplayerlastgames.h>
 #include <dbofficial/compositeasyncdbquery.h>
 #include <dbofficial/db_table_defs.h>
+#include <core/loghelper.h>
 #include <ctime>
 #include <sstream>
 #include <dbofficial/mysqlpp_compat.h>
@@ -425,13 +426,31 @@ void
 ServerDBThread::Main()
 {
 	while (!ShouldTerminate() && !HasPermanentError()) {
-		if (HasDBConnection()) {
-			SetConnected(true);
-			m_semaphore.wait();
-			HandleNextQuery();
-		} else {
+		try {
+			if (HasDBConnection()) {
+				SetConnected(true);
+				m_semaphore.wait();
+				HandleNextQuery();
+			} else {
+				SetConnected(false);
+				EstablishDBConnection();
+			}
+		} catch (const mysqlpp::Exception &e) {
+			string errorMsg = string("Database exception: ") + e.what();
+			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
+			m_connData->conn.disconnect();
 			SetConnected(false);
-			EstablishDBConnection();
+			boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::ConnectFailed, &m_callback, errorMsg));
+		} catch (const std::exception &e) {
+			string errorMsg = string("Standard exception: ") + e.what();
+			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
+			m_connData->conn.disconnect();
+			SetConnected(false);
+		} catch (...) {
+			string errorMsg = "Unknown exception in database thread";
+			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
+			m_connData->conn.disconnect();
+			SetConnected(false);
 		}
 	}
 	m_connData->conn.disconnect();
@@ -549,52 +568,62 @@ ServerDBThread::HandleNextQuery()
 	}
 	if (nextQuery) {
 		do {
-			nextQuery->Init(m_dbIdManager);
-			mysqlpp::Query executeQuery = m_connData->conn.query();
-			executeQuery << "EXECUTE " << nextQuery->GetPreparedName();
+			try {
+				nextQuery->Init(m_dbIdManager);
+				mysqlpp::Query executeQuery = m_connData->conn.query();
+				executeQuery << "EXECUTE " << nextQuery->GetPreparedName();
 
-			list<string> paramList;
-			nextQuery->GetParams(paramList);
-			if (!paramList.empty()) {
-				executeQuery << " using ";
-				mysqlpp::Query paramQuery = m_connData->conn.query();
-				paramQuery << "SET ";
-				unsigned counter = 1;
-				list<string>::iterator i = paramList.begin();
-				list<string>::iterator end = paramList.end();
-				while (i != end) {
-					if (counter > 1) {
-						paramQuery << ", ";
-						executeQuery << ", ";
+				list<string> paramList;
+				nextQuery->GetParams(paramList);
+				if (!paramList.empty()) {
+					executeQuery << " using ";
+					mysqlpp::Query paramQuery = m_connData->conn.query();
+					paramQuery << "SET ";
+					unsigned counter = 1;
+					list<string>::iterator i = paramList.begin();
+					list<string>::iterator end = paramList.end();
+					while (i != end) {
+						if (counter > 1) {
+							paramQuery << ", ";
+							executeQuery << ", ";
+						}
+						paramQuery << "@param" << counter << " = ";
+						if (*i == "NULL") {
+							paramQuery << "NULL";
+						} else {
+							paramQuery << "_utf8" << mysqlpp::quote << *i;
+						}
+						executeQuery << "@param" << counter;
+						++counter;
+						++i;
 					}
-					paramQuery << "@param" << counter << " = ";
-					if (*i == "NULL") {
-						paramQuery << "NULL";
-					} else {
-						paramQuery << "_utf8" << mysqlpp::quote << *i;
+					if (!paramQuery.exec()) {
+						string tmpError = paramQuery.error();
+						m_connData->conn.disconnect();
+						boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::QueryError, &m_callback, tmpError));
+						break;
 					}
-					executeQuery << "@param" << counter;
-					++counter;
-					++i;
 				}
-				if (!paramQuery.exec()) {
-					string tmpError = paramQuery.error();
-					m_connData->conn.disconnect();
-					boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::QueryError, &m_callback, tmpError));
-					break;
+				if (nextQuery->RequiresResultSet()) {
+					mysqlpp::StoreQueryResult res = executeQuery.store();
+					if (res)
+						nextQuery->HandleResult(executeQuery, m_dbIdManager, res, *m_ioService, m_callback);
+					else
+						nextQuery->HandleError(*m_ioService, m_callback);
+				} else {
+					if (executeQuery.exec())
+						nextQuery->HandleNoResult(executeQuery, m_dbIdManager, *m_ioService, m_callback);
+					else
+						nextQuery->HandleError(*m_ioService, m_callback);
 				}
-			}
-			if (nextQuery->RequiresResultSet()) {
-				mysqlpp::StoreQueryResult res = executeQuery.store();
-				if (res)
-					nextQuery->HandleResult(executeQuery, m_dbIdManager, res, *m_ioService, m_callback);
-				else
-					nextQuery->HandleError(*m_ioService, m_callback);
-			} else {
-				if (executeQuery.exec())
-					nextQuery->HandleNoResult(executeQuery, m_dbIdManager, *m_ioService, m_callback);
-				else
-					nextQuery->HandleError(*m_ioService, m_callback);
+			} catch (const mysqlpp::Exception &e) {
+				string errorMsg = string("Query execution failed: ") + e.what();
+				LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
+				nextQuery->HandleError(*m_ioService, m_callback);
+			} catch (const std::exception &e) {
+				string errorMsg = string("Exception during query handling: ") + e.what();
+				LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
+				nextQuery->HandleError(*m_ioService, m_callback);
 			}
 		} while (nextQuery->Next()); // Consider composite queries.
 	}

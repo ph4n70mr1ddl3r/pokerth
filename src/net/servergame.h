@@ -219,6 +219,7 @@ private:
 	unsigned m_adminPlayerId;
 
 	boost::shared_ptr<VoteKickData> m_voteKickData;
+	mutable boost::mutex m_voteKickDataMutex;
 
 	boost::shared_ptr<ServerLobbyThread> m_lobbyThread;
 	boost::shared_ptr<ServerDBInterface> m_database;

@@ -32,6 +32,7 @@
 #include <net/netpacket.h>
 #include <net/socket_msg.h>
 
+#include <memory>
 #include <boost/foreach.hpp>
 
 #include <string>
@@ -57,9 +58,9 @@ NetPacket::Create(const char *data, size_t dataSize)
 
 	// Check minimum requirements.
 	if (data && dataSize > 0) {
-		PokerTHMessage *msg = PokerTHMessage::default_instance().New();
+		std::unique_ptr<PokerTHMessage> msg(PokerTHMessage::default_instance().New());
 		if (msg->ParseFromArray(data, static_cast<int>(dataSize))) {
-			tmpPacket.reset(new NetPacket(msg));
+			tmpPacket.reset(new NetPacket(msg.release()));
 		}
 	}
 	return tmpPacket;

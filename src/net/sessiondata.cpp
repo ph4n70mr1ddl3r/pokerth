@@ -67,13 +67,12 @@ SessionData::SessionData(boost::shared_ptr<WebSocketData> webData, SessionId id,
 }
 
 SessionData::SessionData(boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sslStream, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int /*filler*/)
-    : m_socket(), m_webData(), m_id(id), m_game(), m_state(SessionData::Init), m_clientAddr(),
+    : m_socket(), m_webData(), m_sslStream(sslStream), m_id(id), m_game(), m_state(SessionData::Init), m_clientAddr(),
       m_receiveBuffer(), m_sendBuffer(), m_readyFlag(false), m_wantsLobbyMsg(true),
       m_activityTimeoutSec(0), m_activityWarningRemainingSec(0),
       m_initTimeoutTimer(ioService), m_globalTimeoutTimer(ioService), m_activityTimeoutTimer(ioService),
       m_callback(cb), m_authSession(nullptr), m_curAuthStep(0)
 {
-    m_sslStream = sslStream;
     m_receiveBuffer.reset(new AsioReceiveBuffer);
     m_sendBuffer.reset(new AsioSendBuffer);
 }

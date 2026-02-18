@@ -60,12 +60,16 @@ AsyncDBCreateGame::HandleNoResult(mysqlpp::Query &query, DBIdManager& idManager,
 	query
 			<< "SELECT LAST_INSERT_ID()";
 	mysqlpp::StoreQueryResult tmpResult = query.store();
-	DB_id insertId = tmpResult[0][0];
-	if (!tmpResult || tmpResult.num_rows() != 1 || insertId == 0) {
+	if (!tmpResult || tmpResult.num_rows() != 1) {
 		boost::asio::post(service, boost::bind(&ServerDBCallback::CreateGameFailed, &cb, GetId()));
 	} else {
-		boost::asio::post(service, boost::bind(&ServerDBCallback::CreateGameSuccess, &cb, GetId()));
-		idManager.AddGameId(GetId(), insertId);
+		DB_id insertId = tmpResult[0][0];
+		if (insertId == 0) {
+			boost::asio::post(service, boost::bind(&ServerDBCallback::CreateGameFailed, &cb, GetId()));
+		} else {
+			boost::asio::post(service, boost::bind(&ServerDBCallback::CreateGameSuccess, &cb, GetId()));
+			idManager.AddGameId(GetId(), insertId);
+		}
 	}
 }
 
