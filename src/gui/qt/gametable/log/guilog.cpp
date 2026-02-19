@@ -140,6 +140,11 @@ extern "C" void sqlite3_free_table(char **result)
 	free(result);
 }
 
+extern "C" void sqlite3_free(void *ptr)
+{
+	free(ptr);
+}
+
 extern "C" int sqlite3_close(sqlite3 *pDb)
 {
 	if(!pDb) return SQLITE_ERROR;

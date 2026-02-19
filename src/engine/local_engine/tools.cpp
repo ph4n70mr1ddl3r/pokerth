@@ -66,6 +66,9 @@ void Tools::ShuffleArrayNonDeterministic(int *inout, unsigned count)
 
 void Tools::GetRand(int minValue, int maxValue, unsigned count, int *out)
 {
+	if (!out || count == 0) {
+		return;
+	}
 	InitRandState();
 	boost::uniform_int<> dist(minValue, maxValue);
 	boost::variate_generator<boost::random_device&, boost::uniform_int<> > gen(*g_rand_state, dist);
