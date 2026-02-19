@@ -1133,7 +1133,7 @@ ServerGame::IsPasswordProtected() const
 bool
 ServerGame::CheckPassword(const string &password) const
 {
-	return (password == m_password);
+	return Tools::ConstantTimeStringCompare(password, m_password);
 }
 
 bool
@@ -1183,7 +1183,7 @@ ServerGame::AddPlayerToNumJoinsPerPlayer(const std::string &playerName)
 }
 
 int
-ServerGame::GetNumJoinsPerPlayer(const std::string &playerName)
+ServerGame::GetNumJoinsPerPlayer(const std::string &playerName) const
 {
 	int num = 0;
 	NumJoinsPerPlayerMap::const_iterator pos = m_numJoinsPerPlayer.find(playerName);

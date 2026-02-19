@@ -33,6 +33,7 @@
 #include <QtNetwork>
 #include <QtCore>
 #include <QtEndian>
+#include <QCryptographicHash>
 #include <cstdlib>
 #include <string>
 #include <third_party/protobuf/chatcleaner.pb.h>
@@ -138,7 +139,18 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 	if (msg.messagetype() == ChatCleanerMessage::Type_CleanerInitMessage) {
 		const CleanerInitMessage &netInit = msg.cleanerinitmessage();
 		if (netInit.requestedversion() == CLEANER_PROTOCOL_VERSION) {
-			if (clientSecret == QString::fromStdString(netInit.clientsecret())) {
+			QString receivedSecret = QString::fromStdString(netInit.clientsecret());
+			QByteArray expectedBytes = clientSecret.toUtf8();
+			QByteArray receivedBytes = receivedSecret.toUtf8();
+			bool secretMatch = false;
+			if (expectedBytes.size() == receivedBytes.size()) {
+				volatile char result = 0;
+				for (int i = 0; i < expectedBytes.size(); ++i) {
+					result |= expectedBytes[i] ^ receivedBytes[i];
+				}
+				secretMatch = (result == 0);
+			}
+			if (secretMatch) {
 				error = false;
 
 				boost::shared_ptr<ChatCleanerMessage> tmpAck(ChatCleanerMessage::default_instance().New());

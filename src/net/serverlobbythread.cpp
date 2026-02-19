@@ -49,6 +49,7 @@
 #include <core/openssl_wrapper.h>
 #include <configfile.h>
 #include <playerinterface.h>
+#include <tools.h>
 
 #include <boost/lambda/lambda.hpp>
 #include <boost/filesystem.hpp>
@@ -1009,9 +1010,8 @@ ServerLobbyThread::HandleNetPacketInit(boost::shared_ptr<SessionData> session, c
 	if (initMessage.has_authserverpassword()) {
 		serverPassword = initMessage.authserverpassword();
 	}
-	if (serverPassword != m_serverConfig.readConfigString("ServerPassword")) {
-		LOG_MSG("Invalid server password attempt from "
-				<< session->GetClientAddr() << " (\"" << serverPassword << "\") " << " expected \"" << m_serverConfig.readConfigString("ServerPassword") << "\".");
+	if (!Tools::ConstantTimeStringCompare(serverPassword, m_serverConfig.readConfigString("ServerPassword"))) {
+		LOG_MSG("Invalid server password attempt from " << session->GetClientAddr());
 		SessionError(session, ERR_NET_INVALID_PASSWORD);
 		return;
 	}

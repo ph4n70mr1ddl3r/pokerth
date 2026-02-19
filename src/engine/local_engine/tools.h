@@ -38,6 +38,7 @@ public:
 
 	static void ShuffleArrayNonDeterministic(int *inout, unsigned count);
 	static void GetRand(int minValue, int maxValue, unsigned count, int *out);
+	static bool ConstantTimeStringCompare(const std::string& a, const std::string& b);
 
 };
 

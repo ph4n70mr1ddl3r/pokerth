@@ -122,7 +122,7 @@ public:
 	void KickPlayer(unsigned playerId);
 
 	void AddPlayerToNumJoinsPerPlayer(const std::string &playerName);
-	int GetNumJoinsPerPlayer(const std::string &playerName);
+	int GetNumJoinsPerPlayer(const std::string &playerName) const;
 
 protected:
 

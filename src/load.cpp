@@ -39,6 +39,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <memory>
 
 #define STL_STRING_FROM_OCTET_STRING(_a) (string(static_cast<const char*>((_a).buf), (_a).size))
 
@@ -186,8 +187,9 @@ main(int argc, char *argv[])
 		char *tmpOut = nullptr;
 		size_t tmpOutSize = 0;
 		string nextGsaslMsg;
-		NetSession **sessionArray = new NetSession *[numGames * 10];
-		unsigned *gameId = new unsigned[numGames];
+		auto sessionArray = std::make_unique<NetSession*[]>(numGames * 10);
+		auto gameId = std::make_unique<unsigned[]>(numGames);
+		std::fill_n(sessionArray.get(), numGames * 10, nullptr);
 		const int LoginsPerLoop = 50;
 		for (int t = 0; t < (numGames * 10) / LoginsPerLoop + 1; t++) {
 			int startNum = t * LoginsPerLoop;
@@ -445,8 +447,6 @@ main(int argc, char *argv[])
 		for (int i = 0; i < numGames * 10; i++) {
 			delete sessionArray[i];
 		}
-		delete[] sessionArray;
-		delete[] gameId;
 
 	} catch (const exception &e) {
 		cout << "Exception caught " << e.what() << endl;

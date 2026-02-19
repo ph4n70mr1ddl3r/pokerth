@@ -75,3 +75,20 @@ void Tools::GetRand(int minValue, int maxValue, unsigned count, int *out)
 	}
 }
 
+bool Tools::ConstantTimeStringCompare(const std::string& a, const std::string& b)
+{
+	if (a.size() != b.size()) {
+		volatile unsigned char dummy = 0;
+		for (size_t i = 0; i < b.size(); ++i) {
+			dummy |= static_cast<unsigned char>(a.empty() ? 0 : a[0]) ^ static_cast<unsigned char>(b[i]);
+		}
+		(void)dummy;
+		return false;
+	}
+	volatile unsigned char result = 0;
+	for (size_t i = 0; i < a.size(); ++i) {
+		result |= static_cast<unsigned char>(a[i]) ^ static_cast<unsigned char>(b[i]);
+	}
+	return result == 0;
+}
+
