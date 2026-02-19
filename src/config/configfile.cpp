@@ -693,7 +693,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState)
 
 									QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(tempString1));
 									tmpElement.appendChild(tmpSubElement);
-									tmpSubElement.setAttribute("value", QString::fromStdString(*it));
+									tmpSubElement.setAttribute("value", QString::fromStdString(*it2));
 								}
 							}
 						}
@@ -805,7 +805,7 @@ list<int> ConfigFile::readConfigIntList(string varName) const
 	}
 
 	istringstream isst;
-	int tempInt;
+	int tempInt = 0;
 	for (auto it = tempStringList.begin(); it != tempStringList.end(); ++it)
 	{
 

@@ -158,9 +158,10 @@ AvatarManager::OpenAvatarFileForChunkRead(const std::string &fileName, unsigned 
 				// Validate type of file by verifying image header.
 				unsigned char fileHeader[MAX_HEADER_SIZE];
 				fileState->inputStream.read(reinterpret_cast<char*>(fileHeader), sizeof(fileHeader));
+				std::streamsize bytesRead = fileState->inputStream.gcount();
 				fileState->inputStream.seekg(0, ios_base::beg);
 
-				if (IsValidAvatarFileType(outFileType, fileHeader, sizeof(fileHeader)))
+				if (bytesRead > 0 && IsValidAvatarFileType(outFileType, fileHeader, static_cast<size_t>(bytesRead)))
 					retVal = fileState;
 			}
 		}

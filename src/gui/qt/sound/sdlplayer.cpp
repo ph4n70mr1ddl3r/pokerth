@@ -128,6 +128,14 @@ void SDLPlayer::playSound(string audioString, int playerID)
 			}
 
 			QDataStream in(&myFile);
+			if (soundData) {
+				delete[] soundData;
+				soundData = nullptr;
+			}
+			if (sound) {
+				Mix_FreeChunk(sound);
+				sound = nullptr;
+			}
 			soundData = new Uint8[static_cast<int>(myFile.size())];
 			in.readRawData( reinterpret_cast<char*>(soundData), static_cast<int>(myFile.size()) );
 			sound = Mix_QuickLoad_WAV(soundData);
