@@ -164,7 +164,7 @@ extern "C" int sqlite3_close(sqlite3 *pDb)
 	return SQLITE_OK;
 }
 
-guiLog::guiLog(gameTableImpl* w, ConfigFile *c) : myW(w), myConfig(c), myLogDir(0), myHtmlLogFile(0), myHtmlLogFile_old(0), myTxtLogFile(0), tb(0)
+guiLog::guiLog(gameTableImpl* w, ConfigFile *c) : myW(w), myConfig(c), myLogDir(nullptr), myHtmlLogFile(nullptr), myHtmlLogFile_old(nullptr), myTxtLogFile(nullptr), tb(nullptr)
 {
 
 	myW->setGuiLog(this);
@@ -199,15 +199,15 @@ guiLog::guiLog(gameTableImpl* w, ConfigFile *c) : myW(w), myConfig(c), myLogDir(
 
 			int i = 0;
 
-			myLogDir = new QDir(QString::fromUtf8(myConfig->readConfigString("LogDir").c_str()));
+			myLogDir = std::make_unique<QDir>(QString::fromUtf8(myConfig->readConfigString("LogDir").c_str()));
 
 			if(HTML_LOG) {
 
 				QDateTime currentTime = QDateTime::currentDateTime();
 				if(SQLITE_LOG) {
-					myHtmlLogFile_old = new QFile(myLogDir->absolutePath()+"/pokerth-log-"+currentTime.toString("yyyy-MM-dd_hh.mm.ss")+"_old.html");
+					myHtmlLogFile_old = std::make_unique<QFile>(myLogDir->absolutePath()+"/pokerth-log-"+currentTime.toString("yyyy-MM-dd_hh.mm.ss")+"_old.html");
 				} else {
-					myHtmlLogFile_old = new QFile(myLogDir->absolutePath()+"/pokerth-log-"+currentTime.toString("yyyy-MM-dd_hh.mm.ss")+".html");
+					myHtmlLogFile_old = std::make_unique<QFile>(myLogDir->absolutePath()+"/pokerth-log-"+currentTime.toString("yyyy-MM-dd_hh.mm.ss")+".html");
 				}
 
 				//Logo-Pixmap extrahieren
@@ -270,10 +270,6 @@ guiLog::guiLog(gameTableImpl* w, ConfigFile *c) : myW(w), myConfig(c), myLogDir(
 
 guiLog::~guiLog()
 {
-	delete myLogDir;
-	delete myHtmlLogFile;
-	delete myHtmlLogFile_old;
-
 }
 
 void guiLog::logPlayerActionMsg(QString msg, int action, int setValue)
@@ -743,7 +739,7 @@ void guiLog::flushLogAtGame(int gameID)
 void guiLog::exportLogPdbToHtml(QString fileStringPdb, QString exportFileString)
 {
 
-	myHtmlLogFile = new QFile(exportFileString);
+	myHtmlLogFile = std::make_unique<QFile>(exportFileString);
 
 	myHtmlLogFile->open( QIODevice::ReadWrite | QFile::Truncate);
 
@@ -763,7 +759,7 @@ void guiLog::exportLogPdbToHtml(QString fileStringPdb, QString exportFileString)
 void guiLog::exportLogPdbToTxt(QString fileStringPdb, QString exportFileString)
 {
 
-	myTxtLogFile = new QFile(exportFileString);
+	myTxtLogFile = std::make_unique<QFile>(exportFileString);
 
 	myTxtLogFile->open( QIODevice::ReadWrite | QFile::Truncate );
 

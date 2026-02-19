@@ -34,6 +34,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <memory>
 
 #include "configfile.h"
 
@@ -130,10 +131,10 @@ private:
 	gameTableImpl *myW;
 	ConfigFile *myConfig;
 	QTextStream stream_old;
-	QDir *myLogDir;
-	QFile *myHtmlLogFile;
-	QFile *myHtmlLogFile_old;
-	QFile *myTxtLogFile;
+	std::unique_ptr<QDir> myLogDir;
+	std::unique_ptr<QFile> myHtmlLogFile;
+	std::unique_ptr<QFile> myHtmlLogFile_old;
+	std::unique_ptr<QFile> myTxtLogFile;
 	QString logFileStreamString;
 	QString myAppDataPath;
 	QTextBrowser* tb;

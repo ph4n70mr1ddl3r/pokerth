@@ -1146,7 +1146,7 @@ void LocalPlayer::preflopEngine()
 
 	int bet = 0;
 	int raise = 0;
-	int cBluff;
+	int cBluff = 0;
 	PlayerListConstIterator it_c;
 
 	// temporär solange preflopValue und flopValue noch nicht bereinigt für sechs und sieben spieler
@@ -3983,7 +3983,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 void LocalPlayer::calcMyOdds()
 {
 
-	int handCode;
+	int handCode = 0;
 
 	switch(currentHand->getCurrentRound()) {
 
@@ -4434,11 +4434,11 @@ void LocalPlayer::preflopEngine3()
 
 
 	// 	Bauchgefhl (zufÃ¯Â¿Ålig)
-	int tempRand;
+	int tempRand = 0;
 	Tools::GetRand(1, 10, 1, &tempRand);
 
 	// bluff, checkbluff
-	int bluff;
+	int bluff = 0;
 	Tools::GetRand(1, 100, 1, &bluff);
 
 	// 	cout << "preflop-bluff " << bluff << endl;
@@ -4449,7 +4449,7 @@ void LocalPlayer::preflopEngine3()
 	int setToHighest = currentHand->getCurrentBeRo()->getHighestSet() - mySet;
 
 	// temp fr das Vielfache des Small Blind, sodass HighestSet zu hoch ist
-	int tempFold;
+	int tempFold = 0;
 	// 	tempFold = (currentHand->getPlayerArray()[0]->getMyAverageSets())/(8*currentHand->getSmallBlind());
 	Tools::GetRand(2, 3, 1, &tempFold);
 
@@ -4793,8 +4793,8 @@ void LocalPlayer::turnEngine3()
 	tempOpponentCardsArray[4] = tempBoardCardsArray[2];
 	tempOpponentCardsArray[5] = tempBoardCardsArray[3];
 
-	int tempMyCardsValue;
-	int tempOpponentCardsValue;
+	int tempMyCardsValue = 0;
+	int tempOpponentCardsValue = 0;
 
 	int countAll = 0;
 	int countMy = 0;
@@ -4827,11 +4827,11 @@ void LocalPlayer::turnEngine3()
 	// 	cout << "Prozent: " << percent << endl;
 
 	// 	Bauchgefhl (zufÃ¯Â¿Ålig)
-	int tempRand;
+	int tempRand = 0;
 	Tools::GetRand(static_cast<int>(percent*10.)-2, static_cast<int>(percent*10.)+2, 1, &tempRand);
 
 	// bluff, checkbluff
-	int bluff;
+	int bluff = 0;
 	Tools::GetRand(1, 100, 1, &bluff);
 
 	// 	cout << "turn-bluff " << bluff << endl;
@@ -4842,7 +4842,7 @@ void LocalPlayer::turnEngine3()
 	int setToHighest = currentHand->getCurrentBeRo()->getHighestSet() - mySet;
 
 	// temp fr das Vielfache des Small Blind, sodass HighestSet zu hoch ist
-	int tempFold;
+	int tempFold = 0;
 	// 	tempFold = (currentHand->getPlayerArray()[0]->getMyAverageSets())/(7*currentHand->getSmallBlind());
 	Tools::GetRand(3, 4, 1, &tempFold);
 
@@ -4989,11 +4989,11 @@ void LocalPlayer::riverEngine3()
 	// 	cout << "Prozent: " << percent << endl;
 
 	// 	Bauchgefhl (zufÃ¯Â¿Ålig)
-	int tempRand;
+	int tempRand = 0;
 	Tools::GetRand(static_cast<int>(percent*10.)-2, static_cast<int>(percent*10.)+2, 1, &tempRand);
 
 	// bluff, checkbluff
-	int bluff;
+	int bluff = 0;
 	Tools::GetRand(1, 100, 1, &bluff);
 
 	// 	cout << "river-bluff " << bluff << endl;
@@ -5004,7 +5004,7 @@ void LocalPlayer::riverEngine3()
 	int setToHighest = currentHand->getCurrentBeRo()->getHighestSet() - mySet;
 
 	// temp fr das Vielfache des Small Blind, sodass HighestSet zu hoch ist
-	int tempFold;
+	int tempFold = 0;
 	// 		tempFold = (currentHand->getPlayerArray()[0]->getMyAverageSets())/(6*currentHand->getSmallBlind());
 	Tools::GetRand(4, 6, 1, &tempFold);
 

@@ -318,7 +318,7 @@ ClientStateReadingServerList::Enter(boost::shared_ptr<ClientThread> client)
 			in.push(boost::iostreams::zlib_decompressor());
 			in.push(inFile);
 			boost::iostreams::copy(in, outFile);
-		} catch (...) {
+		} catch (const std::exception&) {
 			throw ClientException(__FILE__, __LINE__, ERR_SOCK_UNZIP_FAILED, 0);
 		}
 	} else
@@ -590,7 +590,7 @@ ClientStateStartConnect::TimerTimeout(const boost::system::error_code& ec, boost
         if (context.GetSessionData()) {
             try {
                 context.GetSessionData()->CloseSocketHandle();
-            } catch (...) {
+            } catch (const std::exception&) {
                 LOG_ERROR("Exception in TimerTimeout while closing socket handle");
             }
         }
