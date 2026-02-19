@@ -30,6 +30,8 @@
  *****************************************************************************/
 #include "sdlplayer.h"
 
+#include <limits>
+
 #if (defined __APPLE__)
 #include <SDL.h>
 #else
@@ -39,7 +41,7 @@
 using namespace std;
 
 SDLPlayer::SDLPlayer(ConfigFile *c)
-	: sound(nullptr), soundData(nullptr), currentChannel(0), audioEnabled(false), myConfig(c)
+	: sound(nullptr), currentChannel(0), audioEnabled(false), myConfig(c)
 {
 	myAppDataPath = QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str());
 	SDL_Init(SDL_INIT_AUDIO);
@@ -128,17 +130,18 @@ void SDLPlayer::playSound(string audioString, int playerID)
 			}
 
 			QDataStream in(&myFile);
-			if (soundData) {
-				delete[] soundData;
-				soundData = nullptr;
-			}
+			soundData.clear();
 			if (sound) {
 				Mix_FreeChunk(sound);
 				sound = nullptr;
 			}
-			soundData = new Uint8[static_cast<int>(myFile.size())];
-			in.readRawData( reinterpret_cast<char*>(soundData), static_cast<int>(myFile.size()) );
-			sound = Mix_QuickLoad_WAV(soundData);
+			qint64 fileSize = myFile.size();
+			if (fileSize <= 0 || fileSize > static_cast<qint64>(std::numeric_limits<int>::max())) {
+				return;
+			}
+			soundData.resize(static_cast<size_t>(fileSize));
+			in.readRawData(reinterpret_cast<char*>(soundData.data()), static_cast<int>(fileSize));
+			sound = Mix_QuickLoad_WAV(soundData.data());
 
 			// set channel 0 to settings volume
 			Mix_Volume(-1,myConfig->readConfigInt("SoundVolume")*10);
@@ -159,8 +162,7 @@ void SDLPlayer::closeAudio()
 		Mix_HaltChannel(currentChannel);
 		Mix_FreeChunk(sound);
 		sound = nullptr;
-		delete[] soundData;
-		soundData = nullptr;
+		soundData.clear();
 		Mix_CloseAudio();
 		qDebug() << "Mix_CloseAudio()";
 		audioEnabled = false;

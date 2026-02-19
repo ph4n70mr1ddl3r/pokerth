@@ -42,6 +42,7 @@
 #include <boost/swap.hpp>
 #endif
 #include <cstring> // memcpy
+#include <cassert>
 
 using namespace std;
 
@@ -214,6 +215,7 @@ void
 AsioSendBuffer::AppendToSendBufWithoutCheck(const char *data, size_t size)
 {
     // Caller guarantees enough space.
+    assert(sendBufAllocated >= sendBufUsed + size && "Buffer overflow detected");
     memcpy(sendBuf + sendBufUsed, data, size);
     sendBufUsed += size;
 }

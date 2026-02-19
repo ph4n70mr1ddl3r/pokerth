@@ -66,7 +66,7 @@ private:
 	std::unique_ptr<QTimer> configRefreshTimer;
 	std::unique_ptr<MessageFilter> myMessageFilter;
 
-	CleanerConfig *config;
+	std::unique_ptr<CleanerConfig> config;
 	bool blockConnection;
 	QString clientSecret;
 	QString serverSecret;

@@ -35,6 +35,7 @@
 
 #include "configfile.h"
 #include <string>
+#include <vector>
 
 #ifdef __APPLE__
 #include <SDL_mixer.h>
@@ -61,7 +62,7 @@ public:
 
 private:
 	Mix_Chunk *sound;
-	unsigned char *soundData;
+	std::vector<Uint8> soundData;
 	int currentChannel;
 	bool audioEnabled;
 	ConfigFile *myConfig;

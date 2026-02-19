@@ -36,6 +36,7 @@
 #include <QCryptographicHash>
 #include <cstdlib>
 #include <string>
+#include <vector>
 #include <third_party/protobuf/chatcleaner.pb.h>
 
 #include "messagefilter.h"
@@ -45,7 +46,7 @@ using namespace std;
 
 CleanerServer::CleanerServer(): config(nullptr), blockConnection(false), m_recvBufUsed(0), secondsSinceLastConfigChange(0)
 {
-	config = new CleanerConfig;
+	config = std::make_unique<CleanerConfig>();
 
 	clientSecret = QString::fromUtf8(config->readConfigString("ClientAuthString").c_str());
 	serverSecret = QString::fromUtf8(config->readConfigString("ServerAuthString").c_str());
@@ -69,10 +70,8 @@ CleanerServer::CleanerServer(): config(nullptr), blockConnection(false), m_recvB
 	configRefreshTimer->start(10000);
 }
 
-CleanerServer::~CleanerServer()
-{
-	delete config;
-}
+CleanerServer::~CleanerServer() = default;
+
 
 void CleanerServer::newCon()
 {
@@ -225,10 +224,9 @@ void CleanerServer::refreshConfig()
 void CleanerServer::sendMessageToClient(ChatCleanerMessage &msg)
 {
 	uint32_t packetSize = msg.ByteSizeLong();
-	google::protobuf::uint8 *buf = new google::protobuf::uint8[packetSize + CLEANER_NET_HEADER_SIZE];
-	*((uint32_t *)buf) = qToBigEndian(packetSize);
-	msg.SerializeWithCachedSizesToArray(&buf[CLEANER_NET_HEADER_SIZE]);
-	tcpSocket->write((const char *)buf, packetSize + CLEANER_NET_HEADER_SIZE);
-	delete[] buf;
+	std::vector<google::protobuf::uint8> buf(packetSize + CLEANER_NET_HEADER_SIZE);
+	*reinterpret_cast<uint32_t*>(buf.data()) = qToBigEndian(packetSize);
+	msg.SerializeWithCachedSizesToArray(buf.data() + CLEANER_NET_HEADER_SIZE);
+	tcpSocket->write(reinterpret_cast<const char*>(buf.data()), packetSize + CLEANER_NET_HEADER_SIZE);
 }
 
