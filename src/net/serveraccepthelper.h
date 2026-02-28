@@ -106,9 +106,7 @@ public:
         } catch (const PokerTHException &e) {
             LOG_ERROR(e.what());
             GetCallback().SignalNetServerError(e.GetErrorId(), e.GetOsErrorCode());
-        } catch (...) {
-            // This is probably an asio exception. Assume that bind failed,
-            // which is the most frequent case.
+        } catch (const std::exception&) {
             LOG_ERROR("Cannot bind/listen on port.");
             GetCallback().SignalNetServerError(ERR_SOCK_BIND_FAILED, 0);
         }
