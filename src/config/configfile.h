@@ -34,6 +34,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #ifndef Q_MOC_RUN
 #include <boost/thread.hpp>
@@ -103,7 +104,7 @@ private:
 	std::string logOnOffDefault;
 
 	ConfigState myConfigState;
-	QtToolsInterface *myQtToolsInterface;
+	std::unique_ptr<QtToolsInterface> myQtToolsInterface;
 
 	char *myArgv0;
 };

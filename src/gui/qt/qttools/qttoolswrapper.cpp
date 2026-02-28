@@ -39,18 +39,12 @@ QtToolsInterface *CreateQtToolsWrapper()
 	return new QtToolsWrapper;
 }
 
-QtToolsWrapper::QtToolsWrapper() : myQtHelper(0)
+QtToolsWrapper::QtToolsWrapper() : myQtHelper(std::make_unique<QtHelper>())
 {
-
-	myQtHelper = new QtHelper();
 }
 
 
-QtToolsWrapper::~QtToolsWrapper()
-{
-	delete myQtHelper;
-	myQtHelper = 0;
-}
+QtToolsWrapper::~QtToolsWrapper() = default;
 
 std::string QtToolsWrapper::stringToUtf8(const std::string &myString)
 {

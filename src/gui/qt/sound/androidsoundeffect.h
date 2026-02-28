@@ -34,6 +34,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QString>
+#include <vector>
 
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
@@ -56,8 +57,8 @@ signals:
 public slots:
 
 private:
-	char* mBuffer;
-	off_t mLength;
+	std::vector<char> mBuffer;
+	off_t mLength = 0;
 
 	QString mPath;
 

@@ -223,7 +223,7 @@ void AndroidAudio::reallyPlaySound(const QString& name)
 	//If the player is realised
 	if (lPlayerState == SL_OBJECT_STATE_REALIZED) {
 		//Get the buffer and length of the effect
-		int16_t* lBuffer = (int16_t *)sound->mBuffer;
+		int16_t* lBuffer = reinterpret_cast<int16_t*>(sound->mBuffer.data());
 		off_t lLength = sound->mLength;
 
 		//Remove any sound from the queue

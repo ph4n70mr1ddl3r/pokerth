@@ -34,6 +34,7 @@
 #include <qttoolsinterface.h>
 
 #include <string>
+#include <memory>
 
 class QtHelper;
 
@@ -51,7 +52,7 @@ public:
 
 private:
 
-	QtHelper *myQtHelper;
+	std::unique_ptr<QtHelper> myQtHelper;
 
 };
 

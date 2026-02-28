@@ -61,7 +61,7 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 
 	myArgv0 = argv0;
 
-	myQtToolsInterface = CreateQtToolsWrapper();
+	myQtToolsInterface = std::unique_ptr<QtToolsInterface>(CreateQtToolsWrapper());
 
 	myConfigState = OK;
 
@@ -388,10 +388,7 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 	}
 }
 
-ConfigFile::~ConfigFile()
-{
-	delete myQtToolsInterface;
-}
+ConfigFile::~ConfigFile() = default;
 
 void ConfigFile::fillBuffer()
 {

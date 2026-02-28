@@ -35,6 +35,7 @@
 #include <qttoolsinterface.h>
 
 #include <string>
+#include <memory>
 
 class NonQtHelper;
 
@@ -51,7 +52,7 @@ public:
 
 private:
 
-	NonQtHelper *myQtHelper;
+	std::unique_ptr<NonQtHelper> myQtHelper;
 
 };
 
