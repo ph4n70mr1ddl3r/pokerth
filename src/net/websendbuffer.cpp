@@ -33,6 +33,7 @@
 #include <net/websocketdata.h>
 #include <net/netpacket.h>
 #include <net/sessiondata.h>
+#include <memory>
 
 using namespace std;
 
@@ -72,22 +73,20 @@ void
 WebSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet)
 {
 	uint32_t packetSize = packet->GetMsg()->ByteSizeLong();
-	google::protobuf::uint8 *buf = new google::protobuf::uint8[packetSize];
-	packet->GetMsg()->SerializeWithCachedSizesToArray(buf);
+	auto buf = std::make_unique<google::protobuf::uint8[]>(packetSize);
+	packet->GetMsg()->SerializeWithCachedSizesToArray(buf.get());
 
 	boost::shared_ptr<WebSocketData> webData = session->GetWebData();
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)
 	std::error_code std_ec;
-	webData->webSocketServer->send(webData->webHandle, string((const char *)buf, packetSize), websocketpp::frame::opcode::BINARY, std_ec);
+	webData->webSocketServer->send(webData->webHandle, string((const char *)buf.get(), packetSize), websocketpp::frame::opcode::BINARY, std_ec);
 	if (std_ec) {
 #else
 	boost::system::error_code ec;
-	webData->webSocketServer->send(webData->webHandle, string((const char *)buf, packetSize), websocketpp::frame::opcode::BINARY, ec);
+	webData->webSocketServer->send(webData->webHandle, string((const char *)buf.get(), packetSize), websocketpp::frame::opcode::BINARY, ec);
 	if (ec) {
 #endif
 		SetCloseAfterSend();
 	}
-
-	delete[] buf;
 }
 
