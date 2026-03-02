@@ -292,8 +292,8 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 		BytesToKey(keyData, keySize, key, iv);
 		// Add padding to plain data.
 		unsigned paddedPlainSize = ADD_PADDING(plainSize);
-		unsigned char *paddedPlainStr = static_cast<unsigned char*>(calloc(paddedPlainSize, 1));
-		memcpy(paddedPlainStr, plainStr.c_str(), plainSize);
+		std::vector<unsigned char> paddedPlainStr(paddedPlainSize, 0);
+		memcpy(paddedPlainStr.data(), plainStr.c_str(), plainSize);
 		// Perform the encryption.
 		int cipherSize = paddedPlainSize;
 		outCipher.resize(cipherSize);
@@ -313,7 +313,7 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 		int success = EVP_EncryptInit(encryptCtx, EVP_aes_128_cbc(), key, iv);
 		EVP_CIPHER_CTX_set_padding(encryptCtx, 0);
 		if (success) {
-			success = EVP_EncryptUpdate(encryptCtx, &outCipher[0], &outCipherSize, paddedPlainStr, paddedPlainSize);
+			success = EVP_EncryptUpdate(encryptCtx, &outCipher[0], &outCipherSize, paddedPlainStr.data(), paddedPlainSize);
 
 			if (success && outCipherSize) {
 				// Since padding is off, this will not modify the cipher. However, parameters need to be set.
@@ -332,7 +332,7 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 		if (!err) {
 			gcry_cipher_setkey(hd, key, sizeof(key));
 			gcry_cipher_setiv(hd, iv, sizeof(iv));
-			err = gcry_cipher_encrypt(hd, &outCipher[0], cipherSize, paddedPlainStr, paddedPlainSize);
+			err = gcry_cipher_encrypt(hd, &outCipher[0], cipherSize, paddedPlainStr.data(), paddedPlainSize);
 			if (!err)
 				retVal = true;
 			else
@@ -342,7 +342,6 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 
 		gcry_cipher_close(hd);
 #endif
-		free(paddedPlainStr);
 	}
 	return retVal;
 }
