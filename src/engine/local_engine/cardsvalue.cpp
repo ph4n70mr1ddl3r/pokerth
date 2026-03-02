@@ -689,7 +689,9 @@ std::vector< std::vector<int> > CardsValue::calcCardsChance(GameState beRoID, in
 		}
 		for(i=0; i<10; i++) {
 			if(chance[0][i] > 0) chance[1][i] = 1;
-			chance[0][i] = static_cast<int>((static_cast<double>(chance[0][i])/static_cast<double>(sum))*100.0+0.5);
+			if(sum > 0) {
+				chance[0][i] = static_cast<int>((static_cast<double>(chance[0][i])/static_cast<double>(sum))*100.0+0.5);
+			}
 		}
 
 	}
@@ -705,7 +707,9 @@ std::vector< std::vector<int> > CardsValue::calcCardsChance(GameState beRoID, in
 		}
 		for(i=0; i<10; i++) {
 			if(chance[0][i] > 0) chance[1][i] = 1;
-			chance[0][i] = static_cast<int>((static_cast<double>(chance[0][i])/static_cast<double>(sum))*100.0+0.5);
+			if(sum > 0) {
+				chance[0][i] = static_cast<int>((static_cast<double>(chance[0][i])/static_cast<double>(sum))*100.0+0.5);
+			}
 		}
 
 	}

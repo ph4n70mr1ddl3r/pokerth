@@ -162,12 +162,11 @@ AsioSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> /*session*/, 
 	if (packetSize > MAX_SEND_BUF_SIZE) {
 		return;
 	}
-	google::protobuf::uint8 *buf = new google::protobuf::uint8[packetSize + NET_HEADER_SIZE];
+	std::vector<google::protobuf::uint8> buf(packetSize + NET_HEADER_SIZE);
 	uint32_t netSize = htonl(packetSize);
-	std::memcpy(buf, &netSize, sizeof(netSize));
+	std::memcpy(buf.data(), &netSize, sizeof(netSize));
 	packet->GetMsg()->SerializeWithCachedSizesToArray(&buf[NET_HEADER_SIZE]);
-	EncodeToBuf(buf, packetSize + NET_HEADER_SIZE);
-	delete[] buf;
+	EncodeToBuf(buf.data(), packetSize + NET_HEADER_SIZE);
 }
 
 int

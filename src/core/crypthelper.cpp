@@ -35,6 +35,7 @@
 #include <cstring>
 #include <cstdio>
 #include <memory>
+#include <functional>
 
 using namespace std;
 
@@ -176,6 +177,7 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 	FILE *file = fopen(fileName.c_str(), "rb");
 
 	if (file) {
+		auto fileCloser = std::unique_ptr<FILE, std::function<void(FILE*)>>(file, [](FILE* f) { if(f) fclose(f); });
 		constexpr size_t ReadBufSize = 8192;
 		auto readBuf = std::make_unique<unsigned char[]>(ReadBufSize);
 		size_t numBytes;
@@ -209,8 +211,6 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 #endif // HAVE_OPENSSL
 
 		retVal = ferror(file) == 0;
-
-		fclose(file);
 	}
 	return retVal;
 }

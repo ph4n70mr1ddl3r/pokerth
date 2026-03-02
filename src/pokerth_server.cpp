@@ -43,6 +43,7 @@
 #include <iostream>
 #include <fstream>
 #include <csignal>
+#include <atomic>
 #include <QtCore/QCoreApplication>
 
 #ifdef _MSC_VER
@@ -67,7 +68,7 @@ using namespace std;
 namespace po = boost::program_options;
 using namespace boost::filesystem;
 
-volatile int g_pokerthTerminate = 0;
+std::atomic<int> g_pokerthTerminate{0};
 
 void
 TerminateHandler(int /*signal*/)

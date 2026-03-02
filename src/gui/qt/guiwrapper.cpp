@@ -56,7 +56,7 @@ GuiWrapper::GuiWrapper(ConfigFile *c, startWindowImpl *s) : myGuiLog(nullptr), m
 GuiWrapper::~GuiWrapper()
 {
 	delete myGuiLog;
-
+	delete myW;
 }
 
 void GuiWrapper::initGui(int speed)
