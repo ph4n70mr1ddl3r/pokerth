@@ -198,33 +198,32 @@ protected:
 
 private:
 
-	HandInterface* myHand;
+	HandInterface* myHand = nullptr;
 
 	const GameState myBeRoID;
-	unsigned dealerPosition;
-	int smallBlindPosition;
+	unsigned dealerPosition = 0;
+	int smallBlindPosition = 0;
 
-	unsigned smallBlindPositionId;
-	unsigned bigBlindPositionId;
+	unsigned smallBlindPositionId = 0;
+	unsigned bigBlindPositionId = 0;
 
 
-	int smallBlind;
-	int highestSet;
-	int minimumRaise;
-	bool fullBetRule;
+	int smallBlind = 0;
+	int highestSet = 0;
+	int minimumRaise = 0;
+	bool fullBetRule = false;
 
-	bool firstRun;
-	bool firstRunGui; // HACK
-	bool firstRound;
-	bool firstHeadsUpRound;
+	bool firstRound = true;
+	bool firstRunGui = false;
+	bool firstHeadsUpRound = true;
 
-	PlayerListIterator currentPlayersTurnIt; // iterator for runningPlayerList
-	PlayerListIterator lastPlayersTurnIt; // iterator for runningPlayerList
+	PlayerListIterator currentPlayersTurnIt;
+	PlayerListIterator lastPlayersTurnIt;
 
-	unsigned currentPlayersTurnId;
-	unsigned firstRoundLastPlayersTurnId;
+	unsigned currentPlayersTurnId = 0;
+	unsigned firstRoundLastPlayersTurnId = 0;
 
-	bool logBoardCardsDone;
+	bool logBoardCardsDone = false;
 
 
 };

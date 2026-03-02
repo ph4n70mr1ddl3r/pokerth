@@ -213,21 +213,21 @@ private:
 
 	std::vector<boost::shared_ptr<BeRoInterface> > myBeRo;
 
-	int myID;
-	int startQuantityPlayers;
-	unsigned dealerPosition;
-	unsigned smallBlindPosition;
-	unsigned bigBlindPosition;
-	GameState currentRound;
-	GameState roundBeforePostRiver;
-	int smallBlind;
-	int startCash;
+	int myID = 0;
+	int startQuantityPlayers = 0;
+	unsigned dealerPosition = 0;
+	unsigned smallBlindPosition = 0;
+	unsigned bigBlindPosition = 0;
+	GameState currentRound = GAME_STATE_PREFLOP;
+	GameState roundBeforePostRiver = GAME_STATE_PREFLOP;
+	int smallBlind = 0;
+	int startCash = 0;
 
-	int previousPlayerID;
-	unsigned lastActionPlayerID;
+	int previousPlayerID = 0;
+	unsigned lastActionPlayerID = 0;
 
-	bool allInCondition;
-	bool cardsShown;
+	bool allInCondition = false;
+	bool cardsShown = false;
 };
 
 #endif

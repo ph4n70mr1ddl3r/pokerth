@@ -36,13 +36,13 @@
 #endif
 
 #include <windows.h>
+#include <vector>
 
 using namespace std;
 
 static string
 Convert(const std::string &inStr, int fromCP, int toCP)
 {
-	// convert str from current Windows source to target charset
 	string retStr(inStr);
 
 	if (!inStr.empty()) {
@@ -50,21 +50,18 @@ Convert(const std::string &inStr, int fromCP, int toCP)
 		int reqLen = ::MultiByteToWideChar(fromCP, 0, inStr.c_str(), len, nullptr, 0);
 
 		if (reqLen) {
-			wchar_t *wstr = new wchar_t[reqLen];
+			std::vector<wchar_t> wstr(reqLen);
 			wstr[0] = L'\0';
-			if (::MultiByteToWideChar(fromCP, 0, inStr.c_str(), len, wstr, reqLen) == static_cast<int>(reqLen)) {
+			if (::MultiByteToWideChar(fromCP, 0, inStr.c_str(), len, wstr.data(), reqLen) == static_cast<int>(reqLen)) {
 				len = reqLen;
-				reqLen = ::WideCharToMultiByte(toCP, 0, wstr, len, nullptr, 0, nullptr, nullptr);
+				reqLen = ::WideCharToMultiByte(toCP, 0, wstr.data(), len, nullptr, 0, nullptr, nullptr);
 
 				if (reqLen) {
-					char *str = new char[reqLen];
-					if (::WideCharToMultiByte(toCP, 0, wstr, len, str, reqLen, nullptr, nullptr) == static_cast<int>(reqLen))
-						retStr = str;
-					delete[] str;
+					std::vector<char> str(reqLen);
+					if (::WideCharToMultiByte(toCP, 0, wstr.data(), len, str.data(), reqLen, nullptr, nullptr) == static_cast<int>(reqLen))
+						retStr = str.data();
 				}
 			}
-
-			delete[] wstr;
 		}
 	}
 	return retStr;

@@ -157,17 +157,16 @@ private:
 	PlayerList runningPlayerList; // nonfolded and nonallin active players
 
 	// start variables
-	int startQuantityPlayers;
-	int startCash;
-	int startSmallBlind;
-	int myGameID;
+	int startQuantityPlayers = 0;
+	int startCash = 0;
+	int startSmallBlind = 0;
+	int myGameID = 0;
 
-	// running variables
-	int currentSmallBlind;
-	int currentHandID;
-	unsigned dealerPosition;
-	int lastHandBlindsRaised;
-	int lastTimeBlindsRaised;
+	int currentSmallBlind = 0;
+	int currentHandID = 0;
+	unsigned dealerPosition = 0;
+	int lastHandBlindsRaised = 0;
+	int lastTimeBlindsRaised = 0;
 	const GameData myGameData;
 	std::list<int> blindsList;
 

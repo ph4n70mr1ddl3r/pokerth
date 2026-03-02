@@ -119,11 +119,11 @@ private:
 	std::list<unsigned> winners;
 	std::list<unsigned> playerNeedToShowCards;
 
-	std::array<int, 5> myCards;
-	int pot;
-	int sets;
-	bool allInCondition;
-	unsigned lastActionPlayerID;
+	std::array<int, 5> myCards{};
+	int pot = 0;
+	int sets = 0;
+	bool allInCondition = false;
+	unsigned lastActionPlayerID = 0;
 
 };
 

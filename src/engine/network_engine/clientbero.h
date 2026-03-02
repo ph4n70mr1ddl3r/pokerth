@@ -105,27 +105,27 @@ private:
 
 	HandInterface *myHand;
 
-	int highestCardsValue;
+	int highestCardsValue = 0;
 
-	PlayerListIterator currentPlayersTurnIt; // iterator for runningPlayerList
-	PlayerListIterator lastPlayersTurnIt; // iterator for runningPlayerList
+	PlayerListIterator currentPlayersTurnIt;
+	PlayerListIterator lastPlayersTurnIt;
 
-	unsigned smallBlindPositionId;
-	unsigned bigBlindPositionId;
+	unsigned smallBlindPositionId = 0;
+	unsigned bigBlindPositionId = 0;
 
-	unsigned currentPlayersTurnId;
-	unsigned firstRoundLastPlayersTurnId;
+	unsigned currentPlayersTurnId = 0;
+	unsigned firstRoundLastPlayersTurnId = 0;
 
 
-	int highestSet;
-	bool firstRound;
-	int smallBlindPosition;
-	int smallBlind;
+	int highestSet = 0;
+	bool firstRound = true;
+	int smallBlindPosition = 0;
+	int smallBlind = 0;
 
-	int minimumRaise;
-	bool fullBetRule;
+	int minimumRaise = 0;
+	bool fullBetRule = false;
 
-	int lastActionPlayer;
+	int lastActionPlayer = 0;
 };
 
 #endif
