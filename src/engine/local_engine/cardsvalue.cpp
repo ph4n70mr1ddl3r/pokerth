@@ -245,27 +245,6 @@ int CardsValue::holeCardsToIntCode(int* cards)
 
 }
 
-/* DO NOT USE, THIS MAY LEAK MEMORY
-int* CardsValue::intCodeToHoleCards(int code)
-{
-
-	// one possibility !!!
-
-	int* cards = new int[2];
-
-	cards[0] = code/1000;
-	cards[1] = (code-cards[0]*1000)/10;
-
-	if(cards[0]==cards[1]) {
-		cards[1] +=13;
-	} else {
-		if(code%10 == 0) cards[1] +=13;
-	}
-
-	return cards;
-
-}*/
-
 int CardsValue::cardsValue(int* cards, int* position)
 {
 
@@ -2322,23 +2301,3 @@ std::list<std::string> CardsValue::translateCardsValueCode(int cardsValueCode)
 	return cardString;
 
 }
-
-
-//int** CardsValue::showdown(GameState beRoID, int** playerCards, int playerCount) {
-//
-// 	int i,j;
-//
-// 	int** chance = new int*[2];
-//
-// 	for(i=0;i<10;i++) {
-// 		chance[i] = new int[2];
-// 		for(j=0;j<2;j++) {
-// 			chance[i][j] = 0;
-// 		}
-// 	}
-//
-// 	int rand[5];
-//
-// 	return chance;
-//
-//}
