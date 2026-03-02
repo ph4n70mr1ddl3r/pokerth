@@ -38,6 +38,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -952,8 +953,8 @@ LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType ty
 	const int interval = 7;
 	const int count = 4;
 
-	int tempArray[count];
-	Tools::GetRand(0, 2*interval, count, tempArray);
+	std::vector<int> tempArray(count);
+	Tools::GetRand(0, 2*interval, count, tempArray.data());
 	for(i=0; i<count; i++) {
 		myDude4 += tempArray[i];
 	}

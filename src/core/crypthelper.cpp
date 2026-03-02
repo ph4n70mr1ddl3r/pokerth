@@ -34,6 +34,7 @@
 #include <core/openssl_wrapper.h>
 #include <cstring>
 #include <cstdio>
+#include <memory>
 
 using namespace std;
 
@@ -175,8 +176,8 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 	FILE *file = fopen(fileName.c_str(), "rb");
 
 	if (file) {
-		// Calculate MD5 sum of file.
-		unsigned char *readBuf = new unsigned char[8192];
+		constexpr size_t ReadBufSize = 8192;
+		auto readBuf = std::make_unique<unsigned char[]>(ReadBufSize);
 		size_t numBytes;
 
 #ifdef HAVE_OPENSSL
@@ -184,24 +185,24 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 		EVP_MD_CTX *context = EVP_MD_CTX_new();
 		unsigned int md5_digest_len = EVP_MD_size(EVP_md5());
 		EVP_DigestInit_ex(context, EVP_md5(), nullptr);
-		while ((numBytes = fread(readBuf, 1, sizeof(readBuf), file)) > 0) {
-			EVP_DigestUpdate(context, readBuf, numBytes);
+		while ((numBytes = fread(readBuf.get(), 1, ReadBufSize, file)) > 0) {
+			EVP_DigestUpdate(context, readBuf.get(), numBytes);
 		}
 		EVP_DigestFinal_ex(context, buf.GetData(), &md5_digest_len);
 		EVP_MD_CTX_free(context);
 	#else
 		MD5_CTX context;
 		MD5_Init(&context);
-		while ((numBytes = fread(readBuf, 1, sizeof(readBuf), file)) > 0) {
-			MD5_Update(&context, readBuf, numBytes);
+		while ((numBytes = fread(readBuf.get(), 1, ReadBufSize, file)) > 0) {
+			MD5_Update(&context, readBuf.get(), numBytes);
 		}
 		MD5_Final(buf.GetData(), &context);
 	#endif // OPENSSL_VERSION_NUMBER >= 0x30000000L
 #else
 		gcry_md_hd_t hash;
 		gcry_md_open(&hash, GCRY_MD_MD5, 0);
-		while ((numBytes = fread(readBuf, 1, sizeof(readBuf), file)) > 0) {
-			gcry_md_write(hash, readBuf, numBytes);
+		while ((numBytes = fread(readBuf.get(), 1, ReadBufSize, file)) > 0) {
+			gcry_md_write(hash, readBuf.get(), numBytes);
 		}
 		memcpy(buf.GetData(), gcry_md_read(hash, GCRY_MD_MD5), MD5_DATA_SIZE);
 		gcry_md_close(hash);
@@ -209,7 +210,6 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 
 		retVal = ferror(file) == 0;
 
-		delete[] readBuf;
 		fclose(file);
 	}
 	return retVal;
@@ -269,13 +269,11 @@ CryptHelper::BytesToKey(const unsigned char *keyData, unsigned keySize, unsigned
 	CryptHelper::SHA1Hash(tmpBuf1.GetData(), tmpBuf1.GetDataSize(), keyBuf1);
 	// Second 20 bytes (we only need a total of 32 bytes, but anyway).
 	unsigned tmpKeySize = keySize + keyBuf1.GetDataSize();
-	unsigned char *tmpKeyData = new unsigned char[tmpKeySize];
-	// Concatenate our first hash and the key data.
-	memcpy(tmpKeyData, keyBuf1.GetData(), keyBuf1.GetDataSize());
-	memcpy(tmpKeyData + keyBuf1.GetDataSize(), keyData, keySize);
-	CryptHelper::SHA1Hash(tmpKeyData, tmpKeySize, tmpBuf2);
+	auto tmpKeyData = std::make_unique<unsigned char[]>(tmpKeySize);
+	memcpy(tmpKeyData.get(), keyBuf1.GetData(), keyBuf1.GetDataSize());
+	memcpy(tmpKeyData.get() + keyBuf1.GetDataSize(), keyData, keySize);
+	CryptHelper::SHA1Hash(tmpKeyData.get(), tmpKeySize, tmpBuf2);
 	CryptHelper::SHA1Hash(tmpBuf2.GetData(), tmpBuf2.GetDataSize(), keyBuf2);
-	delete[] tmpKeyData;
 	// Copy the hashes to key/iv.
 	memcpy(key, keyBuf1.GetData(), AES_BLOCK_SIZE);
 	unsigned tmpivBytes = keyBuf1.GetDataSize() - AES_BLOCK_SIZE;
