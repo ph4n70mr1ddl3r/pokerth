@@ -115,19 +115,6 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 	this->showFullScreen();
 
 	//TODO HACK Missing QSystemScreenSaver::setScreenSaverInhibited(true)
-//		#ifndef ANDROID_TEST
-//			JavaVM *currVM = (JavaVM *)QApplication::platformNativeInterface()->nativeResourceForWidget("JavaVM", 0);
-//			JNIEnv* env;
-//			if (currVM->AttachCurrentThread(&env, NULL)<0) {
-//				qCritical()<<"AttachCurrentThread failed";
-//			} else {
-//	//			jclass jclassApplicationClass = env->FindClass("android/view/View");
-//	//			if (jclassApplicationClass) {
-//	//				env->SetStaticIntField(jclassApplicationClass, env->GetStaticFieldID(jclassApplicationClass,"KEEP_SCREEN_ON", "I"), 1);
-//	//			}
-//				currVM->DetachCurrentThread();
-//			}
-//		#endif
 #else
 //		Maemo
 	this->menubar->hide();

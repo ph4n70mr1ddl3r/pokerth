@@ -35,18 +35,18 @@
 
 #include <core/loghelper.h>
 #include <iostream>
+#include <atomic>
 
 
 using namespace std;
 
 
-static int g_logLevel = 1;
+static atomic<int> g_logLevel{1};
 
 void
 loghelper_init(const std::string & /*logDir*/, int logLevel)
 {
-	// Do not log to file as client.
-	g_logLevel = logLevel;
+	g_logLevel.store(logLevel);
 }
 
 void
@@ -58,14 +58,14 @@ internal_log_err(const string &msg)
 void
 internal_log_msg(const std::string &msg)
 {
-	if (g_logLevel)
+	if (g_logLevel.load())
 		cout << msg;
 }
 
 void
 internal_log_level(const std::string &msg, int logLevel)
 {
-	if (g_logLevel >= logLevel)
+	if (g_logLevel.load() >= logLevel)
 		cout << msg;
 }
 

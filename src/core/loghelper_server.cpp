@@ -40,6 +40,8 @@
 
 #include <core/loghelper.h>
 #include <fstream>
+#include <atomic>
+#include <mutex>
 #include <boost/filesystem.hpp>
 #include <boost/date_time.hpp>
 
@@ -51,7 +53,8 @@ using namespace boost::posix_time;
 #define SERVER_MSG_LOG_FILE_NAME				"server_messages.log"
 
 static string g_logFile;
-static int g_logLevel = 1;
+static mutex g_logFileMutex;
+static atomic<int> g_logLevel{1};
 
 void
 loghelper_init(const string &logDir, int logLevel)
@@ -59,15 +62,21 @@ loghelper_init(const string &logDir, int logLevel)
 	path tmpLogFile(logDir);
 	tmpLogFile /= SERVER_MSG_LOG_FILE_NAME;
 
+	lock_guard<mutex> lock(g_logFileMutex);
 	g_logFile = tmpLogFile.string();
-	g_logLevel = logLevel;
+	g_logLevel.store(logLevel);
 }
 
 void
 internal_log_err(const string &msg)
 {
-	if (!g_logFile.empty()) {
-		std::ofstream o(g_logFile.c_str(), ios_base::out | ios_base::app);
+	string logFile;
+	{
+		lock_guard<mutex> lock(g_logFileMutex);
+		logFile = g_logFile;
+	}
+	if (!logFile.empty()) {
+		std::ofstream o(logFile.c_str(), ios_base::out | ios_base::app);
 		if (!o.fail()) {
 			o << second_clock::local_time() << " ERR: " << msg;
 			o.flush();
@@ -78,9 +87,14 @@ internal_log_err(const string &msg)
 void
 internal_log_msg(const std::string &msg)
 {
-	if (g_logLevel) {
-		if (!g_logFile.empty()) {
-			std::ofstream o(g_logFile.c_str(), ios_base::out | ios_base::app);
+	if (g_logLevel.load()) {
+		string logFile;
+		{
+			lock_guard<mutex> lock(g_logFileMutex);
+			logFile = g_logFile;
+		}
+		if (!logFile.empty()) {
+			std::ofstream o(logFile.c_str(), ios_base::out | ios_base::app);
 			if (!o.fail())
 				o << second_clock::local_time() << " MSG: " << msg;
 		}
@@ -90,9 +104,14 @@ internal_log_msg(const std::string &msg)
 void
 internal_log_level(const std::string &msg, int logLevel)
 {
-	if (g_logLevel >= logLevel) {
-		if (!g_logFile.empty()) {
-			std::ofstream o(g_logFile.c_str(), ios_base::out | ios_base::app);
+	if (g_logLevel.load() >= logLevel) {
+		string logFile;
+		{
+			lock_guard<mutex> lock(g_logFileMutex);
+			logFile = g_logFile;
+		}
+		if (!logFile.empty()) {
+			std::ofstream o(logFile.c_str(), ios_base::out | ios_base::app);
 			if (!o.fail())
 				o << second_clock::local_time() << " OUT: " << msg;
 		}

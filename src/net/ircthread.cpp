@@ -395,8 +395,7 @@ IrcThread::IrcInit()
 		context.session = nullptr;
 	}
 	// Initialize libirc stuff.
-	irc_callbacks_t callbacks;
-	memset (&callbacks, 0, sizeof(callbacks));
+	irc_callbacks_t callbacks{};
 
 	callbacks.event_connect = irc_event_connect;
 	callbacks.event_join = irc_event_join;

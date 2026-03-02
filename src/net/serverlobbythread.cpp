@@ -1929,17 +1929,6 @@ ServerLobbyThread::InternalResubscribeMsg(boost::shared_ptr<SessionData> session
 		session->SetWantsLobbyMsg();
 		SendPlayerList(session);
 		SendGameList(session);
-		// Send new statistics information.
-		/*		boost::shared_ptr<NetPacket> packet(new NetPacket(NetPacket::Alloc));
-				packet->GetMsg()->present = PokerTHMessage_PR_statisticsMessage;
-				StatisticsMessage_t *netStatistics = &packet->GetMsg()->choice.statisticsMessage;
-
-				StatisticsData_t *data = static_cast<StatisticsData_t *>(calloc(1, sizeof(struct StatisticsData)));
-				data->statisticsType = statisticsType_statNumberOfPlayers;
-				data->statisticsValue = m_sessionManager.GetRawSessionCount() + m_gameSessionManager.GetRawSessionCount();
-				ASN_SEQUENCE_ADD(&netStatistics->statisticsData.list, data);
-
-				GetSender().Send(session, packet);*/
 	}
 }
 

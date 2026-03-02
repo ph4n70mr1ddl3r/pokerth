@@ -148,8 +148,7 @@ void SDLPlayer::playSound(string audioString, int playerID)
 
 			// set 3d effect
 			if(!Mix_SetPosition(0, position, distance)) {
-				printf("Mix_SetPosition: %s\n", Mix_GetError());
-				// no position effect, is it ok?
+				qDebug("Mix_SetPosition: %s", Mix_GetError());
 			}
 			currentChannel = Mix_PlayChannel(-1, sound,0);
 		}

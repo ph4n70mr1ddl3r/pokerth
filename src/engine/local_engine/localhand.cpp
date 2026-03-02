@@ -670,7 +670,7 @@ void LocalHand::switchRounds()
 		myGui->refreshGroupbox(previousPlayerID,1);
 	}
 
-	myGui->refreshGameLabels((GameState)getCurrentRound());
+	myGui->refreshGameLabels(static_cast<GameState>(getCurrentRound()));
 
 	if(currentRound < GAME_STATE_POST_RIVER) {
 		roundBeforePostRiver = currentRound;

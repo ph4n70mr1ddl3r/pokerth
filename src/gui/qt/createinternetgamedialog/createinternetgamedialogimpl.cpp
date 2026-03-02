@@ -53,7 +53,7 @@ createInternetGameDialogImpl::createInternetGameDialogImpl(QWidget *parent, Conf
 	comboBox_gameType->setItemData(1, GAME_TYPE_REGISTERED_ONLY, Qt::UserRole);
 	comboBox_gameType->setItemData(2, GAME_TYPE_INVITE_ONLY, Qt::UserRole);
 	comboBox_gameType->setItemData(3, GAME_TYPE_RANKING, Qt::UserRole);
-	myChangeCompleteBlindsDialog = new changeCompleteBlindsDialogImpl;
+	myChangeCompleteBlindsDialog = new changeCompleteBlindsDialogImpl(this);
 	startBlind = new QLabel(tr("<i>First small blind: $%1</i>").arg(RANKING_GAME_START_SBLIND));
 	raiseMode = new QLabel(tr("<i>Double blinds every %1'th hand</i>").arg(RANKING_GAME_RAISE_EVERY_HAND));
 	startBlind->hide();

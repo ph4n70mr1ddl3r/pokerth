@@ -69,7 +69,7 @@ settingsDialogImpl::settingsDialogImpl(QWidget *parent, ConfigFile *c, selectAva
     label_soundVolume->hide();
 #endif
 
-	myManualBlindsOrderDialog = new manualBlindsOrderDialogImpl;
+	myManualBlindsOrderDialog = new manualBlindsOrderDialogImpl(this);
 
 	myAppDataPath = QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str());
 
@@ -1200,7 +1200,7 @@ void settingsDialogImpl::resetSettings()
 									QMessageBox::Yes | QMessageBox::No);
 	if(ret == QMessageBox::Yes) {
 		myConfig->deleteConfigFile();
-		exit(0);
+		QApplication::quit();
 	}
 
 }
