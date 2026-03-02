@@ -707,7 +707,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		client->AddPlayerData(playerData);
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_TimeoutWarningMessage) {
 		const TimeoutWarningMessage &tmpTimeout = tmpPacket->GetMsg()->timeoutwarningmessage();
-		client->GetCallback().SignalNetClientShowTimeoutDialog((NetTimeoutReason)tmpTimeout.timeoutreason(), tmpTimeout.remainingseconds());
+		client->GetCallback().SignalNetClientShowTimeoutDialog(static_cast<NetTimeoutReason>(tmpTimeout.timeoutreason()), tmpTimeout.remainingseconds());
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_ChatMessage) {
 		// Chat message - display it in the GUI.
 		const ChatMessage &netMessage = tmpPacket->GetMsg()->chatmessage();
@@ -1530,7 +1530,7 @@ ClientStateWaitStart::InternalHandlePacket(boost::shared_ptr<ClientThread> clien
 		client->InitGame();
 		client->GetGame()->setCurrentHandID(tmpHandId);
 		// We need to remove the temporary player data objects after creating the game.
-		BOOST_FOREACH(unsigned tmpPlayerId, tmpPlayerList) {
+		for(unsigned tmpPlayerId : tmpPlayerList) {
 			client->RemovePlayerData(tmpPlayerId, NTF_NET_REMOVED_ON_REQUEST);
 		}
 		client->GetCallback().SignalNetClientGameInfo(MSG_NET_GAME_CLIENT_START);
@@ -1779,21 +1779,26 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 
 		//log blinds sets after setting bigblind-button
 		if (isBigBlind) {
-			client->GetGui().logNewBlindsSetsMsg(
-				curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getSmallBlindPositionId())->getMySet(),
-				curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getBigBlindPositionId())->getMySet(),
-				curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getSmallBlindPositionId())->getMyName(),
-				curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getBigBlindPositionId())->getMyName());
-			client->GetGui().flushLogAtHand();
-			client->GetClientLog()->logNewHandMsg(
-				curGame->getCurrentHandID(),
-				curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getDealerPosition())->getMyID()+1,
-				curGame->getCurrentHand()->getSmallBlind(),
-				curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getSmallBlindPositionId())->getMyID()+1,
-				curGame->getCurrentHand()->getSmallBlind()*2,
-				curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getBigBlindPositionId())->getMyID()+1,
-				curGame->getSeatsList()
-			);
+			PlayerInterface* smallBlindPlayer = curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getSmallBlindPositionId());
+			PlayerInterface* bigBlindPlayer = curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getBigBlindPositionId());
+			PlayerInterface* dealerPlayer = curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getDealerPosition());
+			if (smallBlindPlayer && bigBlindPlayer && dealerPlayer) {
+				client->GetGui().logNewBlindsSetsMsg(
+					smallBlindPlayer->getMySet(),
+					bigBlindPlayer->getMySet(),
+					smallBlindPlayer->getMyName(),
+					bigBlindPlayer->getMyName());
+				client->GetGui().flushLogAtHand();
+				client->GetClientLog()->logNewHandMsg(
+					curGame->getCurrentHandID(),
+					dealerPlayer->getMyID()+1,
+					curGame->getCurrentHand()->getSmallBlind(),
+					smallBlindPlayer->getMyID()+1,
+					curGame->getCurrentHand()->getSmallBlind()*2,
+					bigBlindPlayer->getMyID()+1,
+					curGame->getSeatsList()
+				);
+			}
 		}
 
 		// Stop the timeout for the player.

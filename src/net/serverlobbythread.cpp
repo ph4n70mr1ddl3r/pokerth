@@ -824,7 +824,7 @@ ServerLobbyThread::Main()
 	// Clear all sessions and games.
 	m_sessionManager.Clear();
 	m_gameSessionManager.Clear();
-	BOOST_FOREACH(const GameMap::value_type& tmpGame, m_gameMap) {
+	for(const GameMap::value_type& tmpGame : m_gameMap) {
 		tmpGame.second->Exit();
 	}
 	m_gameMap.clear();
@@ -1160,7 +1160,7 @@ ServerLobbyThread::HandleNetPacketAvatarEnd(boost::shared_ptr<SessionData> sessi
 void
 ServerLobbyThread::HandleNetPacketRetrievePlayerInfo(boost::shared_ptr<SessionData> session, const PlayerInfoRequestMessage &playerInfoRequest)
 {
-	BOOST_FOREACH(unsigned playerId, playerInfoRequest.playerid()) {
+	for(unsigned playerId : playerInfoRequest.playerid()) {
 		// Find player in lobby or in a game.
 		boost::shared_ptr<SessionData> tmpSession = m_sessionManager.GetSessionByUniquePlayerId(playerId);
 		if (!tmpSession) {

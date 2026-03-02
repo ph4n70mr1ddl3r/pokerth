@@ -42,6 +42,7 @@
 
 #include <string>
 #include <cstring>
+#include <vector>
 
 #include <iconv.h>
 #include <errno.h>
@@ -61,22 +62,21 @@ ConvHelper::NativeToUtf8(const std::string &inStr)
 
 	const size_t c_outsize = insize * 6; // max size of utf-8 char is 6 per input char
 	size_t outsize = c_outsize;
-	char *c_outbuf = new char[outsize];
-	char *outbuf = c_outbuf;
+	std::vector<char> outBuf(c_outsize);
+	char *outbuf = outBuf.data();
 
 	//nl_langinfo(CODESET)
 	iconv_t conversion = iconv_open("UTF-8", "ISO-8859-1");
 
-	if (conversion == reinterpret_cast<iconv_t>(-1))
+	if (conversion == reinterpret_cast<iconv_t>(static_cast<intptr_t>(-1)))
 		LOG_ERROR("iconv_open() failed: " << strerror(errno));
 	else {
 		size_t retval = iconv(conversion, &inbuf, &insize, &outbuf, &outsize);
 
-		if (retval == (size_t)-1)
+		if (retval == static_cast<size_t>(-1))
 			LOG_ERROR("iconv() failed: " << strerror(errno));
-		retStr = string(c_outbuf, c_outsize - outsize);
+		retStr = string(outBuf.data(), c_outsize - outsize);
 	}
-	delete[] c_outbuf;
 
 	iconv_close(conversion);
 	return retStr;
@@ -95,21 +95,20 @@ ConvHelper::Utf8ToNative(const std::string &inStr)
 
 	const size_t c_outsize = insize;
 	size_t outsize = c_outsize;
-	char *c_outbuf = new char[outsize];
-	char *outbuf = c_outbuf;
+	std::vector<char> outBuf(c_outsize);
+	char *outbuf = outBuf.data();
 
 	iconv_t conversion = iconv_open("ISO-8859-1", "UTF-8");
 
-	if (conversion == reinterpret_cast<iconv_t>(-1))
+	if (conversion == reinterpret_cast<iconv_t>(static_cast<intptr_t>(-1)))
 		LOG_ERROR("iconv_open() failed: " << strerror(errno));
 	else {
 		size_t retval = iconv(conversion, &inbuf, &insize, &outbuf, &outsize);
 
-		if (retval == (size_t)-1)
+		if (retval == static_cast<size_t>(-1))
 			LOG_ERROR("iconv() failed: " << strerror(errno));
-		retStr = string(c_outbuf, c_outsize - outsize);
+		retStr = string(outBuf.data(), c_outsize - outsize);
 	}
-	delete[] c_outbuf;
 
 	iconv_close(conversion);
 	return retStr;

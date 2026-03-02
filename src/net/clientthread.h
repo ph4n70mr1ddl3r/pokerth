@@ -87,7 +87,7 @@ public:
 	{
 		bool retVal = false;
 		if (pingTimer.is_running()) {
-			pingValues.push_back((unsigned)pingTimer.elapsed().total_milliseconds());
+			pingValues.push_back(static_cast<unsigned>(pingTimer.elapsed().total_milliseconds()));
 			if (pingValues.size() > SIZE_PING_BACKLOG) {
 				pingValues.pop_front();
 			}

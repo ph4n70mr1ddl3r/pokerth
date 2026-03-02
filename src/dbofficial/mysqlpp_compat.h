@@ -64,8 +64,8 @@ struct String {
     std::string s;
     bool is_null() const { return s.empty(); }
     void to_string(std::string &out) const { out = s; }
-    operator int() const { try { return s.empty() ? 0 : std::stoi(s); } catch(...) { return 0; } }
-    operator unsigned int() const { try { return s.empty() ? 0u : static_cast<unsigned int>(std::stoul(s)); } catch(...) { return 0u; } }
+    operator int() const { try { return s.empty() ? 0 : std::stoi(s); } catch(const std::exception&) { return 0; } }
+    operator unsigned int() const { try { return s.empty() ? 0u : static_cast<unsigned int>(std::stoul(s)); } catch(const std::exception&) { return 0u; } }
 };
 
 // Simple DateTime wrapper that converts to a string acceptable by SQL

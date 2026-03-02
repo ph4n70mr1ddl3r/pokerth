@@ -408,7 +408,7 @@ void startWindowImpl::showTimeoutDialog(int msgID, unsigned duration)
 {
 	if(myTimeoutDialog->isHidden()) {
 		myTimeoutDialog->setMySession(mySession);
-		myTimeoutDialog->setMsgID((NetTimeoutReason)msgID);
+		myTimeoutDialog->setMsgID(static_cast<NetTimeoutReason>(msgID));
 		myTimeoutDialog->setTimeoutDuration(duration);
 		myTimeoutDialog->show();
 		myTimeoutDialog->raise();

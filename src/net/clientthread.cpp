@@ -688,7 +688,7 @@ ClientThread::RequestPlayerInfo(const list<unsigned> &idList, bool requestAvatar
 	boost::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayerInfoRequestMessage);
 	PlayerInfoRequestMessage *netPlayerInfo = packet->GetMsg()->mutable_playerinforequestmessage();
-	BOOST_FOREACH(unsigned playerId, idList) {
+	for(unsigned playerId : idList) {
 		if (find(m_playerInfoRequestList.begin(), m_playerInfoRequestList.end(), playerId) == m_playerInfoRequestList.end()) {
 			netPlayerInfo->add_playerid(playerId);
 			m_playerInfoRequestList.push_back(playerId);

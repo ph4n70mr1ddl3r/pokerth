@@ -126,7 +126,8 @@ Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
 	currentBoard->setPlayerLists(seatsList, activePlayerList, runningPlayerList);
 
 	// log game data
-	if(myLog) myLog->logNewGameMsg(myGameID, startCash, startSmallBlind, getPlayerByUniqueId(dealerPosition)->getMyID()+1, seatsList);
+	PlayerInterface* dealerPlayer = getPlayerByUniqueId(dealerPosition);
+	if(myLog) myLog->logNewGameMsg(myGameID, startCash, startSmallBlind, dealerPlayer ? dealerPlayer->getMyID()+1 : 0, seatsList);
 
 	//start timer
 	blindsTimer.reset();

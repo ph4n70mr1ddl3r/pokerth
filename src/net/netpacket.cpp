@@ -111,7 +111,7 @@ NetPacket::SetGameData(const GameData &inData, NetGameInfo &outData)
 	outData.set_firstsmallblind(inData.firstSmallBlind);
 	outData.set_startmoney(inData.startMoney);
 
-	BOOST_FOREACH(int manualBlind, inData.manualBlindsList) {
+	for(int manualBlind : inData.manualBlindsList) {
 		outData.add_manualblinds(manualBlind);
 	}
 }

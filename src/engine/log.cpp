@@ -81,7 +81,7 @@ Log::init()
                 mySqliteLogFileName /= myConfig->readConfigString("LogDir");
                 mySqliteLogFileName /= string("pokerth-log-") + curDateTime + ".pdb";
 
-                myConnectionName = QString("pokerth_log_%1").arg((qulonglong)QDateTime::currentMSecsSinceEpoch());
+                myConnectionName = QString("pokerth_log_%1").arg(static_cast<qulonglong>(QDateTime::currentMSecsSinceEpoch()));
                 mySqliteLogDb = QSqlDatabase::addDatabase("QSQLITE", myConnectionName);
                 mySqliteLogDb.setDatabaseName(QString::fromStdString(mySqliteLogFileName.string()));
 
