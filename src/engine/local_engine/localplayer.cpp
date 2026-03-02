@@ -1209,20 +1209,6 @@ void LocalPlayer::preflopEngine()
 
 
 
-	// Aggresivität des humanPlayers auslesen -> nur wenn er aktiv ist !
-	// 	it_c = currentHand->getActivePlayerIt(0);
-	// 	if( it_c != currentHand->getActivePlayerList()->end() ) {
-	// 		if( (*it_c)->getMyAction() != PLAYER_ACTION_FOLD ) {
-	// 			int aggValue = static_cast<int>((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
-	// 			myNiveau[0] -= aggValue;
-	// 			myNiveau[2] -= aggValue;
-	// 		}
-	//
-	// 	}
-
-
-	//	cout << "Spieler " << myID << ": Dude " << myDude4 << "\t Wert " <<  myHoleCardsValue << "\t Niveau " << myNiveau[0] << " " << myNiveau[1] << " " << myNiveau[2] << "\t Agg " << aggValue << " " << endl;
-
 	// Check-Bluff generieren
 	Tools::GetRand(1, 100, 1, &cBluff);
 
@@ -1253,10 +1239,6 @@ void LocalPlayer::preflopEngine()
 		} else {
 			// raise-Betrag ermitteln
 			raise = ((static_cast<int>(myOdds)-myNiveau[2])/2)*2*currentHand->getSmallBlind();
-			// raise-Betrag zu klein -> mindestens Standard-raise
-			// 			if(raise < currentHand->getCurrentBeRo()->getHighestSet()) {
-			// 				raise = currentHand->getCurrentBeRo()->getHighestSet();
-			// 			}
 			// all in bei nur wenigen Chips oder knappem raise
 			if(myCash/(2*currentHand->getSmallBlind()) <= 6 || raise >= (myCash*4)/5) {
 				raise = myCash;
@@ -1333,10 +1315,6 @@ void LocalPlayer::preflopEngine()
 		else {
 			// raise-Betrag ermitteln
 			raise = (sBluff/(8-min(7,static_cast<int>(currentHand->getActivePlayerList()->size()))))*currentHand->getSmallBlind();
-			// raise-Betrag zu klein -> mindestens Standard-raise
-			// 			if(raise < currentHand->getCurrentBeRo()->getHighestSet()) {
-			// 				raise = currentHand->getCurrentBeRo()->getHighestSet();
-			// 			}
 			// all in bei nur wenigen Chips oder knappem raise
 			if(myCash/(2*currentHand->getSmallBlind()) <= 6 || raise >= (myCash*4)/5) {
 				raise = myCash;
@@ -1351,16 +1329,6 @@ void LocalPlayer::preflopEngine()
 
 
 	}
-
-	// minimum raise setting and resetting
-	//        if(myAction == 5) {
-	//
-	//                if(raise < currentHand->getCurrentBeRo()->getMinimumRaise()) {
-	//                        raise = currentHand->getCurrentBeRo()->getMinimumRaise();
-	//                }
-	//                currentHand->getCurrentBeRo()->setMinimumRaise(raise);
-	//        }
-	//
 
 	// 	cout << myID << ": " << myOdds << " - " << myNiveau[0] << " " << myNiveau[2] << " - " << "Bluff: " << sBluffStatus << endl;
 
@@ -1621,10 +1589,6 @@ void LocalPlayer::flopEngine()
 			} else {
 				// raise-Betrag ermitteln
 				raise = ((static_cast<int>(myOdds)-myNiveau[2])/5)*2*currentHand->getSmallBlind();
-				// raise-Betrag zu klein -> mindestens Standard-raise
-				// 				if(raise < currentHand->getCurrentBeRo()->getHighestSet()) {
-				// 					raise = currentHand->getCurrentBeRo()->getHighestSet();
-				// 				}
 				// all in bei nur wenigen Chips oder knappem raise
 				if(myCash/(2*currentHand->getSmallBlind()) <= 6 || raise >= (myCash*4.0)/5.0) {
 					raise = myCash;

@@ -135,7 +135,7 @@ public:
 
 private:
 
-	int myCurrentGameNum;
+	int myCurrentGameNum = 0;
 
 	std::string myIrcNick;
 

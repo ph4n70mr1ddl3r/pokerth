@@ -306,8 +306,8 @@ private:
 	ServerInfoMap m_serverInfoMap;
 	mutable boost::mutex m_serverInfoMapMutex;
 
-	bool m_isServerSelected;
-	unsigned m_selectedServerId;
+	bool m_isServerSelected = false;
+	unsigned m_selectedServerId = 0;
 	mutable boost::mutex m_selectServerMutex;
 
 	LoginData m_loginData;
@@ -325,19 +325,19 @@ private:
 	PlayerIdList m_avatarShouldRequestList;
 	PlayerIdList m_avatarHasRequestedList;
 
-	unsigned m_curGameId;
+	unsigned m_curGameId = 0;
 	mutable boost::mutex m_curGameIdMutex;
 
-	unsigned m_curPetitionId;
+	unsigned m_curPetitionId = 0;
 	mutable boost::mutex m_curPetitionIdMutex;
 
 	AvatarFileMap m_tempAvatarMap;
 
-	unsigned m_curGameNum;
-	unsigned m_guiPlayerId;
+	unsigned m_curGameNum = 1;
+	unsigned m_guiPlayerId = 0;
 	mutable boost::mutex m_guiPlayerIdMutex;
-	int m_origGuiPlayerNum;
-	bool m_sessionEstablished;
+	int m_origGuiPlayerNum = 0;
+	bool m_sessionEstablished = false;
 
 	mutable boost::mutex m_curStatsMutex;
 	ServerStats m_curStats;

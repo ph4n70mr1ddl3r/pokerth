@@ -710,13 +710,3 @@ Log::exec_transaction()
         cout << "Failed to commit transaction: " << err.text().toStdString() << endl;
     }
 }
-
-//void
-//Log::closeLogDbAtExit()
-//{
-//    if(SQLITE_LOG) {
-//        // close sqlite-db
-//        sqlite3_close(mySqliteLogDb);
-//        mySqliteLogDb = NULL;
-//    }
-//}

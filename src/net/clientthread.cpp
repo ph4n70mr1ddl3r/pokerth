@@ -70,9 +70,7 @@ using boost::asio::ip::tcp;
 
 ClientThread::ClientThread(GuiInterface &gui, AvatarManager &avatarManager, Log *myLog)
 	: m_ioService(new boost::asio::io_context), m_clientLog(myLog), m_curState(nullptr), m_gui(gui),
-	  m_avatarManager(avatarManager), m_isServerSelected(false),
-	  m_curGameId(0), m_curGameNum(1), m_guiPlayerId(0), m_sessionEstablished(false),
-	  m_stateTimer(*m_ioService), m_avatarTimer(*m_ioService)
+	  m_avatarManager(avatarManager), m_stateTimer(*m_ioService), m_avatarTimer(*m_ioService)
 {
 	m_context.reset(new ClientContext);
 	myQtToolsInterface.reset(CreateQtToolsWrapper());

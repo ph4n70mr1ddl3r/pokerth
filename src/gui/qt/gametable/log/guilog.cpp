@@ -39,6 +39,7 @@
 #include "gametablestylereader.h"
 
 #include <cstring>
+#include <memory>
 
 // Provide a tiny compatibility layer so guilog.cpp can keep using the old
 // sqlite3_get_table-style API but implemented on top of Qt's QSqlDatabase.
@@ -98,22 +99,24 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 	}
 
 	int nRow = rows.size();
-	// total entries = (nRow + 1) * nCol
 	int total = (nRow + 1) * nCol;
-	char **result = static_cast<char**>(malloc(sizeof(char*) * (total + 1)));
-	if(!result) {
+
+	struct FreeDeleter {
+		void operator()(char** p) const { if(p) { for(char **ptr = p; *ptr; ++ptr) free(*ptr); free(p); } }
+	};
+	std::unique_ptr<char*, FreeDeleter> resultGuard(static_cast<char**>(malloc(sizeof(char*) * (static_cast<size_t>(total) + 1))));
+	if(!resultGuard) {
 		*pazResult = nullptr;
 		*pnRow = 0;
 		*pnColumn = 0;
 		return SQLITE_ERROR;
 	}
 
+	char **result = resultGuard.get();
 	int idx = 0;
-	// column names first
 	for(int c=0;c<nCol;++c) {
 		result[idx++] = strdup(columnNames[c].toStdString().c_str());
 	}
-	// then rows
 	for(int r=0;r<nRow;++r) {
 		for(int c=0;c<nCol;++c) {
 			const QString &v = rows[r][c];
@@ -121,10 +124,9 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 			else result[idx++] = strdup(v.toStdString().c_str());
 		}
 	}
-	// null-terminate pointer array as safety (sqlite3_free_table doesn't require it)
 	result[total] = nullptr;
 
-	*pazResult = result;
+	*pazResult = resultGuard.release();
 	*pnRow = nRow;
 	*pnColumn = nCol;
 	return SQLITE_OK;

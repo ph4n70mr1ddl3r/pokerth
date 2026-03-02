@@ -68,9 +68,9 @@ protected:
 private:
     std::vector<char> sendBuf;
     std::vector<char> curWriteBuf;
-    size_t sendBufUsed;
-    size_t curWriteBufUsed;
-    bool closeAfterSend;
+    size_t sendBufUsed = 0;
+    size_t curWriteBufUsed = 0;
+    bool closeAfterSend = false;
 };
 
 #endif
