@@ -102,6 +102,7 @@ AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<SessionData> session)
 void
 AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<boost::asio::ip::tcp::socket> socket)
 {
+    boost::mutex::scoped_lock lock(dataMutex);
     if (!curWriteBufUsed) {
         // Swap buffers and send data.
 #if BOOST_VERSION >= 108400
@@ -114,6 +115,7 @@ AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<boost::asio::ip::tcp::sock
 		boost::swap(curWriteBufUsed, sendBufUsed);
 #endif
         if (curWriteBufUsed) {
+            lock.unlock();
             boost::asio::async_write(
 				*socket,
 				boost::asio::buffer(curWriteBuf, curWriteBufUsed),
@@ -122,15 +124,16 @@ AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<boost::asio::ip::tcp::sock
 							socket,
 							boost::asio::placeholders::error));
         } else if (closeAfterSend) {
+            lock.unlock();
             socket->close();
         }
     }
 }
 
-// AsyncSendNextPacketSsl (angepasste Signatur, falls noch nicht exakt so vorhanden)
 void
 AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::stream<boost::asio::basic_stream_socket<boost::asio::ip::tcp, boost::asio::any_io_executor>>> sslStream)
 {
+    boost::mutex::scoped_lock lock(dataMutex);
     if (!curWriteBufUsed) {
 #if BOOST_VERSION >= 108400
         boost::core::invoke_swap(curWriteBuf, sendBuf);
@@ -142,6 +145,7 @@ AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::strea
         boost::swap(curWriteBufUsed, sendBufUsed);
 #endif
         if (curWriteBufUsed) {
+            lock.unlock();
             boost::asio::async_write(
                 *sslStream,
                 boost::asio::buffer(curWriteBuf, curWriteBufUsed),
@@ -150,6 +154,7 @@ AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::strea
                             sslStream,
                             boost::asio::placeholders::error));
         } else if (closeAfterSend) {
+            lock.unlock();
             sslStream->lowest_layer().close();
         }
     }

@@ -41,23 +41,19 @@
 #include <net/socket_msg.h>
 
 
-GuiWrapper::GuiWrapper(ConfigFile *c, startWindowImpl *s) : myGuiLog(nullptr), myW(nullptr), myConfig(c), myStartWindow(s)
+GuiWrapper::GuiWrapper(ConfigFile *c, startWindowImpl *s) : myConfig(c), myStartWindow(s)
 {
 
 
-	myW = new gameTableImpl(myConfig);
-	myGuiLog = new guiLog(myW, myConfig);
+	myW = std::make_unique<gameTableImpl>(myConfig);
+	myGuiLog = std::make_unique<guiLog>(myW.get(), myConfig);
 
-	myStartWindow->setGuiLog(myGuiLog);
+	myStartWindow->setGuiLog(myGuiLog.get());
 	myW->setStartWindow(myStartWindow);
 }
 
 
-GuiWrapper::~GuiWrapper()
-{
-	delete myGuiLog;
-	delete myW;
-}
+GuiWrapper::~GuiWrapper() noexcept = default;
 
 void GuiWrapper::initGui(int speed)
 {

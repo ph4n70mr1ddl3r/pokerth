@@ -34,6 +34,7 @@
 #include <guiinterface.h>
 
 #include <string>
+#include <memory>
 
 class Session;
 class gameTableImpl;
@@ -56,11 +57,11 @@ public:
 
 	gameTableImpl* getMyW() const
 	{
-		return myW;
+		return myW.get();
 	}
 	guiLog* getMyGuiLog() const
 	{
-		return myGuiLog;
+		return myGuiLog.get();
 	}
 
 	void refreshSet() const;
@@ -178,8 +179,8 @@ public:
 
 private:
 
-	guiLog *myGuiLog;
-	gameTableImpl *myW;
+	std::unique_ptr<guiLog> myGuiLog;
+	std::unique_ptr<gameTableImpl> myW;
 	ConfigFile *myConfig;
 	startWindowImpl *myStartWindow;
 

@@ -70,7 +70,7 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 	Tools::ShuffleArrayNonDeterministic(cardsArray, NumCards);
 	std::array<int, 5> tempBoardArray;
 	std::array<int, 2> tempPlayerArray;
-	int tempPlayerAndBoardArray[7];
+	int tempPlayerAndBoardArray[7] = {};
 	std::array<int, 5> bestHandPos;
 	int sBluff = 0;
 	for(i=0; i<5; i++) {

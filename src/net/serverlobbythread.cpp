@@ -107,7 +107,7 @@ class InternalServerCallback : public SessionDataCallback, public ChatCleanerCal
 {
 public:
 	InternalServerCallback(ServerLobbyThread &server) : m_server(server) {}
-	virtual ~InternalServerCallback() {}
+	virtual ~InternalServerCallback() noexcept {}
 
 	virtual void CloseSession(boost::shared_ptr<SessionData> session)
 	{

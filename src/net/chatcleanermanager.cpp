@@ -156,8 +156,8 @@ ChatCleanerManager::HandleConnect(const boost::system::error_code& ec,
 	} else if (ec != boost::asio::error::operation_aborted) {
 		if (endpoint_iterator != endpoint_range.end()) {
 			// Try next resolve entry.
-			boost::system::error_code ec;
-			m_socket->close(ec);
+			boost::system::error_code closeEc;
+			m_socket->close(closeEc);
 			boost::asio::ip::tcp::endpoint endpoint = endpoint_iterator->endpoint();
 			m_socket->async_connect(
 				endpoint,
@@ -166,8 +166,11 @@ ChatCleanerManager::HandleConnect(const boost::system::error_code& ec,
 							boost::asio::placeholders::error,
 							++endpoint_iterator,
 							endpoint_range));
-		} else
+		} else {
+			boost::system::error_code closeEc;
+			m_socket->close(closeEc);
 			LOG_ERROR("Could not connect to chat cleaner server.");
+		}
 	}
 }
 
@@ -274,11 +277,10 @@ void
 ChatCleanerManager::SendMessageToServer(ChatCleanerMessage &msg)
 {
 	uint32_t packetSize = msg.ByteSizeLong();
-	google::protobuf::uint8 *buf = new google::protobuf::uint8[packetSize + CLEANER_NET_HEADER_SIZE];
-	*((uint32_t *)buf) = htonl(packetSize);
-	msg.SerializeWithCachedSizesToArray(&buf[CLEANER_NET_HEADER_SIZE]);
-	m_sendManager->EncodeToBuf(buf, packetSize + CLEANER_NET_HEADER_SIZE);
-	delete[] buf;
+	std::vector<google::protobuf::uint8> buf(packetSize + CLEANER_NET_HEADER_SIZE);
+	*((uint32_t *)buf.data()) = htonl(packetSize);
+	msg.SerializeWithCachedSizesToArray(buf.data() + CLEANER_NET_HEADER_SIZE);
+	m_sendManager->EncodeToBuf(buf.data(), packetSize + CLEANER_NET_HEADER_SIZE);
 
 	m_sendManager->AsyncSendNextPacket(m_socket);
 }

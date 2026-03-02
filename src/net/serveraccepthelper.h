@@ -218,7 +218,7 @@ protected:
 
     static inline void SslServerInfoCallback(const SSL *ssl, int where, int ret)
     {
-        const char *state = SSL_state_string_long((SSL*)ssl);
+        const char *state = SSL_state_string_long(const_cast<SSL*>(ssl));
         std::ostringstream ss;
         ss << "SSL handshake info: state=" << (state ? state : "unknown")
            << " where=" << where << " ret=" << ret;
@@ -252,10 +252,10 @@ protected:
         }
 #endif
         if (ssl) {
-            const char *ver = SSL_get_version((SSL*)ssl);
-            const char *cipher = SSL_get_cipher((SSL*)ssl);
+            const char *ver = SSL_get_version(const_cast<SSL*>(ssl));
+            const char *cipher = SSL_get_cipher(const_cast<SSL*>(ssl));
             ss << " ver=" << (ver ? ver : "n/a") << " cipher=" << (cipher ? cipher : "n/a");
-            if (const SSL_CIPHER *c = SSL_get_current_cipher((SSL*)ssl)) {
+            if (const SSL_CIPHER *c = SSL_get_current_cipher(const_cast<SSL*>(ssl))) {
                 ss << " cipher_name=" << SSL_CIPHER_get_name(c);
             }
         }
