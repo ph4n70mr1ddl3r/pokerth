@@ -36,27 +36,20 @@
 #include <net/asiosendbuffer.h>
 #include <net/sessiondata.h>
 #include <net/netpacket.h>
-#if BOOST_VERSION >= 108400
-#include <boost/core/invoke_swap.hpp>
-#else
-#include <boost/swap.hpp>
-#endif
-#include <cstring> // memcpy
+#include <cstring>
 #include <cassert>
+#include <utility>
 
 using namespace std;
 
 
 AsioSendBuffer::AsioSendBuffer()
-	: sendBuf(nullptr), curWriteBuf(nullptr), sendBufAllocated(0), sendBufUsed(0),
-	  curWriteBufAllocated(0), curWriteBufUsed(0), closeAfterSend(false)
+	: sendBufUsed(0), curWriteBufUsed(0), closeAfterSend(false)
 {
 }
 
-AsioSendBuffer::~AsioSendBuffer()
+AsioSendBuffer::~AsioSendBuffer() noexcept
 {
-	free(sendBuf);
-	free(curWriteBuf);
 }
 
 void
@@ -104,21 +97,13 @@ AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<boost::asio::ip::tcp::sock
 {
     boost::mutex::scoped_lock lock(dataMutex);
     if (!curWriteBufUsed) {
-        // Swap buffers and send data.
-#if BOOST_VERSION >= 108400
-		boost::core::invoke_swap(curWriteBuf, sendBuf);
-		boost::core::invoke_swap(curWriteBufAllocated, sendBufAllocated);
-		boost::core::invoke_swap(curWriteBufUsed, sendBufUsed);
-#else
-		boost::swap(curWriteBuf, sendBuf);
-		boost::swap(curWriteBufAllocated, sendBufAllocated);
-		boost::swap(curWriteBufUsed, sendBufUsed);
-#endif
+        sendBuf.swap(curWriteBuf);
+        std::swap(curWriteBufUsed, sendBufUsed);
         if (curWriteBufUsed) {
             lock.unlock();
             boost::asio::async_write(
 				*socket,
-				boost::asio::buffer(curWriteBuf, curWriteBufUsed),
+				boost::asio::buffer(curWriteBuf.data(), curWriteBufUsed),
 				boost::bind(&SendBuffer::HandleWrite,
 							shared_from_this(),
 							socket,
@@ -135,20 +120,13 @@ AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::strea
 {
     boost::mutex::scoped_lock lock(dataMutex);
     if (!curWriteBufUsed) {
-#if BOOST_VERSION >= 108400
-        boost::core::invoke_swap(curWriteBuf, sendBuf);
-        boost::core::invoke_swap(curWriteBufAllocated, sendBufAllocated);
-        boost::core::invoke_swap(curWriteBufUsed, sendBufUsed);
-#else
-        boost::swap(curWriteBuf, sendBuf);
-        boost::swap(curWriteBufAllocated, sendBufAllocated);
-        boost::swap(curWriteBufUsed, sendBufUsed);
-#endif
+        sendBuf.swap(curWriteBuf);
+        std::swap(curWriteBufUsed, sendBufUsed);
         if (curWriteBufUsed) {
             lock.unlock();
             boost::asio::async_write(
                 *sslStream,
-                boost::asio::buffer(curWriteBuf, curWriteBufUsed),
+                boost::asio::buffer(curWriteBuf.data(), curWriteBufUsed),
                 boost::bind(&AsioSendBuffer::HandleWriteSsl,
                             this,
                             sslStream,
@@ -193,35 +171,27 @@ AsioSendBuffer::EncodeToBuf(const void *data, size_t size)
 size_t
 AsioSendBuffer::GetSendBufLeft() const
 {
-    return (sendBufAllocated > sendBufUsed) ? (sendBufAllocated - sendBufUsed) : 0;
+    return (sendBuf.size() > sendBufUsed) ? (sendBuf.size() - sendBufUsed) : 0;
 }
 
 bool
 AsioSendBuffer::ReallocSendBuf()
 {
-    // Grow strategy: double until MAX_SEND_BUF_SIZE
-    size_t newSize = sendBufAllocated ? sendBufAllocated * 2 : SEND_BUF_FIRST_ALLOC_CHUNKSIZE;
+    size_t newSize = sendBuf.empty() ? SEND_BUF_FIRST_ALLOC_CHUNKSIZE : sendBuf.size() * 2;
     if (newSize > MAX_SEND_BUF_SIZE)
         newSize = MAX_SEND_BUF_SIZE;
-    // If already at max or cannot grow further
-    if (newSize <= sendBufAllocated)
+    if (newSize <= sendBuf.size())
         return false;
 
-    char *newBuf = static_cast<char*>(realloc(sendBuf, newSize));
-    if (!newBuf)
-        return false;
-
-    sendBuf = newBuf;
-    sendBufAllocated = newSize;
+    sendBuf.resize(newSize);
     return true;
 }
 
 void
 AsioSendBuffer::AppendToSendBufWithoutCheck(const char *data, size_t size)
 {
-    // Caller guarantees enough space.
-    assert(sendBufAllocated >= sendBufUsed + size && "Buffer overflow detected");
-    memcpy(sendBuf + sendBufUsed, data, size);
+    assert(sendBuf.size() >= sendBufUsed + size && "Buffer overflow detected");
+    std::memcpy(sendBuf.data() + sendBufUsed, data, size);
     sendBufUsed += size;
 }
 

@@ -34,7 +34,7 @@
 #define _ASIOSENDBUFFER_H_
 
 #include <net/sendbuffer.h>
-#include <cstdlib>
+#include <vector>
 #include <boost/asio/ssl.hpp>
 
 
@@ -66,11 +66,9 @@ protected:
     void AppendToSendBufWithoutCheck(const char *data, size_t size);
 
 private:
-    char *sendBuf;
-    char *curWriteBuf;
-    size_t sendBufAllocated;
+    std::vector<char> sendBuf;
+    std::vector<char> curWriteBuf;
     size_t sendBufUsed;
-    size_t curWriteBufAllocated;
     size_t curWriteBufUsed;
     bool closeAfterSend;
 };
