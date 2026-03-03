@@ -36,6 +36,6 @@ ServerDBNoAction::ServerDBNoAction()
 {
 }
 
-ServerDBNoAction::~ServerDBNoAction()
+ServerDBNoAction::~ServerDBNoAction() noexcept
 {
 }

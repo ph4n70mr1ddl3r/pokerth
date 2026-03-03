@@ -70,7 +70,7 @@ CleanerServer::CleanerServer(): config(nullptr), blockConnection(false), m_recvB
 	configRefreshTimer->start(10000);
 }
 
-CleanerServer::~CleanerServer() = default;
+CleanerServer::~CleanerServer() noexcept = default;
 
 
 void CleanerServer::newCon()

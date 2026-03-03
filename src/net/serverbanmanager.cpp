@@ -45,7 +45,7 @@ ServerBanManager::ServerBanManager(boost::shared_ptr<boost::asio::io_context> io
 {
 }
 
-ServerBanManager::~ServerBanManager()
+ServerBanManager::~ServerBanManager() noexcept
 {
 }
 

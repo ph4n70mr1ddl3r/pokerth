@@ -110,7 +110,7 @@ GameTableStyleReader::GameTableStyleReader(ConfigFile *c, QWidget *w)
 }
 
 
-GameTableStyleReader::~GameTableStyleReader()
+GameTableStyleReader::~GameTableStyleReader() noexcept
 {
 }
 

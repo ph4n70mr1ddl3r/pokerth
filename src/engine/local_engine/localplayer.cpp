@@ -1007,7 +1007,7 @@ LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType ty
 }
 
 
-LocalPlayer::~LocalPlayer()
+LocalPlayer::~LocalPlayer() noexcept
 {
 }
 

@@ -270,7 +270,7 @@ guiLog::guiLog(gameTableImpl* w, ConfigFile *c) : myW(w), myConfig(c), myLogDir(
 	}
 }
 
-guiLog::~guiLog()
+guiLog::~guiLog() noexcept
 {
 }
 

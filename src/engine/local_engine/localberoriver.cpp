@@ -41,6 +41,6 @@ LocalBeRoRiver::LocalBeRoRiver(HandInterface* hi, unsigned dP, int sB) : LocalBe
 {
 }
 
-LocalBeRoRiver::~LocalBeRoRiver()
+LocalBeRoRiver::~LocalBeRoRiver() noexcept
 {
 }

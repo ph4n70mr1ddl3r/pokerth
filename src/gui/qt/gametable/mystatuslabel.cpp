@@ -41,7 +41,7 @@ MyStatusLabel::MyStatusLabel(QGroupBox* parent)
 
 }
 
-MyStatusLabel::~MyStatusLabel()
+MyStatusLabel::~MyStatusLabel() noexcept
 {
 }
 

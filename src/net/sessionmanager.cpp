@@ -44,7 +44,7 @@ SessionManager::SessionManager()
 {
 }
 
-SessionManager::~SessionManager()
+SessionManager::~SessionManager() noexcept
 {
 	Clear();
 }

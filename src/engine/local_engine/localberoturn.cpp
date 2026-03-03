@@ -40,6 +40,6 @@ LocalBeRoTurn::LocalBeRoTurn(HandInterface* hi, unsigned dP, int sB) : LocalBeRo
 {
 }
 
-LocalBeRoTurn::~LocalBeRoTurn()
+LocalBeRoTurn::~LocalBeRoTurn() noexcept
 {
 }

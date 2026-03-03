@@ -141,13 +141,6 @@ int main(int argc, char *argv[])
 #define ENABLE_LEAK_CHECK()
 #endif
 
-// #ifdef ANDROID
-// #ifndef ANDROID_TEST
-// // #include "QtGui/5.3.0/QtGui/qpa/qplatformnativeinterface.h"
-// // #include <jni.h>
-// #endif
-// #endif
-
 using namespace std;
 
 class startWindowImpl;

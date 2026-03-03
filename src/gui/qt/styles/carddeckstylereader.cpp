@@ -50,7 +50,7 @@ CardDeckStyleReader::CardDeckStyleReader(ConfigFile *c, QWidget *w) : myConfig(c
 }
 
 
-CardDeckStyleReader::~CardDeckStyleReader()
+CardDeckStyleReader::~CardDeckStyleReader() noexcept
 {
 }
 

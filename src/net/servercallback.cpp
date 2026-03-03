@@ -32,7 +32,7 @@
 #include <net/servercallback.h>
 
 
-ServerCallback::~ServerCallback()
+ServerCallback::~ServerCallback() noexcept
 {
 }
 

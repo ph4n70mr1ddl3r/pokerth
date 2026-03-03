@@ -66,7 +66,7 @@ LogFileDialog::LogFileDialog(QWidget *parent, ConfigFile *c) :
 	uploader.reset(new UploaderThread(this));
 }
 
-LogFileDialog::~LogFileDialog()
+LogFileDialog::~LogFileDialog() noexcept
 {
 	delete ui;
 }

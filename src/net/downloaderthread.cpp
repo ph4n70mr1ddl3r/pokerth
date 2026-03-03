@@ -50,7 +50,7 @@ DownloaderThread::DownloaderThread()
 	myDownloadHelper.reset(new DownloadHelper());
 }
 
-DownloaderThread::~DownloaderThread()
+DownloaderThread::~DownloaderThread() noexcept
 {
 }
 

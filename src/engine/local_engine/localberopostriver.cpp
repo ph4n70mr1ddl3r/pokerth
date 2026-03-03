@@ -41,7 +41,7 @@ LocalBeRoPostRiver::LocalBeRoPostRiver(HandInterface* hi, int dP, int sB) : Loca
 {
 }
 
-LocalBeRoPostRiver::~LocalBeRoPostRiver()
+LocalBeRoPostRiver::~LocalBeRoPostRiver() noexcept
 {
 }
 

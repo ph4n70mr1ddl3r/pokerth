@@ -32,7 +32,7 @@
 #include "berointerface.h"
 
 
-BeRoInterface::~BeRoInterface()
+BeRoInterface::~BeRoInterface() noexcept
 {
 }
 

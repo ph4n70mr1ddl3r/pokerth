@@ -39,7 +39,7 @@ ClientBeRo::ClientBeRo(HandInterface* hi, unsigned /*dP*/, int sB, GameState gS)
 }
 
 
-ClientBeRo::~ClientBeRo()
+ClientBeRo::~ClientBeRo() noexcept
 {
 }
 

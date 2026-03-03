@@ -46,7 +46,7 @@ LocalBeRoPreflop::LocalBeRoPreflop(HandInterface* hi, unsigned dP, int sB) : Loc
 
 
 
-LocalBeRoPreflop::~LocalBeRoPreflop()
+LocalBeRoPreflop::~LocalBeRoPreflop() noexcept
 {
 }
 

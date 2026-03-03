@@ -32,7 +32,7 @@
 #include <db/serverdbfactory.h>
 
 
-ServerDBFactory::~ServerDBFactory()
+ServerDBFactory::~ServerDBFactory() noexcept
 {
 }
 

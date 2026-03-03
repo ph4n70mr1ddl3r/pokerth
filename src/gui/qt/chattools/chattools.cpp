@@ -46,7 +46,7 @@ ChatTools::ChatTools(QLineEdit* l, ConfigFile *c, ChatType ct, QTextBrowser *b, 
 	ignoreList = myConfig->readConfigStringList("PlayerIgnoreList");
 }
 
-ChatTools::~ChatTools()
+ChatTools::~ChatTools() noexcept
 {
 }
 

@@ -44,7 +44,7 @@ TextFloodCheck::TextFloodCheck()
 
 }
 
-TextFloodCheck::~TextFloodCheck()
+TextFloodCheck::~TextFloodCheck() noexcept
 {
 }
 

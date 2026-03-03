@@ -49,7 +49,7 @@ SDLPlayer::SDLPlayer(ConfigFile *c)
 }
 
 
-SDLPlayer::~SDLPlayer()
+SDLPlayer::~SDLPlayer() noexcept
 {
 	closeAudio();
 	SDL_Quit();

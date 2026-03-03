@@ -40,7 +40,7 @@ ServerGuiWrapper::ServerGuiWrapper(ConfigFile *config, ClientCallback *clientcb,
 {
 }
 
-ServerGuiWrapper::~ServerGuiWrapper()
+ServerGuiWrapper::~ServerGuiWrapper() noexcept
 {
 }
 

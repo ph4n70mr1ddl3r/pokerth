@@ -41,7 +41,7 @@ AsyncDBLogin::AsyncDBLogin(unsigned queryId, const string &preparedName, const l
 {
 }
 
-AsyncDBLogin::~AsyncDBLogin()
+AsyncDBLogin::~AsyncDBLogin() noexcept
 {
 }
 

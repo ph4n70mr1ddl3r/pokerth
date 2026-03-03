@@ -36,6 +36,6 @@ AndroidApi8Dummy::AndroidApi8Dummy(ConfigFile *c, QObject *parent) :
 {
 }
 
-AndroidApi8Dummy::~AndroidApi8Dummy()
+AndroidApi8Dummy::~AndroidApi8Dummy() noexcept
 {
 }

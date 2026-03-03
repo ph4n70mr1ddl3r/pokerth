@@ -476,7 +476,7 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	// this->setFixedSize(480, 800);
 }
 
-gameTableImpl::~gameTableImpl()
+gameTableImpl::~gameTableImpl() noexcept
 {
 
 

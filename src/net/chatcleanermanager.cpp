@@ -52,7 +52,7 @@ ChatCleanerManager::ChatCleanerManager(ChatCleanerCallback &cb, boost::shared_pt
 		new AsioSendBuffer);
 }
 
-ChatCleanerManager::~ChatCleanerManager()
+ChatCleanerManager::~ChatCleanerManager() noexcept
 {
 }
 

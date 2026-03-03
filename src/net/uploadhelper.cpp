@@ -59,7 +59,7 @@ UploadHelper::UploadHelper()
 {
 }
 
-UploadHelper::~UploadHelper()
+UploadHelper::~UploadHelper() noexcept
 {
 }
 

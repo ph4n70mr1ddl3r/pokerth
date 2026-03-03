@@ -46,7 +46,7 @@ SoundEvents::SoundEvents(ConfigFile *c): myConfig(c), lastSBValue(0), lastSBLeve
     myPlayer = new QtAudioPlayer(myConfig);
 }
 
-SoundEvents::~SoundEvents()
+SoundEvents::~SoundEvents() noexcept
 {
     myPlayer->deleteLater();
 }

@@ -40,7 +40,7 @@ MyLeftTabWidget::MyLeftTabWidget(QGroupBox *parent)
 }
 
 
-MyLeftTabWidget::~MyLeftTabWidget()
+MyLeftTabWidget::~MyLeftTabWidget() noexcept
 {
 }
 

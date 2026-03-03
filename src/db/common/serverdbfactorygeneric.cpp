@@ -37,7 +37,7 @@ ServerDBFactoryGeneric::ServerDBFactoryGeneric()
 {
 }
 
-ServerDBFactoryGeneric::~ServerDBFactoryGeneric()
+ServerDBFactoryGeneric::~ServerDBFactoryGeneric() noexcept
 {
 }
 

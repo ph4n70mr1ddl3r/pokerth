@@ -35,6 +35,6 @@
 using namespace std;
 
 
-AsyncDBQuery::~AsyncDBQuery()
+AsyncDBQuery::~AsyncDBQuery() noexcept
 {
 }

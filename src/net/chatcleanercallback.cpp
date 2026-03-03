@@ -32,7 +32,7 @@
 #include <net/chatcleanercallback.h>
 
 
-ChatCleanerCallback::~ChatCleanerCallback()
+ChatCleanerCallback::~ChatCleanerCallback() noexcept
 {
 }
 

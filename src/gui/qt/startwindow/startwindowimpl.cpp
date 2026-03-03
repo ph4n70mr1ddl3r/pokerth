@@ -222,7 +222,7 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 
 }
 
-startWindowImpl::~startWindowImpl()
+startWindowImpl::~startWindowImpl() noexcept
 {
 }
 

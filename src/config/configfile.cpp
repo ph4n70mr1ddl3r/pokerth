@@ -388,7 +388,7 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 	}
 }
 
-ConfigFile::~ConfigFile() = default;
+ConfigFile::~ConfigFile() noexcept = default;
 
 void ConfigFile::fillBuffer()
 {

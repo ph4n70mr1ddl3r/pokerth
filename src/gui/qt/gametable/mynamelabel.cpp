@@ -41,7 +41,7 @@ MyNameLabel::MyNameLabel(QGroupBox* parent)
 }
 
 
-MyNameLabel::~MyNameLabel()
+MyNameLabel::~MyNameLabel() noexcept
 {
 }
 

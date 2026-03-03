@@ -72,7 +72,7 @@ AvatarManager::AvatarManager(bool useExternalServer, const std::string &external
 	m_uploader.reset(new UploaderThread());
 }
 
-AvatarManager::~AvatarManager()
+AvatarManager::~AvatarManager() noexcept
 {
 	m_uploader->SignalTermination();
 	m_uploader->Join(UPLOADER_THREAD_TERMINATE_TIMEOUT);

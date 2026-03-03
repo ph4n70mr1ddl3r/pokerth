@@ -42,7 +42,7 @@ AsyncDBGamePlace::AsyncDBGamePlace(unsigned queryId, const string &preparedName,
 {
 }
 
-AsyncDBGamePlace::~AsyncDBGamePlace()
+AsyncDBGamePlace::~AsyncDBGamePlace() noexcept
 {
 }
 

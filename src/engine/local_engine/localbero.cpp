@@ -70,7 +70,7 @@ LocalBeRo::LocalBeRo(HandInterface* hi, unsigned dP, int sB, GameState gS)
 }
 
 
-LocalBeRo::~LocalBeRo()
+LocalBeRo::~LocalBeRo() noexcept
 {
 }
 

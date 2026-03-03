@@ -49,7 +49,7 @@ ClientPlayer::ClientPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType 
 }
 
 
-ClientPlayer::~ClientPlayer()
+ClientPlayer::~ClientPlayer() noexcept
 {
 }
 

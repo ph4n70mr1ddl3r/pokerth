@@ -42,7 +42,7 @@ AsyncDBBlockPlayer::AsyncDBBlockPlayer(unsigned queryId, unsigned replyId, const
 {
 }
 
-AsyncDBBlockPlayer::~AsyncDBBlockPlayer()
+AsyncDBBlockPlayer::~AsyncDBBlockPlayer() noexcept
 {
 }
 

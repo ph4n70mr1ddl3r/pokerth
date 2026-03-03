@@ -31,7 +31,7 @@
 
 #include "enginefactory.h"
 
-EngineFactory::~EngineFactory()
+EngineFactory::~EngineFactory() noexcept
 {
 }
 

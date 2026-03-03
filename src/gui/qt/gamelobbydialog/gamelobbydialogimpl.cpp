@@ -280,7 +280,7 @@ int gameLobbyDialogImpl::exec()
 }
 
 
-gameLobbyDialogImpl::~gameLobbyDialogImpl()
+gameLobbyDialogImpl::~gameLobbyDialogImpl() noexcept
 {
 	delete myChat;
 

@@ -44,7 +44,7 @@ QtToolsWrapper::QtToolsWrapper() : myQtHelper(std::make_unique<QtHelper>())
 }
 
 
-QtToolsWrapper::~QtToolsWrapper() = default;
+QtToolsWrapper::~QtToolsWrapper() noexcept = default;
 
 std::string QtToolsWrapper::stringToUtf8(const std::string &myString)
 {

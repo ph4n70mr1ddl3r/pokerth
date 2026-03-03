@@ -43,7 +43,7 @@ ClientEngineFactory::ClientEngineFactory()
 }
 
 
-ClientEngineFactory::~ClientEngineFactory()
+ClientEngineFactory::~ClientEngineFactory() noexcept
 {
 }
 

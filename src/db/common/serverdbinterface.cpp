@@ -32,7 +32,7 @@
 #include <db/serverdbinterface.h>
 
 
-ServerDBInterface::~ServerDBInterface()
+ServerDBInterface::~ServerDBInterface() noexcept
 {
 }
 

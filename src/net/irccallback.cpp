@@ -32,7 +32,7 @@
 #include <net/irccallback.h>
 
 
-IrcCallback::~IrcCallback()
+IrcCallback::~IrcCallback() noexcept
 {
 }
 

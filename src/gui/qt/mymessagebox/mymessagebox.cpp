@@ -51,7 +51,7 @@ MyMessageBox::MyMessageBox(Icon icon, const QString &title, const QString &text,
 #endif
 }
 
-MyMessageBox::~MyMessageBox()
+MyMessageBox::~MyMessageBox() noexcept
 {
 
 }

@@ -46,7 +46,7 @@ TransferHelper::TransferHelper()
 	m_data.reset(new TransferData);
 }
 
-TransferHelper::~TransferHelper()
+TransferHelper::~TransferHelper() noexcept
 {
 	Cleanup();
 }

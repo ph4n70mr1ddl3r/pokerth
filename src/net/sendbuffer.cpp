@@ -34,7 +34,7 @@
 using namespace std;
 
 
-SendBuffer::~SendBuffer()
+SendBuffer::~SendBuffer() noexcept
 {
 }
 

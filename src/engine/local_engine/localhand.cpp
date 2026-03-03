@@ -386,7 +386,7 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 
 
 
-LocalHand::~LocalHand()
+LocalHand::~LocalHand() noexcept
 {
 }
 

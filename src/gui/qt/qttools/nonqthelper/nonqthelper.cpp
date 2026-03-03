@@ -39,7 +39,7 @@ NonQtHelper::NonQtHelper()
 }
 
 
-NonQtHelper::~NonQtHelper()
+NonQtHelper::~NonQtHelper() noexcept
 {
 }
 

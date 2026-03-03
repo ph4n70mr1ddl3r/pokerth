@@ -77,7 +77,7 @@ SessionData::SessionData(boost::shared_ptr<boost::asio::ssl::stream<boost::asio:
     m_sendBuffer.reset(new AsioSendBuffer);
 }
 
-SessionData::~SessionData()
+SessionData::~SessionData() noexcept
 {
 	InternalClearAuthSession();
 	// Web Socket handle needs to be manually closed, asio socket is closed automatically.

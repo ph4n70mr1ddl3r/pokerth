@@ -38,7 +38,7 @@ MyCashLabel::MyCashLabel(QGroupBox* parent)
 }
 
 
-MyCashLabel::~MyCashLabel()
+MyCashLabel::~MyCashLabel() noexcept
 {
 }
 

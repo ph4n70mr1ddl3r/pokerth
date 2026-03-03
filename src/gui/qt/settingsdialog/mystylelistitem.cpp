@@ -35,7 +35,7 @@ MyStyleListItem::MyStyleListItem(QStringList s, QTreeWidget *w)
 {
 }
 
-MyStyleListItem::~MyStyleListItem()
+MyStyleListItem::~MyStyleListItem() noexcept
 {
 }
 

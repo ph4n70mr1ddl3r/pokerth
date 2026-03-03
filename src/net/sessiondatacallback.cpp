@@ -32,7 +32,7 @@
 #include <net/sessiondatacallback.h>
 
 
-SessionDataCallback::~SessionDataCallback()
+SessionDataCallback::~SessionDataCallback() noexcept
 {
 }
 

@@ -69,7 +69,7 @@ ClientHand::ClientHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boos
 
 
 
-ClientHand::~ClientHand()
+ClientHand::~ClientHand() noexcept
 {
 }
 

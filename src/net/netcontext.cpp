@@ -31,7 +31,7 @@
 
 #include <net/netcontext.h>
 
-NetContext::~NetContext()
+NetContext::~NetContext() noexcept
 {
 }
 

@@ -30,7 +30,7 @@
  *****************************************************************************/
 #include "qttoolsinterface.h"
 
-QtToolsInterface::~QtToolsInterface()
+QtToolsInterface::~QtToolsInterface() noexcept
 {
 }
 

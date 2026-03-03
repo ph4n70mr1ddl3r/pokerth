@@ -41,7 +41,7 @@ AsyncDBAuth::AsyncDBAuth(unsigned queryId, const string &preparedName, const lis
 {
 }
 
-AsyncDBAuth::~AsyncDBAuth()
+AsyncDBAuth::~AsyncDBAuth() noexcept
 {
 }
 

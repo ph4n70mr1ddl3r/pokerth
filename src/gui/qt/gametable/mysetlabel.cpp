@@ -40,7 +40,7 @@ MySetLabel::MySetLabel(QGroupBox* parent)
 }
 
 
-MySetLabel::~MySetLabel()
+MySetLabel::~MySetLabel() noexcept
 {
 }
 

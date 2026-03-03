@@ -40,7 +40,7 @@ SingleAsyncDBQuery::SingleAsyncDBQuery(unsigned queryId, const string &preparedN
 {
 }
 
-SingleAsyncDBQuery::~SingleAsyncDBQuery()
+SingleAsyncDBQuery::~SingleAsyncDBQuery() noexcept
 {
 }
 

@@ -58,7 +58,7 @@ MyCardsPixmapLabel::MyCardsPixmapLabel(QGroupBox* parent)
 }
 
 
-MyCardsPixmapLabel::~MyCardsPixmapLabel()
+MyCardsPixmapLabel::~MyCardsPixmapLabel() noexcept
 {
 }
 

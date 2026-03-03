@@ -41,7 +41,7 @@ AsyncDBAvatarBlacklist::AsyncDBAvatarBlacklist(unsigned queryId, const string &p
 {
 }
 
-AsyncDBAvatarBlacklist::~AsyncDBAvatarBlacklist()
+AsyncDBAvatarBlacklist::~AsyncDBAvatarBlacklist() noexcept
 {
 }
 

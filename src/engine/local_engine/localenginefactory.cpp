@@ -49,7 +49,7 @@ LocalEngineFactory::LocalEngineFactory(ConfigFile *c)
 }
 
 
-LocalEngineFactory::~LocalEngineFactory()
+LocalEngineFactory::~LocalEngineFactory() noexcept
 {
 }
 

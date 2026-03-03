@@ -38,7 +38,7 @@ MyAvatarListItem::MyAvatarListItem(QListWidget* parent)
 
 }
 
-MyAvatarListItem::~MyAvatarListItem()
+MyAvatarListItem::~MyAvatarListItem() noexcept
 {
 }
 

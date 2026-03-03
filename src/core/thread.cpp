@@ -52,7 +52,7 @@ Thread::Thread()
 {
 }
 
-Thread::~Thread()
+Thread::~Thread() noexcept
 {
 }
 

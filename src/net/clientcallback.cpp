@@ -32,7 +32,7 @@
 #include <net/clientcallback.h>
 
 
-ClientCallback::~ClientCallback()
+ClientCallback::~ClientCallback() noexcept
 {
 }
 

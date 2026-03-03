@@ -79,7 +79,7 @@ ServerGame::ServerGame(boost::shared_ptr<ServerLobbyThread> lobbyThread, u_int32
 	LOG_VERBOSE("Game object " << GetId() << " created.");
 }
 
-ServerGame::~ServerGame()
+ServerGame::~ServerGame() noexcept
 {
 	LOG_VERBOSE("Game object " << GetId() << " destructed.");
 }

@@ -32,7 +32,7 @@
 #include <net/serverircbotcallback.h>
 
 
-ServerIrcBotCallback::~ServerIrcBotCallback()
+ServerIrcBotCallback::~ServerIrcBotCallback() noexcept
 {
 }
 

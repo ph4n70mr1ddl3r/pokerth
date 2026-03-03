@@ -41,7 +41,7 @@ CompositeAsyncDBQuery::CompositeAsyncDBQuery(const AsyncQueryList &queries)
 	m_currentQuery = m_list.begin();
 }
 
-CompositeAsyncDBQuery::~CompositeAsyncDBQuery()
+CompositeAsyncDBQuery::~CompositeAsyncDBQuery() noexcept
 {
 }
 

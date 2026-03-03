@@ -32,7 +32,7 @@
 #include <net/uploadcallback.h>
 
 
-UploadCallback::~UploadCallback()
+UploadCallback::~UploadCallback() noexcept
 {
 }
 

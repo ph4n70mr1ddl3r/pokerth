@@ -47,7 +47,7 @@ NetPacket::NetPacket(PokerTHMessage *msg)
 {
 }
 
-NetPacket::~NetPacket()
+NetPacket::~NetPacket() noexcept
 {
 }
 

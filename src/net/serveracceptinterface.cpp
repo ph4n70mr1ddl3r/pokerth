@@ -32,7 +32,7 @@
 #include <net/serveracceptinterface.h>
 
 
-ServerAcceptInterface::~ServerAcceptInterface()
+ServerAcceptInterface::~ServerAcceptInterface() noexcept
 {
 }
 

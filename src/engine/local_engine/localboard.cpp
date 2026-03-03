@@ -42,7 +42,7 @@ LocalBoard::LocalBoard() : BoardInterface(), pot(0), sets(0), allInCondition(fal
 	myCards.fill(0);
 }
 
-LocalBoard::~LocalBoard()
+LocalBoard::~LocalBoard() noexcept
 {
 }
 

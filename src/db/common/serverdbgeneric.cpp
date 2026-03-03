@@ -40,7 +40,7 @@ ServerDBGeneric::ServerDBGeneric(ServerDBCallback &cb, boost::shared_ptr<boost::
 {
 }
 
-ServerDBGeneric::~ServerDBGeneric()
+ServerDBGeneric::~ServerDBGeneric() noexcept
 {
 }
 

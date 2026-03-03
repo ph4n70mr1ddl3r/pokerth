@@ -41,7 +41,7 @@ AsyncDBEndGame::AsyncDBEndGame(unsigned queryId, const string &preparedName, con
 {
 }
 
-AsyncDBEndGame::~AsyncDBEndGame()
+AsyncDBEndGame::~AsyncDBEndGame() noexcept
 {
 }
 

@@ -43,7 +43,7 @@ MyGameListTreeWidget::MyGameListTreeWidget(QDialog* parent)
 }
 
 
-MyGameListTreeWidget::~MyGameListTreeWidget()
+MyGameListTreeWidget::~MyGameListTreeWidget() noexcept
 {
 }
 

@@ -48,7 +48,7 @@ UploaderThread::UploaderThread(UploadCallback *callback)
 	m_uploadHelper.reset(new UploadHelper());
 }
 
-UploaderThread::~UploaderThread()
+UploaderThread::~UploaderThread() noexcept
 {
 }
 

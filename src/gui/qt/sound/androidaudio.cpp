@@ -40,7 +40,7 @@ AndroidAudio::AndroidAudio(ConfigFile *c, QObject *parent) :
 	initAudio();
 }
 
-AndroidAudio::~AndroidAudio()
+AndroidAudio::~AndroidAudio() noexcept
 {
 	closeAudio();
 }

@@ -31,7 +31,7 @@
 
 #include "boardinterface.h"
 
-BoardInterface::~BoardInterface()
+BoardInterface::~BoardInterface() noexcept
 {
 }
 

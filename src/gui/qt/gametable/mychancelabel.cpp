@@ -60,7 +60,7 @@ MyChanceLabel::MyChanceLabel(QWidget* parent)
 	HCChance[1] = 0;
 }
 
-MyChanceLabel::~MyChanceLabel()
+MyChanceLabel::~MyChanceLabel() noexcept
 {
 }
 

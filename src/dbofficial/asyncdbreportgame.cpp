@@ -42,7 +42,7 @@ AsyncDBReportGame::AsyncDBReportGame(unsigned queryId, unsigned replyId, unsigne
 {
 }
 
-AsyncDBReportGame::~AsyncDBReportGame()
+AsyncDBReportGame::~AsyncDBReportGame() noexcept
 {
 }
 

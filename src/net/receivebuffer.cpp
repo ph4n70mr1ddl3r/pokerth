@@ -33,7 +33,7 @@
 
 NetPacketValidator ReceiveBuffer::validator;
 
-ReceiveBuffer::~ReceiveBuffer()
+ReceiveBuffer::~ReceiveBuffer() noexcept
 {
 }
 

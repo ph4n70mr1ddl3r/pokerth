@@ -316,7 +316,7 @@ IrcThread::IrcThread(IrcCallback *callback)
 	m_context.reset(new IrcContext(*this));
 }
 
-IrcThread::~IrcThread()
+IrcThread::~IrcThread() noexcept
 {
 	IrcContext &context = GetContext();
 	if (context.session)

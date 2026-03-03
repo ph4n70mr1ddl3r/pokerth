@@ -41,7 +41,7 @@ AsyncDBAdminPlayers::AsyncDBAdminPlayers(unsigned queryId, const string &prepare
 {
 }
 
-AsyncDBAdminPlayers::~AsyncDBAdminPlayers()
+AsyncDBAdminPlayers::~AsyncDBAdminPlayers() noexcept
 {
 }
 

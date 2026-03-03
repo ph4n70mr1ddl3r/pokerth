@@ -39,7 +39,7 @@ MyAvatarButton::MyAvatarButton(QGroupBox* parent)
 }
 
 
-MyAvatarButton::~MyAvatarButton()
+MyAvatarButton::~MyAvatarButton() noexcept
 {
 }
 

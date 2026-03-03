@@ -46,7 +46,7 @@ SenderHelper::SenderHelper(boost::shared_ptr<boost::asio::io_context> ioService)
 {
 }
 
-SenderHelper::~SenderHelper()
+SenderHelper::~SenderHelper() noexcept
 {
 }
 

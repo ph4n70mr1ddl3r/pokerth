@@ -38,7 +38,7 @@ MyHPAvatarButton::MyHPAvatarButton(QWidget* parent)
 
 }
 
-MyHPAvatarButton::~MyHPAvatarButton()
+MyHPAvatarButton::~MyHPAvatarButton() noexcept
 {
 }
 

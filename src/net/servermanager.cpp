@@ -58,7 +58,7 @@ ServerManager::ServerManager(ConfigFile &config, GuiInterface &gui, ServerMode m
 	m_lobbyThread.reset(new ServerLobbyThread(gui, mode, config, avatarManager, m_ioService));
 }
 
-ServerManager::~ServerManager()
+ServerManager::~ServerManager() noexcept
 {
 	size_t remainingHandler = 0;
 	// Call all pending handlers to clean up.

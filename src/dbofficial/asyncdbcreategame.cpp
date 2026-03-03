@@ -42,7 +42,7 @@ AsyncDBCreateGame::AsyncDBCreateGame(unsigned queryId, const string &preparedNam
 {
 }
 
-AsyncDBCreateGame::~AsyncDBCreateGame()
+AsyncDBCreateGame::~AsyncDBCreateGame() noexcept
 {
 }
 

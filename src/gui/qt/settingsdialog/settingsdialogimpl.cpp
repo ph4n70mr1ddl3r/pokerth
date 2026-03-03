@@ -160,7 +160,7 @@ settingsDialogImpl::settingsDialogImpl(QWidget *parent, ConfigFile *c, selectAva
 
 }
 
-settingsDialogImpl::~settingsDialogImpl()
+settingsDialogImpl::~settingsDialogImpl() noexcept
 {
 }
 

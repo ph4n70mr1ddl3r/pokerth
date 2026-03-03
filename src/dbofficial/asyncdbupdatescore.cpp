@@ -41,7 +41,7 @@ AsyncDBUpdateScore::AsyncDBUpdateScore(unsigned queryId, const string &preparedN
 {
 }
 
-AsyncDBUpdateScore::~AsyncDBUpdateScore()
+AsyncDBUpdateScore::~AsyncDBUpdateScore() noexcept
 {
 }
 

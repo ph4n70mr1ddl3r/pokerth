@@ -56,7 +56,7 @@ ServerLobbyBot::ServerLobbyBot(boost::shared_ptr<boost::asio::io_context> ioServ
 {
 }
 
-ServerLobbyBot::~ServerLobbyBot()
+ServerLobbyBot::~ServerLobbyBot() noexcept
 {
 }
 

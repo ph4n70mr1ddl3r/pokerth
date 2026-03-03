@@ -38,7 +38,7 @@ QtAudioPlayer::QtAudioPlayer(ConfigFile *config)
     initAudio();
 }
 
-QtAudioPlayer::~QtAudioPlayer()
+QtAudioPlayer::~QtAudioPlayer() noexcept
 {
     closeAudio();
 }

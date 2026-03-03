@@ -44,7 +44,7 @@ MyTimeoutLabel::MyTimeoutLabel(QGroupBox* parent)
 }
 
 
-MyTimeoutLabel::~MyTimeoutLabel()
+MyTimeoutLabel::~MyTimeoutLabel() noexcept
 {
 }
 

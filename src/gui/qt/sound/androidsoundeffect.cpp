@@ -40,7 +40,7 @@ AndroidSoundEffect::AndroidSoundEffect(const QString& path, QObject *parent) :
 {
 }
 
-AndroidSoundEffect::~AndroidSoundEffect()
+AndroidSoundEffect::~AndroidSoundEffect() noexcept
 {
 	this->unload();
 }

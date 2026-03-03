@@ -38,7 +38,7 @@ Log::Log(ConfigFile *c) : mySqliteLogDb(), myConnectionName(), mySqliteLogFileNa
 {
 }
 
-Log::~Log()
+Log::~Log() noexcept
 {
     // close Qt SQL database and remove connection
     if (mySqliteLogDb.isValid() && mySqliteLogDb.isOpen()) {

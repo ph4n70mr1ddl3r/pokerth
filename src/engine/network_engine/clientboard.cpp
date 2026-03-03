@@ -43,7 +43,7 @@ ClientBoard::ClientBoard()
 }
 
 
-ClientBoard::~ClientBoard()
+ClientBoard::~ClientBoard() noexcept
 {
 }
 

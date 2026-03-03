@@ -68,7 +68,7 @@ MessageFilter::MessageFilter(CleanerConfig *c): config(c)
 	cleanTimer->start(30000);
 }
 
-MessageFilter::~MessageFilter()
+MessageFilter::~MessageFilter() noexcept
 {
 }
 

@@ -264,7 +264,7 @@ ServerLobbyThread::ServerLobbyThread(GuiInterface &gui, ServerMode mode, ConfigF
 	m_database = dbFactory.CreateServerDBObject(*m_internalServerCallback, m_ioService);
 }
 
-ServerLobbyThread::~ServerLobbyThread()
+ServerLobbyThread::~ServerLobbyThread() noexcept
 {
 }
 

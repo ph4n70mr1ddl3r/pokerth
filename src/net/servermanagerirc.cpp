@@ -47,7 +47,7 @@ ServerManagerIrc::ServerManagerIrc(ConfigFile &config, GuiInterface &gui, Server
 	m_lobbyThread.reset(new ServerLobbyThread(gui, mode, *m_lobbyBot, config, avatarManager, m_ioService));
 }
 
-ServerManagerIrc::~ServerManagerIrc()
+ServerManagerIrc::~ServerManagerIrc() noexcept
 {
 }
 

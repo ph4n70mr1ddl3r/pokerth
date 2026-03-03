@@ -65,7 +65,7 @@ MyAvatarLabel::MyAvatarLabel(QGroupBox* parent)
 }
 
 
-MyAvatarLabel::~MyAvatarLabel()
+MyAvatarLabel::~MyAvatarLabel() noexcept
 {
 }
 

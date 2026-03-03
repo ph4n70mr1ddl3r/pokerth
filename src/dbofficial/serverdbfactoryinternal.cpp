@@ -37,7 +37,7 @@ ServerDBFactoryInternal::ServerDBFactoryInternal()
 {
 }
 
-ServerDBFactoryInternal::~ServerDBFactoryInternal()
+ServerDBFactoryInternal::~ServerDBFactoryInternal() noexcept
 {
 }
 

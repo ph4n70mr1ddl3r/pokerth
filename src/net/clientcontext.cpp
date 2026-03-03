@@ -39,7 +39,7 @@ ClientContext::ClientContext()
 {
 }
 
-ClientContext::~ClientContext()
+ClientContext::~ClientContext() noexcept
 {
 	m_sessionData.reset();
 }

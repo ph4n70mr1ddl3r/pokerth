@@ -32,7 +32,7 @@
 #include <net/sendercallback.h>
 
 
-SenderCallback::~SenderCallback()
+SenderCallback::~SenderCallback() noexcept
 {
 }
 

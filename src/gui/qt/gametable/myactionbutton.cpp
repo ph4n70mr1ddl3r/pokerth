@@ -39,7 +39,7 @@ MyActionButton::MyActionButton(QGroupBox* parent)
 }
 
 
-MyActionButton::~MyActionButton()
+MyActionButton::~MyActionButton() noexcept
 {
 }
 

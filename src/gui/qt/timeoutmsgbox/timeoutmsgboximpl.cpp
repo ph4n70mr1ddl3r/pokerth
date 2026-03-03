@@ -51,7 +51,7 @@ timeoutMsgBoxImpl::timeoutMsgBoxImpl(QMainWindow *parent)
 
 }
 
-timeoutMsgBoxImpl::~timeoutMsgBoxImpl()
+timeoutMsgBoxImpl::~timeoutMsgBoxImpl() noexcept
 {
 }
 

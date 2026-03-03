@@ -55,7 +55,7 @@ fromHex(int ch)
 	return retVal;
 }
 
-HashBuf::~HashBuf()
+HashBuf::~HashBuf() noexcept
 {
 }
 

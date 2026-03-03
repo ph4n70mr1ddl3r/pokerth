@@ -38,7 +38,7 @@ QtHelper::QtHelper()
 }
 
 
-QtHelper::~QtHelper()
+QtHelper::~QtHelper() noexcept
 {
 }
 

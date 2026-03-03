@@ -40,7 +40,7 @@ AsyncDBPlayerLastGames::AsyncDBPlayerLastGames(unsigned queryId, const string &p
 {
 }
 
-AsyncDBPlayerLastGames::~AsyncDBPlayerLastGames()
+AsyncDBPlayerLastGames::~AsyncDBPlayerLastGames() noexcept
 {
 }
 

@@ -44,7 +44,7 @@ DownloadHelper::DownloadHelper()
 {
 }
 
-DownloadHelper::~DownloadHelper()
+DownloadHelper::~DownloadHelper() noexcept
 {
 }
 

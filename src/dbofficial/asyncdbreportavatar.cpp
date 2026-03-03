@@ -41,7 +41,7 @@ AsyncDBReportAvatar::AsyncDBReportAvatar(unsigned queryId, unsigned replyId, con
 {
 }
 
-AsyncDBReportAvatar::~AsyncDBReportAvatar()
+AsyncDBReportAvatar::~AsyncDBReportAvatar() noexcept
 {
 }
 

@@ -30,7 +30,7 @@
  *****************************************************************************/
 #include "guiinterface.h"
 
-GuiInterface::~GuiInterface()
+GuiInterface::~GuiInterface() noexcept
 {
 }
 

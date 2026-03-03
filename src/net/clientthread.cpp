@@ -77,7 +77,7 @@ ClientThread::ClientThread(GuiInterface &gui, AvatarManager &avatarManager, Log 
 	m_senderHelper.reset(new SenderHelper(m_ioService));
 }
 
-ClientThread::~ClientThread()
+ClientThread::~ClientThread() noexcept
 {
 }
 

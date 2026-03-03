@@ -39,7 +39,7 @@ MyRightTabWidget::MyRightTabWidget(QGroupBox *parent)
 	myTabBar = this->tabBar();
 }
 
-MyRightTabWidget::~MyRightTabWidget()
+MyRightTabWidget::~MyRightTabWidget() noexcept
 {
 }
 

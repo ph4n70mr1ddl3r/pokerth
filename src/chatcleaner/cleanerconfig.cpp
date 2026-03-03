@@ -237,7 +237,7 @@ CleanerConfig::CleanerConfig()
 	fillBuffer();
 }
 
-CleanerConfig::~CleanerConfig()
+CleanerConfig::~CleanerConfig() noexcept
 {
 }
 

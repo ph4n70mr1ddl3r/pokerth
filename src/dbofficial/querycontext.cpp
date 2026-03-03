@@ -31,6 +31,6 @@
 
 #include <dbofficial/querycontext.h>
 
-QueryContext::~QueryContext()
+QueryContext::~QueryContext() noexcept
 {
 }

@@ -62,7 +62,7 @@ ServerAdminBot::ServerAdminBot(boost::shared_ptr<boost::asio::io_context> ioServ
 {
 }
 
-ServerAdminBot::~ServerAdminBot()
+ServerAdminBot::~ServerAdminBot() noexcept
 {
 }
 

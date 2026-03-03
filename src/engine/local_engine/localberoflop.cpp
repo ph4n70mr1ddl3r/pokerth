@@ -40,7 +40,7 @@ LocalBeRoFlop::LocalBeRoFlop(HandInterface* hi, unsigned dP, int sB) : LocalBeRo
 {
 }
 
-LocalBeRoFlop::~LocalBeRoFlop()
+LocalBeRoFlop::~LocalBeRoFlop() noexcept
 {
 }
 

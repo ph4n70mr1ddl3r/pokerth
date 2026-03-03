@@ -32,7 +32,7 @@
 #include <db/serverdbcallback.h>
 
 
-ServerDBCallback::~ServerDBCallback()
+ServerDBCallback::~ServerDBCallback() noexcept
 {
 }
 

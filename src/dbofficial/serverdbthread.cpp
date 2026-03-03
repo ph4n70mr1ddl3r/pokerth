@@ -80,7 +80,7 @@ ServerDBThread::ServerDBThread(ServerDBCallback &cb, boost::shared_ptr<boost::as
 	m_connData.reset(new DBConnectionData);
 }
 
-ServerDBThread::~ServerDBThread()
+ServerDBThread::~ServerDBThread() noexcept
 {
 }
 
