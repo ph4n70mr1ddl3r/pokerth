@@ -43,9 +43,9 @@ class AsioReceiveBuffer : public ReceiveBuffer
 public:
 	AsioReceiveBuffer();
 
-	virtual void StartAsyncRead(boost::shared_ptr<SessionData> session);
-	virtual void HandleRead(boost::shared_ptr<SessionData> session, const boost::system::error_code &error, size_t bytesRead);
-	virtual void HandleMessage(boost::shared_ptr<SessionData> session, const std::string &msg);
+	void StartAsyncRead(boost::shared_ptr<SessionData> session) override;
+	void HandleRead(boost::shared_ptr<SessionData> session, const boost::system::error_code &error, size_t bytesRead) override;
+	void HandleMessage(boost::shared_ptr<SessionData> session, const std::string &msg) override;
 
 protected:
 

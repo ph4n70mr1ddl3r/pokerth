@@ -34,7 +34,7 @@
 
 #include <core/loghelper.h>
 
-#include<vector>
+#include <vector>
 
 class ArrayData
 {

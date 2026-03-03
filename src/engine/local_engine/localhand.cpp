@@ -113,20 +113,6 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 
 	if(DEBUG_MODE) {
 
-		//QSqlDatabase *mySqliteLogDb;
-
-
-
-		// myGui->getMyW()->getSession();
-
-		//QSqlDatabase * test = myGui->getMyLog()->getMySqliteLogDb();
-
-//           if(!mySqliteLogDb->open()) {
-//               MyMessageBox::critical(0, tr("ERROR"),mySqliteLogDb->lastError().text().toUtf8().c_str(), QMessageBox::Cancel);
-//           }
-
-
-
 		int temp5Array[5];
 
 		switch(myID) {

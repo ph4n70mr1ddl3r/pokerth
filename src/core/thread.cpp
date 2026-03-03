@@ -30,6 +30,8 @@
  *****************************************************************************/
 
 #include "thread.h"
+#include <chrono>
+#include <thread>
 
 
 
@@ -104,7 +106,7 @@ Thread::Join(unsigned msecTimeout)
 void
 Thread::Msleep(unsigned msecs)
 {
-	boost::this_thread::sleep(boost::posix_time::millisec(msecs));
+	std::this_thread::sleep_for(std::chrono::milliseconds(msecs));
 }
 
 void

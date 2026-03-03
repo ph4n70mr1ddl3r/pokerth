@@ -341,7 +341,6 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 			QDomElement confRevision = xmlDoc.documentElement().firstChildElement("Configuration").firstChildElement("ConfigRevision");
 			if (!confRevision.isNull())
 			{
-				// confRevision->QueryIntAttribute("value", &tempRevision );
 				tempRevision = confRevision.attribute("value").toInt();
 			}
 
@@ -349,8 +348,6 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 
 			if (!confAppDataPath.isNull())
 			{
-				// const char *tmpStr = confAppDataPath.attribute("value");
-				// if (tmpStr) tempAppDataPath = tmpStr;
 				QString tempAppDataPath = confAppDataPath.attribute("value");
 				// if appdatapath changes directly update it here not in UpdateConfig()
 #ifdef ANDROID

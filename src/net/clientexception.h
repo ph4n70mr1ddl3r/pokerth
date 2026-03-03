@@ -42,7 +42,7 @@ public:
 	ClientException(const char *sourcefile, int sourceline, int errorId, int osErrorCode)
 		: NetException(sourcefile, sourceline, errorId, osErrorCode) {}
 
-	virtual ~ClientException() noexcept;
+	virtual ~ClientException() noexcept override;
 };
 
 #endif
