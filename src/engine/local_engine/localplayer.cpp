@@ -1168,16 +1168,18 @@ void LocalPlayer::preflopEngine()
 	int individualHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 	if(individualHighestSet > myCash) individualHighestSet = myCash;
 
-	// Verhaeltnis Set / Cash für call
-	if(myCash/individualHighestSet >= 25) {
-		myNiveau[0] += (25-myCash/individualHighestSet)/10;
-	} else {
-		myNiveau[0] += (25-myCash/individualHighestSet)/3;
-	}
+	if(individualHighestSet > 0) {
+		// Verhaeltnis Set / Cash für call
+		if(myCash/individualHighestSet >= 25) {
+			myNiveau[0] += (25-myCash/individualHighestSet)/10;
+		} else {
+			myNiveau[0] += (25-myCash/individualHighestSet)/3;
+		}
 
-	// Verhaeltnis Set / Cash für raise
-	if(myCash/individualHighestSet < 11) {
-		myNiveau[2] += (21-myCash/individualHighestSet)/2;
+		// Verhaeltnis Set / Cash für raise
+		if(myCash/individualHighestSet < 11) {
+			myNiveau[2] += (21-myCash/individualHighestSet)/2;
+		}
 	}
 
 	//	cout << myID << ": " << myHoleCardsValue << " - " << myNiveau[0] << " " << myNiveau[2] << " - " << myCards[0] << " " << myCards[1] << endl;

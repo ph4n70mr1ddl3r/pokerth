@@ -453,13 +453,15 @@ ServerGame::StoreLastGames(const PlayerDataList &playerDataList)
 		boost::shared_ptr<PlayerData> tmpPlayer(*i);
 		// tmpPlayer->GetUniqueId()
 		tmpPlayer->AddPlayerLastGame(static_cast<long>(time(nullptr)));
-		LOG_ERROR("TimeStamp stored: " << tmpPlayer->GetPlayerLastGames().back());
 		std::vector<long> last_games = tmpPlayer->GetPlayerLastGames();
-		LOG_ERROR("Ready for storing vector for player " << tmpPlayer->GetDBId() << " - lastGameTs " << last_games.back());
-		if(tmpPlayer->GetDBId() != DB_ID_INVALID){
-			boost::shared_ptr<SessionData> session = GetSessionManager().GetSessionByUniquePlayerId(tmpPlayer->GetUniqueId());
-			if (session) {
-				GetDatabase().SetPlayerLastGames(GetId(), tmpPlayer->GetDBId(), last_games, session->GetClientAddr());
+		if(!last_games.empty()) {
+			LOG_ERROR("TimeStamp stored: " << last_games.back());
+			LOG_ERROR("Ready for storing vector for player " << tmpPlayer->GetDBId() << " - lastGameTs " << last_games.back());
+			if(tmpPlayer->GetDBId() != DB_ID_INVALID){
+				boost::shared_ptr<SessionData> session = GetSessionManager().GetSessionByUniquePlayerId(tmpPlayer->GetUniqueId());
+				if (session) {
+					GetDatabase().SetPlayerLastGames(GetId(), tmpPlayer->GetDBId(), last_games, session->GetClientAddr());
+				}
 			}
 		}
 		++i;

@@ -1214,7 +1214,11 @@ ServerLobbyThread::HandleNetPacketRetrieveAvatar(boost::shared_ptr<SessionData> 
 
 	string tmpFile;
 	MD5Buf tmpMD5;
-	memcpy(tmpMD5.GetData(), retrieveAvatar.avatarhash().data(), MD5_DATA_SIZE);
+	if(retrieveAvatar.avatarhash().size() >= MD5_DATA_SIZE) {
+		memcpy(tmpMD5.GetData(), retrieveAvatar.avatarhash().data(), MD5_DATA_SIZE);
+	} else {
+		LOG_ERROR("Avatar hash size too small: " << retrieveAvatar.avatarhash().size());
+	}
 	if (GetAvatarManager().GetAvatarFileName(tmpMD5, tmpFile)) {
 		NetPacketList tmpPackets;
 		if (GetAvatarManager().AvatarFileToNetPackets(tmpFile, retrieveAvatar.requestid(), tmpPackets) == 0) {
