@@ -629,7 +629,11 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 			}
 			if (netInfo.has_avatardata()) {
 				tmpInfo.hasAvatar = true;
-				memcpy(tmpInfo.avatar.GetData(), netInfo.avatardata().avatarhash().data(), MD5_DATA_SIZE);
+				if (netInfo.avatardata().avatarhash().size() >= MD5_DATA_SIZE) {
+					memcpy(tmpInfo.avatar.GetData(), netInfo.avatardata().avatarhash().data(), MD5_DATA_SIZE);
+				} else {
+					tmpInfo.hasAvatar = false;
+				}
 				tmpInfo.avatarType = static_cast<AvatarFileType>(netInfo.avatardata().avatartype());
 			}
 			client->SetPlayerInfo(

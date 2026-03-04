@@ -699,7 +699,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState)
 					config.appendChild(tmpElement);
 					tmpElement.setAttribute("value", QString::fromStdString(configList[i].defaultValue));
 
-					if (configList[i].type == CONFIG_TYPE_INT_LIST || configBufferList[i].type == CONFIG_TYPE_STRING_LIST)
+					if (configList[i].type == CONFIG_TYPE_INT_LIST || configList[i].type == CONFIG_TYPE_STRING_LIST)
 					{
 
 					tmpElement.setAttribute("type", "list");

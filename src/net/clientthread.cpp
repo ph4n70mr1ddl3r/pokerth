@@ -1015,6 +1015,9 @@ ClientThread::CreateContextSession()
         qDebug() << "[TLS-DEBUG] >>> SSL context created successfully";
         
         qDebug() << "[TLS-DEBUG] >>> Setting verify mode to verify_none...";
+        // NOTE: TLS certificate verification is disabled to support servers with self-signed certificates.
+        // In a production environment requiring strict security, consider enabling verify_peer and
+        // using a proper certificate authority or certificate pinning.
         sslCtx->set_verify_mode(boost::asio::ssl::verify_none);
         qDebug() << "[TLS-DEBUG] >>> Verify mode set";
 

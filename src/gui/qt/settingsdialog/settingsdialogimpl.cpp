@@ -35,7 +35,7 @@
 #include "carddeckstylereader.h"
 #include "configfile.h"
 #include <net/socket_startup.h>
-#include <QSet>
+#include <QList>
 enum StyleType { POKERTH_DISTRIBUTED_STYLE, ADDITIONAL_STYLE };
 
 using namespace std;
@@ -80,42 +80,42 @@ settingsDialogImpl::settingsDialogImpl(QWidget *parent, ConfigFile *c, selectAva
 		groupBox_logOnOff->setDisabled(true);
 	}
 
-	QSet<Language*> languages
+	QList<Language> languages
 	{
-		new Language("af", "Afrikaans", "Afrikaans"),
-		new Language("bg", "Bulgarian", "Български"),
-		new Language("ca", "Catalan", "Català"),
-		new Language("zhcn", "Chinese", "简体中文"),
-		new Language("cz", "Czech", "čeština"),
-		new Language("dk", "Danish", "Dansk"),
-		new Language("nl", "Dutch", "Nederlands"),
-		new Language("en", "English", "English"),
-		new Language("fi", "Finnish", "suomi"),
-		new Language("fr", "French", "français"),
-		new Language("gl", "Galician", "Galego"),
-		new Language("de", "German", "Deutsch"),
-		new Language("gr", "Greek", "Ελληνικά"),
-		new Language("hu", "Hungarian", "Magyar"),
-		new Language("it", "Italian", "italiano"),
-		new Language("jp", "Japanese", "日本語"),
-		new Language("lt", "Lithuania", "Lietuviškai"),
-		new Language("no", "Norwegian", "Norsk"),
-		new Language("pl", "Polish", "polski"),
-		new Language("ptbr", "Portuguese-Brazilian", "português brasileiro"),
-		new Language("ptpt", "Portuguese-Portuguese", "português português"),
-		new Language("ru", "Russian", "Pyccĸий"),
-		new Language("gd", "Scottish Gaelic", "Gàidhlig"),
-		new Language("sk", "Slovak", "Slovenčina"),
-		new Language("es", "Spanish", "Español"),
-		new Language("sv", "Swedish", "svenska"),
-		new Language("ta", "Tamil", "தமிழ்"),
-		new Language("tr", "Turkish", "Tϋrkçe"),
-		new Language("vi", "Vietnamese", "Tiếng Việt")
+		Language("af", "Afrikaans", "Afrikaans"),
+		Language("bg", "Bulgarian", "Български"),
+		Language("ca", "Catalan", "Català"),
+		Language("zhcn", "Chinese", "简体中文"),
+		Language("cz", "Czech", "čeština"),
+		Language("dk", "Danish", "Dansk"),
+		Language("nl", "Dutch", "Nederlands"),
+		Language("en", "English", "English"),
+		Language("fi", "Finnish", "suomi"),
+		Language("fr", "French", "français"),
+		Language("gl", "Galician", "Galego"),
+		Language("de", "German", "Deutsch"),
+		Language("gr", "Greek", "Ελληνικά"),
+		Language("hu", "Hungarian", "Magyar"),
+		Language("it", "Italian", "italiano"),
+		Language("jp", "Japanese", "日本語"),
+		Language("lt", "Lithuania", "Lietuviškai"),
+		Language("no", "Norwegian", "Norsk"),
+		Language("pl", "Polish", "polski"),
+		Language("ptbr", "Portuguese-Brazilian", "português brasileiro"),
+		Language("ptpt", "Portuguese-Portuguese", "português português"),
+		Language("ru", "Russian", "Pyccĸий"),
+		Language("gd", "Scottish Gaelic", "Gàidhlig"),
+		Language("sk", "Slovak", "Slovenčina"),
+		Language("es", "Spanish", "Español"),
+		Language("sv", "Swedish", "svenska"),
+		Language("ta", "Tamil", "தமிழ்"),
+		Language("tr", "Turkish", "Tϋrkçe"),
+		Language("vi", "Vietnamese", "Tiếng Việt")
 	};
 
 	for(const auto& language : languages)
 	{
-		comboBox_switchLanguage->addItem(language->getLanguageLabel(), language->getCode());	
+		comboBox_switchLanguage->addItem(language.getLanguageLabel(), language.getCode());	
 	}
 #ifdef GUI_800x480
 	connect( pushButton_ok, SIGNAL( clicked() ), this, SLOT( isAccepted() ) );

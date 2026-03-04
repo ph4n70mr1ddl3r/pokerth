@@ -676,7 +676,9 @@ ServerLobbyThread::SendChatBotMsg(unsigned gameId, const std::string &message)
 	netChat->set_chattext(message);
 
 	GameMap::const_iterator pos = m_gameMap.find(gameId);
+	if (pos != m_gameMap.end() && pos->second) {
 		pos->second->SendToAllPlayers(packet, SessionData::Game);
+	}
 }
 
 void

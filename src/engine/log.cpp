@@ -201,6 +201,8 @@ Log::logNewGameMsg(int gameID, int startCash, int startSmallBlind, unsigned deal
 				i = 1;
 				for(it_c = seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 					if((*it_c)->getMyActiveStatus()) {
+						QString playerName = QString::fromStdString((*it_c)->getMyName());
+						QString escapedName = playerName.replace("'", "''");
 						sql += "INSERT INTO Player (";
 						sql += "UniqueGameID";
 						sql += ",Seat";
@@ -208,7 +210,7 @@ Log::logNewGameMsg(int gameID, int startCash, int startSmallBlind, unsigned deal
 					 sql += ") VALUES (";
 					 sql += boost::lexical_cast<string>(uniqueGameID);
 					 sql += "," + boost::lexical_cast<string>(i);
-					 sql += ",\"" + (*it_c)->getMyName() +"\"";
+					 sql += ",'" + escapedName.toStdString() + "'";
 					 sql += ");";
 					}
 					i++;

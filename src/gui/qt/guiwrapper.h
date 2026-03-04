@@ -48,134 +48,134 @@ class GuiWrapper : public GuiInterface
 public:
 	GuiWrapper(ConfigFile*, startWindowImpl*);
 
-	~GuiWrapper() noexcept;
+	~GuiWrapper() noexcept override;
 
-	void initGui(int speed);
+	void initGui(int speed) override;
 
-	boost::shared_ptr<Session> getSession();
-	void setSession(boost::shared_ptr<Session> session);
+	boost::shared_ptr<Session> getSession() override;
+	void setSession(boost::shared_ptr<Session> session) override;
 
-	gameTableImpl* getMyW() const
+	gameTableImpl* getMyW() const override
 	{
 		return myW.get();
 	}
-	guiLog* getMyGuiLog() const
+	guiLog* getMyGuiLog() const override
 	{
 		return myGuiLog.get();
 	}
 
-	void refreshSet() const;
-	void refreshCash() const;
-	void refreshAction(int =-1, int =-1) const;
-	void refreshChangePlayer() const;
-	void refreshPot() const;
-	void refreshGroupbox(int =-1, int =-1) const;
-	void refreshAll() const;
-	void refreshPlayerName() const;
-	void refreshButton() const;
-	void refreshGameLabels(GameState state) const;
+	void refreshSet() const override;
+	void refreshCash() const override;
+	void refreshAction(int =-1, int =-1) const override;
+	void refreshChangePlayer() const override;
+	void refreshPot() const override;
+	void refreshGroupbox(int =-1, int =-1) const override;
+	void refreshAll() const override;
+	void refreshPlayerName() const override;
+	void refreshButton() const override;
+	void refreshGameLabels(GameState state) const override;
 
-	void setPlayerAvatar(int myUniqueID, const std::string &myAvatar) const;
+	void setPlayerAvatar(int myUniqueID, const std::string &myAvatar) const override;
 
-	void waitForGuiUpdateDone() const;
+	void waitForGuiUpdateDone() const override;
 
-	void dealBeRoCards(int myBeRoID);
-	void dealHoleCards();
-	void dealFlopCards();
-	void dealTurnCard();
-	void dealRiverCard();
+	void dealBeRoCards(int myBeRoID) override;
+	void dealHoleCards() override;
+	void dealFlopCards() override;
+	void dealTurnCard() override;
+	void dealRiverCard() override;
 
-	void nextPlayerAnimation();
+	void nextPlayerAnimation() override;
 
-	void beRoAnimation2(int);
+	void beRoAnimation2(int) override;
 
-	void preflopAnimation1();
-	void preflopAnimation2();
+	void preflopAnimation1() override;
+	void preflopAnimation2() override;
 
-	void flopAnimation1();
-	void flopAnimation2();
+	void flopAnimation1() override;
+	void flopAnimation2() override;
 
-	void turnAnimation1();
-	void turnAnimation2();
+	void turnAnimation1() override;
+	void turnAnimation2() override;
 
-	void riverAnimation1();
-	void riverAnimation2();
+	void riverAnimation1() override;
+	void riverAnimation2() override;
 
-	void postRiverAnimation1();
-	void postRiverRunAnimation1();
+	void postRiverAnimation1() override;
+	void postRiverRunAnimation1() override;
 
-	void flipHolecardsAllIn();
+	void flipHolecardsAllIn() override;
 
-	void nextRoundCleanGui();
+	void nextRoundCleanGui() override;
 
-	void meInAction();
-	void disableMyButtons();
-	void updateMyButtonsState();
-	void startTimeoutAnimation(int playerNum, int timeoutSec);
-	void stopTimeoutAnimation(int playerNum);
+	void meInAction() override;
+	void disableMyButtons() override;
+	void updateMyButtonsState() override;
+	void startTimeoutAnimation(int playerNum, int timeoutSec) override;
+	void stopTimeoutAnimation(int playerNum) override;
 
-	void startVoteOnKick(unsigned playerId, unsigned voteStarterPlayerId, int timeoutSec, int numVotesNeededToKick);
-	void changeVoteOnKickButtonsState(bool showHide);
-	void refreshVotesMonitor(int currentVotes, int numVotesNeededToKick);
-	void endVoteOnKick();
+	void startVoteOnKick(unsigned playerId, unsigned voteStarterPlayerId, int timeoutSec, int numVotesNeededToKick) override;
+	void changeVoteOnKickButtonsState(bool showHide) override;
+	void refreshVotesMonitor(int currentVotes, int numVotesNeededToKick) override;
+	void endVoteOnKick() override;
 
-	void logPlayerActionMsg(std::string playerName, int action, int setValue) ;
-	void logNewGameHandMsg(int gameID, int handID) ;
-	void logNewBlindsSetsMsg(int sbSet, int bbSet, std::string sbName, std::string bbName);
-	void logPlayerWinsMsg(std::string playerName, int pot, bool main);
-	void logPlayerSitsOut(std::string playerName);
-	void logDealBoardCardsMsg(int roundID, int card1, int card2, int card3, int card4 = -1, int card5 = -1);
-	void logFlipHoleCardsMsg(std::string playerName, int card1, int card2, int cardsValueInt = -1, std::string showHas = "shows");
-	void logPlayerWinGame(std::string playerName, int gameID);
-	void flushLogAtGame(int gameID);
-	void flushLogAtHand();
+	void logPlayerActionMsg(std::string playerName, int action, int setValue) override;
+	void logNewGameHandMsg(int gameID, int handID) override;
+	void logNewBlindsSetsMsg(int sbSet, int bbSet, std::string sbName, std::string bbName) override;
+	void logPlayerWinsMsg(std::string playerName, int pot, bool main) override;
+	void logPlayerSitsOut(std::string playerName) override;
+	void logDealBoardCardsMsg(int roundID, int card1, int card2, int card3, int card4 = -1, int card5 = -1) override;
+	void logFlipHoleCardsMsg(std::string playerName, int card1, int card2, int cardsValueInt = -1, std::string showHas = "shows") override;
+	void logPlayerWinGame(std::string playerName, int gameID) override;
+	void flushLogAtGame(int gameID) override;
+	void flushLogAtHand() override;
 
-	void SignalNetClientConnect(int actionID);
-	void SignalNetClientServerListAdd(unsigned serverId);
-	void SignalNetClientServerListShow();
-	void SignalNetClientServerListClear();
-	void SignalNetClientLoginShow();
-	void SignalNetClientRejoinPossible(unsigned gameId);
-	void SignalNetClientPostRiverShowCards(unsigned playerId);
-	void SignalNetClientGameInfo(int actionID);
-	void SignalNetClientError(int errorID, int osErrorID);
-	void SignalNetClientNotification(int notificationId);
-	void SignalNetClientStatsUpdate(const ServerStats &stats);
-	void SignalNetClientPingUpdate(unsigned minPing, unsigned avgPing, unsigned maxPing);
-	void SignalNetClientShowTimeoutDialog(NetTimeoutReason reason, unsigned remainingSec);
-	void SignalNetClientRemovedFromGame(int notificationId);
-	void SignalNetClientSelfJoined(unsigned playerId, const std::string &playerName, bool isGameAdmin);
-	void SignalNetClientPlayerJoined(unsigned playerId, const std::string &playerName, bool isGameAdmin);
-	void SignalNetClientPlayerChanged(unsigned playerId, const std::string &newPlayerName);
-	void SignalNetClientPlayerLeft(unsigned playerId, const std::string &playerName, int removeReason);
-	void SignalNetClientNewGameAdmin(unsigned playerId, const std::string &playerName);
-	void SignalNetClientGameChatMsg(const std::string &playerName, const std::string &msg);
-	void SignalNetClientLobbyChatMsg(const std::string &playerName, const std::string &msg);
-	void SignalNetClientPrivateChatMsg(const std::string &playerName, const std::string &msg);
-	void SignalNetClientMsgBox(const std::string &msg);
-	void SignalNetClientMsgBox(unsigned msgId);
+	void SignalNetClientConnect(int actionID) override;
+	void SignalNetClientServerListAdd(unsigned serverId) override;
+	void SignalNetClientServerListShow() override;
+	void SignalNetClientServerListClear() override;
+	void SignalNetClientLoginShow() override;
+	void SignalNetClientRejoinPossible(unsigned gameId) override;
+	void SignalNetClientPostRiverShowCards(unsigned playerId) override;
+	void SignalNetClientGameInfo(int actionID) override;
+	void SignalNetClientError(int errorID, int osErrorID) override;
+	void SignalNetClientNotification(int notificationId) override;
+	void SignalNetClientStatsUpdate(const ServerStats &stats) override;
+	void SignalNetClientPingUpdate(unsigned minPing, unsigned avgPing, unsigned maxPing) override;
+	void SignalNetClientShowTimeoutDialog(NetTimeoutReason reason, unsigned remainingSec) override;
+	void SignalNetClientRemovedFromGame(int notificationId) override;
+	void SignalNetClientSelfJoined(unsigned playerId, const std::string &playerName, bool isGameAdmin) override;
+	void SignalNetClientPlayerJoined(unsigned playerId, const std::string &playerName, bool isGameAdmin) override;
+	void SignalNetClientPlayerChanged(unsigned playerId, const std::string &newPlayerName) override;
+	void SignalNetClientPlayerLeft(unsigned playerId, const std::string &playerName, int removeReason) override;
+	void SignalNetClientNewGameAdmin(unsigned playerId, const std::string &playerName) override;
+	void SignalNetClientGameChatMsg(const std::string &playerName, const std::string &msg) override;
+	void SignalNetClientLobbyChatMsg(const std::string &playerName, const std::string &msg) override;
+	void SignalNetClientPrivateChatMsg(const std::string &playerName, const std::string &msg) override;
+	void SignalNetClientMsgBox(const std::string &msg) override;
+	void SignalNetClientMsgBox(unsigned msgId) override;
 
-	void SignalNetClientWaitDialog();
+	void SignalNetClientWaitDialog() override;
 
-	void SignalNetClientGameListNew(unsigned gameId);
-	void SignalNetClientGameListRemove(unsigned gameId);
-	void SignalNetClientGameListUpdateMode(unsigned gameId, GameMode mode);
-	void SignalNetClientGameListUpdateAdmin(unsigned gameId, unsigned adminPlayerId);
-	void SignalNetClientGameListPlayerJoined(unsigned gameId, unsigned playerId);
-	void SignalNetClientGameListPlayerLeft(unsigned gameId, unsigned playerId);
+	void SignalNetClientGameListNew(unsigned gameId) override;
+	void SignalNetClientGameListRemove(unsigned gameId) override;
+	void SignalNetClientGameListUpdateMode(unsigned gameId, GameMode mode) override;
+	void SignalNetClientGameListUpdateAdmin(unsigned gameId, unsigned adminPlayerId) override;
+	void SignalNetClientGameListPlayerJoined(unsigned gameId, unsigned playerId) override;
+	void SignalNetClientGameListPlayerLeft(unsigned gameId, unsigned playerId) override;
 
-	void SignalNetClientGameStart(boost::shared_ptr<Game> game);
+	void SignalNetClientGameStart(boost::shared_ptr<Game> game) override;
 
-	void SignalNetServerSuccess(int actionID);
-	void SignalNetServerError(int errorID, int osErrorID);
+	void SignalNetServerSuccess(int actionID) override;
+	void SignalNetServerError(int errorID, int osErrorID) override;
 
-	void SignalLobbyPlayerJoined(unsigned playerId, const std::string &nickName);
-	void SignalLobbyPlayerKicked(const std::string &nickName, const std::string &byWhom, const std::string &reason);
-	void SignalLobbyPlayerLeft(unsigned playerId);
+	void SignalLobbyPlayerJoined(unsigned playerId, const std::string &nickName) override;
+	void SignalLobbyPlayerKicked(const std::string &nickName, const std::string &byWhom, const std::string &reason) override;
+	void SignalLobbyPlayerLeft(unsigned playerId) override;
 
-	void SignalSelfGameInvitation(unsigned gameId, unsigned playerIdFrom);
-	void SignalPlayerGameInvitation(unsigned gameId, unsigned playerIdWho, unsigned playerIdFrom);
-	void SignalRejectedGameInvitation(unsigned gameId, unsigned playerIdWho, DenyGameInvitationReason reason);
+	void SignalSelfGameInvitation(unsigned gameId, unsigned playerIdFrom) override;
+	void SignalPlayerGameInvitation(unsigned gameId, unsigned playerIdWho, unsigned playerIdFrom) override;
+	void SignalRejectedGameInvitation(unsigned gameId, unsigned playerIdWho, DenyGameInvitationReason reason) override;
 
 private:
 

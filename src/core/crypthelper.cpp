@@ -374,7 +374,7 @@ CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const
 
 			if (success && outPlainSize) {
 				// Since padding is off, this will not modify the plain text. However, parameters need to be set.
-				EVP_DecryptFinal(decryptCtx, (unsigned char *)outPlain.c_str(), &outPlainSize);
+				EVP_DecryptFinal(decryptCtx, reinterpret_cast<unsigned char*>(&outPlain[0]), &outPlainSize);
 				retVal = true;
 			}
 		} else
