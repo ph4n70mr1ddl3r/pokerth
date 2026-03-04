@@ -175,7 +175,8 @@ unsigned
 AvatarManager::ChunkReadAvatarFile(boost::shared_ptr<AvatarFileState> fileState, unsigned char *data, unsigned chunkSize)
 {
 	unsigned retVal = 0;
-	if (fileState.get()) {
+	constexpr unsigned MAX_CHUNK_SIZE = 64 * 1024;
+	if (fileState.get() && data && chunkSize > 0 && chunkSize <= MAX_CHUNK_SIZE) {
 		try {
 			if (!fileState->inputStream.fail() && !fileState->inputStream.eof()) {
 				fileState->inputStream.read(reinterpret_cast<char*>(data), chunkSize);

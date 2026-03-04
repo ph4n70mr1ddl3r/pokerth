@@ -39,6 +39,15 @@
 
 using namespace std;
 
+#ifdef HAVE_OPENSSL
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+struct EvpCipherCtxDeleter {
+	void operator()(EVP_CIPHER_CTX *ctx) const { EVP_CIPHER_CTX_free(ctx); }
+};
+using EvpCipherCtxPtr = std::unique_ptr<EVP_CIPHER_CTX, EvpCipherCtxDeleter>;
+#endif
+#endif
+
 // Helper function.
 static int
 fromHex(int ch)
@@ -300,11 +309,15 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 
 #ifdef HAVE_OPENSSL
 	#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-		EVP_CIPHER_CTX *encryptCtx = EVP_CIPHER_CTX_new();  
+		EvpCipherCtxPtr encryptCtxPtr(EVP_CIPHER_CTX_new());
+		if (!encryptCtxPtr) {
+			outCipher.clear();
+			return retVal;
+		}
+		EVP_CIPHER_CTX *encryptCtx = encryptCtxPtr.get();
 	#else
 		EVP_CIPHER_CTX _encryptCtx; 
-		EVP_CIPHER_CTX *encryptCtx; 
-		encryptCtx = &_encryptCtx; 
+		EVP_CIPHER_CTX *encryptCtx = &_encryptCtx; 
 	#endif // OPENSSL_VERSION_NUMBER >= 0x10100000L 
 
 		EVP_CIPHER_CTX_init(encryptCtx);
@@ -322,10 +335,7 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 			}
 		} else
 			outCipher.clear();
-		
-	#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-		EVP_CIPHER_CTX_free(encryptCtx);
-	#endif // OPENSSL_VERSION_NUMBER >= 0x10100000L 
+		// RAII handles cleanup for OpenSSL >= 1.1.0
 #else
 		gcry_cipher_hd_t hd;
 		gcry_error_t err = gcry_cipher_open(&hd, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CBC, 0);
@@ -357,11 +367,15 @@ CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const
 		outPlain.resize(cipherSize);
 #ifdef HAVE_OPENSSL
 	#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-		EVP_CIPHER_CTX *decryptCtx = EVP_CIPHER_CTX_new();  
+		EvpCipherCtxPtr decryptCtxPtr(EVP_CIPHER_CTX_new());
+		if (!decryptCtxPtr) {
+			outPlain.clear();
+			return retVal;
+		}
+		EVP_CIPHER_CTX *decryptCtx = decryptCtxPtr.get();
 	#else
 		EVP_CIPHER_CTX _decryptCtx; 
-		EVP_CIPHER_CTX *decryptCtx; 
-		decryptCtx = &_decryptCtx; 
+		EVP_CIPHER_CTX *decryptCtx = &_decryptCtx; 
 	#endif // OPENSSL_VERSION_NUMBER >= 0x10100000L 
 
 		EVP_CIPHER_CTX_init(decryptCtx);
@@ -379,10 +393,7 @@ CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const
 			}
 		} else
 			outPlain.clear();
-		
-	#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-		EVP_CIPHER_CTX_free(decryptCtx);
-	#endif // OPENSSL_VERSION_NUMBER >= 0x10100000L 
+		// RAII handles cleanup for OpenSSL >= 1.1.0
 #else
 		gcry_cipher_hd_t hd;
 		gcry_error_t err = gcry_cipher_open(&hd, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CBC, 0);

@@ -39,6 +39,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <climits>
 
 using namespace std;
 
@@ -1181,20 +1182,20 @@ void LocalPlayer::preflopEngine()
 
 	//	cout << myID << ": " << myHoleCardsValue << " - " << myNiveau[0] << " " << myNiveau[2] << " - " << myCards[0] << " " << myCards[1] << endl;
 
-	// count number of active human players
+	//	count number of active human players
 	size_t countHumanPlayers = 0;
-	for(it_c=currentHand->getActivePlayerList()->begin(); it_c!=currentHand->getActivePlayerList()->end(); ++it_c) {
-		if((*it_c)->getMyType() == PLAYER_TYPE_HUMAN) {
+	for(const auto& player : *currentHand->getActivePlayerList()) {
+		if(player->getMyType() == PLAYER_TYPE_HUMAN) {
 			countHumanPlayers++;
 		}
 	}
 	if(countHumanPlayers) {
-		// local or network game and only one human player is active --> set aggValue
+		// local or network games and only one human player is active --> set aggValue
 		if(countHumanPlayers == 1) {
 
-			for(it_c=currentHand->getActivePlayerList()->begin(); it_c!=currentHand->getActivePlayerList()->end(); ++it_c) {
-				if((*it_c)->getMyType() == PLAYER_TYPE_HUMAN &&  (*it_c)->getMyAction() != PLAYER_ACTION_FOLD) {
-					int aggValue = static_cast<int>((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
+			for(const auto& player : *currentHand->getActivePlayerList()) {
+				if(player->getMyType() == PLAYER_TYPE_HUMAN &&  player->getMyAction() != PLAYER_ACTION_FOLD) {
+					int aggValue = static_cast<int>((( player->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
 					myNiveau[0] -= aggValue;
 					myNiveau[2] -= aggValue;
 				}
@@ -1294,7 +1295,9 @@ void LocalPlayer::preflopEngine()
 	// 	cout << sBluff << endl;
 
 	// auf sBluff testen --> raise statt call oder fold
-	if((sBluff < 100/((static_cast<int>(currentHand->getActivePlayerList()->size())-2)*6)+3) && myOdds < myNiveau[2] && currentHand->getCurrentBeRo()->getHighestSet() == 2*currentHand->getSmallBlind() && !sBluffStatus) || sBluffStatus) {
+	int activePlayerCount = static_cast<int>(currentHand->getActivePlayerList()->size());
+	int bluffThreshold = (activePlayerCount > 2) ? 100/((activePlayerCount-2)*6)+3 : INT_MAX;
+	if(((sBluff < bluffThreshold) && myOdds < myNiveau[2] && currentHand->getCurrentBeRo()->getHighestSet() == 2*currentHand->getSmallBlind() && !sBluffStatus) || sBluffStatus) {
 
 		// 		cout << "sBLUFF!" << endl;
 		sBluffStatus = true;
