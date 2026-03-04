@@ -1270,6 +1270,9 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_GAME_BAD_NAME);
 	} else if (!ServerGame::CheckSettings(tmpData, password, GetServerMode())) {
 		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_INVALID_SETTINGS);
+	} else if (!session->GetPlayerData()) {
+		LOG_ERROR("Session " << session->GetId() << " has no player data");
+		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_INVALID_SETTINGS);
 	} else if (!session->GetPlayerData()->IsPlayerAllowedToJoinCreateLimitRank(m_serverConfig.readConfigString("ServerLimitRankNum"), m_serverConfig.readConfigString("ServerLimitRankPeriod"))
 			&& tmpData.gameType == GAME_TYPE_RANKING ) {
 		LOG_ERROR("not allowed due to ranklimit");
@@ -1309,7 +1312,10 @@ ServerLobbyThread::HandleNetPacketJoinGame(boost::shared_ptr<SessionData> sessio
 		boost::shared_ptr<ServerGame> game = pos->second;
 		const GameData &tmpData = game->GetGameData();
 		LOG_ERROR("JoinGame pre validation");
-		if (tmpData.gameType == GAME_TYPE_INVITE_ONLY
+		if (!session->GetPlayerData()) {
+			LOG_ERROR("Session " << session->GetId() << " has no player data");
+			SendJoinGameFailed(session, joinGame.gameid(), NTF_NET_JOIN_INVALID_SETTINGS);
+		} else if (tmpData.gameType == GAME_TYPE_INVITE_ONLY
 				   && !game->IsPlayerInvited(session->GetPlayerData()->GetUniqueId())) {
 			SendJoinGameFailed(session, joinGame.gameid(), NTF_NET_JOIN_NOT_INVITED);
 		} else if (!game->CheckPassword(password)) {
