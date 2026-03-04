@@ -58,7 +58,6 @@ public:
 	virtual void HandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) = 0;
 };
 
-// State: Initialization.
 class ClientStateInit : public ClientState
 {
 public:
@@ -131,7 +130,7 @@ protected:
 
 private:
 
-	boost::shared_ptr<DownloadHelper> myDownloadHelper;
+	boost::shared_ptr<DownloadHelper> m_downloadHelper;
 };
 
 class ClientStateReadingServerList : public ClientState
@@ -159,6 +158,50 @@ public:
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
 
+	virtual void HandlePacket(boost::shared_ptr<ClientThread> /*client*/, boost::shared_ptr<NetPacket> /*tmpPacket*/) override {}
+
+protected:
+
+	ClientStateWaitChooseServer();
+
+	void TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client);
+};
+
+class ClientStateStartConnect : public ClientState
+{
+public:
+	static ClientStateStartConnect &Instance();
+	virtual ~ClientStateStartConnect() noexcept;
+
+	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
+	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
+
+	virtual void HandlePacket(boost::shared_ptr<ClientThread> /*client*/, boost::shared_ptr<NetPacket> /*tmpPacket*/) override {}
+
+	void SetRemoteEndpoint(boost::asio::ip::tcp::resolver::results_type endpointIterator);
+
+protected:
+
+	ClientStateStartConnect();
+
+	void HandleConnect(const boost::system::error_code& ec,
+					   boost::asio::ip::basic_resolver_iterator<boost::asio::ip::tcp> endpoint_iterator,
+					   boost::shared_ptr<ClientThread> client);
+
+	void TimerTimeout(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client);
+
+	void HandleSslHandshake(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client);
+
+private:
+	boost::asio::ip::tcp::resolver::results_type m_remoteEndpoint;
+	boost::asio::ip::basic_resolver_iterator<boost::asio::ip::tcp> m_remoteEndpointIterator;
+};
+
+class AbstractClientStateReceiving : public ClientState
+{
+public:
+	virtual ~AbstractClientStateReceiving() noexcept;
+
 	virtual void HandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) override;
 
 protected:
@@ -180,7 +223,7 @@ protected:
 
 	ClientStateStartSession();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) override;
 };
 
 class ClientStateWaitEnterLogin : public ClientState
@@ -214,7 +257,7 @@ protected:
 
 	ClientStateWaitAuthChallenge();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) override;
 };
 
 class ClientStateWaitAuthVerify : public AbstractClientStateReceiving
@@ -230,7 +273,7 @@ protected:
 
 	ClientStateWaitAuthVerify();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) override;
 };
 
 class ClientStateWaitSession : public AbstractClientStateReceiving
@@ -246,7 +289,7 @@ protected:
 
 	ClientStateWaitSession();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) override;
 };
 
 class ClientStateWaitJoin : public AbstractClientStateReceiving
@@ -255,14 +298,14 @@ public:
 	static ClientStateWaitJoin &Instance();
 	virtual ~ClientStateWaitJoin() noexcept;
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
+	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
 
 protected:
 
 	ClientStateWaitJoin();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) override;
 };
 
 class ClientStateWaitGame : public AbstractClientStateReceiving
@@ -271,14 +314,14 @@ public:
 	static ClientStateWaitGame &Instance();
 	virtual ~ClientStateWaitGame() noexcept;
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
+	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
 
 protected:
 
 	ClientStateWaitGame();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) override;
 };
 
 class ClientStateSynchronizeStart : public AbstractClientStateReceiving
@@ -287,15 +330,15 @@ public:
 	static ClientStateSynchronizeStart &Instance();
 	virtual ~ClientStateSynchronizeStart() noexcept;
 
-	virtual void Enter(boost::shared_ptr<ClientThread> client);
-	virtual void Exit(boost::shared_ptr<ClientThread> client);
+	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
+	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
 
 protected:
 
 	ClientStateSynchronizeStart();
 
 	void TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client);
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) override;
 };
 
 class ClientStateWaitStart : public AbstractClientStateReceiving
@@ -311,7 +354,7 @@ protected:
 
 	ClientStateWaitStart();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) override;
 };
 
 class ClientStateWaitHand : public AbstractClientStateReceiving
@@ -327,7 +370,7 @@ protected:
 
 	ClientStateWaitHand();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) override;
 };
 
 class ClientStateRunHand : public AbstractClientStateReceiving
@@ -343,7 +386,7 @@ protected:
 
 	ClientStateRunHand();
 
-	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket);
+	virtual void InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) override;
 
 	static void ResetPlayerActions(Game &curGame);
 	static void ResetPlayerSets(Game &curGame);
