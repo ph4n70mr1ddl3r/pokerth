@@ -105,12 +105,22 @@ bool
 ServerAcceptWebHelper::validate(websocketpp::connection_hdl hdl)
 {
 	bool retVal = false;
-	server::connection_ptr con = m_webSocketServer->get_con_from_hdl(hdl);
-	if ((m_webSocketResource.empty() || con->get_resource() == m_webSocketResource)
-			&& (m_webSocketOrigin.empty() ||
-				(con->get_origin() != "null" &&
-				 (con->get_origin() == "http://" + m_webSocketOrigin || con->get_origin() == "http://www." + m_webSocketOrigin)))) {
-		retVal = true;
+	if (m_tls) {
+		tls_server::connection_ptr con = m_webSocketTlsServer->get_con_from_hdl(hdl);
+		if ((m_webSocketResource.empty() || con->get_resource() == m_webSocketResource)
+				&& (m_webSocketOrigin.empty() ||
+					(con->get_origin() != "null" &&
+					 (con->get_origin() == "http://" + m_webSocketOrigin || con->get_origin() == "http://www." + m_webSocketOrigin)))) {
+			retVal = true;
+		}
+	} else {
+		server::connection_ptr con = m_webSocketServer->get_con_from_hdl(hdl);
+		if ((m_webSocketResource.empty() || con->get_resource() == m_webSocketResource)
+				&& (m_webSocketOrigin.empty() ||
+					(con->get_origin() != "null" &&
+					 (con->get_origin() == "http://" + m_webSocketOrigin || con->get_origin() == "http://www." + m_webSocketOrigin)))) {
+			retVal = true;
+		}
 	}
 	return retVal;
 }
@@ -120,15 +130,21 @@ ServerAcceptWebHelper::on_open(websocketpp::connection_hdl hdl)
 {
 	boost::shared_ptr<WebSocketData> webData(new WebSocketData);
 	webData->webSocketServer = m_webSocketServer;
+	webData->webSocketTlsServer = m_webSocketTlsServer;
 	webData->webHandle = hdl;
+	webData->isTls = m_tls;
 	boost::shared_ptr<SessionData> sessionData(new SessionData(webData, m_lobbyThread->GetNextSessionId(), m_lobbyThread->GetSessionDataCallback(), *m_ioService, 0));
-	m_sessionMap.insert(make_pair(hdl, sessionData));
+	{
+		boost::mutex::scoped_lock lock(m_sessionMapMutex);
+		m_sessionMap.insert(make_pair(hdl, sessionData));
+	}
 	m_lobbyThread->AddConnection(sessionData);
 }
 
 void
 ServerAcceptWebHelper::on_close(websocketpp::connection_hdl hdl)
 {
+	boost::mutex::scoped_lock lock(m_sessionMapMutex);
 	SessionMap::iterator pos = m_sessionMap.find(hdl);
 	if (pos != m_sessionMap.end()) {
 		boost::shared_ptr<SessionData> tmpSession = pos->second.lock();
@@ -143,12 +159,16 @@ void
 ServerAcceptWebHelper::on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
 {
 	if (msg->get_opcode() == websocketpp::frame::opcode::BINARY) {
-		SessionMap::iterator pos = m_sessionMap.find(hdl);
-		if (pos != m_sessionMap.end()) {
-			boost::shared_ptr<SessionData> tmpSession = pos->second.lock();
-			if (tmpSession) {
-				tmpSession->GetReceiveBuffer().HandleMessage(tmpSession, msg->get_payload());
+		boost::shared_ptr<SessionData> tmpSession;
+		{
+			boost::mutex::scoped_lock lock(m_sessionMapMutex);
+			SessionMap::iterator pos = m_sessionMap.find(hdl);
+			if (pos != m_sessionMap.end()) {
+				tmpSession = pos->second.lock();
 			}
+		}
+		if (tmpSession) {
+			tmpSession->GetReceiveBuffer().HandleMessage(tmpSession, msg->get_payload());
 		}
 	}
 }

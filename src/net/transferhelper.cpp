@@ -62,8 +62,11 @@ TransferHelper::Init(const string &url, const string &targetFileName, const stri
 	if (!m_data->curlHandle)
 		throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_INIT_FAILED, 0);
 	m_data->curlMultiHandle = curl_multi_init();
-	if (!m_data->curlMultiHandle)
+	if (!m_data->curlMultiHandle) {
+		curl_easy_cleanup(m_data->curlHandle);
+		m_data->curlHandle = nullptr;
 		throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_INIT_FAILED, 0);
+	}
 
 	// Use a copy of the url string, because some curl versions require a copy.
 	m_data->curlUrl = url;

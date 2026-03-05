@@ -38,7 +38,9 @@
 
 struct WebSocketData {
 	boost::shared_ptr<server> webSocketServer;
+	boost::shared_ptr<tls_server> webSocketTlsServer;
 	websocketpp::connection_hdl webHandle;
+	bool isTls;
 };
 
 #endif

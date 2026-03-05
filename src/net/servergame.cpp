@@ -539,6 +539,12 @@ ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned 
 				unsigned petitionId = m_voteKickData->petitionId;
 				unsigned kickPlayerId = m_voteKickData->kickPlayerId;
 				int numVotesNeeded = m_voteKickData->numVotesToKick;
+
+				m_voteKickTimer.expires_after(milliseconds(SERVER_CHECK_VOTE_KICK_INTERVAL_MSEC));
+				m_voteKickTimer.async_wait(
+					boost::bind(
+						&ServerGame::TimerVoteKick, shared_from_this(), boost::asio::placeholders::error));
+
 				lock.unlock();
 
 				boost::shared_ptr<NetPacket> packet(new NetPacket);
@@ -551,11 +557,6 @@ ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned 
 				netStartPetition->set_kicktimeoutsec(timeoutSec);
 				netStartPetition->set_numvotesneededtokick(numVotesNeeded);
 				SendToAllPlayers(packet, SessionData::Game);
-
-				m_voteKickTimer.expires_after(milliseconds(SERVER_CHECK_VOTE_KICK_INTERVAL_MSEC));
-				m_voteKickTimer.async_wait(
-					boost::bind(
-						&ServerGame::TimerVoteKick, shared_from_this(), boost::asio::placeholders::error));
 
 			} else
 				InternalDenyAskVoteKick(byWhom, playerIdWho, KICK_DENIED_OTHER_IN_PROGRESS);

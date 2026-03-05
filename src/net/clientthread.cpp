@@ -997,58 +997,34 @@ ClientThread::CreateContextSession()
 {
     ClientContext &context = GetContext();
 
-    qDebug() << "========== [TLS-DEBUG] CreateContextSession started ==========";
-    qDebug() << "[TLS-DEBUG] TLS enabled:" << (context.GetTls() ? "YES" : "NO");
-    qDebug() << "[TLS-DEBUG] Server address:" << context.GetServerAddr().c_str();
-    qDebug() << "[TLS-DEBUG] Server port:" << context.GetServerPort();
-
     boost::shared_ptr<boost::asio::ip::tcp::resolver> resolver(new boost::asio::ip::tcp::resolver(*m_ioService));
     context.SetResolver(resolver);
 
     if (context.GetTls()) {
-        qDebug() << "[TLS-DEBUG] >>> Creating SSL context...";
         boost::shared_ptr<boost::asio::ssl::context> sslCtx(
             new boost::asio::ssl::context(boost::asio::ssl::context::sslv23_client));
-        qDebug() << "[TLS-DEBUG] >>> SSL context created successfully";
         
-        qDebug() << "[TLS-DEBUG] >>> Setting verify mode...";
         if (context.GetTlsVerifyPeer()) {
-            qDebug() << "[TLS-DEBUG] >>> Enabling peer certificate verification";
             sslCtx->set_verify_mode(boost::asio::ssl::verify_peer);
             sslCtx->set_default_verify_paths();
         } else {
-            qDebug() << "[TLS-DEBUG] >>> WARNING: TLS certificate verification disabled";
-            qDebug() << "[TLS-DEBUG] >>> This allows MITM attacks. Use only for testing with self-signed certs.";
             sslCtx->set_verify_mode(boost::asio::ssl::verify_none);
         }
-        qDebug() << "[TLS-DEBUG] >>> Verify mode set";
 
-        qDebug() << "[TLS-DEBUG] >>> Setting SSL info callback on context...";
         SSL_CTX_set_info_callback(sslCtx->native_handle(), &ClientThread::SslInfoCallback);
-        qDebug() << "[TLS-DEBUG] >>> SSL info callback set on context";
 
-        qDebug() << "[TLS-DEBUG] >>> Creating SSL stream...";
         boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sslStream(
             new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(*m_ioService, *sslCtx));
-        qDebug() << "[TLS-DEBUG] >>> SSL stream created successfully";
 
-        qDebug() << "[TLS-DEBUG] >>> Setting SSL info callback on stream...";
         SSL_set_info_callback(sslStream->native_handle(), &ClientThread::SslInfoCallback);
-        qDebug() << "[TLS-DEBUG] >>> SSL info callback set on stream";
 
-        qDebug() << "[TLS-DEBUG] >>> Creating session data with SSL...";
         boost::shared_ptr<SessionData> session(new SessionData(sslStream, SESSION_ID_GENERIC, *this, *m_ioService, 0));
         context.SetSessionData(session);
-        qDebug() << "[TLS-DEBUG] >>> Session data created with SSL - TLS mode ACTIVE";
     } else {
-        qDebug() << "[TLS-DEBUG] >>> Creating plain TCP socket (TLS disabled)...";
         boost::shared_ptr<boost::asio::ip::tcp::socket> sock(new boost::asio::ip::tcp::socket(*m_ioService));
         boost::shared_ptr<SessionData> session(new SessionData(sock, SESSION_ID_GENERIC, *this, *m_ioService));
         context.SetSessionData(session);
-        qDebug() << "[TLS-DEBUG] >>> Session data created - PLAIN mode (no TLS)";
     }
-    
-    qDebug() << "========== [TLS-DEBUG] CreateContextSession completed ==========";
 }
 
 ClientState &
@@ -1061,15 +1037,10 @@ ClientThread::GetState()
 void
 ClientThread::SetState(ClientState &newState)
 {
-	const char* newStateName = typeid(newState).name();
-	qDebug() << "[AUTH DEBUG] ClientThread::SetState - Changing state to:" << newStateName;
 	if (m_curState) {
-		const char* oldStateName = typeid(*m_curState).name();
-		qDebug() << "[AUTH DEBUG] ClientThread::SetState - Exiting state:" << oldStateName;
 		m_curState->Exit(shared_from_this());
 	}
 	m_curState = &newState;
-	qDebug() << "[AUTH DEBUG] ClientThread::SetState - Entering new state:" << newStateName;
 	m_curState->Enter(shared_from_this());
 }
 

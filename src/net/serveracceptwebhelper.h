@@ -65,6 +65,7 @@ private:
 	boost::shared_ptr<server> m_webSocketServer;
 	boost::shared_ptr<tls_server> m_webSocketTlsServer;
 	SessionMap m_sessionMap;
+	mutable boost::mutex m_sessionMapMutex;
 	std::string m_webSocketResource;
 	std::string m_webSocketOrigin;
 	bool m_tls;

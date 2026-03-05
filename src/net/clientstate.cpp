@@ -822,8 +822,12 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		client->AddTempAvatarFile(netAvatarHeader.requestid(), netAvatarHeader.avatarsize(), static_cast<AvatarFileType>(netAvatarHeader.avatartype()));
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_AvatarDataMessage) {
 		const AvatarDataMessage &netAvatarData = tmpPacket->GetMsg()->avatardatamessage();
-		vector<unsigned char> fileData(netAvatarData.avatarblock().size());
-		memcpy(&fileData[0], netAvatarData.avatarblock().data(), netAvatarData.avatarblock().size());
+		size_t dataSize = netAvatarData.avatarblock().size();
+		if (dataSize > MAX_AVATAR_FILE_SIZE) {
+			throw ClientException(__FILE__, __LINE__, ERR_NET_WRONG_AVATAR_SIZE);
+		}
+		vector<unsigned char> fileData(dataSize);
+		memcpy(&fileData[0], netAvatarData.avatarblock().data(), dataSize);
 		client->StoreInTempAvatarFile(netAvatarData.requestid(), fileData);
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_AvatarEndMessage) {
 		const AvatarEndMessage &netAvatarEnd = tmpPacket->GetMsg()->avatarendmessage();
