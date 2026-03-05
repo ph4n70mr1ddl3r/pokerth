@@ -1121,9 +1121,9 @@ ServerLobbyThread::HandleNetPacketAvatarFile(boost::shared_ptr<SessionData> sess
 	if (session->GetPlayerData()) {
 		boost::shared_ptr<AvatarFile> tmpAvatar = session->GetPlayerData()->GetNetAvatarFile();
 		const string &avatarBlock = avatarData.avatarblock();
-		if (tmpAvatar && tmpAvatar->fileData.size() + avatarBlock.size() <= tmpAvatar->reportedSize &&
+		if (tmpAvatar && !avatarBlock.empty() && tmpAvatar->fileData.size() + avatarBlock.size() <= tmpAvatar->reportedSize &&
 			tmpAvatar->fileData.size() + avatarBlock.size() <= MAX_AVATAR_FILE_SIZE) {
-			std::copy(&avatarBlock[0], &avatarBlock[avatarBlock.size()], back_inserter(tmpAvatar->fileData));
+			std::copy(avatarBlock.begin(), avatarBlock.end(), back_inserter(tmpAvatar->fileData));
 		}
 	}
 }
@@ -1134,10 +1134,10 @@ ServerLobbyThread::HandleNetPacketAvatarEnd(boost::shared_ptr<SessionData> sessi
 	if (session->GetPlayerData()) {
 		boost::shared_ptr<AvatarFile> tmpAvatar = session->GetPlayerData()->GetNetAvatarFile();
 		MD5Buf avatarMD5 = session->GetPlayerData()->GetAvatarMD5();
-		if (!avatarMD5.IsZero() && tmpAvatar.get()) {
+		if (!avatarMD5.IsZero() && tmpAvatar.get() && !tmpAvatar->fileData.empty()) {
 			unsigned avatarSize = static_cast<unsigned>(tmpAvatar->fileData.size());
 			if (avatarSize == tmpAvatar->reportedSize) {
-				if (!GetAvatarManager().StoreAvatarInCache(avatarMD5, tmpAvatar->fileType, &tmpAvatar->fileData[0], avatarSize, true)) {
+				if (!GetAvatarManager().StoreAvatarInCache(avatarMD5, tmpAvatar->fileType, tmpAvatar->fileData.data(), avatarSize, true)) {
 					session->GetPlayerData()->SetAvatarMD5(MD5Buf());
 					LOG_ERROR("Failed to store avatar in cache directory.");
 				}

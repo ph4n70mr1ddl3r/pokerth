@@ -446,11 +446,18 @@ ServerDBThread::Main()
 			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
 			m_connData->conn.disconnect();
 			SetConnected(false);
+		} catch (const std::exception &e) {
+			string errorMsg = string("Exception in database thread: ") + e.what();
+			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
+			m_connData->conn.disconnect();
+			SetConnected(false);
+			boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::ConnectFailed, &m_callback, errorMsg));
 		} catch (...) {
 			string errorMsg = "Unknown exception in database thread";
 			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
 			m_connData->conn.disconnect();
 			SetConnected(false);
+			boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::ConnectFailed, &m_callback, errorMsg));
 		}
 	}
 	m_connData->conn.disconnect();

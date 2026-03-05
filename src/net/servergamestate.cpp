@@ -440,6 +440,10 @@ AbstractServerGameStateReceiving::CreateNetPacketHandStart(const ServerGame &ser
 void
 AbstractServerGameStateReceiving::AcceptNewSession(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session)
 {
+	if (!session || !session->GetPlayerData()) {
+		LOG_ERROR("AcceptNewSession: Invalid session or player data");
+		return;
+	}
 	// Set game admin, if applicable.
 	session->GetPlayerData()->SetGameAdmin(session->GetPlayerData()->GetUniqueId() == server->GetAdminPlayerId());
 
@@ -1213,7 +1217,7 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 											   cardDataStream.str(),
 											   tmpCipher)
 						&& !tmpCipher.empty()) {
-					netHandStart->set_encryptedcards(static_cast<const char*>(&tmpCipher[0]), tmpCipher.size());
+					netHandStart->set_encryptedcards(reinterpret_cast<const char*>(tmpCipher.data()), tmpCipher.size());
 				} else {
 					server->RemovePlayer(tmpPlayer->getMyUniqueID(), ERR_SOCK_INVALID_STATE);
 					errorFlag = true;

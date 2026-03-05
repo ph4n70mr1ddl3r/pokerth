@@ -351,6 +351,10 @@ bool
 AvatarManager::StoreAvatarInCache(const MD5Buf &md5buf, AvatarFileType avatarFileType, const unsigned char *data, size_t size, bool upload)
 {
 	bool retVal = false;
+	if (!data || size == 0 || size > MAX_AVATAR_FILE_SIZE) {
+		LOG_ERROR("Invalid avatar data: null pointer or invalid size");
+		return false;
+	}
 	string cacheDir;
 	{
 		boost::mutex::scoped_lock lock(m_cacheDirMutex);

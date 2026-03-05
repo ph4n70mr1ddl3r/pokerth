@@ -1197,7 +1197,8 @@ void LocalPlayer::preflopEngine()
 
 			for(const auto& player : *currentHand->getActivePlayerList()) {
 				if(player->getMyType() == PLAYER_TYPE_HUMAN &&  player->getMyAction() != PLAYER_ACTION_FOLD) {
-					int aggValue = static_cast<int>((( player->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
+					size_t activePlayerCount = currentHand->getActivePlayerList()->size();
+					int aggValue = static_cast<int>((( player->getMyAggressive()*1.0)/7.0 - 1.0/(activePlayerCount > 0 ? activePlayerCount : 1))*21.0);
 					myNiveau[0] -= aggValue;
 					myNiveau[2] -= aggValue;
 				}
