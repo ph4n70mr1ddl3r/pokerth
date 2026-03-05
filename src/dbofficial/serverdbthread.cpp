@@ -446,15 +446,17 @@ ServerDBThread::Main()
 			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
 			m_connData->conn.disconnect();
 			SetConnected(false);
-		} catch (const std::exception &e) {
-			string errorMsg = string("Exception in database thread: ") + e.what();
-			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
-			m_connData->conn.disconnect();
-			SetConnected(false);
 			boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::ConnectFailed, &m_callback, errorMsg));
 		} catch (...) {
 			string errorMsg = "Unknown exception in database thread";
 			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
+			try {
+				std::rethrow_exception(std::current_exception());
+			} catch (const std::exception& e) {
+				LOG_ERROR("Actual exception type: " << e.what());
+			} catch (...) {
+				LOG_ERROR("Non-standard exception thrown");
+			}
 			m_connData->conn.disconnect();
 			SetConnected(false);
 			boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::ConnectFailed, &m_callback, errorMsg));
@@ -594,12 +596,12 @@ ServerDBThread::HandleNextQuery()
 							paramQuery << ", ";
 							executeQuery << ", ";
 						}
-						paramQuery << "@param" << counter << " = ";
-						if (*i == "NULL") {
-							paramQuery << "NULL";
-						} else {
-							paramQuery << "_utf8" << mysqlpp::quote << *i;
-						}
+					paramQuery << "@param" << counter << " = ";
+					if (*i == "NULL") {
+						paramQuery << "NULL";
+					} else {
+						paramQuery << mysqlpp::quote << *i;
+					}
 						executeQuery << "@param" << counter;
 						++counter;
 						++i;

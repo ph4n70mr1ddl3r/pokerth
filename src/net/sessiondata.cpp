@@ -80,6 +80,16 @@ SessionData::SessionData(boost::shared_ptr<boost::asio::ssl::stream<boost::asio:
 SessionData::~SessionData() noexcept
 {
 	InternalClearAuthSession();
+	{
+		boost::mutex::scoped_lock lock(m_dataMutex);
+		if (!m_password.empty()) {
+			volatile char *ptr = &m_password[0];
+			for (size_t i = 0; i < m_password.size(); ++i) {
+				ptr[i] = 0;
+			}
+			m_password.clear();
+		}
+	}
 	// Web Socket handle needs to be manually closed, asio socket is closed automatically.
 	CloseWebSocketHandle();
 }
@@ -186,12 +196,20 @@ SessionData::AuthGetUser() const
 void
 SessionData::AuthSetPassword(const std::string &password)
 {
+	boost::mutex::scoped_lock lock(m_dataMutex);
+	if (!m_password.empty()) {
+		volatile char *ptr = &m_password[0];
+		for (size_t i = 0; i < m_password.size(); ++i) {
+			ptr[i] = 0;
+		}
+	}
 	m_password = password;
 }
 
 string
 SessionData::AuthGetPassword() const
 {
+    boost::mutex::scoped_lock lock(m_dataMutex);
     return m_password;
 }
 
@@ -221,7 +239,12 @@ void
 SessionData::TimerInitTimeout(const boost::system::error_code &ec)
 {
 	if (!ec) {
-		if (GetState() == SessionData::Init) {
+		State currentState;
+		{
+			boost::mutex::scoped_lock lock(m_dataMutex);
+			currentState = m_state;
+		}
+		if (currentState == SessionData::Init) {
 			m_callback.SessionError(shared_from_this(), ERR_NET_SESSION_TIMED_OUT);
 		}
 	}
@@ -391,7 +414,7 @@ SessionData::SetPlayerData(boost::shared_ptr<PlayerData> player)
 }
 
 boost::shared_ptr<PlayerData>
-SessionData::GetPlayerData()
+SessionData::GetPlayerData() const
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);
 	return m_playerData;

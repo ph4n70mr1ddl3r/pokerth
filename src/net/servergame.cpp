@@ -213,14 +213,14 @@ ServerGame::TimerVoteKick(const boost::system::error_code &ec)
 	if (!ec && m_curState != &ServerGameStateFinal::Instance()) {
 		// Check whether someone should be kicked, or whether a vote kick should be aborted.
 		// Only one vote kick can be active at a time.
-		unsigned petitionId;
-		unsigned kickPlayerId;
-		int numVotesToKick;
-		int numVotesInFavourOfKicking;
-		int numVotesAgainstKicking;
+		unsigned petitionId = 0;
+		unsigned kickPlayerId = 0;
+		int numVotesToKick = 0;
+		int numVotesInFavourOfKicking = 0;
+		int numVotesAgainstKicking = 0;
 		PlayerIdList votedPlayerIds;
 		boost::timer::cpu_timer voteTimer;
-		int timeLimitSec;
+		int timeLimitSec = 0;
 		bool hasActivePetition = false;
 		
 		{

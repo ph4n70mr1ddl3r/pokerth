@@ -127,7 +127,7 @@ public:
 	void CancelTimers();
 
 	void SetPlayerData(boost::shared_ptr<PlayerData> player);
-	boost::shared_ptr<PlayerData> GetPlayerData();
+	boost::shared_ptr<PlayerData> GetPlayerData() const;
 
 	std::string GetRemoteIPAddressFromSocket() const;
 

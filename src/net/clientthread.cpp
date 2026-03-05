@@ -1013,6 +1013,7 @@ ClientThread::CreateContextSession()
             sslCtx->set_verify_mode(boost::asio::ssl::verify_peer);
             sslCtx->set_default_verify_paths();
         } else {
+            LOG_ERROR("WARNING: TLS peer verification is disabled - connection is vulnerable to MITM attacks");
             sslCtx->set_verify_mode(boost::asio::ssl::verify_none);
         }
 
