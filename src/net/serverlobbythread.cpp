@@ -51,10 +51,8 @@
 #include <playerinterface.h>
 #include <tools.h>
 
-#include <boost/lambda/lambda.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/bind/bind.hpp>
-#include <boost/foreach.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/algorithm/string.hpp>
 

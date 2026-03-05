@@ -119,9 +119,11 @@ Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
 		if(startQuantityPlayers > i) {
 			activePlayerList->push_back(tmpPlayer);
 		}
-		(*runningPlayerList) = (*activePlayerList);
 
 	}
+
+	// Copy active player list to running player list once after loop completes
+	(*runningPlayerList) = (*activePlayerList);
 
 	currentBoard->setPlayerLists(seatsList, activePlayerList, runningPlayerList);
 
@@ -251,8 +253,14 @@ boost::shared_ptr<PlayerInterface> Game::getPlayerByNumber(int number)
 
 boost::shared_ptr<PlayerInterface> Game::getCurrentPlayer()
 {
-	boost::shared_ptr<PlayerInterface> tmpPlayer = getPlayerByUniqueId(getCurrentHand()->getCurrentBeRo()->getCurrentPlayersTurnId());
-	if (!tmpPlayer.get())
+	auto hand = getCurrentHand();
+	if (!hand)
+		throw LocalException(__FILE__, __LINE__, ERR_HAND_NOT_FOUND);
+	auto bero = hand->getCurrentBeRo();
+	if (!bero)
+		throw LocalException(__FILE__, __LINE__, ERR_BERO_NOT_FOUND);
+	auto tmpPlayer = getPlayerByUniqueId(bero->getCurrentPlayersTurnId());
+	if (!tmpPlayer)
 		throw LocalException(__FILE__, __LINE__, ERR_CURRENT_PLAYER_NOT_FOUND);
 	return tmpPlayer;
 }

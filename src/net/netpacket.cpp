@@ -33,7 +33,6 @@
 #include <net/socket_msg.h>
 
 #include <memory>
-#include <boost/foreach.hpp>
 
 #include <string>
 

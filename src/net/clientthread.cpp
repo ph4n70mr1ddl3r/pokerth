@@ -48,8 +48,6 @@
 
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
 
 #include <QDebug>
@@ -1014,11 +1012,16 @@ ClientThread::CreateContextSession()
             new boost::asio::ssl::context(boost::asio::ssl::context::sslv23_client));
         qDebug() << "[TLS-DEBUG] >>> SSL context created successfully";
         
-        qDebug() << "[TLS-DEBUG] >>> Setting verify mode to verify_none...";
-        // NOTE: TLS certificate verification is disabled to support servers with self-signed certificates.
-        // In a production environment requiring strict security, consider enabling verify_peer and
-        // using a proper certificate authority or certificate pinning.
-        sslCtx->set_verify_mode(boost::asio::ssl::verify_none);
+        qDebug() << "[TLS-DEBUG] >>> Setting verify mode...";
+        if (context.GetTlsVerifyPeer()) {
+            qDebug() << "[TLS-DEBUG] >>> Enabling peer certificate verification";
+            sslCtx->set_verify_mode(boost::asio::ssl::verify_peer);
+            sslCtx->set_default_verify_paths();
+        } else {
+            qDebug() << "[TLS-DEBUG] >>> WARNING: TLS certificate verification disabled";
+            qDebug() << "[TLS-DEBUG] >>> This allows MITM attacks. Use only for testing with self-signed certs.";
+            sslCtx->set_verify_mode(boost::asio::ssl::verify_none);
+        }
         qDebug() << "[TLS-DEBUG] >>> Verify mode set";
 
         qDebug() << "[TLS-DEBUG] >>> Setting SSL info callback on context...";
@@ -1101,7 +1104,8 @@ ClientThread::SetGameId(unsigned id)
 Gsasl *
 ClientThread::GetAuthContext()
 {
-	assert(m_authContext);
+	if (!m_authContext)
+		throw NetException(__FILE__, __LINE__, ERR_NET_GSASL_INIT_FAILED, 0);
 	return m_authContext;
 }
 
@@ -1277,7 +1281,9 @@ ClientThread::MapPlayerDataList()
 	}
 
 	// Sort the list by player number.
-	mappedList.sort(*boost::lambda::_1 < *boost::lambda::_2);
+	mappedList.sort([](const boost::shared_ptr<PlayerData>& a, const boost::shared_ptr<PlayerData>& b) {
+		return a->GetNumber() < b->GetNumber();
+	});
 
 	m_playerDataList = mappedList;
 }

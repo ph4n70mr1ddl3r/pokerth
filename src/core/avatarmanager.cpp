@@ -37,7 +37,6 @@
 #include <core/crypthelper.h>
 
 #include <boost/filesystem.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <core/openssl_wrapper.h>
 

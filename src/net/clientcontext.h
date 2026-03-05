@@ -65,6 +65,14 @@ public:
 	{
 		m_tls = tls;
 	}
+	bool GetTlsVerifyPeer() const
+	{
+		return m_tlsVerifyPeer;
+	}
+	void SetTlsVerifyPeer(bool verifyPeer)
+	{
+		m_tlsVerifyPeer = verifyPeer;
+	}
 	int GetAddrFamily() const
 	{
 		return m_addrFamily;
@@ -185,6 +193,7 @@ private:
 	boost::shared_ptr<boost::asio::ip::tcp::resolver> m_resolver;
 	bool				m_sctp;
 	bool				m_tls;
+	bool				m_tlsVerifyPeer;
 	int					m_addrFamily;
 	std::string			m_serverAddr;
 	std::string			m_serverPassword;

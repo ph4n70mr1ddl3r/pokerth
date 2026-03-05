@@ -176,6 +176,28 @@ extern "C" int sqlite3_close(sqlite3 *pDb)
 	return SQLITE_OK;
 }
 
+class SqliteDbRaii {
+public:
+	explicit SqliteDbRaii(sqlite3* db = nullptr) : m_db(db) {}
+	~SqliteDbRaii() { if (m_db) sqlite3_close(m_db); }
+	SqliteDbRaii(const SqliteDbRaii&) = delete;
+	SqliteDbRaii& operator=(const SqliteDbRaii&) = delete;
+	SqliteDbRaii(SqliteDbRaii&& other) noexcept : m_db(other.m_db) { other.m_db = nullptr; }
+	SqliteDbRaii& operator=(SqliteDbRaii&& other) noexcept {
+		if (this != &other) {
+			if (m_db) sqlite3_close(m_db);
+			m_db = other.m_db;
+			other.m_db = nullptr;
+		}
+		return *this;
+	}
+	sqlite3* get() const { return m_db; }
+	sqlite3** operator&() { return &m_db; }
+	operator bool() const { return m_db != nullptr; }
+private:
+	sqlite3* m_db;
+};
+
 guiLog::guiLog(gameTableImpl* w, ConfigFile *c) : myW(w), myConfig(c), myLogDir(nullptr), myHtmlLogFile(nullptr), myHtmlLogFile_old(nullptr), myTxtLogFile(nullptr), tb(nullptr)
 {
 
