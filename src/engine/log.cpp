@@ -21,6 +21,7 @@
 #include "configfile.h"
 #include "playerinterface.h"
 #include "cardsvalue.h"
+#include <core/loghelper.h>
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -159,9 +160,9 @@ Log::init()
 
                     exec_transaction();
                 } else {
-                    // open failed: du kannst hier Fehlerlog ergänzen
+                    // open failed
                     QSqlError err = mySqliteLogDb.lastError();
-                    cout << "Failed to open sqlite (Qt): " << err.text().toStdString() << endl;
+                    LOG_ERROR("Failed to open sqlite (Qt): " << err.text().toStdString());
                 }
             }
         }

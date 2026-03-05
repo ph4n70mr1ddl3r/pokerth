@@ -40,6 +40,7 @@
 #include <net/clientthread.h>
 #include <core/avatarmanager.h>
 #include <net/servermanagerfactory.h>
+#include <net/netexception.h>
 
 #include <boost/asio.hpp>
 
@@ -177,8 +178,7 @@ boost::shared_ptr<AvatarManager> Session::getAvatarManager()
 void Session::startInternetClient()
 {
 	if (myNetClient || !myGui) {
-		assert(false);
-		return;
+		throw NetException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	}
 	myGameType = GAME_TYPE_INTERNET;
 
@@ -206,8 +206,7 @@ void Session::startInternetClient()
 void Session::startNetworkClient(const string &serverAddress, unsigned serverPort, bool ipv6, bool sctp)
 {
 	if (myNetClient || !myGui) {
-		assert(false);
-		return;
+		throw NetException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	}
 	myGameType = GAME_TYPE_NETWORK;
 
@@ -315,8 +314,7 @@ void Session::startNetworkServer(bool dedicated)
 {
 #ifdef POKERTH_DEDICATED_SERVER	
 	if (myNetServer) {
-		assert(false);
-		return;
+		throw NetException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	}
 
 	ServerMode mode;

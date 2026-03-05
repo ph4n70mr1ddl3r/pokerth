@@ -78,7 +78,8 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 	if(!q.exec(QString::fromUtf8(zSql))) {
 		if(pErrMsg) {
 			std::string err = q.lastError().text().toStdString();
-			*pErrMsg = strdup(err.c_str());
+			char* errMsg = strdup(err.c_str());
+			*pErrMsg = errMsg ? errMsg : const_cast<char*>("Out of memory");
 		}
 		*pazResult = nullptr;
 		*pnRow = 0;

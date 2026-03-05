@@ -89,8 +89,7 @@ ClientThread::Init(
 	const string &avatarFile, const string &cacheDir)
 {
 	if (IsRunning()) {
-		assert(false);
-		return;
+		throw ClientException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	}
 
 	ClientContext &context = GetContext();

@@ -45,6 +45,7 @@
 #include <vector>
 #include <sstream>
 #include <mutex>
+#include <atomic>
 
 namespace mysqlpp {
 
@@ -166,7 +167,7 @@ public:
     bool connect(const char *dbName, const char *host, const char *user, const char *pwd) {
         std::lock_guard<std::mutex> l(m_mutex);
         // Use QMYSQL driver
-        static int instance = 0;
+        static std::atomic<int> instance{0};
         m_connName = QString("pokerth_dbofficial_%1").arg(++instance);
         m_db = QSqlDatabase::addDatabase("QMYSQL", m_connName);
         m_db.setHostName(host);
