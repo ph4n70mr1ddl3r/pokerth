@@ -679,8 +679,9 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		// A player left the game.
 		const GamePlayerLeftMessage &netLeft = tmpPacket->GetMsg()->gameplayerleftmessage();
 
-		if (client->GetGame()) {
-			boost::shared_ptr<PlayerInterface> tmpPlayer = client->GetGame()->getPlayerByUniqueId(netLeft.playerid());
+		boost::shared_ptr<Game> game = client->GetGame();
+		if (game) {
+			boost::shared_ptr<PlayerInterface> tmpPlayer = game->getPlayerByUniqueId(netLeft.playerid());
 			if (tmpPlayer) {
 				tmpPlayer->setIsKicked(netLeft.gameplayerleftreason() == GamePlayerLeftMessage::leftKicked);
 			}

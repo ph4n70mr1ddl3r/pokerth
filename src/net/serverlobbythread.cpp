@@ -1121,7 +1121,8 @@ ServerLobbyThread::HandleNetPacketAvatarFile(boost::shared_ptr<SessionData> sess
 	if (session->GetPlayerData()) {
 		boost::shared_ptr<AvatarFile> tmpAvatar = session->GetPlayerData()->GetNetAvatarFile();
 		const string &avatarBlock = avatarData.avatarblock();
-		if (tmpAvatar && tmpAvatar->fileData.size() + avatarBlock.size() <= tmpAvatar->reportedSize) {
+		if (tmpAvatar && tmpAvatar->fileData.size() + avatarBlock.size() <= tmpAvatar->reportedSize &&
+			tmpAvatar->fileData.size() + avatarBlock.size() <= MAX_AVATAR_FILE_SIZE) {
 			std::copy(&avatarBlock[0], &avatarBlock[avatarBlock.size()], back_inserter(tmpAvatar->fileData));
 		}
 	}

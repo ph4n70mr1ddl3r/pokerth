@@ -247,7 +247,7 @@ protected:
 	void RemovePlayerData(unsigned playerId, int removeReason);
 	void ClearPlayerDataList();
 	void MapPlayerDataList();
-	const PlayerDataList &GetPlayerDataList() const;
+	const PlayerDataList GetPlayerDataList() const;
 	boost::shared_ptr<PlayerData> GetPlayerDataByUniqueId(unsigned id);
 	boost::shared_ptr<PlayerData> GetPlayerDataByName(const std::string &name);
 
@@ -302,6 +302,7 @@ private:
 	GameData m_gameData;
 	StartData m_startData;
 	PlayerDataList m_playerDataList;
+	mutable boost::mutex m_playerDataListMutex;
 
 	ServerInfoMap m_serverInfoMap;
 	mutable boost::mutex m_serverInfoMapMutex;

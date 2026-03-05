@@ -783,7 +783,11 @@ ClientThread::RetrieveAvatarIfNeeded(unsigned id, const PlayerInfo &info)
 {
 	if (find(m_avatarHasRequestedList.begin(), m_avatarHasRequestedList.end(), id) == m_avatarHasRequestedList.end()) {
 		if (info.hasAvatar && !info.avatar.IsZero() && !GetAvatarManager().HasAvatar(info.avatar)) {
-			m_avatarHasRequestedList.push_back(id); // Never remove from this list. Only request once.
+			m_avatarHasRequestedList.push_back(id);
+			// Limit list size to prevent unbounded growth
+			if (m_avatarHasRequestedList.size() > 1000) {
+				m_avatarHasRequestedList.pop_front();
+			}
 
 			// Download from avatar server if applicable.
 			string avatarServerAddress(GetContext().GetAvatarServerAddr());
@@ -1171,7 +1175,9 @@ void
 ClientThread::AddPlayerData(boost::shared_ptr<PlayerData> playerData)
 {
 	if (playerData.get() && !playerData->GetName().empty()) {
+		boost::mutex::scoped_lock lock(m_playerDataListMutex);
 		m_playerDataList.push_back(playerData);
+		lock.unlock();
 		if (playerData->GetUniqueId() == GetGuiPlayerId())
 			GetCallback().SignalNetClientSelfJoined(playerData->GetUniqueId(), playerData->GetName(), playerData->IsGameAdmin());
 		else {
@@ -1188,15 +1194,18 @@ ClientThread::RemovePlayerData(unsigned playerId, int removeReason)
 {
 	boost::shared_ptr<PlayerData> tmpData;
 
-	PlayerDataList::iterator i = m_playerDataList.begin();
-	PlayerDataList::iterator end = m_playerDataList.end();
-	while (i != end) {
-		if ((*i)->GetUniqueId() == playerId) {
-			tmpData = *i;
-			m_playerDataList.erase(i);
-			break;
+	{
+		boost::mutex::scoped_lock lock(m_playerDataListMutex);
+		PlayerDataList::iterator i = m_playerDataList.begin();
+		PlayerDataList::iterator end = m_playerDataList.end();
+		while (i != end) {
+			if ((*i)->GetUniqueId() == playerId) {
+				tmpData = *i;
+				m_playerDataList.erase(i);
+				break;
+			}
+			++i;
 		}
-		++i;
 	}
 
 	if (tmpData.get()) {
@@ -1223,6 +1232,7 @@ ClientThread::RemovePlayerData(unsigned playerId, int removeReason)
 void
 ClientThread::ClearPlayerDataList()
 {
+	boost::mutex::scoped_lock lock(m_playerDataListMutex);
 	m_playerDataList.clear();
 }
 
@@ -1237,17 +1247,20 @@ ClientThread::MapPlayerDataList()
 	// Create a copy of the player list so that the GUI player
 	// is player 0. This is mapped because the GUI depends on it.
 	PlayerDataList mappedList;
+	
+	{
+		boost::mutex::scoped_lock lock(m_playerDataListMutex);
+		PlayerDataList::const_iterator i = m_playerDataList.begin();
+		PlayerDataList::const_iterator end = m_playerDataList.end();
+		int numPlayers = GetStartData().numberOfPlayers;
 
-	PlayerDataList::const_iterator i = m_playerDataList.begin();
-	PlayerDataList::const_iterator end = m_playerDataList.end();
-	int numPlayers = GetStartData().numberOfPlayers;
-
-	while (i != end) {
-		boost::shared_ptr<PlayerData> tmpData(new PlayerData(*(*i)));
-		int numberDiff = numPlayers - m_origGuiPlayerNum;
-		tmpData->SetNumber((tmpData->GetNumber() + numberDiff) % numPlayers);
-		mappedList.push_back(tmpData);
-		++i;
+		while (i != end) {
+			boost::shared_ptr<PlayerData> tmpData(new PlayerData(*(*i)));
+			int numberDiff = numPlayers - m_origGuiPlayerNum;
+			tmpData->SetNumber((tmpData->GetNumber() + numberDiff) % numPlayers);
+			mappedList.push_back(tmpData);
+			++i;
+		}
 	}
 
 	// Sort the list by player number.
@@ -1255,12 +1268,14 @@ ClientThread::MapPlayerDataList()
 		return a->GetNumber() < b->GetNumber();
 	});
 
+	boost::mutex::scoped_lock lock(m_playerDataListMutex);
 	m_playerDataList = mappedList;
 }
 
-const PlayerDataList &
+const PlayerDataList
 ClientThread::GetPlayerDataList() const
 {
+	boost::mutex::scoped_lock lock(m_playerDataListMutex);
 	return m_playerDataList;
 }
 
@@ -1269,6 +1284,7 @@ ClientThread::GetPlayerDataByUniqueId(unsigned id)
 {
 	boost::shared_ptr<PlayerData> tmpPlayer;
 
+	boost::mutex::scoped_lock lock(m_playerDataListMutex);
 	PlayerDataList::const_iterator i = m_playerDataList.begin();
 	PlayerDataList::const_iterator end = m_playerDataList.end();
 
@@ -1288,6 +1304,7 @@ ClientThread::GetPlayerDataByName(const std::string &name)
 	boost::shared_ptr<PlayerData> tmpPlayer;
 
 	if (!name.empty()) {
+		boost::mutex::scoped_lock lock(m_playerDataListMutex);
 		PlayerDataList::const_iterator i = m_playerDataList.begin();
 		PlayerDataList::const_iterator end = m_playerDataList.end();
 

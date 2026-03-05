@@ -446,7 +446,7 @@ ServerDBThread::Main()
 			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
 			m_connData->conn.disconnect();
 			SetConnected(false);
-		} catch (const std::exception&) {
+		} catch (...) {
 			string errorMsg = "Unknown exception in database thread";
 			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
 			m_connData->conn.disconnect();
