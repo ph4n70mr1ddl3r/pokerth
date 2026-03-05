@@ -151,15 +151,16 @@ void MyAvatarLabel::setPlayerRating(QString playerInfo)
 	std::list<std::string> result;
 	std::string separator="(!#$%)";
 	// Bug #319: https://github.com/pokerth/pokerth/issues/319
+	if (playerInfoList.size() < 2) return;
 	QString playerName = playerInfoList.at(0);
 	playerName = QUrl::fromPercentEncoding(playerName.toUtf8());
 
 	for(auto iterator = tipsList.begin(); iterator != tipsList.end(); ++iterator) {
 		tipInfo=QString::fromUtf8(iterator->c_str()).split("(!#$%)", Qt::KeepEmptyParts, Qt::CaseSensitive);
-		if(tipInfo.at(0)==playerName) {
+		if(tipInfo.size() >= 2 && tipInfo.at(0)==playerName) {
 			result.push_back(tipInfo.at(0).toUtf8().constData()+separator+tipInfo.at(1).toUtf8().constData()+separator+playerInfoList.at(1).toUtf8().constData()+separator);
 			found=1;
-		} else {
+		} else if(tipInfo.size() >= 3) {
 			result.push_back(tipInfo.at(0).toUtf8().constData()+separator+tipInfo.at(1).toUtf8().constData()+separator+tipInfo.at(2).toUtf8().constData()+separator);
 		}
 	}

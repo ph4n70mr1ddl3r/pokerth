@@ -115,13 +115,23 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 	char **result = resultGuard.get();
 	int idx = 0;
 	for(int c=0;c<nCol;++c) {
-		result[idx++] = strdup(columnNames[c].toStdString().c_str());
+		char* dup = strdup(columnNames[c].toStdString().c_str());
+		if (!dup) {
+			return SQLITE_NOMEM;
+		}
+		result[idx++] = dup;
 	}
 	for(int r=0;r<nRow;++r) {
 		for(int c=0;c<nCol;++c) {
 			const QString &v = rows[r][c];
 			if(v.isNull()) result[idx++] = nullptr;
-			else result[idx++] = strdup(v.toStdString().c_str());
+			else {
+				char* dup = strdup(v.toStdString().c_str());
+				if (!dup) {
+					return SQLITE_NOMEM;
+				}
+				result[idx++] = dup;
+			}
 		}
 	}
 	result[total] = nullptr;
@@ -500,7 +510,12 @@ void guiLog::logFlipHoleCardsMsg(QString playerName, int card1, int card2, int c
 
 			if (cardsValueInt != -1) {
 
-				tempHandName.fromStdString(CardsValue::determineHandName(cardsValueInt,myW->getSession()->getCurrentGame()->getActivePlayerList()));
+				auto session = myW ? myW->getSession() : nullptr;
+				auto game = session ? session->getCurrentGame() : nullptr;
+				auto playerList = game ? game->getActivePlayerList() : nullptr;
+				if (playerList) {
+					tempHandName.fromStdString(CardsValue::determineHandName(cardsValueInt, playerList));
+				}
 
 				logFileStreamString += playerName+" "+showHas+" [ <b>"+translateCardCode(card1).at(0)+"</b>"+translateCardCode(card1).at(1)+",<b>"+translateCardCode(card2).at(0)+"</b>"+translateCardCode(card2).at(1)+"] - "+tempHandName+"</br>\n";
 

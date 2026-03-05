@@ -419,6 +419,7 @@ ServerGame::SetPlayerPlace(unsigned playerId, int place)
 void
 ServerGame::ReplaceRankingPlayer(unsigned oldPlayerId, unsigned newPlayerId)
 {
+	boost::mutex::scoped_lock lock(m_rankingMapMutex);
 	RankingMap::iterator pos = m_rankingMap.find(oldPlayerId);
 	if (pos != m_rankingMap.end()) {
 		RankingData tmpData((*pos).second);
@@ -1176,6 +1177,7 @@ ServerGame::GetNextGameNum()
 void
 ServerGame::AddPlayerToNumJoinsPerPlayer(const std::string &playerName)
 {
+	boost::mutex::scoped_lock lock(m_numJoinsPerPlayerMutex);
 	NumJoinsPerPlayerMap::iterator pos = m_numJoinsPerPlayer.find(playerName);
 	if (pos != m_numJoinsPerPlayer.end()) {
 		pos->second++;
@@ -1187,6 +1189,7 @@ ServerGame::AddPlayerToNumJoinsPerPlayer(const std::string &playerName)
 int
 ServerGame::GetNumJoinsPerPlayer(const std::string &playerName) const
 {
+	boost::mutex::scoped_lock lock(m_numJoinsPerPlayerMutex);
 	int num = 0;
 	NumJoinsPerPlayerMap::const_iterator pos = m_numJoinsPerPlayer.find(playerName);
 	if (pos != m_numJoinsPerPlayer.end()) {

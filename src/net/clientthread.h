@@ -69,11 +69,11 @@ public:
 
 	unsigned MinPing()
 	{
-		return *std::min_element(pingValues.begin(), pingValues.end());
+		return pingValues.empty() ? 0 : *std::min_element(pingValues.begin(), pingValues.end());
 	}
 	unsigned MaxPing()
 	{
-		return *std::max_element(pingValues.begin(), pingValues.end());
+		return pingValues.empty() ? 0 : *std::max_element(pingValues.begin(), pingValues.end());
 	}
 	unsigned AveragePing()
 	{

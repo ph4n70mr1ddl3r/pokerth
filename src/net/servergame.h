@@ -215,6 +215,7 @@ private:
 	PlayerIdList m_reportedAvatarList;
 
 	RankingMap m_rankingMap;
+	mutable boost::mutex m_rankingMapMutex;
 
 	unsigned m_adminPlayerId;
 
@@ -253,6 +254,7 @@ private:
 	friend class ServerGameStateWaitNextHand;
 
 	NumJoinsPerPlayerMap m_numJoinsPerPlayer;
+	mutable boost::mutex m_numJoinsPerPlayerMutex;
 };
 
 #endif
