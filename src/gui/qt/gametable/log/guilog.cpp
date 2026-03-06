@@ -1136,14 +1136,14 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					if(modus == 1) log_string += "<br />";
 
-					// read dealer and blinds
-					sql = "SELECT Player,Action,Amount FROM Action WHERE UniqueGameID=";
-					sql += boost::lexical_cast<std::string>(uniqueGameID);
-					sql += " AND HandID=";
-					sql += boost::lexical_cast<std::string>(results.result_Hand_ID[hand_ctr]);
-					sql += " AND BeRo=";
-					sql += boost::lexical_cast<std::string>(GAME_STATE_PREFLOP);
-					sql += " AND (Action='posts small blind' OR Action='posts big blind' OR Action='starts as dealer')";
+			// read dealer and blinds
+			 sql = "SELECT Player,Action,Amount FROM Action WHERE UniqueGameID=";
+			 sql += std::to_string(uniqueGameID);
+                sql += " AND HandID=";
+                sql += results.result_Hand_ID[hand_ctr] ? results.result_Hand_ID[hand_ctr] : "0";
+                sql += " AND BeRo=";
+                sql += std::to_string(GAME_STATE_PREFLOP);
+                sql += " AND (Action='posts small blind' OR Action='posts big blind' OR Action='starts as dealer')";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
 						cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
@@ -1352,14 +1352,14 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						}
 					}
 
-					// read round action
-					sql = "SELECT Player,Action,Amount FROM Action WHERE UniqueGameID=";
-					sql += boost::lexical_cast<std::string>(uniqueGameID);
-					sql += " AND HandID=";
-					sql += boost::lexical_cast<std::string>(results.result_Hand_ID[hand_ctr]);
-					sql += " AND BeRo=";
-					sql += boost::lexical_cast<std::string>(round_ctr);
-					sql += " AND Action<>'starts as dealer' AND Action<>'posts big blind' AND Action<>'posts small blind'";
+				// read round action
+				 sql = "SELECT Player,Action,Amount FROM Action WHERE UniqueGameID=";
+                    sql += std::to_string(uniqueGameID);
+                    sql += " AND HandID=";
+                    sql += results.result_Hand_ID[hand_ctr] ? results.result_Hand_ID[hand_ctr] : "0";
+                    sql += " AND BeRo=";
+                    sql += std::to_string(round_ctr);
+                    sql += " AND Action<>'starts as dealer' AND Action<>'posts big blind' AND Action<>'posts small blind'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
 						cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;

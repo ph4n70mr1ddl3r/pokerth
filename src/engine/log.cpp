@@ -31,7 +31,6 @@
 #include <QDir>
 
 #include <dirent.h>
-#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
@@ -138,14 +137,14 @@ Log::init()
                     sql += ",Bb_Amount INTEGER NOT NULL";
                     sql += ",Bb_Seat INTEGER NOT NULL";
                     for(i=1; i<=MAX_NUMBER_OF_PLAYERS; i++) {
-                        sql += ",Seat_" + boost::lexical_cast<std::string>(i) + "_Cash INTEGER";
-                        sql += ",Seat_" + boost::lexical_cast<std::string>(i) + "_Card_1 INTEGER";
-                        sql += ",Seat_" + boost::lexical_cast<std::string>(i) + "_Card_2 INTEGER";
-                        sql += ",Seat_" + boost::lexical_cast<std::string>(i) + "_Hand_text TEXT";
-                        sql += ",Seat_" + boost::lexical_cast<std::string>(i) + "_Hand_int INTEGER";
+                        sql += ",Seat_" + std::to_string(i) + "_Cash INTEGER";
+                        sql += ",Seat_" + std::to_string(i) + "_Card_1 INTEGER";
+                        sql += ",Seat_" + std::to_string(i) + "_Card_2 INTEGER";
+                        sql += ",Seat_" + std::to_string(i) + "_Hand_text TEXT";
+                        sql += ",Seat_" + std::to_string(i) + "_Hand_int INTEGER";
                     }
                     for(i=1; i<=5; i++) {
-                        sql += ",BoardCard_" + boost::lexical_cast<std::string>(i) + " INTEGER";
+                        sql += ",BoardCard_" + std::to_string(i) + " INTEGER";
                     }
                     sql += ",PRIMARY KEY(HandID,UniqueGameID));";
 
@@ -254,7 +253,7 @@ Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned
 			 sql += ",Bb_Amount";
 			 sql += ",Bb_Seat";
 			 for(i=1; i<=MAX_NUMBER_OF_PLAYERS; i++) {
-				 sql += ",Seat_" + boost::lexical_cast<std::string>(i) + "_Cash";
+				 sql += ",Seat_" + std::to_string(i) + "_Cash";
 			 }
 			 sql += ") VALUES (";
 			 sql += std::to_string(currentHandID);
