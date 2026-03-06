@@ -303,7 +303,6 @@ ServerLobbyThread::AddConnection(boost::shared_ptr<SessionData> sessionData)
 	m_sessionManager.AddSession(sessionData);
 
 	LOG_VERBOSE(sessionData->GetRemoteIPAddressFromSocket() << " Accepted connection - session #" << sessionData->GetId() << ".");
-	LOG_ERROR(sessionData->GetRemoteIPAddressFromSocket() << " Accepted connection - session #" << sessionData->GetId() << ".");
 
 	sessionData->StartTimerInitTimeout(SERVER_INIT_SESSION_TIMEOUT_SEC);
 	sessionData->StartTimerGlobalTimeout(SERVER_SESSION_FORCED_TIMEOUT_SEC);
@@ -796,6 +795,7 @@ ServerLobbyThread::GetNextUniquePlayerId()
 u_int32_t
 ServerLobbyThread::GetNextGameId()
 {
+	boost::mutex::scoped_lock lock(m_curGameIdMutex);
 	m_curGameId++;
 	if (m_curGameId == 0) // 0 is an invalid id.
 		m_curGameId++;
@@ -1700,7 +1700,7 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
     }
 
     std::string providedPassword = tmpSession->AuthGetPassword();
-    if (!providedPassword.empty() && providedPassword == dbPlayerData.secret) {
+    if (!providedPassword.empty() && Tools::ConstantTimeStringCompare(providedPassword, dbPlayerData.secret)) {
         EstablishSession(tmpSession);
     } else {
         LOG_MSG("Authentication failed for player " << playerId << " (" << tmpSession->GetClientAddr() << ")");

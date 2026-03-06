@@ -143,10 +143,16 @@ private:
         std::string out;
         out.reserve(in.size()*2);
         for (char c : in) {
-            if (c == '\\' || c == '\'') {
-                out.push_back('\\');
+            switch (c) {
+                case '\0': out += "\\0"; break;
+                case '\n': out += "\\n"; break;
+                case '\r': out += "\\r"; break;
+                case '\x1a': out += "\\Z"; break;
+                case '\'': out += "\\'"; break;
+                case '"': out += "\\\""; break;
+                case '\\': out += "\\\\"; break;
+                default: out.push_back(c); break;
             }
-            out.push_back(c);
         }
         return out;
     }

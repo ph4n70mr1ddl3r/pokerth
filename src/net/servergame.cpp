@@ -552,7 +552,7 @@ ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned 
 				m_voteKickData.reset(new VoteKickData);
 				m_voteKickData->petitionId = m_curPetitionId++;
 				m_voteKickData->kickPlayerId = playerIdWho;
-				m_voteKickData->numVotesToKick = static_cast<int>(ceil(numPlayers / 3. * 2.));
+				m_voteKickData->numVotesToKick = static_cast<int>(ceil(std::max(1, numPlayers) / 3. * 2.));
 				m_voteKickData->timeLimitSec = timeoutSec + SERVER_KICK_TIMEOUT_ADD_DELAY_SEC;
 				// Consider first vote.
 				m_voteKickData->numVotesInFavourOfKicking = 1;

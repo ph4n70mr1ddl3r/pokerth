@@ -251,6 +251,7 @@ private:
 	std::string m_statisticsFileName;
 	ConfigFile &m_serverConfig;
 	u_int32_t m_curGameId;
+	mutable boost::mutex m_curGameIdMutex;
 
 	u_int32_t m_curUniquePlayerId;
 	u_int32_t m_curSessionId;
