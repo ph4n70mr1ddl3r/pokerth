@@ -48,6 +48,7 @@
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDomNode>
+#include <limits>
 #include <QDebug>
 #include <QFile>
 #include <boost/bind/bind.hpp>
@@ -1755,7 +1756,8 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 			isBigBlind = true;
 		} else { // no blind -> log
 			if (netActionDone.playeraction()) {
-				if (static_cast<int>(netActionDone.totalplayerbet()) < tmpPlayer->getMySet()) {
+				if (netActionDone.totalplayerbet() > static_cast<uint64_t>(std::numeric_limits<int>::max()) ||
+				    static_cast<int64_t>(netActionDone.totalplayerbet()) < tmpPlayer->getMySet()) {
 					LOG_ERROR("Invalid bet: totalplayerbet=" << netActionDone.totalplayerbet() 
 						<< " < playerSet=" << tmpPlayer->getMySet());
 					throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_BET, 0);

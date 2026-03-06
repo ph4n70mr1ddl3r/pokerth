@@ -1031,9 +1031,27 @@ ServerLobbyThread::HandleNetPacketInit(boost::shared_ptr<SessionData> session, c
 	// Partly, this is also done in netpacket.
 	// However, some disallowed names are checked only here.
 	if (playerName.empty()
+			|| playerName.size() > 64
 			|| playerName[0] == '#'
 			|| playerName[0] == ' '
 			|| playerName.substr(0, sizeof(SERVER_COMPUTER_PLAYER_NAME) - 1) == SERVER_COMPUTER_PLAYER_NAME) {
+		SessionError(session, ERR_NET_INVALID_PLAYER_NAME);
+		return;
+	}
+	
+	// Additional validation: check for valid characters
+	bool hasNonWhitespace = false;
+	for (char c : playerName) {
+		if (c < 32 || c > 126) {
+			SessionError(session, ERR_NET_INVALID_PLAYER_NAME);
+			return;
+		}
+		if (!isspace(static_cast<unsigned char>(c))) {
+			hasNonWhitespace = true;
+		}
+	}
+	
+	if (!hasNonWhitespace) {
 		SessionError(session, ERR_NET_INVALID_PLAYER_NAME);
 		return;
 	}
@@ -1376,7 +1394,7 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 			if (targetSession && targetSession->GetPlayerData()) {
 				boost::shared_ptr<ServerGame> tmpGame = targetSession->GetGame();
 				if (!tmpGame || !tmpGame->IsRunning()) {
-					if(targetSession->GetPlayerData()->GetDBId() == 338 && GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId()) && chatRequest.chattext().substr (0, 3) == "gn ")
+					if(GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId()) && chatRequest.chattext().substr (0, 3) == "gn ")
 					{
 						LOG_ERROR("Global Notice: " << chatRequest.chattext().substr(3) << " von player_id " << session->GetPlayerData()->GetDBId());
 						SendGlobalChat(chatRequest.chattext().substr(3));

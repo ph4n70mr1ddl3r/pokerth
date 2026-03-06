@@ -86,6 +86,12 @@ void CleanerServer::newCon()
 
 void CleanerServer::onRead()
 {
+	if (m_recvBufUsed >= sizeof(m_recvBuf)) {
+		qDebug() << "Buffer overflow detected, resetting";
+		m_recvBufUsed = 0;
+		return;
+	}
+	
 	qint64 bytesRead = tcpSocket->read(reinterpret_cast<char *>(m_recvBuf) + m_recvBufUsed, sizeof(m_recvBuf) - m_recvBufUsed);
 	bool error = bytesRead < 1;
 	if (!error) {

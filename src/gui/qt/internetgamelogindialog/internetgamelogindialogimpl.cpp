@@ -33,6 +33,67 @@
 #include <tools.h>
 #include <QtCore>
 #include <QtGui>
+#include <crypthelper.h>
+#include <QHostInfo>
+#include <QProcessEnvironment>
+#include <random>
+
+namespace {
+	
+	std::string getEncryptionKey() {
+		QString machineId = QHostInfo::localHostName();
+		QString userId = QProcessEnvironment::systemEnvironment().value("USER", 
+						 QProcessEnvironment::systemEnvironment().value("USERNAME", "default"));
+		QString combined = machineId + ":" + userId + ":pokerth";
+		
+		SHA1Buf hash;
+		CryptHelper::SHA1Hash(
+			reinterpret_cast<const unsigned char*>(combined.toUtf8().constData()),
+			combined.toUtf8().size(),
+			hash
+		);
+		
+		return std::string(reinterpret_cast<const char*>(hash.GetData()), hash.GetDataSize());
+	}
+	
+	bool encryptPassword(const QString& password, QString& encrypted) {
+		std::string key = getEncryptionKey();
+		std::string plainStr = password.toUtf8().constData();
+		std::vector<unsigned char> cipher;
+		
+		if (!CryptHelper::AES128Encrypt(
+			reinterpret_cast<const unsigned char*>(key.data()),
+			static_cast<unsigned>(key.size()),
+			plainStr,
+			cipher)) {
+			return false;
+		}
+		
+		encrypted = QByteArray(
+			reinterpret_cast<const char*>(cipher.data()),
+			static_cast<int>(cipher.size())
+		).toBase64();
+		return true;
+	}
+	
+	bool decryptPassword(const QString& encrypted, QString& password) {
+		std::string key = getEncryptionKey();
+		QByteArray cipherData = QByteArray::fromBase64(encrypted.toUtf8());
+		
+		std::string plainStr;
+		if (!CryptHelper::AES128Decrypt(
+			reinterpret_cast<const unsigned char*>(key.data()),
+			static_cast<unsigned>(key.size()),
+			reinterpret_cast<const unsigned char*>(cipherData.constData()),
+			static_cast<unsigned>(cipherData.size()),
+			plainStr)) {
+			return false;
+		}
+		
+		password = QString::fromUtf8(plainStr.c_str());
+		return true;
+	}
+}
 
 internetGameLoginDialogImpl::internetGameLoginDialogImpl(QWidget *parent, ConfigFile *c) :
 	QDialog(parent), myConfig(c)
@@ -56,7 +117,12 @@ int internetGameLoginDialogImpl::exec()
 	lineEdit_username->setText(QString::fromUtf8(myConfig->readConfigString("MyName").c_str()));
 	if(myConfig->readConfigInt("InternetSavePassword")) {
 		checkBox_rememberPassword->setChecked(true);
-		lineEdit_password->setText(QString::fromUtf8(QByteArray::fromBase64(myConfig->readConfigString("InternetLoginPassword").c_str())));
+		QString encrypted = QString::fromUtf8(myConfig->readConfigString("InternetLoginPassword").c_str());
+		QString password;
+		if (!decryptPassword(encrypted, password)) {
+			password.clear();
+		}
+		lineEdit_password->setText(password);
 	} else {
 		checkBox_rememberPassword->setChecked(false);
 		lineEdit_password->clear();
@@ -77,7 +143,12 @@ void internetGameLoginDialogImpl::accept()
 	myConfig->writeConfigString("MyName", lineEdit_username->text().toUtf8().constData());
 	if(checkBox_rememberPassword->isChecked()) {
 		myConfig->writeConfigInt("InternetSavePassword", 1);
-		myConfig->writeConfigString("InternetLoginPassword", lineEdit_password->text().toUtf8().toBase64().constData());
+		QString encrypted;
+		if (encryptPassword(lineEdit_password->text(), encrypted)) {
+			myConfig->writeConfigString("InternetLoginPassword", encrypted.toUtf8().constData());
+		} else {
+			myConfig->writeConfigString("InternetLoginPassword", "");
+		}
 	} else {
 		myConfig->writeConfigInt("InternetSavePassword", 0);
 	}
