@@ -628,7 +628,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 			}
 			if (netInfo.has_avatardata()) {
 				tmpInfo.hasAvatar = true;
-				if (netInfo.avatardata().avatarhash().size() >= MD5_DATA_SIZE) {
+				if (netInfo.avatardata().avatarhash().size() == MD5_DATA_SIZE) {
 					memcpy(tmpInfo.avatar.GetData(), netInfo.avatardata().avatarhash().data(), MD5_DATA_SIZE);
 				} else {
 					tmpInfo.hasAvatar = false;

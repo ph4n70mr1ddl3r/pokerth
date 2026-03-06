@@ -98,16 +98,18 @@ Log::init()
                     sql += ",LogVersion INTEGER NOT NULL";
                     sql += ", PRIMARY KEY(Date,Time));";
 
-                    sql += "INSERT INTO Session (";
-                    sql += "PokerTH_Version";
-                    sql += ",Date";
-                    sql += ",Time";
-                    sql += ",LogVersion";
-                    sql += ") VALUES (";
-                    sql += "\"" + boost::lexical_cast<string>(POKERTH_BETA_RELEASE_STRING) + "\",";
-                    sql += "\"" + boost::lexical_cast<string>(curDate) + "\",";
-                    sql += "\"" + boost::lexical_cast<string>(curTime) + "\",";
-                    sql += boost::lexical_cast<string>(SQLITE_LOG_VERSION) + ");";
+                    {
+                    QSqlQuery sessionQuery(mySqliteLogDb);
+                    sessionQuery.prepare("INSERT INTO Session (PokerTH_Version, Date, Time, LogVersion) VALUES (?, ?, ?, ?)");
+                    sessionQuery.addBindValue(QString::fromUtf8(POKERTH_BETA_RELEASE_STRING));
+                    sessionQuery.addBindValue(QString::fromUtf8(curDate));
+                    sessionQuery.addBindValue(QString::fromUtf8(curTime));
+                    sessionQuery.addBindValue(SQLITE_LOG_VERSION);
+                    if (!sessionQuery.exec()) {
+                        QSqlError err = sessionQuery.lastError();
+                        LOG_ERROR("Failed to insert session: " << err.text().toStdString());
+                    }
+                }
 
                     // create game table
                     sql += "CREATE TABLE Game (";

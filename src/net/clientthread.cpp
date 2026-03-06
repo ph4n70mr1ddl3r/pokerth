@@ -691,6 +691,9 @@ ClientThread::RequestPlayerInfo(const list<unsigned> &idList, bool requestAvatar
 		// Remember that we have to request an avatar.
 		if (requestAvatar) {
 			m_avatarShouldRequestList.push_back(playerId);
+			if (m_avatarShouldRequestList.size() > 1000) {
+				m_avatarShouldRequestList.pop_front();
+			}
 		}
 	}
 	if (netPlayerInfo->playerid_size() > 0) {

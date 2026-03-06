@@ -1210,7 +1210,7 @@ ServerLobbyThread::HandleNetPacketRetrieveAvatar(boost::shared_ptr<SessionData> 
 
 	string tmpFile;
 	MD5Buf tmpMD5;
-	if(retrieveAvatar.avatarhash().size() >= MD5_DATA_SIZE) {
+	if(retrieveAvatar.avatarhash().size() == MD5_DATA_SIZE) {
 		memcpy(tmpMD5.GetData(), retrieveAvatar.avatarhash().data(), MD5_DATA_SIZE);
 		if (GetAvatarManager().GetAvatarFileName(tmpMD5, tmpFile)) {
 			NetPacketList tmpPackets;
@@ -1246,7 +1246,6 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 	// Create a new game.
 	GameData tmpData;
 	NetPacket::GetGameData(newGame.gameinfo(), tmpData);
-	tmpData.maxNumberOfPlayers = 2; // Force heads-up only
 	string gameName(newGame.gameinfo().gamename());
 	// Always trim the game name.
 	boost::trim(gameName);
