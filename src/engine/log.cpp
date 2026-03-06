@@ -266,7 +266,7 @@ Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned
 			 sql += "," + std::to_string(bigBlindPosition);
 			 for(it_c = seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 				 if((*it_c)->getMyActiveStatus()) {
-					 sql += "," + boost::lexical_cast<string>((*it_c)->getMyRoundStartCash());
+					 sql += "," + std::to_string((*it_c)->getMyRoundStartCash());
 				 } else {
 					 sql += ",NULL";
 				 }
@@ -495,19 +495,19 @@ Log::logBoardCards(std::array<int, 5> boardCards)
                 switch(currentRound) {
                 case GAME_STATE_FLOP: {
                     sql += "UPDATE Hand SET ";
-                    sql += "BoardCard_1=" + boost::lexical_cast<string>(boardCards[0]) + ",";
-                    sql += "BoardCard_2=" + boost::lexical_cast<string>(boardCards[1]) + ",";
-                    sql += "BoardCard_3=" + boost::lexical_cast<string>(boardCards[2]);
+                    sql += "BoardCard_1=" + std::to_string(boardCards[0]) + ",";
+                    sql += "BoardCard_2=" + std::to_string(boardCards[1]) + ",";
+                    sql += "BoardCard_3=" + std::to_string(boardCards[2]);
                 }
                 break;
                 case GAME_STATE_TURN: {
                     sql += "UPDATE Hand SET ";
-                    sql += "BoardCard_4=" + boost::lexical_cast<string>(boardCards[3]);
+                    sql += "BoardCard_4=" + std::to_string(boardCards[3]);
                 }
                 break;
                 case GAME_STATE_RIVER: {
                     sql += "UPDATE Hand SET ";
-                    sql += "BoardCard_5=" + boost::lexical_cast<string>(boardCards[4]);
+                    sql += "BoardCard_5=" + std::to_string(boardCards[4]);
                 }
                 break;
                 default:
@@ -556,15 +556,15 @@ Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerI
 				player->getMyCards(myCards);
 				sql += "UPDATE Hand SET ";
 				if(currentRound==GAME_STATE_POST_RIVER && player->getMyCardsValueInt()>0) {
-					sql += "Seat_" + boost::lexical_cast<string>(player->getMyID()+1) + "_Hand_text=\"" + CardsValue::determineHandName(player->getMyCardsValueInt(),activePlayerList) + "\"";
-					sql += ",Seat_" + boost::lexical_cast<string>(player->getMyID()+1) + "_Hand_int=" + boost::lexical_cast<string>(player->getMyCardsValueInt());
+					sql += "Seat_" + std::to_string(player->getMyID()+1) + "_Hand_text=\"" + CardsValue::determineHandName(player->getMyCardsValueInt(),activePlayerList) + "\"";
+					sql += ",Seat_" + std::to_string(player->getMyID()+1) + "_Hand_int=" + std::to_string(player->getMyCardsValueInt());
 				}
 				if(currentRound==GAME_STATE_POST_RIVER && player->getMyCardsValueInt()>0 && !player->getLogHoleCardsDone()) {
 					sql+= ",";
 				}
 				if(!player->getLogHoleCardsDone()) {
-					sql += "Seat_" + boost::lexical_cast<string>(player->getMyID()+1) + "_Card_1=" + boost::lexical_cast<string>(myCards[0]);
-					sql += ",Seat_" + boost::lexical_cast<string>(player->getMyID()+1) + "_Card_2=" + boost::lexical_cast<string>(myCards[1]);
+					sql += "Seat_" + std::to_string(player->getMyID()+1) + "_Card_1=" + std::to_string(myCards[0]);
+					sql += ",Seat_" + std::to_string(player->getMyID()+1) + "_Card_2=" + std::to_string(myCards[1]);
 				}
 				sql += " WHERE ";
 				sql += "UniqueGameID=" + std::to_string(uniqueGameID) + " AND ";

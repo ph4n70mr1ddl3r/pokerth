@@ -164,8 +164,8 @@ AvatarManager::OpenAvatarFileForChunkRead(const std::string &fileName, unsigned 
 					retVal = fileState;
 			}
 		}
-	} catch (const std::exception&) {
-		LOG_ERROR("Exception caught when trying to open avatar.");
+	} catch (const std::exception& e) {
+		LOG_ERROR("Exception caught when trying to open avatar: " << e.what());
 	}
 	return retVal;
 }
@@ -181,8 +181,8 @@ AvatarManager::ChunkReadAvatarFile(boost::shared_ptr<AvatarFileState> fileState,
 				fileState->inputStream.read(reinterpret_cast<char*>(data), chunkSize);
 				retVal = static_cast<unsigned>(fileState->inputStream.gcount());
 			}
-		} catch (const std::exception&) {
-			LOG_ERROR("Exception caught when trying to read avatar.");
+		} catch (const std::exception& e) {
+			LOG_ERROR("Exception caught when trying to read avatar: " << e.what());
 		}
 	}
 	return retVal;
@@ -384,8 +384,8 @@ AvatarManager::StoreAvatarInCache(const MD5Buf &md5buf, AvatarFileType avatarFil
 				}
 			}
 		}
-	} catch (const std::exception&) {
-		LOG_ERROR("Exception caught when trying to store avatar.");
+	} catch (const std::exception& e) {
+		LOG_ERROR("Exception caught when trying to store avatar: " << e.what());
 	}
 	return retVal;
 }
@@ -507,8 +507,8 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 				timeMap.erase(i);
 			}
 		}
-	} catch (const std::exception&) {
-		LOG_ERROR("Exception caught while cleaning up cache.");
+	} catch (const std::exception& e) {
+		LOG_ERROR("Exception caught while cleaning up cache: " << e.what());
 	}
 }
 
@@ -536,8 +536,8 @@ AvatarManager::InternalReadDirectory(const std::string &dir, AvatarMap &avatars)
 				}
 				++i;
 			}
-		} catch (const std::exception&) {
-			LOG_ERROR("Exception caught when trying to scan avatar directory.");
+		} catch (const std::exception& e) {
+			LOG_ERROR("Exception caught when trying to scan avatar directory: " << e.what());
 			retVal = false;
 		}
 	} else {

@@ -1075,8 +1075,8 @@ ServerLobbyThread::HandleNetPacketAuthClientResponse(boost::shared_ptr<SessionDa
     try {
         int curStep = session->AuthGetCurStepNum();
         session->AuthStep(curStep + 1, std::string());
-    } catch (const std::exception&) {
-        LOG_ERROR("Exception in HandleNetPacketAuthClientResponse");
+    } catch (const std::exception& e) {
+        LOG_ERROR("Exception in HandleNetPacketAuthClientResponse: " << e.what());
     }
 }
 

@@ -589,8 +589,8 @@ ClientStateStartConnect::TimerTimeout(const boost::system::error_code& ec, boost
         if (context.GetSessionData()) {
             try {
                 context.GetSessionData()->CloseSocketHandle();
-            } catch (const std::exception&) {
-                LOG_ERROR("Exception in TimerTimeout while closing socket handle");
+            } catch (const std::exception& e) {
+                LOG_ERROR("Exception in TimerTimeout while closing socket handle: " << e.what());
             }
         }
 
@@ -1033,26 +1033,20 @@ ClientStateWaitEnterLogin::TimerLoop(const boost::system::error_code& ec, boost:
             netInit->mutable_requestedversion()->set_minorversion(NET_VERSION_MINOR);
             netInit->set_buildid(0);
             if (!context.GetSessionGuid().empty()) {
-                qDebug() << "[AUTH DEBUG] TimerLoop - Using previous session GUID:" << QString::fromStdString(context.GetSessionGuid());
                 netInit->set_mylastsessionid(context.GetSessionGuid());
             }
             if (!context.GetServerPassword().empty()) {
-                qDebug() << "[AUTH DEBUG] TimerLoop - Server password is set";
                 netInit->set_authserverpassword(context.GetServerPassword());
             }
 
             context.SetPlayerName(loginData.userName);
 
-            qDebug() << "[AUTH DEBUG] TimerLoop - Authenticated login for:" << QString::fromStdString(loginData.userName);
             context.SetPassword(loginData.password);
             netInit->set_login(InitMessage::authenticatedLogin);
             netInit->set_nickname(context.GetPlayerName());
             if (!context.GetPassword().empty()) {
-                qDebug() << "[AUTH DEBUG] TimerLoop - Password is set (plain text auth)";
                 netInit->set_clientuserdata(context.GetPassword());
             }
-
-            qDebug() << "[AUTH DEBUG] TimerLoop - Sending authenticated InitMessage, switching to WaitSession";
             client->GetSender().Send(context.GetSessionData(), init);
             client->SetState(ClientStateWaitSession::Instance());
         } else {
@@ -1761,7 +1755,11 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 			isBigBlind = true;
 		} else { // no blind -> log
 			if (netActionDone.playeraction()) {
-				assert(static_cast<int>(netActionDone.totalplayerbet()) >= tmpPlayer->getMySet());
+				if (static_cast<int>(netActionDone.totalplayerbet()) < tmpPlayer->getMySet()) {
+					LOG_ERROR("Invalid bet: totalplayerbet=" << netActionDone.totalplayerbet() 
+						<< " < playerSet=" << tmpPlayer->getMySet());
+					throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_BET, 0);
+				}
 				client->GetGui().logPlayerActionMsg(
 					tmpPlayer->getMyName(),
 					netActionDone.playeraction(),

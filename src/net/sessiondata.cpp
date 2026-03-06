@@ -436,8 +436,8 @@ SessionData::GetRemoteIPAddressFromSocket() const
             auto &lowest = m_sslStream->lowest_layer();
             auto ep = lowest.remote_endpoint(ec);
             if (!ec) return ep.address().to_string();
-        } catch (const std::exception&) {
-            LOG_ERROR("Exception while getting SSL remote endpoint");
+        } catch (const std::exception& e) {
+            LOG_ERROR("Exception while getting SSL remote endpoint: " << e.what());
         }
     }
 
@@ -446,8 +446,8 @@ SessionData::GetRemoteIPAddressFromSocket() const
             auto sock = m_socket;
             auto ep = sock->remote_endpoint(ec);
             if (!ec) return ep.address().to_string();
-        } catch (const std::exception&) {
-            LOG_ERROR("Exception while getting socket remote endpoint");
+        } catch (const std::exception& e) {
+            LOG_ERROR("Exception while getting socket remote endpoint: " << e.what());
         }
     }
     return std::string();
