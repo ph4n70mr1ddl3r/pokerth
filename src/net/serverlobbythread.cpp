@@ -821,16 +821,13 @@ ServerLobbyThread::Main()
 		GetCallback().SignalNetServerError(e.GetErrorId(), e.GetOsErrorCode());
 		LOG_ERROR("Lobby exception: " << e.what());
 	}
-	// Clear all sessions and games.
+	CancelTimers();
 	m_sessionManager.Clear();
 	m_gameSessionManager.Clear();
 	for(const GameMap::value_type& tmpGame : m_gameMap) {
 		tmpGame.second->Exit();
 	}
 	m_gameMap.clear();
-	// Cancel pending timer callbacks.
-	CancelTimers();
-	// Stop database engine.
 	m_database->Stop();
 
 	ClearAuthContext();
@@ -1215,20 +1212,19 @@ ServerLobbyThread::HandleNetPacketRetrieveAvatar(boost::shared_ptr<SessionData> 
 	MD5Buf tmpMD5;
 	if(retrieveAvatar.avatarhash().size() >= MD5_DATA_SIZE) {
 		memcpy(tmpMD5.GetData(), retrieveAvatar.avatarhash().data(), MD5_DATA_SIZE);
+		if (GetAvatarManager().GetAvatarFileName(tmpMD5, tmpFile)) {
+			NetPacketList tmpPackets;
+			if (GetAvatarManager().AvatarFileToNetPackets(tmpFile, retrieveAvatar.requestid(), tmpPackets) == 0) {
+				avatarFound = true;
+				GetSender().Send(session, tmpPackets);
+			} else
+				LOG_ERROR("Failed to read avatar file for network transmission.");
+		}
 	} else {
 		LOG_ERROR("Avatar hash size too small: " << retrieveAvatar.avatarhash().size());
 	}
-	if (GetAvatarManager().GetAvatarFileName(tmpMD5, tmpFile)) {
-		NetPacketList tmpPackets;
-		if (GetAvatarManager().AvatarFileToNetPackets(tmpFile, retrieveAvatar.requestid(), tmpPackets) == 0) {
-			avatarFound = true;
-			GetSender().Send(session, tmpPackets);
-		} else
-			LOG_ERROR("Failed to read avatar file for network transmission.");
-	}
 
 	if (!avatarFound) {
-		// Notify client we didn't find the avatar.
 		boost::shared_ptr<NetPacket> unknownAvatar(new NetPacket);
 		unknownAvatar->GetMsg()->set_messagetype(PokerTHMessage::Type_UnknownAvatarMessage);
 		UnknownAvatarMessage *netAvatarReply = unknownAvatar->GetMsg()->mutable_unknownavatarmessage();
@@ -1379,27 +1375,25 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 				targetSession = m_gameSessionManager.GetSessionByUniquePlayerId(chatRequest.targetplayerid());
 
 			if (targetSession && targetSession->GetPlayerData()) {
-				// Only allow private messages to players which are not in running games.
 				boost::shared_ptr<ServerGame> tmpGame = targetSession->GetGame();
 				if (!tmpGame || !tmpGame->IsRunning()) {
-			          if(targetSession->GetPlayerData()->GetDBId() == 338 /* bbcbot */ && (session->GetPlayerData()->GetDBId() == 338 /* bbcbot */ || session->GetPlayerData()->GetDBId() == 36 /* sp0ck */ || session->GetPlayerData()->GetDBId() == 37 /* boehmi */|| session->GetPlayerData()->GetDBId() == 45 /* RankingKing */|| session->GetPlayerData()->GetDBId() == 73 /* q4z1 */|| session->GetPlayerData()->GetDBId() == 82 /* Huckleberry */) && chatRequest.chattext().substr (0, 3) == "gn ")
-			          {
-			            // bbcbot pm from admins - global notice => /msg bbcbot gn This is a global Notice
-			            LOG_ERROR("Global Notice: " << chatRequest.chattext().substr(3) << " von player_id " << session->GetPlayerData()->GetDBId());
-			            SendGlobalChat(chatRequest.chattext().substr(3));
-			          }else{
+					if(targetSession->GetPlayerData()->GetDBId() == 338 && GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId()) && chatRequest.chattext().substr (0, 3) == "gn ")
+					{
+						LOG_ERROR("Global Notice: " << chatRequest.chattext().substr(3) << " von player_id " << session->GetPlayerData()->GetDBId());
+						SendGlobalChat(chatRequest.chattext().substr(3));
+					}else{
 
-					boost::shared_ptr<NetPacket> packet(new NetPacket);
-					packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatMessage);
-					ChatMessage *netChat = packet->GetMsg()->mutable_chatmessage();
-					netChat->set_chattype(ChatMessage::chatTypePrivate);
-					netChat->set_playerid(session->GetPlayerData()->GetUniqueId());
-					netChat->set_chattext(chatRequest.chattext());
+						boost::shared_ptr<NetPacket> packet(new NetPacket);
+						packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatMessage);
+						ChatMessage *netChat = packet->GetMsg()->mutable_chatmessage();
+						netChat->set_chattype(ChatMessage::chatTypePrivate);
+						netChat->set_playerid(session->GetPlayerData()->GetUniqueId());
+						netChat->set_chattext(chatRequest.chattext());
 
-					GetSender().Send(targetSession, packet);
-					chatSent = true;
+						GetSender().Send(targetSession, packet);
+						chatSent = true;
+					}
 				}
-			      }
 			}
 		}
 	}

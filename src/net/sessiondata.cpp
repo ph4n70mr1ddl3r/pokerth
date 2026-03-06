@@ -333,10 +333,15 @@ SessionData::CloseSocketHandle()
     if (m_socket) {
         boost::system::error_code ec;
         m_socket->close(ec);
+        if (ec) {
+            LOG_ERROR("Error closing socket: " << ec.message());
+        }
     } else if (m_sslStream) {
         boost::system::error_code ec;
-        // close underlying socket
         m_sslStream->lowest_layer().close(ec);
+        if (ec) {
+            LOG_ERROR("Error closing SSL stream: " << ec.message());
+        }
     }
 }
 
