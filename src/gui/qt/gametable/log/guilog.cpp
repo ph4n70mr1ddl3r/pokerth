@@ -934,7 +934,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 		// read game
 		if(uniqueGameID_req > 0) {
-			sql = "SELECT * FROM Game WHERE UniqueGameID=" + boost::lexical_cast<std::string>(uniqueGameID_req);
+			sql = "SELECT * FROM Game WHERE UniqueGameID=" + std::to_string(uniqueGameID_req);
 		} else {
 			sql = "SELECT * FROM Game";
 		}
@@ -977,7 +977,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 			// read player
 			sql  = "SELECT Player,Seat FROM Player WHERE UniqueGameID=";
-			sql += boost::lexical_cast<std::string>(uniqueGameID);
+			sql += std::to_string(uniqueGameID);
 			sql += " ORDER BY Seat;";
 			if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Player,&nRow_Player,&nCol_Player,&errmsg) != SQLITE_OK) {
 				cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
@@ -990,7 +990,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 			// read all hand id
 			sql = "SELECT HandID FROM Hand WHERE UniqueGameID=";
-			sql+= boost::lexical_cast<std::string>(uniqueGameID);
+			sql+= std::to_string(uniqueGameID);
 			if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand_ID,&nRow_Hand_ID,&nCol_Hand,&errmsg) != SQLITE_OK) {
 				cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
 				cleanUp(results, mySqliteLogDb);

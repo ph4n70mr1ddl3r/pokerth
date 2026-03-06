@@ -194,11 +194,11 @@ Log::logNewGameMsg(int gameID, int startCash, int startSmallBlind, unsigned deal
 			 sql += ",StartSb";
 			 sql += ",DealerPos";
 			 sql += ") VALUES (";
-			 sql += boost::lexical_cast<string>(uniqueGameID);
-			 sql += "," + boost::lexical_cast<string>(gameID);
-			 sql += "," + boost::lexical_cast<string>(startCash);
-			 sql += "," + boost::lexical_cast<string>(startSmallBlind);
-			 sql += "," + boost::lexical_cast<string>(dealerPosition);
+			 sql += std::to_string(uniqueGameID);
+			 sql += "," + std::to_string(gameID);
+			 sql += "," + std::to_string(startCash);
+			 sql += "," + std::to_string(startSmallBlind);
+			 sql += "," + std::to_string(dealerPosition);
 			 sql += ");";
 
 				i = 1;
@@ -211,8 +211,8 @@ Log::logNewGameMsg(int gameID, int startCash, int startSmallBlind, unsigned deal
 						sql += ",Seat";
 					 sql += ",Player";
 					 sql += ") VALUES (";
-					 sql += boost::lexical_cast<string>(uniqueGameID);
-					 sql += "," + boost::lexical_cast<string>(i);
+					 sql += std::to_string(uniqueGameID);
+					 sql += "," + std::to_string(i);
 					 sql += ",'" + escapedName.toStdString() + "'";
 					 sql += ");";
 					}
@@ -257,13 +257,13 @@ Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned
 				 sql += ",Seat_" + boost::lexical_cast<std::string>(i) + "_Cash";
 			 }
 			 sql += ") VALUES (";
-			 sql += boost::lexical_cast<string>(currentHandID);
-			 sql += "," + boost::lexical_cast<string>(uniqueGameID);
-			 sql += "," + boost::lexical_cast<string>(dealerPosition);
-			 sql += "," + boost::lexical_cast<string>(smallBlind);
-			 sql += "," + boost::lexical_cast<string>(smallBlindPosition);
-			 sql += "," + boost::lexical_cast<string>(bigBlind);
-			 sql += "," + boost::lexical_cast<string>(bigBlindPosition);
+			 sql += std::to_string(currentHandID);
+			 sql += "," + std::to_string(uniqueGameID);
+			 sql += "," + std::to_string(dealerPosition);
+			 sql += "," + std::to_string(smallBlind);
+			 sql += "," + std::to_string(smallBlindPosition);
+			 sql += "," + std::to_string(bigBlind);
+			 sql += "," + std::to_string(bigBlindPosition);
 			 for(it_c = seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 				 if((*it_c)->getMyActiveStatus()) {
 					 sql += "," + boost::lexical_cast<string>((*it_c)->getMyRoundStartCash());
@@ -370,10 +370,10 @@ Log::logPlayerAction(int seat, PlayerActionLog action, int amount)
                     sql += ",Action";
                     sql += ",Amount";
                     sql += ") VALUES (";
-                    sql += boost::lexical_cast<string>(currentHandID);
-                    sql += "," + boost::lexical_cast<string>(uniqueGameID);
-                    sql += "," + boost::lexical_cast<string>(currentRound);
-                    sql += "," + boost::lexical_cast<string>(seat);
+                    sql += std::to_string(currentHandID);
+                    sql += "," + std::to_string(uniqueGameID);
+                    sql += "," + std::to_string(currentRound);
+                    sql += "," + std::to_string(seat);
 
                     // Erzeuge Action-Text und einen einzelnen Wert für Amount (Zahl oder NULL)
                     std::string actionText;
@@ -384,11 +384,11 @@ Log::logPlayerAction(int seat, PlayerActionLog action, int amount)
                         break;
                     case LOG_ACTION_SMALL_BLIND:
                         actionText = "posts small blind";
-                        amountText = boost::lexical_cast<string>(amount);
+                        amountText = std::to_string(amount);
                         break;
                     case LOG_ACTION_BIG_BLIND:
                         actionText = "posts big blind";
-                        amountText = boost::lexical_cast<string>(amount);
+                        amountText = std::to_string(amount);
                         break;
                     case LOG_ACTION_FOLD:
                         actionText = "folds";
@@ -398,15 +398,15 @@ Log::logPlayerAction(int seat, PlayerActionLog action, int amount)
                         break;
                     case LOG_ACTION_CALL:
                         actionText = "calls";
-                        amountText = boost::lexical_cast<string>(amount);
+                        amountText = std::to_string(amount);
                         break;
                     case LOG_ACTION_BET:
                         actionText = "bets";
-                        amountText = boost::lexical_cast<string>(amount);
+                        amountText = std::to_string(amount);
                         break;
                     case LOG_ACTION_ALL_IN:
                         actionText = "is all in with";
-                        amountText = boost::lexical_cast<string>(amount);
+                        amountText = std::to_string(amount);
                         break;
                     case LOG_ACTION_SHOW:
                         actionText = "shows";
@@ -416,11 +416,11 @@ Log::logPlayerAction(int seat, PlayerActionLog action, int amount)
                         break;
                     case LOG_ACTION_WIN:
                         actionText = "wins";
-                        amountText = boost::lexical_cast<string>(amount);
+                        amountText = std::to_string(amount);
                         break;
                     case LOG_ACTION_WIN_SIDE_POT:
                         actionText = "wins (side pot)";
-                        amountText = boost::lexical_cast<string>(amount);
+                        amountText = std::to_string(amount);
                         break;
                     case LOG_ACTION_SIT_OUT:
                         actionText = "sits out";
@@ -514,8 +514,8 @@ Log::logBoardCards(std::array<int, 5> boardCards)
                     return;
                 }
                 sql += " WHERE ";
-                sql += "UniqueGameID=" + boost::lexical_cast<string>(uniqueGameID) + " AND ";
-                sql += "HandID=" + boost::lexical_cast<string>(currentHandID);
+                sql += "UniqueGameID=" + std::to_string(uniqueGameID) + " AND ";
+                sql += "HandID=" + std::to_string(currentHandID);
                 sql += ";";
                 if(myConfig->readConfigInt("LogInterval") == 0) {
                     exec_transaction();
@@ -567,8 +567,8 @@ Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerI
 					sql += ",Seat_" + boost::lexical_cast<string>(player->getMyID()+1) + "_Card_2=" + boost::lexical_cast<string>(myCards[1]);
 				}
 				sql += " WHERE ";
-				sql += "UniqueGameID=" + boost::lexical_cast<string>(uniqueGameID) + " AND ";
-				sql += "HandID=" + boost::lexical_cast<string>(currentHandID);
+				sql += "UniqueGameID=" + std::to_string(uniqueGameID) + " AND ";
+				sql += "HandID=" + std::to_string(currentHandID);
 				sql += ";";
 				if(myConfig->readConfigInt("LogInterval") == 0 || forceExecLog) {
 					exec_transaction();
