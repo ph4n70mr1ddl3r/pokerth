@@ -87,8 +87,11 @@ void CleanerServer::newCon()
 void CleanerServer::onRead()
 {
 	if (m_recvBufUsed >= sizeof(m_recvBuf)) {
-		qDebug() << "Buffer overflow detected, resetting";
+		qDebug() << "Buffer overflow detected, closing connection";
 		m_recvBufUsed = 0;
+		if (tcpSocket) {
+			tcpSocket->close();
+		}
 		return;
 	}
 	

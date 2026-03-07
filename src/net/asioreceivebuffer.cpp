@@ -161,8 +161,9 @@ AsioReceiveBuffer::ProcessPackets(boost::shared_ptr<SessionData> session)
 		session->HandlePacket(p);
 	}
 	if (recvBufUsed >= RECV_BUF_SIZE) {
-		LOG_ERROR("Session " << session->GetId() << " - Receive buf full: " << recvBufUsed);
+		LOG_ERROR("Session " << session->GetId() << " - Receive buf full: " << recvBufUsed << ", closing connection");
 		recvBufUsed = 0;
+		session->Close();
 	}
 }
 
