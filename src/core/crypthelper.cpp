@@ -182,6 +182,9 @@ SHA1Buf::GetDataSize() const
 bool
 CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 {
+	if (fileName.empty() || fileName.find("..") != std::string::npos) {
+		return false;
+	}
 	bool retVal = false;
 	FILE *file = fopen(fileName.c_str(), "rb");
 

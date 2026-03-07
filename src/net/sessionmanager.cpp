@@ -174,9 +174,11 @@ SessionManager::GetPlayerIdList(int state) const
 	SessionMap::const_iterator session_end = m_sessionMap.end();
 
 	while (session_i != session_end) {
-		// Get all players in the game.
 		if ((session_i->second->GetState() & state) != 0) {
-			playerList.push_back(session_i->second->GetPlayerData()->GetUniqueId());
+			boost::shared_ptr<PlayerData> tmpPlayer = session_i->second->GetPlayerData();
+			if (tmpPlayer) {
+				playerList.push_back(tmpPlayer->GetUniqueId());
+			}
 		}
 		++session_i;
 	}

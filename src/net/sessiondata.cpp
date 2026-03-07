@@ -92,14 +92,11 @@ SessionData::~SessionData() noexcept
 			}
 		}
 		CloseWebSocketHandle();
+	} catch (const std::exception& e) {
+		LOG_ERROR("Exception in SessionData destructor: " << e.what());
 	} catch (...) {
+		LOG_ERROR("Unknown exception in SessionData destructor");
 	}
-}
-			m_password.clear();
-		}
-	}
-	// Web Socket handle needs to be manually closed, asio socket is closed automatically.
-	CloseWebSocketHandle();
 }
 
 SessionId

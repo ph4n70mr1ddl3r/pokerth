@@ -52,7 +52,8 @@ boost::thread_specific_ptr<boost::mt19937> g_rand_state;
 static inline void InitRandState()
 {
 	if (!g_rand_state.get()) {
-		g_rand_state.reset(new boost::mt19937(static_cast<unsigned>(std::time(0))));
+		std::random_device rd;
+		g_rand_state.reset(new boost::mt19937(rd()));
 	}
 }
 
