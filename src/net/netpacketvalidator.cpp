@@ -1015,7 +1015,14 @@ NetPacketValidator::ValidateChatRequestMessage(const NetPacket &packet)
 	if (packet.GetMsg()->has_chatrequestmessage()) {
 		const ChatRequestMessage &msg = packet.GetMsg()->chatrequestmessage();
 		if (VALIDATE_STRING_SIZE(msg.chattext(), 1, 128)) {
-			retVal = true;
+			bool validContent = true;
+			for (char c : msg.chattext()) {
+				if (c == '\0' || c == '\x1b') {
+					validContent = false;
+					break;
+				}
+			}
+			retVal = validContent;
 		}
 	}
 	return retVal;
@@ -1028,7 +1035,14 @@ NetPacketValidator::ValidateChatMessage(const NetPacket &packet)
 	if (packet.GetMsg()->has_chatmessage()) {
 		const ChatMessage &msg = packet.GetMsg()->chatmessage();
 		if (VALIDATE_STRING_SIZE(msg.chattext(), 1, 128)) {
-			retVal = true;
+			bool validContent = true;
+			for (char c : msg.chattext()) {
+				if (c == '\0' || c == '\x1b') {
+					validContent = false;
+					break;
+				}
+			}
+			retVal = validContent;
 		}
 	}
 	return retVal;

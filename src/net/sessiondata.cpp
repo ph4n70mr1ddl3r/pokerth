@@ -79,14 +79,22 @@ SessionData::SessionData(boost::shared_ptr<boost::asio::ssl::stream<boost::asio:
 
 SessionData::~SessionData() noexcept
 {
-	InternalClearAuthSession();
-	{
-		boost::mutex::scoped_lock lock(m_dataMutex);
-		if (!m_password.empty()) {
-			volatile char *ptr = &m_password[0];
-			for (size_t i = 0; i < m_password.size(); ++i) {
-				ptr[i] = 0;
+	try {
+		InternalClearAuthSession();
+		{
+			boost::mutex::scoped_lock lock(m_dataMutex);
+			if (!m_password.empty()) {
+				volatile char *ptr = &m_password[0];
+				for (size_t i = 0; i < m_password.size(); ++i) {
+					ptr[i] = 0;
+				}
+				m_password.clear();
 			}
+		}
+		CloseWebSocketHandle();
+	} catch (...) {
+	}
+}
 			m_password.clear();
 		}
 	}

@@ -893,18 +893,25 @@ void
 ServerLobbyThread::DispatchPacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet)
 {
 	if (session) {
-		// Retrieve current game, if applicable.
 		boost::shared_ptr<ServerGame> game = session->GetGame();
 		if (game) {
-			// We need to catch game-specific exceptions, so that they do not affect the server.
 			try {
 				game->HandlePacket(session, packet);
 			} catch (const PokerTHException &e) {
 				LOG_ERROR("Game " << game->GetId() << " - Read handler exception: " << e.what());
 				game->RemoveAllSessions();
 			}
-		} else
-			HandlePacket(session, packet);
+		} else {
+			try {
+				HandlePacket(session, packet);
+			} catch (const PokerTHException &e) {
+				LOG_ERROR("Session " << session->GetId() << " - Lobby packet handler exception: " << e.what());
+				SessionError(session, ERR_NET_INVALID_PACKET);
+			} catch (const std::exception &e) {
+				LOG_ERROR("Session " << session->GetId() << " - Lobby packet handler std::exception: " << e.what());
+				SessionError(session, ERR_NET_INVALID_PACKET);
+			}
+		}
 	}
 }
 
@@ -1148,9 +1155,19 @@ ServerLobbyThread::HandleNetPacketAvatarFile(boost::shared_ptr<SessionData> sess
 	if (session->GetPlayerData()) {
 		boost::shared_ptr<AvatarFile> tmpAvatar = session->GetPlayerData()->GetNetAvatarFile();
 		const string &avatarBlock = avatarData.avatarblock();
-		if (tmpAvatar && !avatarBlock.empty() && tmpAvatar->fileData.size() + avatarBlock.size() <= tmpAvatar->reportedSize &&
-			tmpAvatar->fileData.size() + avatarBlock.size() <= MAX_AVATAR_FILE_SIZE) {
+		
+		size_t newSize = tmpAvatar->fileData.size() + avatarBlock.size();
+		if (tmpAvatar && !avatarBlock.empty() && 
+			newSize <= static_cast<size_t>(tmpAvatar->reportedSize) &&
+			newSize <= MAX_AVATAR_FILE_SIZE) {
 			std::copy(avatarBlock.begin(), avatarBlock.end(), back_inserter(tmpAvatar->fileData));
+		} else if (tmpAvatar && !avatarBlock.empty()) {
+			LOG_ERROR("Session " << session->GetId() << " - Avatar upload rejected: size mismatch or exceeds limit. "
+			          << "Current size: " << tmpAvatar->fileData.size() 
+			          << ", Block size: " << avatarBlock.size()
+			          << ", Reported size: " << tmpAvatar->reportedSize
+			          << ", Max allowed: " << MAX_AVATAR_FILE_SIZE);
+			session->GetPlayerData()->SetNetAvatarFile(boost::shared_ptr<AvatarFile>());
 		}
 	}
 }
@@ -1286,7 +1303,17 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 	boost::replace_all(gameName, "\f", " ");
 	unsigned gameId = GetNextGameId();
 
-	if (gameName.empty() || !isprint(gameName[0])) {
+	bool validGameName = !gameName.empty();
+	if (validGameName) {
+		for (char c : gameName) {
+			if (!isprint(c) || c == '\0') {
+				validGameName = false;
+				break;
+			}
+		}
+	}
+
+	if (!validGameName) {
 		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_GAME_BAD_NAME);
 	} else if (IsGameNameInUse(gameName)) {
 		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_GAME_NAME_IN_USE);

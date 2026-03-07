@@ -75,6 +75,12 @@ AsioReceiveBuffer::HandleRead(boost::shared_ptr<SessionData> session, const boos
     if (error != boost::asio::error::operation_aborted) {
         try {
             if (!error) {
+                if (recvBufUsed + bytesRead > RECV_BUF_SIZE) {
+                    LOG_ERROR("Session " << session->GetId() << " - Buffer overflow detected: recvBufUsed=" 
+                              << recvBufUsed << ", bytesRead=" << bytesRead << ", maxSize=" << RECV_BUF_SIZE);
+                    session->Close();
+                    return;
+                }
                 recvBufUsed += bytesRead;
                 ScanPackets(session);
                 ProcessPackets(session);
@@ -114,8 +120,10 @@ AsioReceiveBuffer::ScanPackets(boost::shared_ptr<SessionData> session)
 			memcpy(&nativeVal, &recvBuf[0], sizeof(uint32_t));
 			size_t packetSize = ntohl(nativeVal);
 			if (packetSize > MAX_PACKET_SIZE) {
-				recvBufUsed = 0;
-				LOG_ERROR(session->GetClientAddr() << "Session " << session->GetId() << " - Invalid packet size: " << packetSize);
+				LOG_ERROR(session->GetClientAddr() << "Session " << session->GetId() 
+				          << " - Invalid packet size: " << packetSize << " (max: " << MAX_PACKET_SIZE << ")");
+				session->Close();
+				return;
 			} else if (recvBufUsed >= packetSize + NET_HEADER_SIZE) {
 				try {
 					tmpPacket = NetPacket::Create(&recvBuf[NET_HEADER_SIZE], packetSize);

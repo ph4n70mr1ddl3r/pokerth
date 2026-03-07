@@ -37,6 +37,7 @@
 #include <boost/asio/steady_timer.hpp>
 #include <third_party/boost/timers.hpp>
 #include <map>
+#include <atomic>
 
 #include <net/sessionmanager.h>
 #include <db/serverdbcallback.h>
@@ -237,7 +238,7 @@ private:
 	const unsigned		m_creatorPlayerDBId;
 	ConfigFile		   &m_playerConfig;
 	unsigned			m_gameNum;
-	unsigned			m_curPetitionId;
+	std::atomic<unsigned> m_curPetitionId;
 	boost::asio::steady_timer m_voteKickTimer;
 	boost::asio::steady_timer m_stateTimer1;
 	boost::asio::steady_timer m_stateTimer2;
