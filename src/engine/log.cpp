@@ -183,37 +183,31 @@ Log::logNewGameMsg(int gameID, int startCash, int startSmallBlind, unsigned deal
 			PlayerListConstIterator it_c;
 
 			if( mySqliteLogDb.isValid() && mySqliteLogDb.isOpen() ) {
-				// sqlite-db is open
-				int i = 0;
+				QSqlQuery gameQuery(mySqliteLogDb);
+				gameQuery.prepare("INSERT INTO Game (UniqueGameID, GameID, Startmoney, StartSb, DealerPos) VALUES (?, ?, ?, ?, ?)");
+				gameQuery.addBindValue(static_cast<qulonglong>(uniqueGameID));
+				gameQuery.addBindValue(gameID);
+				gameQuery.addBindValue(startCash);
+				gameQuery.addBindValue(startSmallBlind);
+				gameQuery.addBindValue(dealerPosition);
+				if (!gameQuery.exec()) {
+					QSqlError err = gameQuery.lastError();
+					LOG_ERROR("Failed to insert game: " << err.text().toStdString());
+				}
 
-				sql += "INSERT INTO Game (";
-				sql += "UniqueGameID";
-				sql += ",GameID";
-				sql += ",Startmoney";
-			 sql += ",StartSb";
-			 sql += ",DealerPos";
-			 sql += ") VALUES (";
-			 sql += std::to_string(uniqueGameID);
-			 sql += "," + std::to_string(gameID);
-			 sql += "," + std::to_string(startCash);
-			 sql += "," + std::to_string(startSmallBlind);
-			 sql += "," + std::to_string(dealerPosition);
-			 sql += ");";
-
-				i = 1;
+				int i = 1;
 				for(it_c = seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 					if((*it_c)->getMyActiveStatus()) {
 						QString playerName = QString::fromStdString((*it_c)->getMyName());
-						QString escapedName = playerName.replace("'", "''");
-						sql += "INSERT INTO Player (";
-						sql += "UniqueGameID";
-						sql += ",Seat";
-					 sql += ",Player";
-					 sql += ") VALUES (";
-					 sql += std::to_string(uniqueGameID);
-					 sql += "," + std::to_string(i);
-					 sql += ",'" + escapedName.toStdString() + "'";
-					 sql += ");";
+						QSqlQuery playerQuery(mySqliteLogDb);
+						playerQuery.prepare("INSERT INTO Player (UniqueGameID, Seat, Player) VALUES (?, ?, ?)");
+						playerQuery.addBindValue(static_cast<qulonglong>(uniqueGameID));
+						playerQuery.addBindValue(i);
+						playerQuery.addBindValue(playerName);
+						if (!playerQuery.exec()) {
+							QSqlError err = playerQuery.lastError();
+							LOG_ERROR("Failed to insert player: " << err.text().toStdString());
+						}
 					}
 					i++;
 				}
@@ -241,39 +235,43 @@ Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned
 			//if write logfiles is enabled
 
 			if( mySqliteLogDb.isValid() && mySqliteLogDb.isOpen() ) {
-				// sqlite-db is open
-			 int i = 0;
+				QString insertSql = "INSERT INTO Hand (HandID, UniqueGameID, Dealer_Seat, Sb_Amount, Sb_Seat, Bb_Amount, Bb_Seat";
+				for(int i=1; i<=MAX_NUMBER_OF_PLAYERS; i++) {
+					insertSql += QString(", Seat_%1_Cash").arg(i);
+				}
+				insertSql += ") VALUES (?, ?, ?, ?, ?, ?, ?";
+				for(int i=1; i<=MAX_NUMBER_OF_PLAYERS; i++) {
+					insertSql += ", ?";
+				}
+				insertSql += ")";
 
-				sql += "INSERT INTO Hand (";
-				sql += "HandID";
-				sql += ",UniqueGameID";
-				sql += ",Dealer_Seat";
-			 sql += ",Sb_Amount";
-			 sql += ",Sb_Seat";
-			 sql += ",Bb_Amount";
-			 sql += ",Bb_Seat";
-			 for(i=1; i<=MAX_NUMBER_OF_PLAYERS; i++) {
-				 sql += ",Seat_" + std::to_string(i) + "_Cash";
-			 }
-			 sql += ") VALUES (";
-			 sql += std::to_string(currentHandID);
-			 sql += "," + std::to_string(uniqueGameID);
-			 sql += "," + std::to_string(dealerPosition);
-			 sql += "," + std::to_string(smallBlind);
-			 sql += "," + std::to_string(smallBlindPosition);
-			 sql += "," + std::to_string(bigBlind);
-			 sql += "," + std::to_string(bigBlindPosition);
-			 for(it_c = seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
-				 if((*it_c)->getMyActiveStatus()) {
-					 sql += "," + std::to_string((*it_c)->getMyRoundStartCash());
-				 } else {
-					 sql += ",NULL";
-				 }
-			 }
-			 sql += ");";
-			 if(myConfig->readConfigInt("LogInterval") == 0) {
-				 exec_transaction();
-			 }
+				QSqlQuery handQuery(mySqliteLogDb);
+				handQuery.prepare(insertSql);
+				handQuery.addBindValue(currentHandID);
+				handQuery.addBindValue(static_cast<qulonglong>(uniqueGameID));
+				handQuery.addBindValue(dealerPosition);
+				handQuery.addBindValue(smallBlind);
+				handQuery.addBindValue(smallBlindPosition);
+				handQuery.addBindValue(bigBlind);
+				handQuery.addBindValue(bigBlindPosition);
+				for(it_c = seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
+					if((*it_c)->getMyActiveStatus()) {
+						handQuery.addBindValue((*it_c)->getMyRoundStartCash());
+					} else {
+						handQuery.addBindValue(QVariant(QVariant::LongLong));
+					}
+				}
+				for(int i = seatsList->size(); i < MAX_NUMBER_OF_PLAYERS; i++) {
+					handQuery.addBindValue(QVariant(QVariant::LongLong));
+				}
+				if (!handQuery.exec()) {
+					QSqlError err = handQuery.lastError();
+					LOG_ERROR("Failed to insert hand: " << err.text().toStdString());
+				}
+
+				if(myConfig->readConfigInt("LogInterval") == 0) {
+					exec_transaction();
+				}
 
 				// !! TODO !! Hack, weil Button-Regel noch falsch und dealerPosition noch teilweise falsche ID enthält (HeadsUp: dealerPosition=bigBlindPosition <-- falsch)
 				bool dealerButtonOnTable = false;
@@ -358,36 +356,20 @@ Log::logPlayerAction(int seat, PlayerActionLog action, int amount)
             //if write logfiles is enabled
 
             if( mySqliteLogDb.isValid() && mySqliteLogDb.isOpen() ) {
-                // sqlite-db (Qt) is open
-
                 if(action!=LOG_ACTION_NONE) {
-                    sql += "INSERT INTO Action (";
-                    sql += "HandID";
-                    sql += ",UniqueGameID";
-                    sql += ",BeRo";
-                    sql += ",Player";
-                    sql += ",Action";
-                    sql += ",Amount";
-                    sql += ") VALUES (";
-                    sql += std::to_string(currentHandID);
-                    sql += "," + std::to_string(uniqueGameID);
-                    sql += "," + std::to_string(currentRound);
-                    sql += "," + std::to_string(seat);
-
-                    // Erzeuge Action-Text und einen einzelnen Wert für Amount (Zahl oder NULL)
                     std::string actionText;
-                    std::string amountText = "NULL";
+                    bool hasAmount = false;
                     switch(action) {
                     case LOG_ACTION_DEALER:
                         actionText = "starts as dealer";
                         break;
                     case LOG_ACTION_SMALL_BLIND:
                         actionText = "posts small blind";
-                        amountText = std::to_string(amount);
+                        hasAmount = true;
                         break;
                     case LOG_ACTION_BIG_BLIND:
                         actionText = "posts big blind";
-                        amountText = std::to_string(amount);
+                        hasAmount = true;
                         break;
                     case LOG_ACTION_FOLD:
                         actionText = "folds";
@@ -397,15 +379,15 @@ Log::logPlayerAction(int seat, PlayerActionLog action, int amount)
                         break;
                     case LOG_ACTION_CALL:
                         actionText = "calls";
-                        amountText = std::to_string(amount);
+                        hasAmount = true;
                         break;
                     case LOG_ACTION_BET:
                         actionText = "bets";
-                        amountText = std::to_string(amount);
+                        hasAmount = true;
                         break;
                     case LOG_ACTION_ALL_IN:
                         actionText = "is all in with";
-                        amountText = std::to_string(amount);
+                        hasAmount = true;
                         break;
                     case LOG_ACTION_SHOW:
                         actionText = "shows";
@@ -415,11 +397,11 @@ Log::logPlayerAction(int seat, PlayerActionLog action, int amount)
                         break;
                     case LOG_ACTION_WIN:
                         actionText = "wins";
-                        amountText = std::to_string(amount);
+                        hasAmount = true;
                         break;
                     case LOG_ACTION_WIN_SIDE_POT:
                         actionText = "wins (side pot)";
-                        amountText = std::to_string(amount);
+                        hasAmount = true;
                         break;
                     case LOG_ACTION_SIT_OUT:
                         actionText = "sits out";
@@ -443,9 +425,23 @@ Log::logPlayerAction(int seat, PlayerActionLog action, int amount)
                         return;
                     }
 
-                    sql += ",'" + actionText + "'";
-                    sql += "," + amountText;
-                    sql += ");";
+                    QSqlQuery actionQuery(mySqliteLogDb);
+                    actionQuery.prepare("INSERT INTO Action (HandID, UniqueGameID, BeRo, Player, Action, Amount) VALUES (?, ?, ?, ?, ?, ?)");
+                    actionQuery.addBindValue(currentHandID);
+                    actionQuery.addBindValue(static_cast<qulonglong>(uniqueGameID));
+                    actionQuery.addBindValue(currentRound);
+                    actionQuery.addBindValue(seat);
+                    actionQuery.addBindValue(QString::fromStdString(actionText));
+                    if (hasAmount) {
+                        actionQuery.addBindValue(amount);
+                    } else {
+                        actionQuery.addBindValue(QVariant(QVariant::LongLong));
+                    }
+                    if (!actionQuery.exec()) {
+                        QSqlError err = actionQuery.lastError();
+                        LOG_ERROR("Failed to insert action: " << err.text().toStdString());
+                    }
+
                      if(myConfig->readConfigInt("LogInterval") == 0) {
                          exec_transaction();
                      }

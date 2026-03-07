@@ -633,16 +633,18 @@ ClientThread::InitGame()
 void
 ClientThread::SendSessionPacket(boost::shared_ptr<NetPacket> packet)
 {
-	// Put packets in a buffer until the session is established.
-	if (IsSessionEstablished())
+	if (IsSessionEstablished()) {
 		GetSender().Send(GetContext().GetSessionData(), packet);
-	else
+	} else {
+		boost::mutex::scoped_lock lock(m_outPacketListMutex);
 		m_outPacketList.push_back(packet);
+	}
 }
 
 void
 ClientThread::SendQueuedPackets()
 {
+	boost::mutex::scoped_lock lock(m_outPacketListMutex);
 	if (!m_outPacketList.empty()) {
 		NetPacketList::iterator i = m_outPacketList.begin();
 		NetPacketList::iterator end = m_outPacketList.end();
@@ -1560,10 +1562,9 @@ ClientThread::IsSessionEstablished() const
 void
 ClientThread::SetSessionEstablished(bool flag)
 {
-	if (m_sessionEstablished != flag) {
-		m_sessionEstablished = flag;
-		if (flag)
-			SendQueuedPackets();
+	bool wasEstablished = m_sessionEstablished.exchange(flag);
+	if (!wasEstablished && flag) {
+		SendQueuedPackets();
 	}
 }
 

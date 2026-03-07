@@ -1056,6 +1056,18 @@ ServerLobbyThread::HandleNetPacketInit(boost::shared_ptr<SessionData> session, c
 		return;
 	}
 
+	// Check for control characters and null bytes
+	if (playerName.find('\0') != std::string::npos) {
+		SessionError(session, ERR_NET_INVALID_PLAYER_NAME);
+		return;
+	}
+
+	// Check for suspicious patterns that could be used for impersonation
+	if (playerName.find("  ") != std::string::npos) {
+		SessionError(session, ERR_NET_INVALID_PLAYER_NAME);
+		return;
+	}
+
 	// Check whether the player name is banned.
 	if (GetBanManager().IsPlayerBanned(playerName)) {
 		SessionError(session, ERR_NET_PLAYER_BANNED);

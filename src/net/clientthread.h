@@ -40,6 +40,8 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
+#include <atomic>
+#include <mutex>
 #include <openssl/ssl.h>
 
 #include <core/thread.h>
@@ -289,6 +291,7 @@ private:
 	Gsasl *m_authContext;
 
 	NetPacketList m_outPacketList;
+	mutable boost::mutex m_outPacketListMutex;
 
 	boost::shared_ptr<ClientContext> m_context;
 	ClientState *m_curState;
@@ -338,7 +341,7 @@ private:
 	unsigned m_guiPlayerId = 0;
 	mutable boost::mutex m_guiPlayerIdMutex;
 	int m_origGuiPlayerNum = 0;
-	bool m_sessionEstablished = false;
+	std::atomic<bool> m_sessionEstablished{false};
 
 	mutable boost::mutex m_curStatsMutex;
 	ServerStats m_curStats;

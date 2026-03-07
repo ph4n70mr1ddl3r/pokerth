@@ -872,8 +872,8 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 		// pokerth version
 		data_found = false;
 		for(i=0; i<nCol_Session; i++) {
-			if(boost::lexical_cast<std::string>(results.result_Session[i]) == "PokerTH_Version") {
-				log_string += boost::lexical_cast<std::string>(results.result_Session[i+nCol_Session]);
+			if(std::string(results.result_Session[i]) == "PokerTH_Version") {
+				log_string += std::string(results.result_Session[i+nCol_Session]);
 				data_found = true;
 			}
 		}
@@ -888,8 +888,8 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 		// logging date
 		data_found = false;
 		for(i=0; i<nCol_Session; i++) {
-			if(boost::lexical_cast<std::string>(results.result_Session[i]) == "Date") {
-				log_string += boost::lexical_cast<std::string>(results.result_Session[i+nCol_Session]);
+			if(std::string(results.result_Session[i]) == "Date") {
+				log_string += std::string(results.result_Session[i+nCol_Session]);
 				data_found = true;
 			}
 		}
@@ -904,8 +904,8 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 		// logging time
 		data_found = false;
 		for(i=0; i<nCol_Session; i++) {
-			if(boost::lexical_cast<std::string>(results.result_Session[i]) == "Time") {
-				log_string += boost::lexical_cast<std::string>(results.result_Session[i+nCol_Session]);
+			if(std::string(results.result_Session[i]) == "Time") {
+				log_string += std::string(results.result_Session[i+nCol_Session]);
 				data_found = true;
 			}
 		}
@@ -950,8 +950,8 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			// unique game id
 			data_found = false;
 			for(i=0; i<nCol_Game; i++) {
-				if(boost::lexical_cast<std::string>(results.result_Game[i]) == "UniqueGameID") {
-					uniqueGameID = boost::lexical_cast<int>(results.result_Game[i+nCol_Game*game_ctr]);
+				if(std::string(results.result_Game[i]) == "UniqueGameID") {
+					uniqueGameID = std::stoi(results.result_Game[i+nCol_Game*game_ctr]);
 					data_found = true;
 				}
 			}
@@ -964,8 +964,8 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			// game id
 			data_found = false;
 			for(i=0; i<nCol_Game; i++) {
-				if(boost::lexical_cast<std::string>(results.result_Game[i]) == "GameID") {
-					gameID = boost::lexical_cast<int>(results.result_Game[i+nCol_Game*game_ctr]);
+				if(std::string(results.result_Game[i]) == "GameID") {
+					gameID = std::stoi(results.result_Game[i+nCol_Game*game_ctr]);
 					data_found = true;
 				}
 			}
@@ -985,7 +985,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				return 1;
 			}
 			for(i=1; i<=nRow_Player; i++) {
-				player[i-1] = boost::lexical_cast<std::string>(results.result_Player[nCol_Player*i]);
+				player[i-1] = std::string(results.result_Player[nCol_Player*i]);
 			}
 
 			// read all hand id
@@ -1002,9 +1002,9 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 				// log game and hand id
 				log_string += "Game: ";
-				log_string += boost::lexical_cast<std::string>(gameID);
+				log_string += std::string(gameID);
 				log_string += " | Hand: ";
-				log_string += boost::lexical_cast<std::string>(results.result_Hand_ID[hand_ctr]);
+				log_string += std::string(results.result_Hand_ID[hand_ctr]);
 
 				switch(modus) {
 				case 1:
@@ -1026,9 +1026,9 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 				// read current hand
 				sql = "SELECT * FROM Hand WHERE UniqueGameID=";
-				sql+= boost::lexical_cast<std::string>(uniqueGameID);
+				sql+= std::string(uniqueGameID);
 				sql+= " AND HandID=";
-				sql+= boost::lexical_cast<std::string>(results.result_Hand_ID[hand_ctr]);
+				sql+= std::string(results.result_Hand_ID[hand_ctr]);
 				if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand,&nRow_Hand,&nCol_Hand,&errmsg) != SQLITE_OK) {
 					cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
 					cleanUp(results, mySqliteLogDb);
@@ -1042,8 +1042,8 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				// read small blind amount
 				data_found = false;
 				for(i=0; i<nCol_Hand; i++) {
-					if(boost::lexical_cast<std::string>(results.result_Hand[i]) == "Sb_Amount") {
-						log_string += boost::lexical_cast<std::string>(results.result_Hand[i+nCol_Hand]);
+					if(std::string(results.result_Hand[i]) == "Sb_Amount") {
+						log_string += std::string(results.result_Hand[i+nCol_Hand]);
 						data_found = true;
 					}
 				}
@@ -1058,8 +1058,8 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				// read big blind amount
 				data_found = false;
 				for(i=0; i<nCol_Hand; i++) {
-					if(boost::lexical_cast<std::string>(results.result_Hand[i]) == "Bb_Amount") {
-						log_string += boost::lexical_cast<std::string>(results.result_Hand[i+nCol_Hand]);
+					if(std::string(results.result_Hand[i]) == "Bb_Amount") {
+						log_string += std::string(results.result_Hand[i+nCol_Hand]);
 						data_found = true;
 					}
 				}
@@ -1090,12 +1090,12 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					data_found = false;
 					for(j=0; j<nCol_Hand; j++) {
 						cmpString = "Seat_";
-						cmpString+= boost::lexical_cast<std::string>(i);
+						cmpString+= std::string(i);
 						cmpString+= "_Cash";
-						if(boost::lexical_cast<std::string>(results.result_Hand[j]) == cmpString) { // seat found
+						if(std::string(results.result_Hand[j]) == cmpString) { // seat found
 							if(results.result_Hand[j+nCol_Hand]) { // player has cash > 0
 								log_string += "Seat ";
-								log_string += boost::lexical_cast<std::string>(i);
+								log_string += std::string(i);
 								log_string += ": ";
 								if(modus == 1 || modus == 3) {
 									log_string += "<b>";
@@ -1105,7 +1105,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 									log_string += "</b>";
 								}
 								log_string += " ($";
-								log_string += boost::lexical_cast<std::string>(results.result_Hand[j+nCol_Hand]);
+								log_string += std::string(results.result_Hand[j+nCol_Hand]);
 								log_string += ")";
 								switch(modus) {
 								case 1:
@@ -1157,13 +1157,13 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					}
 					// log dealer and blind setting
 					for(i=1; i<=nRow_Action; i++) {
-						log_string += player[boost::lexical_cast<int>(results.result_Action[3*i])-1];
+						log_string += player[std::stoi(results.result_Action[3*i])-1];
 						log_string += " ";
-						log_string += boost::lexical_cast<std::string>(results.result_Action[3*i+1]);
+						log_string += std::string(results.result_Action[3*i+1]);
 						if(results.result_Action[3*i+2]) {
 							// with amount
 							log_string +=  " $";
-							log_string += boost::lexical_cast<std::string>(results.result_Action[3*i+2]);
+							log_string += std::string(results.result_Action[3*i+2]);
 						}
 						log_string += ".";
 						switch(modus) {
@@ -1187,9 +1187,9 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					// read small blind
 					sql = "SELECT Player,Amount FROM Action WHERE UniqueGameID=";
-					sql += boost::lexical_cast<std::string>(uniqueGameID);
+					sql += std::string(uniqueGameID);
 					sql += " AND HandID=";
-					sql += boost::lexical_cast<std::string>(results.result_Hand_ID[hand_ctr]);
+					sql += std::string(results.result_Hand_ID[hand_ctr]);
 					sql += " AND BeRo=0 AND Action='posts small blind'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
@@ -1204,16 +1204,16 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					}
 
 					// log small blind
-					log_string += player[boost::lexical_cast<int>(results.result_Action[2])-1];
+					log_string += player[std::stoi(results.result_Action[2])-1];
 					log_string += " ($";
-					log_string += boost::lexical_cast<std::string>(results.result_Action[3]);
+					log_string += std::string(results.result_Action[3]);
 					log_string += "), ";
 
 					// read big blind
 					sql = "SELECT Player,Amount FROM Action WHERE UniqueGameID=";
-					sql += boost::lexical_cast<std::string>(uniqueGameID);
+					sql += std::string(uniqueGameID);
 					sql += " AND HandID=";
-					sql += boost::lexical_cast<std::string>(results.result_Hand_ID[hand_ctr]);
+					sql += std::string(results.result_Hand_ID[hand_ctr]);
 					sql += " AND BeRo=0 AND Action='posts big blind'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
@@ -1228,16 +1228,16 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					}
 
 					// log big blind
-					log_string += player[boost::lexical_cast<int>(results.result_Action[2])-1];
+					log_string += player[std::stoi(results.result_Action[2])-1];
 					log_string += " ($";
-					log_string += boost::lexical_cast<std::string>(results.result_Action[3]);
+					log_string += std::string(results.result_Action[3]);
 					log_string += ")";
 
 					// read dealer
 					sql = "SELECT Player,Amount FROM Action WHERE UniqueGameID=";
-					sql += boost::lexical_cast<std::string>(uniqueGameID);
+					sql += std::string(uniqueGameID);
 					sql += " AND HandID=";
-					sql += boost::lexical_cast<std::string>(results.result_Hand_ID[hand_ctr]);
+					sql += std::string(results.result_Hand_ID[hand_ctr]);
 					sql += " AND BeRo=0 AND Action='starts as dealer'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
@@ -1266,7 +1266,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						default:
 							;
 						}
-						log_string += player[boost::lexical_cast<int>(results.result_Action[2])-1];
+						log_string += player[std::stoi(results.result_Action[2])-1];
 						log_string += " starts as dealer.";
 					}
 
@@ -1324,18 +1324,18 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 							for(i=1; i<=round_ctr+2; i++) {
 								data_found = false;
 								for(j=0; j<nCol_Hand; j++) {
-									if(boost::lexical_cast<std::string>(results.result_Hand[j]) == "BoardCard_"+boost::lexical_cast<std::string>(i)) {
+									if(std::string(results.result_Hand[j]) == "BoardCard_"+std::string(i)) {
 										if(results.result_Hand[j+nCol_Hand]) {
 											if(modus == 1 || modus == 3) round_string += "<b>";
-											string_tmp = convertCardIntToString(boost::lexical_cast<int>(results.result_Hand[j+nCol_Hand]),modus);
+											string_tmp = convertCardIntToString(std::stoi(results.result_Hand[j+nCol_Hand]),modus);
 											if(string_tmp == "") {
 												cout << "Implausible board card in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
 												cleanUp(results, mySqliteLogDb);
 												return 1;
 											}
-											round_string += boost::lexical_cast<std::string>(string_tmp.at(0));
+											round_string += std::string(string_tmp.at(0));
 											if(modus==1 || modus == 3) round_string += "</b>";
-											round_string += boost::lexical_cast<std::string>(string_tmp.erase(0,1));
+											round_string += std::string(string_tmp.erase(0,1));
 											if(round_ctr+2-i > 0) round_string += ",";
 
 											data_found = true;
@@ -1371,7 +1371,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						switch(modus) {
 						case 1:
 							if(!neu) {
-								if(action_ctr>1 && (boost::lexical_cast<std::string>(results.result_Action[3*(action_ctr-1)+1]) == "wins" || boost::lexical_cast<std::string>(results.result_Action[3*(action_ctr-1)+1]) == "sits out" || boost::lexical_cast<std::string>(results.result_Action[3*(action_ctr-1)+1]) == "wins (side pot)"))
+								if(action_ctr>1 && (std::string(results.result_Action[3*(action_ctr-1)+1]) == "wins" || std::string(results.result_Action[3*(action_ctr-1)+1]) == "sits out" || std::string(results.result_Action[3*(action_ctr-1)+1]) == "wins (side pot)"))
 									log_string += "\n";
 								else
 									log_string += "</br>\n";
@@ -1388,34 +1388,34 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						default:
 							;
 						}
-						if(!neu && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) == "wins (side pot)") {
-							action_string += player[boost::lexical_cast<int>(results.result_Action[3*action_ctr])-1];
+						if(!neu && std::string(results.result_Action[3*action_ctr+1]) == "wins (side pot)") {
+							action_string += player[std::stoi(results.result_Action[3*action_ctr])-1];
 							action_string += " wins $";
-							action_string += boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+2]);
+							action_string += std::string(results.result_Action[3*action_ctr+2]);
 							action_string += " (side pot)";
 						} else {
-							action_string += player[boost::lexical_cast<int>(results.result_Action[3*action_ctr])-1];
+							action_string += player[std::stoi(results.result_Action[3*action_ctr])-1];
 							action_string += " ";
-							action_string += boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]);
+							action_string += std::string(results.result_Action[3*action_ctr+1]);
 							if(results.result_Action[3*action_ctr+2]) {
 								// with amount
 								action_string += " $";
-								action_string += boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+2]);
+								action_string += std::string(results.result_Action[3*action_ctr+2]);
 							}
 						}
 
 						// wins game
-						if(boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) == "wins game") {
+						if(std::string(results.result_Action[3*action_ctr+1]) == "wins game") {
 							switch(modus) {
 							case 1:
-								if(!neu) action_string = "</br></br><i><b>" + action_string + " " + boost::lexical_cast<std::string>(gameID) + "!</i></b></br>";
-								else action_string = "</br><i><b>" + action_string + " " + boost::lexical_cast<std::string>(gameID) + "!</b></i>";
+								if(!neu) action_string = "</br></br><i><b>" + action_string + " " + std::string(gameID) + "!</i></b></br>";
+								else action_string = "</br><i><b>" + action_string + " " + std::string(gameID) + "!</b></i>";
 								break;
 							case 2:
-								action_string += action_string + " " + boost::lexical_cast<std::string>(gameID) + "!";
+								action_string += action_string + " " + std::string(gameID) + "!";
 								break;
 							case 3:
-								action_string = "<i><b>" + action_string + " " + boost::lexical_cast<std::string>(gameID) + "!</b></i>";
+								action_string = "<i><b>" + action_string + " " + std::string(gameID) + "!</b></i>";
 								break;
 							default:
 								;
@@ -1423,7 +1423,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						}
 
 						// wins
-						if(boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) == "wins" || boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) == "wins (side pot)") {
+						if(std::string(results.result_Action[3*action_ctr+1]) == "wins" || std::string(results.result_Action[3*action_ctr+1]) == "wins (side pot)") {
 							switch(modus) {
 							case 1:
 								if(!neu) action_string = "</br><i>" + action_string + "</i>";
@@ -1438,7 +1438,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						}
 
 						// network actions
-						if(boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) == "has left the game" || boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) == "was kicked from the game" || boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) == "is game admin now" || boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) == "has joined the game") {
+						if(std::string(results.result_Action[3*action_ctr+1]) == "has left the game" || std::string(results.result_Action[3*action_ctr+1]) == "was kicked from the game" || std::string(results.result_Action[3*action_ctr+1]) == "is game admin now" || std::string(results.result_Action[3*action_ctr+1]) == "has joined the game") {
 							switch(modus) {
 							case 1:
 								if(!neu) action_string = "<i>" + action_string + "!</i>";
@@ -1453,7 +1453,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						}
 
 						// sits out
-						if(boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) == "sits out") {
+						if(std::string(results.result_Action[3*action_ctr+1]) == "sits out") {
 							switch(modus) {
 							case 1:
 								if(!neu) action_string = "</br><i><span style=\"font-size:smaller;\">" + action_string + "</span></i>";
@@ -1471,7 +1471,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						action_string = "";
 
 						// show cards
-						if(boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) == "shows" || boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) == "has") {
+						if(std::string(results.result_Action[3*action_ctr+1]) == "shows" || std::string(results.result_Action[3*action_ctr+1]) == "has") {
 							// log cards
 							if(!neu && round_ctr == GAME_STATE_POST_RIVER) log_string += " [ ";
 							else log_string += " [";
@@ -1481,18 +1481,18 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 							data_found = false;
 							for(i=0; i<nCol_Hand; i++) {
 								cmpString = "Seat_";
-								cmpString += boost::lexical_cast<std::string>(results.result_Action[3*action_ctr]);
+								cmpString += std::string(results.result_Action[3*action_ctr]);
 								cmpString += "_Card_1";
-								if(boost::lexical_cast<std::string>(results.result_Hand[i]) == cmpString) {
-									string_tmp = convertCardIntToString(boost::lexical_cast<int>(results.result_Hand[i+nCol_Hand]),modus);
+								if(std::string(results.result_Hand[i]) == cmpString) {
+									string_tmp = convertCardIntToString(std::stoi(results.result_Hand[i+nCol_Hand]),modus);
 									if(string_tmp == "") {
 										cout << "Hole card information implausible in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
 										cleanUp(results, mySqliteLogDb);
 										return 1;
 									}
-									log_string += boost::lexical_cast<std::string>(string_tmp.at(0));
+									log_string += std::string(string_tmp.at(0));
 									if(modus == 1 || modus == 3) log_string += "</b>";
-									log_string += boost::lexical_cast<std::string>(string_tmp.erase(0,1));
+									log_string += std::string(string_tmp.erase(0,1));
 									log_string += ",";
 									if(modus == 1 || modus == 3) log_string += "<b>";
 									data_found = true;
@@ -1508,18 +1508,18 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 							data_found = false;
 							for(i=0; i<nCol_Hand; i++) {
 								cmpString = "Seat_";
-								cmpString += boost::lexical_cast<std::string>(results.result_Action[3*action_ctr]);
+								cmpString += std::string(results.result_Action[3*action_ctr]);
 								cmpString += "_Card_2";
-								if(boost::lexical_cast<std::string>(results.result_Hand[i]) == cmpString) {
-									string_tmp = convertCardIntToString(boost::lexical_cast<int>(results.result_Hand[i+nCol_Hand]),modus);
+								if(std::string(results.result_Hand[i]) == cmpString) {
+									string_tmp = convertCardIntToString(std::stoi(results.result_Hand[i+nCol_Hand]),modus);
 									if(string_tmp == "") {
 										cout << "Hole card information implausible in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
 										cleanUp(results, mySqliteLogDb);
 										return 1;
 									}
-									log_string += boost::lexical_cast<std::string>(string_tmp.at(0));
+									log_string += std::string(string_tmp.at(0));
 									if(modus == 1 || modus == 3) log_string += "</b>";
-									log_string += boost::lexical_cast<std::string>(string_tmp.erase(0,1));
+									log_string += std::string(string_tmp.erase(0,1));
 									log_string += "]";
 									data_found = true;
 								}
@@ -1534,20 +1534,20 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 								// find hand name
 								for(i=0; i<nCol_Hand; i++) {
 									cmpString = "Seat_";
-									cmpString += boost::lexical_cast<std::string>(results.result_Action[3*action_ctr]);
+									cmpString += std::string(results.result_Action[3*action_ctr]);
 									cmpString += "_Hand_text";
-									if(boost::lexical_cast<std::string>(results.result_Hand[i]) == cmpString && results.result_Hand[i+nCol_Hand]) {
-										log_string += " - " + boost::lexical_cast<std::string>(results.result_Hand[i+nCol_Hand]);
+									if(std::string(results.result_Hand[i]) == cmpString && results.result_Hand[i+nCol_Hand]) {
+										log_string += " - " + std::string(results.result_Hand[i+nCol_Hand]);
 									}
 								}
 							}
 
 						}
 
-						if(!neu && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "wins" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "shows" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "has" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "sits out" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "wins (side pot)" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "wins game" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "has left the game" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "was kicked from the game" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "is game admin now" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "has joined the game") {
+						if(!neu && std::string(results.result_Action[3*action_ctr+1]) != "wins" && std::string(results.result_Action[3*action_ctr+1]) != "shows" && std::string(results.result_Action[3*action_ctr+1]) != "has" && std::string(results.result_Action[3*action_ctr+1]) != "sits out" && std::string(results.result_Action[3*action_ctr+1]) != "wins (side pot)" && std::string(results.result_Action[3*action_ctr+1]) != "wins game" && std::string(results.result_Action[3*action_ctr+1]) != "has left the game" && std::string(results.result_Action[3*action_ctr+1]) != "was kicked from the game" && std::string(results.result_Action[3*action_ctr+1]) != "is game admin now" && std::string(results.result_Action[3*action_ctr+1]) != "has joined the game") {
 							log_string += ".";
 						}
-						if(neu && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "wins game" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "has left the game" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "was kicked from the game" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "is game admin now" && boost::lexical_cast<std::string>(results.result_Action[3*action_ctr+1]) != "has joined the game")
+						if(neu && std::string(results.result_Action[3*action_ctr+1]) != "wins game" && std::string(results.result_Action[3*action_ctr+1]) != "has left the game" && std::string(results.result_Action[3*action_ctr+1]) != "was kicked from the game" && std::string(results.result_Action[3*action_ctr+1]) != "is game admin now" && std::string(results.result_Action[3*action_ctr+1]) != "has joined the game")
 							log_string += ".";
 
 					}
@@ -1602,8 +1602,8 @@ QList<int> guiLog::getGameList(QString fileStringPdb)
 		} else {
 			for(game_ctr=1; game_ctr<=nRow_Game; game_ctr++) {
 				for(i=0; i<nCol_Game; i++) {
-					if(boost::lexical_cast<std::string>(results.result_Game[i]) == "UniqueGameID") {
-						gameList.append(boost::lexical_cast<int>(results.result_Game[i+nCol_Game*game_ctr]));
+					if(std::string(results.result_Game[i]) == "UniqueGameID") {
+						gameList.append(std::stoi(results.result_Game[i+nCol_Game*game_ctr]));
 					}
 				}
 			}
