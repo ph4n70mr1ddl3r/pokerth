@@ -359,7 +359,10 @@ ServerGame::InternalStartGame()
 		SetStartData(startData);
 
 		GuiInterface &gui = GetGui();
-		m_game.reset(new Game(&gui, factory, playerData, GetGameData(), GetStartData(), GetNextGameNum(), nullptr));
+		{
+			boost::mutex::scoped_lock lock(m_gameMutex);
+			m_game.reset(new Game(&gui, factory, playerData, GetGameData(), GetStartData(), GetNextGameNum(), nullptr));
+		}
 
 		GetDatabase().AsyncCreateGame(GetId(), GetName());
 		InitRankingMap(playerData);
@@ -510,8 +513,14 @@ void
 ServerGame::InternalEndGame()
 {
 	StoreAndResetRanking();
-	m_game.reset();
-	m_numJoinsPerPlayer.clear();
+	{
+		boost::mutex::scoped_lock lock(m_gameMutex);
+		m_game.reset();
+	}
+	{
+		boost::mutex::scoped_lock lock(m_numJoinsPerPlayerMutex);
+		m_numJoinsPerPlayer.clear();
+	}
 }
 
 void
@@ -747,18 +756,21 @@ ServerGame::GetPlayerInterfaceFromGame(unsigned playerId)
 bool
 ServerGame::IsRunning() const
 {
+	boost::mutex::scoped_lock lock(m_gameMutex);
 	return m_game.get() != nullptr;
 }
 
 unsigned
 ServerGame::GetAdminPlayerId() const
 {
+	boost::mutex::scoped_lock lock(m_adminPlayerIdMutex);
 	return m_adminPlayerId;
 }
 
 void
 ServerGame::SetAdminPlayerId(unsigned playerId)
 {
+	boost::mutex::scoped_lock lock(m_adminPlayerIdMutex);
 	m_adminPlayerId = playerId;
 }
 
@@ -831,13 +843,13 @@ ServerGame::GetAndResetReactivatePlayers()
 void
 ServerGame::SetNameReported()
 {
-	m_isNameReported = true;
+	m_isNameReported.store(true);
 }
 
 bool
 ServerGame::IsNameReported() const
 {
-	return m_isNameReported;
+	return m_isNameReported.load();
 }
 
 void
@@ -1044,7 +1056,21 @@ ServerGame::IsValidPlayer(unsigned playerId) const
 void
 ServerGame::AddReportedAvatar(unsigned playerId)
 {
+	boost::mutex::scoped_lock lock(m_reportedAvatarListMutex);
 	m_reportedAvatarList.push_back(playerId);
+	m_reportedAvatarList.sort();
+	m_reportedAvatarList.unique();
+}
+
+bool
+ServerGame::IsAvatarReported(unsigned playerId) const
+{
+	bool retVal = false;
+	boost::mutex::scoped_lock lock(m_reportedAvatarListMutex);
+	PlayerIdList::const_iterator pos = find(m_reportedAvatarList.begin(), m_reportedAvatarList.end(), playerId);
+	if (pos != m_reportedAvatarList.end())
+		retVal = true;
+	return retVal;
 }
 
 bool
@@ -1092,6 +1118,7 @@ ServerGame::GetCallback()
 ServerGameState &
 ServerGame::GetState()
 {
+	boost::mutex::scoped_lock lock(m_curStateMutex);
 	assert(m_curState);
 	return *m_curState;
 }
@@ -1099,6 +1126,7 @@ ServerGame::GetState()
 void
 ServerGame::SetState(ServerGameState &newState)
 {
+	boost::mutex::scoped_lock lock(m_curStateMutex);
 	if (m_curState)
 		m_curState->Exit(shared_from_this());
 	m_curState = &newState;
@@ -1120,6 +1148,7 @@ ServerGame::GetStateTimer2()
 Game &
 ServerGame::GetGame()
 {
+	boost::mutex::scoped_lock lock(m_gameMutex);
 	assert(m_game.get());
 	return *m_game;
 }
@@ -1127,6 +1156,7 @@ ServerGame::GetGame()
 const Game &
 ServerGame::GetGame() const
 {
+	boost::mutex::scoped_lock lock(m_gameMutex);
 	assert(m_game.get());
 	return *m_game;
 }
@@ -1140,12 +1170,14 @@ ServerGame::GetGameData() const
 const StartData &
 ServerGame::GetStartData() const
 {
+	boost::mutex::scoped_lock lock(m_startDataMutex);
 	return m_startData;
 }
 
 void
 ServerGame::SetStartData(const StartData &startData)
 {
+	boost::mutex::scoped_lock lock(m_startDataMutex);
 	m_startData = startData;
 }
 

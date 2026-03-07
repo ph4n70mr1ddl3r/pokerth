@@ -435,9 +435,18 @@ ServerLobbyThread::CloseSession(boost::shared_ptr<SessionData> session)
 }
 
 void
-ServerLobbyThread::ResubscribeLobbyMsg(boost::shared_ptr<SessionData> session)
+ServerLobbyThread::SendGameList(boost::shared_ptr<SessionData> s)
 {
-	InternalResubscribeMsg(session);
+	GetSender().Send(s, CreateNetPacketPlayerListNew(s->GetPlayerData()->GetUniqueId()));
+	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		GameMap::const_iterator game_i = m_gameMap.begin();
+		GameMap::const_iterator game_end = m_gameMap.end();
+		while (game_i != game_end) {
+			GetSender().Send(s, CreateNetPacketGameListNew(*game_i->second));
+			++game_i;
+		}
+	}
 }
 
 void
@@ -672,9 +681,12 @@ ServerLobbyThread::SendChatBotMsg(unsigned gameId, const std::string &message)
 	netChat->set_gameid(gameId);
 	netChat->set_chattext(message);
 
-	GameMap::const_iterator pos = m_gameMap.find(gameId);
-	if (pos != m_gameMap.end() && pos->second) {
-		pos->second->SendToAllPlayers(packet, SessionData::Game);
+	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		GameMap::const_iterator pos = m_gameMap.find(gameId);
+		if (pos != m_gameMap.end() && pos->second) {
+			pos->second->SendToAllPlayers(packet, SessionData::Game);
+		}
 	}
 }
 
@@ -1749,13 +1761,30 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
         return;
     }
 
-    std::string providedPassword = tmpSession->AuthGetPassword();
-    if (!providedPassword.empty() && Tools::ConstantTimeStringCompare(providedPassword, dbPlayerData.secret)) {
-        EstablishSession(tmpSession);
-    } else {
-        LOG_MSG("Authentication failed for player " << playerId << " (" << tmpSession->GetClientAddr() << ")");
-        SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
+	std::string providedPassword = tmpSession->AuthGetPassword();
+	if (!providedPassword.empty() && Tools::ConstantTimeStringCompare(providedPassword, dbPlayerData.secret)) {
+		boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
+		std::string clientAddr = tmpSession->GetClientAddr();
+	 FailedLoginMap::iterator it = m_failedLoginMap.find(clientAddr);
+		if (it != m_failedLoginMap.end()) {
+		 boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+		 auto duration = now - it->second;
+            if (duration < seconds(MAX_FAILED_LOGIN_RATE_LIMIT_SECONDS)) {
+                it->second++;
+            } else {
+                it->second = MAX_FAILED_LOGIN_ATTEMPTS;
+                if (it->second-> MAX_FAILED_LOGIN_ATTEMPTS) {
+                    LOG_MSG("Rate limiting: Too many failed login attempts from " << clientAddr);
+                    SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
+                    return;
+                }
+            }
+        }
     }
+    EstablishSession(tmpSession);
+} else {
+    LOG_MSG("Authentication failed for player " << playerId << " (" << tmpSession->GetClientAddr() << ")");
+    SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
 }
 
 void
@@ -1837,19 +1866,22 @@ void
 ServerLobbyThread::TimerRemoveGame(const boost::system::error_code &ec)
 {
 	if (!ec) {
-		// Synchronously remove games which have been closed.
-		GameMap::iterator i = m_gameMap.begin();
-		GameMap::iterator end = m_gameMap.end();
-		while (i != end) {
-			GameMap::iterator next = i;
-			++next;
-			boost::shared_ptr<ServerGame> tmpGame = i->second;
-			if (!tmpGame->GetSessionManager().HasSessionWithState(SessionData::Game)) {
-				InternalRemoveGame(tmpGame); // This will delete the game.
+		std::vector<boost::shared_ptr<ServerGame>> gamesToRemove;
+		{
+			boost::mutex::scoped_lock lock(m_gameMapMutex);
+			GameMap::iterator i = m_gameMap.begin();
+			GameMap::iterator end = m_gameMap.end();
+			while (i != end) {
+				boost::shared_ptr<ServerGame> tmpGame = i->second;
+				if (!tmpGame->GetSessionManager().HasSessionWithState(SessionData::Game)) {
+					gamesToRemove.push_back(tmpGame);
+				}
+				++i;
 			}
-			i = next;
 		}
-		// Restart timer
+		for (auto& game : gamesToRemove) {
+			InternalRemoveGame(game);
+		}
 		m_removeGameTimer.expires_after(milliseconds(SERVER_REMOVE_GAME_INTERVAL_MSEC));
 		m_removeGameTimer.async_wait(
 			boost::bind(
@@ -1885,6 +1917,7 @@ bool
 ServerLobbyThread::IsGameNameInUse(const std::string &gameName) const
 {
 	bool found = false;
+	boost::mutex::scoped_lock lock(m_gameMapMutex);
 	GameMap::const_iterator i = m_gameMap.begin();
 	GameMap::const_iterator end = m_gameMap.end();
 
@@ -1903,6 +1936,7 @@ ServerLobbyThread::InternalGetGameFromId(unsigned gameId)
 {
 	boost::shared_ptr<ServerGame> game;
 	if (gameId) {
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
 		GameMap::iterator pos = m_gameMap.find(gameId);
 
 		if (pos != m_gameMap.end())
@@ -1914,9 +1948,10 @@ ServerLobbyThread::InternalGetGameFromId(unsigned gameId)
 void
 ServerLobbyThread::InternalAddGame(boost::shared_ptr<ServerGame> game)
 {
-	// Add game to list.
-	m_gameMap.insert(GameMap::value_type(game->GetId(), game));
-	// Notify all players.
+	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		m_gameMap.insert(GameMap::value_type(game->GetId(), game));
+	}
 	m_sessionManager.SendLobbyMsgToAllSessions(GetSender(), CreateNetPacketGameListNew(*game), SessionData::Established);
 	m_gameSessionManager.SendLobbyMsgToAllSessions(GetSender(), CreateNetPacketGameListNew(*game), SessionData::Game);
 
@@ -1924,6 +1959,7 @@ ServerLobbyThread::InternalAddGame(boost::shared_ptr<ServerGame> game)
 		boost::mutex::scoped_lock lock(m_statMutex);
 		++m_statData.totalGamesEverCreated;
 		++m_statData.numberOfGamesOpen;
+		boost::mutex::scoped_lock gameLock(m_gameMapMutex);
 		unsigned numGames = static_cast<unsigned>(m_gameMap.size());
 		if (numGames > m_statData.maxGamesOpen)
 			m_statData.maxGamesOpen = numGames;
@@ -1941,13 +1977,13 @@ ServerLobbyThread::InternalRemoveGame(boost::shared_ptr<ServerGame> game)
 			m_statDataChanged = true;
 		}
 	}
-	// Remove game from list.
-	m_gameMap.erase(game->GetId());
-	// Remove all sessions left in the game.
+	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		m_gameMap.erase(game->GetId());
+	}
 	game->ResetComputerPlayerList();
 	game->RemoveAllSessions();
 	game->Exit();
-	// Notify all players.
 	boost::shared_ptr<NetPacket> packet = CreateNetPacketGameListUpdate(game->GetId(), GAME_MODE_CLOSED);
 	m_sessionManager.SendLobbyMsgToAllSessions(GetSender(), packet, SessionData::Established);
 	m_gameSessionManager.SendLobbyMsgToAllSessions(GetSender(), packet, SessionData::Game);

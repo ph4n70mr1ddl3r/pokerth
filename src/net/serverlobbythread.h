@@ -134,9 +134,11 @@ protected:
 	typedef std::list<boost::shared_ptr<SessionData> > SessionList;
 	typedef std::list<SessionId> SessionIdList;
 	typedef std::map<SessionId, boost::timers::portable::microsec_timer> TimerSessionMap;
-	typedef std::map<unsigned, boost::shared_ptr<ServerGame> > GameMap;
 	typedef std::map<std::string, boost::timers::portable::microsec_timer> TimerClientAddressMap;
+	typedef std::map<std::string, unsigned> FailedLoginMap;
 	typedef std::list<unsigned> RemoveGameList;
+
+protected:
 
 	// Main function of the thread.
 	virtual void Main() override;
@@ -243,6 +245,10 @@ private:
 	mutable boost::mutex m_computerPlayersMutex;
 
 	GameMap m_gameMap;
+	mutable boost::mutex m_gameMapMutex;
+
+	FailedLoginMap m_failedLoginMap;
+	mutable boost::mutex m_failedLoginMapMutex;
 
 	GuiInterface &m_gui;
 	AvatarManager &m_avatarManager;

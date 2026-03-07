@@ -115,7 +115,6 @@ AsioReceiveBuffer::ScanPackets(boost::shared_ptr<SessionData> session)
 		// Packets may be received in multiple chunks or
 		// several packets may be received at once.
 		if (recvBufUsed >= NET_HEADER_SIZE) {
-			// Read the size of the packet (first 4 bytes in network byte order).
 			uint32_t nativeVal;
 			memcpy(&nativeVal, &recvBuf[0], sizeof(uint32_t));
 			size_t packetSize = ntohl(nativeVal);
@@ -124,7 +123,14 @@ AsioReceiveBuffer::ScanPackets(boost::shared_ptr<SessionData> session)
 				          << " - Invalid packet size: " << packetSize << " (max: " << MAX_PACKET_SIZE << ")");
 				session->Close();
 				return;
-			} else if (recvBufUsed >= packetSize + NET_HEADER_SIZE) {
+			}
+			if (packetSize > SIZE_MAX - NET_HEADER_SIZE) {
+				LOG_ERROR(session->GetClientAddr() << "Session " << session->GetId() 
+				          << " - Packet size overflow");
+				session->Close();
+				return;
+			}
+			if (recvBufUsed >= packetSize + NET_HEADER_SIZE) {
 				try {
 					tmpPacket = NetPacket::Create(&recvBuf[NET_HEADER_SIZE], packetSize);
 					if (tmpPacket) {
@@ -134,7 +140,6 @@ AsioReceiveBuffer::ScanPackets(boost::shared_ptr<SessionData> session)
 						}
 					}
 				} catch (const exception &e) {
-					// Reset buffer on error.
 					recvBufUsed = 0;
 					LOG_ERROR(session->GetClientAddr() << "Session " << session->GetId() << " - " << e.what());
 				}

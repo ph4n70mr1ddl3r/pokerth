@@ -214,11 +214,13 @@ private:
 	mutable boost::mutex m_reactivatePlayerListMutex;
 
 	PlayerIdList m_reportedAvatarList;
+	mutable boost::mutex m_reportedAvatarListMutex;
 
 	RankingMap m_rankingMap;
 	mutable boost::mutex m_rankingMapMutex;
 
 	unsigned m_adminPlayerId;
+	mutable boost::mutex m_adminPlayerIdMutex;
 
 	boost::shared_ptr<VoteKickData> m_voteKickData;
 	mutable boost::mutex m_voteKickDataMutex;
@@ -229,8 +231,11 @@ private:
 
 	const GameData		m_gameData;
 	StartData			m_startData;
+	mutable boost::mutex m_startDataMutex;
 	boost::shared_ptr<Game>	 m_game;
+	mutable boost::mutex m_gameMutex;
 	ServerGameState			*m_curState;
+	mutable boost::mutex m_curStateMutex;
 
 	const u_int32_t		m_id;
 	const std::string	m_name;
@@ -242,7 +247,7 @@ private:
 	boost::asio::steady_timer m_voteKickTimer;
 	boost::asio::steady_timer m_stateTimer1;
 	boost::asio::steady_timer m_stateTimer2;
-	bool				m_isNameReported;
+	std::atomic<bool> m_isNameReported;
 
 	friend class ServerLobbyThread;
 	friend class AbstractServerGameStateReceiving;
