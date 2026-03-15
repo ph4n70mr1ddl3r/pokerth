@@ -1341,13 +1341,18 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 	boost::replace_all(gameName, "\f", " ");
 	unsigned gameId = GetNextGameId();
 
-	bool validGameName = !gameName.empty();
+	bool validGameName = !gameName.empty() && gameName.size() <= 64;
 	if (validGameName) {
 		for (char c : gameName) {
-			if (!isprint(c) || c == '\0') {
+			if (!isprint(static_cast<unsigned char>(c)) || c == '\0') {
 				validGameName = false;
 				break;
 			}
+		}
+	}
+	if (validGameName) {
+		if (gameName.find("  ") != std::string::npos) {
+			validGameName = false;
 		}
 	}
 
@@ -1827,7 +1832,11 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
 					}
 				}
 				if (shouldEstablish) {
-					m_failedLoginMap.erase(it);
+					if (it->second.count > 2) {
+						it->second.count -= 2;
+					} else {
+						m_failedLoginMap.erase(it);
+					}
 				}
 			}
 		}

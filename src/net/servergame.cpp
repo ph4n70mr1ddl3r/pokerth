@@ -1088,14 +1088,18 @@ ServerGame::GetSessionManager() const
 ServerDBInterface &
 ServerGame::GetDatabase()
 {
-	assert(m_database);
+	if (!m_database) {
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INIT_FAILED, 0);
+	}
 	return *m_database;
 }
 
 ServerLobbyThread &
 ServerGame::GetLobbyThread()
 {
-	assert(m_lobbyThread);
+	if (!m_lobbyThread) {
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INIT_FAILED, 0);
+	}
 	return *m_lobbyThread;
 }
 
@@ -1109,7 +1113,9 @@ ServerGameState &
 ServerGame::GetState()
 {
 	boost::mutex::scoped_lock lock(m_curStateMutex);
-	assert(m_curState);
+	if (!m_curState) {
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INIT_FAILED, 0);
+	}
 	return *m_curState;
 }
 
