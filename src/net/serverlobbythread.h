@@ -142,6 +142,7 @@ protected:
 	};
 	typedef std::map<std::string, FailedLoginEntry> FailedLoginMap;
 	typedef std::list<unsigned> RemoveGameList;
+	typedef std::map<unsigned, boost::shared_ptr<ServerGame> > GameMap;
 
 protected:
 

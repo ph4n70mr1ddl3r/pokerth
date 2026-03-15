@@ -1368,11 +1368,16 @@ ServerLobbyThread::HandleNetPacketJoinGame(boost::shared_ptr<SessionData> sessio
 	if (joinGame.has_password())
 		password = joinGame.password();
 
-	// Join an existing game.
-	GameMap::iterator pos = m_gameMap.find(joinGame.gameid());
+	boost::shared_ptr<ServerGame> game;
+	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		GameMap::iterator pos = m_gameMap.find(joinGame.gameid());
+		if (pos != m_gameMap.end()) {
+			game = pos->second;
+		}
+	}
 
-	if (pos != m_gameMap.end()) {
-		boost::shared_ptr<ServerGame> game = pos->second;
+	if (game) {
 		const GameData &tmpData = game->GetGameData();
 		LOG_ERROR("JoinGame pre validation");
 		if (!session->GetPlayerData()) {
@@ -1402,11 +1407,16 @@ ServerLobbyThread::HandleNetPacketJoinGame(boost::shared_ptr<SessionData> sessio
 void
 ServerLobbyThread::HandleNetPacketRejoinGame(boost::shared_ptr<SessionData> session, const RejoinExistingGameMessage &rejoinGame)
 {
-	// Rejoin a running game.
-	GameMap::iterator pos = m_gameMap.find(rejoinGame.gameid());
+	boost::shared_ptr<ServerGame> game;
+	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		GameMap::iterator pos = m_gameMap.find(rejoinGame.gameid());
+		if (pos != m_gameMap.end()) {
+			game = pos->second;
+		}
+	}
 
-	if (pos != m_gameMap.end()) {
-		boost::shared_ptr<ServerGame> game = pos->second;
+	if (game) {
 		MoveSessionToGame(game, session, rejoinGame.autoleave());
 	} else {
 		SendJoinGameFailed(session, rejoinGame.gameid(), NTF_NET_JOIN_GAME_INVALID);
@@ -1478,17 +1488,21 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 void
 ServerLobbyThread::HandleNetPacketRejectGameInvitation(boost::shared_ptr<SessionData> session, const RejectGameInvitationMessage &reject)
 {
-	GameMap::iterator pos = m_gameMap.find(reject.gameid());
+	boost::shared_ptr<ServerGame> game;
+	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		GameMap::iterator pos = m_gameMap.find(reject.gameid());
+		if (pos != m_gameMap.end()) {
+			game = pos->second;
+		}
+	}
 
-	if (pos != m_gameMap.end() && session->GetPlayerData()) {
-		ServerGame &game = *pos->second;
+	if (game && session->GetPlayerData()) {
 		unsigned tmpPlayerId = session->GetPlayerData()->GetUniqueId();
-		if (game.IsPlayerInvited(tmpPlayerId)) {
-			// If he actively rejects, he is no longer invited.
+		if (game->IsPlayerInvited(tmpPlayerId)) {
 			if (reject.myrejectreason() == RejectGameInvitationMessage::rejectReasonNo) {
-				game.RemovePlayerInvitation(tmpPlayerId);
+				game->RemovePlayerInvitation(tmpPlayerId);
 			}
-			// Send reject notification.
 			boost::shared_ptr<NetPacket> packet(new NetPacket);
 			packet->GetMsg()->set_messagetype(PokerTHMessage::Type_RejectInvNotifyMessage);
 			RejectInvNotifyMessage *netReject = packet->GetMsg()->mutable_rejectinvnotifymessage();
@@ -1496,7 +1510,7 @@ ServerLobbyThread::HandleNetPacketRejectGameInvitation(boost::shared_ptr<Session
 			netReject->set_playerid(tmpPlayerId);
 			netReject->set_playerrejectreason(reject.myrejectreason());
 
-				game.SendToAllPlayers(packet, SessionData::Game);
+			game->SendToAllPlayers(packet, SessionData::Game);
 		}
 	}
 }
@@ -1504,13 +1518,17 @@ ServerLobbyThread::HandleNetPacketRejectGameInvitation(boost::shared_ptr<Session
 void
 ServerLobbyThread::HandleNetPacketReportGame(boost::shared_ptr<SessionData> session, const ReportGameMessage &report)
 {
-	GameMap::iterator pos = m_gameMap.find(report.reportedgameid());
+	boost::shared_ptr<ServerGame> tmpGame;
+	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		GameMap::iterator pos = m_gameMap.find(report.reportedgameid());
+		if (pos != m_gameMap.end()) {
+			tmpGame = pos->second;
+		}
+	}
 
-	if (pos != m_gameMap.end() && session->GetPlayerData()) {
-		boost::shared_ptr<ServerGame> tmpGame(pos->second);
+	if (tmpGame && session->GetPlayerData()) {
 		if (!tmpGame->IsNameReported()) {
-			// Temporarily note that this game was reported.
-			// This prevents spamming of the game report.
 			tmpGame->SetNameReported();
 			unsigned creatorDBId = tmpGame->GetCreatorDBId();
 			unsigned reporterDBId = session->GetPlayerData()->GetDBId();
@@ -1543,18 +1561,23 @@ ServerLobbyThread::HandleNetPacketReportGame(boost::shared_ptr<SessionData> sess
 void
 ServerLobbyThread::HandleNetPacketAdminRemoveGame(boost::shared_ptr<SessionData> session, const AdminRemoveGameMessage &removeGame)
 {
-	GameMap::iterator pos = m_gameMap.find(removeGame.removegameid());
+	boost::shared_ptr<ServerGame> gameToRemove;
+	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		GameMap::iterator pos = m_gameMap.find(removeGame.removegameid());
+		if (pos != m_gameMap.end()) {
+			gameToRemove = pos->second;
+		}
+	}
 
-	// Create Ack-Packet.
 	boost::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AdminRemoveGameAckMessage);
 	AdminRemoveGameAckMessage *netRemoveAck = packet->GetMsg()->mutable_adminremovegameackmessage();
 	netRemoveAck->set_removegameid(removeGame.removegameid());
 
-	// Check whether game id is valid and whether the player is an admin.
-	if (pos != m_gameMap.end() && session->GetPlayerData() && GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId())) {
-		LOG_ERROR("Player " << session->GetPlayerData()->GetName() << "(" << session->GetPlayerData()->GetDBId() << ") removes game '" << pos->second->GetName() << "'");
-		InternalRemoveGame(pos->second);
+	if (gameToRemove && session->GetPlayerData() && GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId())) {
+		LOG_ERROR("Player " << session->GetPlayerData()->GetName() << "(" << session->GetPlayerData()->GetDBId() << ") removes game '" << gameToRemove->GetName() << "'");
+		InternalRemoveGame(gameToRemove);
 		netRemoveAck->set_removegameresult(AdminRemoveGameAckMessage::gameRemoveAccepted);
 	} else {
 		netRemoveAck->set_removegameresult(AdminRemoveGameAckMessage::gameRemoveInvalid);
@@ -2172,6 +2195,7 @@ ServerLobbyThread::SendPlayerList(boost::shared_ptr<SessionData> s)
 void
 ServerLobbyThread::SendGameList(boost::shared_ptr<SessionData> s)
 {
+	boost::mutex::scoped_lock lock(m_gameMapMutex);
 	GameMap::const_iterator game_i = m_gameMap.begin();
 	GameMap::const_iterator game_end = m_gameMap.end();
 	while (game_i != game_end) {
@@ -2365,6 +2389,7 @@ ServerLobbyThread::GetRejoinGameIdForPlayer(const std::string &playerName, const
 {
 	u_int32_t retGameId = 0;
 	if (!guid.empty()) {
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
 		GameMap::iterator i = m_gameMap.begin();
 		GameMap::iterator end = m_gameMap.end();
 		while (i != end) {
