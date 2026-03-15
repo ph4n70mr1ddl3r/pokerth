@@ -135,7 +135,12 @@ protected:
 	typedef std::list<SessionId> SessionIdList;
 	typedef std::map<SessionId, boost::timers::portable::microsec_timer> TimerSessionMap;
 	typedef std::map<std::string, boost::timers::portable::microsec_timer> TimerClientAddressMap;
-	typedef std::map<std::string, unsigned> FailedLoginMap;
+	struct FailedLoginEntry {
+		unsigned count;
+		boost::posix_time::ptime firstFailTime;
+		FailedLoginEntry() : count(0), firstFailTime(boost::posix_time::not_a_date_time) {}
+	};
+	typedef std::map<std::string, FailedLoginEntry> FailedLoginMap;
 	typedef std::list<unsigned> RemoveGameList;
 
 protected:

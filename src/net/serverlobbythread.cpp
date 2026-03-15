@@ -1765,32 +1765,54 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
 	if (!providedPassword.empty() && Tools::ConstantTimeStringCompare(providedPassword, dbPlayerData.secret)) {
 		boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
 		std::string clientAddr = tmpSession->GetClientAddr();
-	 FailedLoginMap::iterator it = m_failedLoginMap.find(clientAddr);
+		FailedLoginMap::iterator it = m_failedLoginMap.find(clientAddr);
 		if (it != m_failedLoginMap.end()) {
-		 boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
-		 auto duration = now - it->second;
-            if (duration < seconds(MAX_FAILED_LOGIN_RATE_LIMIT_SECONDS)) {
-                it->second++;
-            } else {
-                it->second = MAX_FAILED_LOGIN_ATTEMPTS;
-                if (it->second-> MAX_FAILED_LOGIN_ATTEMPTS) {
-                    LOG_MSG("Rate limiting: Too many failed login attempts from " << clientAddr);
-                    SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
-                    return;
-                }
-            }
-        }
-    }
-    EstablishSession(tmpSession);
-} else {
-    LOG_MSG("Authentication failed for player " << playerId << " (" << tmpSession->GetClientAddr() << ")");
-    SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
+			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+			boost::posix_time::time_duration duration = now - it->second.firstFailTime;
+			if (duration.total_seconds() < MAX_FAILED_LOGIN_RATE_LIMIT_SECONDS) {
+				if (it->second.count >= MAX_FAILED_LOGIN_ATTEMPTS) {
+					LOG_MSG("Rate limiting: Too many failed login attempts from " << clientAddr);
+					SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
+					return;
+				}
+			} else {
+				m_failedLoginMap.erase(it);
+			}
+		}
+		lock.unlock();
+		EstablishSession(tmpSession);
+	} else {
+		LOG_MSG("Authentication failed for player " << playerId << " (" << tmpSession->GetClientAddr() << ")");
+		SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
+	}
 }
 
 void
 ServerLobbyThread::UserInvalid(unsigned playerId)
 {
-	SessionError(m_sessionManager.GetSessionByUniquePlayerId(playerId, true), ERR_NET_INVALID_PASSWORD);
+	boost::shared_ptr<SessionData> session = m_sessionManager.GetSessionByUniquePlayerId(playerId, true);
+	if (session) {
+		boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
+		std::string clientAddr = session->GetClientAddr();
+		FailedLoginMap::iterator it = m_failedLoginMap.find(clientAddr);
+		if (it == m_failedLoginMap.end()) {
+			FailedLoginEntry entry;
+			entry.count = 1;
+			entry.firstFailTime = boost::posix_time::second_clock::local_time();
+			m_failedLoginMap[clientAddr] = entry;
+		} else {
+			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+			boost::posix_time::time_duration duration = now - it->second.firstFailTime;
+			if (duration.total_seconds() < MAX_FAILED_LOGIN_RATE_LIMIT_SECONDS) {
+				it->second.count++;
+			} else {
+				it->second.count = 1;
+				it->second.firstFailTime = now;
+			}
+		}
+		lock.unlock();
+		SessionError(session, ERR_NET_INVALID_PASSWORD);
+	}
 }
 
 void
