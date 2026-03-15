@@ -731,7 +731,9 @@ ServerLobbyThread::GetAvatarManager()
 ChatCleanerManager &
 ServerLobbyThread::GetChatCleaner()
 {
-	assert(m_chatCleanerManager);
+	if (!m_chatCleanerManager) {
+		throw PokerTHException(__FILE__, __LINE__, ERR_NET_INVALID_SOCKET, 0, "ChatCleanerManager not initialized");
+	}
 	return *m_chatCleanerManager;
 }
 
@@ -757,14 +759,18 @@ ServerLobbyThread::GetServerMode() const
 SenderHelper &
 ServerLobbyThread::GetSender()
 {
-	assert(m_sender);
+	if (!m_sender) {
+		throw PokerTHException(__FILE__, __LINE__, ERR_NET_INVALID_SOCKET, 0, "SenderHelper not initialized");
+	}
 	return *m_sender;
 }
 
 boost::asio::io_context &
 ServerLobbyThread::GetIOService()
 {
-	assert(m_ioService);
+	if (!m_ioService) {
+		throw PokerTHException(__FILE__, __LINE__, ERR_NET_INVALID_SOCKET, 0, "IOService not initialized");
+	}
 	return *m_ioService;
 }
 
@@ -790,6 +796,7 @@ ServerLobbyThread::GetSessionDataCallback()
 u_int32_t
 ServerLobbyThread::GetNextSessionId()
 {
+	boost::mutex::scoped_lock lock(m_curSessionIdMutex);
 	return m_curSessionId++;
 }
 
@@ -836,10 +843,13 @@ ServerLobbyThread::Main()
 	CancelTimers();
 	m_sessionManager.Clear();
 	m_gameSessionManager.Clear();
-	for(const GameMap::value_type& tmpGame : m_gameMap) {
-		tmpGame.second->Exit();
+	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		for(const GameMap::value_type& tmpGame : m_gameMap) {
+			tmpGame.second->Exit();
+		}
+		m_gameMap.clear();
 	}
-	m_gameMap.clear();
 	m_database->Stop();
 
 	ClearAuthContext();
@@ -1303,6 +1313,10 @@ ServerLobbyThread::HandleNetPacketRetrieveAvatar(boost::shared_ptr<SessionData> 
 void
 ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> session, const JoinNewGameMessage &newGame)
 {
+	if (!session) {
+		LOG_ERROR("HandleNetPacketCreateGame called with null session");
+		return;
+	}
 	LOG_ERROR("Creating new game, initiated by session #" << session->GetId() << ".");
 
 	string password;

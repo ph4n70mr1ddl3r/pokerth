@@ -268,6 +268,7 @@ private:
 	u_int32_t m_curUniquePlayerId;
 	u_int32_t m_curSessionId;
 	mutable boost::mutex m_curUniquePlayerIdMutex;
+	mutable boost::mutex m_curSessionIdMutex;
 
 	ServerStats m_statData;
 	bool m_statDataChanged;

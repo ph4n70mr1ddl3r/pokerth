@@ -298,7 +298,7 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 {
 	bool retVal = false;
 	unsigned plainSize = static_cast<unsigned>(plainStr.size());
-	if (keySize && plainSize) {
+	if (keySize >= AES_BLOCK_SIZE && plainSize) {
 		unsigned char key[AES_BLOCK_SIZE];
 		unsigned char iv[AES_BLOCK_SIZE];
 		BytesToKey(keyData, keySize, key, iv);

@@ -187,9 +187,8 @@ main(int argc, char *argv[])
 		char *tmpOut = nullptr;
 		size_t tmpOutSize = 0;
 		string nextGsaslMsg;
-		auto sessionArray = std::make_unique<NetSession*[]>(numGames * 10);
 		auto gameId = std::make_unique<unsigned[]>(numGames);
-		std::fill_n(sessionArray.get(), numGames * 10, nullptr);
+		std::vector<std::unique_ptr<NetSession>> sessionArray(numGames * 10);
 		const int LoginsPerLoop = 50;
 		for (int t = 0; t < (numGames * 10) / LoginsPerLoop + 1; t++) {
 			int startNum = t * LoginsPerLoop;
@@ -198,8 +197,8 @@ main(int argc, char *argv[])
 				endNum = numGames * 10;
 			}
 			for (int i = startNum; i < endNum; i++) {
-				sessionArray[i] = new NetSession(ioService);
-				NetSession *session = sessionArray[i];
+				sessionArray[i] = std::make_unique<NetSession>(ioService);
+				NetSession *session = sessionArray[i].get();
 
 				session->socket.connect(*curEndpoint, error);
 
@@ -251,7 +250,7 @@ main(int argc, char *argv[])
 			}
 
 			for (int i = startNum; i < endNum; i++) {
-				NetSession *session = sessionArray[i];
+				NetSession *session = sessionArray[i].get();
 				msg = receiveMessage(session);
 				if (!msg || msg->present != PokerTHMessage_PR_authMessage) {
 					cout << "Auth request failed" << endl;
@@ -286,7 +285,7 @@ main(int argc, char *argv[])
 			}
 
 			for (int i = startNum; i < endNum; i++) {
-				NetSession *session = sessionArray[i];
+				NetSession *session = sessionArray[i].get();
 				msg = receiveMessage(session);
 				if (!msg || msg->present != PokerTHMessage_PR_authMessage) {
 					cout << "Auth response failed" << endl;
@@ -378,7 +377,7 @@ main(int argc, char *argv[])
 				if (i % 10 == 0) {
 					continue;
 				}
-				NetSession *session = sessionArray[i];
+				NetSession *session = sessionArray[i].get();
 
 				cout << "Player " << session->name << " joining game " << (i / 10)+1 << endl;
 				msg = static_cast<PokerTHMessage_t*>(calloc(1, sizeof(PokerTHMessage_t)));
@@ -402,7 +401,7 @@ main(int argc, char *argv[])
 				if (i % 10 == 0) {
 					continue;
 				}
-				NetSession *session = sessionArray[i];
+				NetSession *session = sessionArray[i].get();
 				// Receive join game ack
 				do {
 					ASN_STRUCT_FREE(asn_DEF_PokerTHMessage, msg);
@@ -427,7 +426,7 @@ main(int argc, char *argv[])
 		bool terminated = false;
 		while (!terminated) {
 			for (int i = 0; i < numGames * 10; i++) {
-				NetSession *session = sessionArray[i];
+				NetSession *session = sessionArray[i].get();
 
 				size_t bytes_readable = session->socket.available();
 				while (bytes_readable > 0) {
@@ -443,10 +442,6 @@ main(int argc, char *argv[])
 			boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 		}
 		gsasl_done(authContext);
-
-		for (int i = 0; i < numGames * 10; i++) {
-			delete sessionArray[i];
-		}
 
 	} catch (const exception &e) {
 		cout << "Exception caught " << e.what() << endl;

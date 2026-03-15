@@ -1017,7 +1017,7 @@ NetPacketValidator::ValidateChatRequestMessage(const NetPacket &packet)
 		if (VALIDATE_STRING_SIZE(msg.chattext(), 1, 128)) {
 			bool validContent = true;
 			for (char c : msg.chattext()) {
-				if (c == '\0' || c == '\x1b') {
+				if (c == '\0' || c == '\x1b' || (static_cast<unsigned char>(c) < 0x20 && c != '\t' && c != '\n' && c != '\r') || c == '\x7f') {
 					validContent = false;
 					break;
 				}
@@ -1037,7 +1037,7 @@ NetPacketValidator::ValidateChatMessage(const NetPacket &packet)
 		if (VALIDATE_STRING_SIZE(msg.chattext(), 1, 128)) {
 			bool validContent = true;
 			for (char c : msg.chattext()) {
-				if (c == '\0' || c == '\x1b') {
+				if (c == '\0' || c == '\x1b' || (static_cast<unsigned char>(c) < 0x20 && c != '\t' && c != '\n' && c != '\r') || c == '\x7f') {
 					validContent = false;
 					break;
 				}
