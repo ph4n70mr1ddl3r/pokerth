@@ -423,3 +423,19 @@ CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const
 	return retVal;
 }
 
+void
+CryptHelper::SecureClearMemory(void *ptr, size_t len)
+{
+	if (!ptr || len == 0)
+		return;
+#ifdef HAVE_OPENSSL
+	OPENSSL_cleanse(ptr, len);
+#else
+	volatile unsigned char *volatilePtr = static_cast<volatile unsigned char *>(ptr);
+	for (size_t i = 0; i < len; ++i) {
+		volatilePtr[i] = 0;
+	}
+	gcry_fast_random_poll();
+#endif
+}
+

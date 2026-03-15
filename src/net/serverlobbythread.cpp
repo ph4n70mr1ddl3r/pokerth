@@ -1217,7 +1217,14 @@ ServerLobbyThread::HandleNetPacketAvatarEnd(boost::shared_ptr<SessionData> sessi
 void
 ServerLobbyThread::HandleNetPacketRetrievePlayerInfo(boost::shared_ptr<SessionData> session, const PlayerInfoRequestMessage &playerInfoRequest)
 {
-	for(unsigned playerId : playerInfoRequest.playerid()) {
+	constexpr size_t MAX_PLAYER_INFO_REQUEST_IDS = 50;
+	const auto& playerIdList = playerInfoRequest.playerid();
+	if (playerIdList.size() > MAX_PLAYER_INFO_REQUEST_IDS) {
+		LOG_ERROR("Session " << session->GetId() << " - Player info request exceeded maximum IDs: " 
+		          << playerIdList.size() << " > " << MAX_PLAYER_INFO_REQUEST_IDS);
+		return;
+	}
+	for(unsigned playerId : playerIdList) {
 		// Find player in lobby or in a game.
 		boost::shared_ptr<SessionData> tmpSession = m_sessionManager.GetSessionByUniquePlayerId(playerId);
 		if (!tmpSession) {
@@ -2000,12 +2007,15 @@ ServerLobbyThread::InternalAddGame(boost::shared_ptr<ServerGame> game)
 	m_sessionManager.SendLobbyMsgToAllSessions(GetSender(), CreateNetPacketGameListNew(*game), SessionData::Established);
 	m_gameSessionManager.SendLobbyMsgToAllSessions(GetSender(), CreateNetPacketGameListNew(*game), SessionData::Game);
 
+	unsigned numGames = 0;
+	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		numGames = static_cast<unsigned>(m_gameMap.size());
+	}
 	{
 		boost::mutex::scoped_lock lock(m_statMutex);
 		++m_statData.totalGamesEverCreated;
 		++m_statData.numberOfGamesOpen;
-		boost::mutex::scoped_lock gameLock(m_gameMapMutex);
-		unsigned numGames = static_cast<unsigned>(m_gameMap.size());
 		if (numGames > m_statData.maxGamesOpen)
 			m_statData.maxGamesOpen = numGames;
 		m_statDataChanged = true;

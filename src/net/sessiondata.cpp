@@ -36,6 +36,7 @@
 #include <net/websendbuffer.h>
 #include <net/socket_msg.h>
 #include <net/websocketdata.h>
+#include <core/crypthelper.h>
 #include <boost/asio/ssl.hpp>
 #include <QDebug>
 
@@ -84,10 +85,7 @@ SessionData::~SessionData() noexcept
 		{
 			boost::mutex::scoped_lock lock(m_dataMutex);
 			if (!m_password.empty()) {
-				volatile char *ptr = &m_password[0];
-				for (size_t i = 0; i < m_password.size(); ++i) {
-					ptr[i] = 0;
-				}
+				CryptHelper::SecureClearMemory(&m_password[0], m_password.size());
 				m_password.clear();
 			}
 		}
@@ -203,10 +201,7 @@ SessionData::AuthSetPassword(const std::string &password)
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);
 	if (!m_password.empty()) {
-		volatile char *ptr = &m_password[0];
-		for (size_t i = 0; i < m_password.size(); ++i) {
-			ptr[i] = 0;
-		}
+		CryptHelper::SecureClearMemory(&m_password[0], m_password.size());
 	}
 	m_password = password;
 }

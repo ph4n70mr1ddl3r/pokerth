@@ -95,6 +95,7 @@ public:
 	static bool HMACSha1(const unsigned char *keyData, unsigned keySize, const unsigned char *plainData, unsigned plainSize, SHA1Buf &buf);
 	static bool AES128Encrypt(const unsigned char *keyData, unsigned keySize, const std::string &plainStr, std::vector<unsigned char> &outCipher);
 	static bool AES128Decrypt(const unsigned char *keyData, unsigned keySize, const unsigned char *cipher, unsigned cipherSize, std::string &outPlain);
+	static void SecureClearMemory(void *ptr, size_t len);
 
 private:
 	static void BytesToKey(const unsigned char *keyData, unsigned keySize, unsigned char *key, unsigned char *iv);
