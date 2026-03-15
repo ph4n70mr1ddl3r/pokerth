@@ -36,6 +36,7 @@
 #include <boost/thread.hpp>
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
 #include <boost/shared_ptr.hpp>
+#include <atomic>
 
 #ifndef NANOSECONDS_PER_SECOND
 #define NANOSECONDS_PER_SECOND 1000000000
@@ -86,6 +87,7 @@ private:
 
 	// Flag specifying whether the thread should be terminated.
 	mutable boost::interprocess::interprocess_semaphore m_shouldTerminateSemaphore;
+	mutable std::atomic<bool> m_shouldTerminateFlag{false};
 
 	// The boost thread object.
 	boost::shared_ptr<boost::thread> m_threadObj;

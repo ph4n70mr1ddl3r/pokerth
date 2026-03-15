@@ -1035,6 +1035,11 @@ ServerLobbyThread::HandleNetPacketInit(boost::shared_ptr<SessionData> session, c
 	string serverPassword;
 	if (initMessage.has_authserverpassword()) {
 		serverPassword = initMessage.authserverpassword();
+		if (serverPassword.size() > 128) {
+			LOG_ERROR("Server password too long from " << session->GetClientAddr());
+			SessionError(session, ERR_NET_INVALID_PASSWORD);
+			return;
+		}
 	}
 	if (!Tools::ConstantTimeStringCompare(serverPassword, m_serverConfig.readConfigString("ServerPassword"))) {
 		LOG_MSG("Invalid server password attempt from " << session->GetClientAddr());
@@ -1807,24 +1812,30 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
 
 	std::string providedPassword = tmpSession->AuthGetPassword();
 	if (!providedPassword.empty() && Tools::ConstantTimeStringCompare(providedPassword, dbPlayerData.secret)) {
-		boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
-		std::string clientAddr = tmpSession->GetClientAddr();
-		FailedLoginMap::iterator it = m_failedLoginMap.find(clientAddr);
-		if (it != m_failedLoginMap.end()) {
-			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
-			boost::posix_time::time_duration duration = now - it->second.firstFailTime;
-			if (duration.total_seconds() < MAX_FAILED_LOGIN_RATE_LIMIT_SECONDS) {
-				if (it->second.count >= MAX_FAILED_LOGIN_ATTEMPTS) {
-					LOG_MSG("Rate limiting: Too many failed login attempts from " << clientAddr);
-					SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
-					return;
+		bool shouldEstablish = true;
+		{
+			boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
+			std::string clientAddr = tmpSession->GetClientAddr();
+			FailedLoginMap::iterator it = m_failedLoginMap.find(clientAddr);
+			if (it != m_failedLoginMap.end()) {
+				boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+				boost::posix_time::time_duration duration = now - it->second.firstFailTime;
+				if (duration.total_seconds() < MAX_FAILED_LOGIN_RATE_LIMIT_SECONDS) {
+					if (it->second.count >= MAX_FAILED_LOGIN_ATTEMPTS) {
+						LOG_MSG("Rate limiting: Too many failed login attempts from " << clientAddr);
+						shouldEstablish = false;
+					}
 				}
-			} else {
-				m_failedLoginMap.erase(it);
+				if (shouldEstablish) {
+					m_failedLoginMap.erase(it);
+				}
 			}
 		}
-		lock.unlock();
-		EstablishSession(tmpSession);
+		if (shouldEstablish) {
+			EstablishSession(tmpSession);
+		} else {
+			SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
+		}
 	} else {
 		LOG_MSG("Authentication failed for player " << playerId << " (" << tmpSession->GetClientAddr() << ")");
 		SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);

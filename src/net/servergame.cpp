@@ -1073,16 +1073,6 @@ ServerGame::IsAvatarReported(unsigned playerId) const
 	return retVal;
 }
 
-bool
-ServerGame::IsAvatarReported(unsigned playerId) const
-{
-	bool retVal = false;
-	PlayerIdList::const_iterator pos = find(m_reportedAvatarList.begin(), m_reportedAvatarList.end(), playerId);
-	if (pos != m_reportedAvatarList.end())
-		retVal = true;
-	return retVal;
-}
-
 SessionManager &
 ServerGame::GetSessionManager()
 {

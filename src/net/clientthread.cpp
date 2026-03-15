@@ -685,12 +685,19 @@ ClientThread::RequestPlayerInfo(const list<unsigned> &idList, bool requestAvatar
 	boost::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayerInfoRequestMessage);
 	PlayerInfoRequestMessage *netPlayerInfo = packet->GetMsg()->mutable_playerinforequestmessage();
-	for(unsigned playerId : idList) {
-		if (find(m_playerInfoRequestList.begin(), m_playerInfoRequestList.end(), playerId) == m_playerInfoRequestList.end()) {
-			netPlayerInfo->add_playerid(playerId);
-			m_playerInfoRequestList.push_back(playerId);
+	{
+		boost::mutex::scoped_lock lock(m_playerInfoRequestListMutex);
+		for(unsigned playerId : idList) {
+			if (find(m_playerInfoRequestList.begin(), m_playerInfoRequestList.end(), playerId) == m_playerInfoRequestList.end()) {
+				netPlayerInfo->add_playerid(playerId);
+				m_playerInfoRequestList.push_back(playerId);
+				if (m_playerInfoRequestList.size() > 1000) {
+					m_playerInfoRequestList.pop_front();
+				}
+			}
 		}
-		// Remember that we have to request an avatar.
+	}
+	for(unsigned playerId : idList) {
 		if (requestAvatar) {
 			m_avatarShouldRequestList.push_back(playerId);
 			if (m_avatarShouldRequestList.size() > 1000) {

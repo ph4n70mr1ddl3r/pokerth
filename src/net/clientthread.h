@@ -326,6 +326,7 @@ private:
 	PlayerInfoMap m_playerInfoMap;
 	mutable boost::mutex m_playerInfoMapMutex;
 	PlayerIdList m_playerInfoRequestList;
+	mutable boost::mutex m_playerInfoRequestListMutex;
 	PlayerIdList m_avatarShouldRequestList;
 	PlayerIdList m_avatarHasRequestedList;
 

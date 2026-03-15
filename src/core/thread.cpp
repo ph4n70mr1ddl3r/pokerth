@@ -72,6 +72,7 @@ Thread::Run()
 void
 Thread::SignalTermination()
 {
+	m_shouldTerminateFlag.store(true, std::memory_order_release);
 	m_shouldTerminateSemaphore.post();
 }
 
@@ -119,7 +120,7 @@ Thread::MainWrapper()
 bool
 Thread::ShouldTerminate() const
 {
-	return m_shouldTerminateSemaphore.try_wait();
+	return m_shouldTerminateFlag.load(std::memory_order_acquire);
 }
 
 bool
