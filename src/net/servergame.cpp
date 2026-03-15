@@ -306,7 +306,7 @@ ServerGame::TimerVoteKick(const boost::system::error_code &ec)
 PlayerDataList
 ServerGame::InternalStartGame()
 {
-	LOG_ERROR("InternalStartGame() entered.");
+	LOG_VERBOSE("InternalStartGame() entered.");
 	// Initialize the game.
 	PlayerDataList playerData(GetFullPlayerDataList());
 
@@ -480,8 +480,8 @@ ServerGame::StoreLastGames(const PlayerDataList &playerDataList)
 		tmpPlayer->AddPlayerLastGame(static_cast<long>(time(nullptr)));
 		std::vector<long> last_games = tmpPlayer->GetPlayerLastGames();
 		if(!last_games.empty()) {
-			LOG_ERROR("TimeStamp stored: " << last_games.back());
-			LOG_ERROR("Ready for storing vector for player " << tmpPlayer->GetDBId() << " - lastGameTs " << last_games.back());
+			LOG_VERBOSE("TimeStamp stored: " << last_games.back());
+			LOG_VERBOSE("Ready for storing vector for player " << tmpPlayer->GetDBId() << " - lastGameTs " << last_games.back());
 			if(tmpPlayer->GetDBId() != DB_ID_INVALID){
 				boost::shared_ptr<SessionData> session = GetSessionManager().GetSessionByUniquePlayerId(tmpPlayer->GetUniqueId());
 				if (session) {

@@ -269,14 +269,11 @@ ServerLobbyThread::~ServerLobbyThread() noexcept
 void
 ServerLobbyThread::Init(const string &logDir)
 {
-	// Read previous server statistics.
 	if (!logDir.empty()) {
 		boost::filesystem::path logPath(logDir);
-		if (!logDir.empty()) {
-			logPath /= SERVER_STATISTICS_FILE_NAME;
-			m_statisticsFileName = logPath.string();
-			ReadStatisticsFile();
-		}
+		logPath /= SERVER_STATISTICS_FILE_NAME;
+		m_statisticsFileName = logPath.string();
+		ReadStatisticsFile();
 	}
 	m_database->Init(
 		m_serverConfig.readConfigString("DBServerAddress"),
@@ -642,6 +639,7 @@ ServerLobbyThread::SendGlobalChat(const string &message)
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatMessage);
 	ChatMessage *netChat = packet->GetMsg()->mutable_chatmessage();
 	netChat->set_chattype(ChatMessage::chatTypeBroadcast);
+	netChat->set_chattext(message);
 	m_sessionManager.SendToAllSessions(GetSender(), packet, SessionData::Established);
 	m_gameSessionManager.SendToAllSessions(GetSender(), packet, SessionData::Game);
 }
@@ -1322,7 +1320,7 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 		LOG_ERROR("HandleNetPacketCreateGame called with null session");
 		return;
 	}
-	LOG_ERROR("Creating new game, initiated by session #" << session->GetId() << ".");
+	LOG_VERBOSE("Creating new game, initiated by session #" << session->GetId() << ".");
 
 	string password;
 	if (newGame.has_password())
@@ -1410,7 +1408,7 @@ ServerLobbyThread::HandleNetPacketJoinGame(boost::shared_ptr<SessionData> sessio
 
 	if (game) {
 		const GameData &tmpData = game->GetGameData();
-		LOG_ERROR("JoinGame pre validation");
+		LOG_VERBOSE("JoinGame pre validation");
 		if (!session->GetPlayerData()) {
 			LOG_ERROR("Session " << session->GetId() << " has no player data");
 			SendJoinGameFailed(session, joinGame.gameid(), NTF_NET_JOIN_INVALID_SETTINGS);

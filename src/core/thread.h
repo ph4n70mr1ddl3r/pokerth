@@ -47,7 +47,7 @@
 class Thread
 {
 public:
-	Thread();
+	explicit Thread();
 	virtual ~Thread() noexcept;
 
 	// Start the thread. Will do nothing if the
