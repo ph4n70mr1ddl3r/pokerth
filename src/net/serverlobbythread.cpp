@@ -419,7 +419,7 @@ ServerLobbyThread::CloseSession(boost::shared_ptr<SessionData> session)
 		boost::shared_ptr<boost::asio::ip::tcp::socket> sock = session->GetAsioSocket();
 		if (sock) {
 			boost::system::error_code ec;
-			session->GetAsioSocket()->shutdown(boost::asio::ip::tcp::socket::shutdown_receive, ec);
+			sock->shutdown(boost::asio::ip::tcp::socket::shutdown_receive, ec);
 		}
 		// Close this session after send.
 		GetSender().SetCloseAfterSend(session);
@@ -479,6 +479,9 @@ ServerLobbyThread::NotifyPlayerLeftGame(unsigned gameId, unsigned playerId)
 	// Send notification to players in lobby.
 	boost::shared_ptr<NetPacket> packet(new NetPacket);
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_GameListPlayerLeftMessage);
+	GameListPlayerLeftMessage *netListMsg = packet->GetMsg()->mutable_gamelistplayerleftmessage();
+	netListMsg->set_gameid(gameId);
+	netListMsg->set_playerid(playerId);
 	m_sessionManager.SendLobbyMsgToAllSessions(GetSender(), packet, SessionData::Established);
 	m_gameSessionManager.SendLobbyMsgToAllSessions(GetSender(), packet, SessionData::Game);
 }
@@ -1811,7 +1814,11 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
     }
 
 	std::string providedPassword = tmpSession->AuthGetPassword();
-	if (!providedPassword.empty() && Tools::ConstantTimeStringCompare(providedPassword, dbPlayerData.secret)) {
+	std::string emptyPassword;
+	bool passwordMatch = Tools::ConstantTimeStringCompare(
+		providedPassword.empty() ? emptyPassword : providedPassword,
+		dbPlayerData.secret);
+	if (!providedPassword.empty() && passwordMatch) {
 		bool shouldEstablish = true;
 		{
 			boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
