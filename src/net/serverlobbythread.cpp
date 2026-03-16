@@ -1815,9 +1815,8 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
 
 	std::string providedPassword = tmpSession->AuthGetPassword();
 	std::string emptyPassword;
-	bool passwordMatch = Tools::ConstantTimeStringCompare(
-		providedPassword.empty() ? emptyPassword : providedPassword,
-		dbPlayerData.secret);
+	std::string passwordToCompare = providedPassword.empty() ? std::string(dbPlayerData.secret.size(), '\0') : providedPassword;
+	bool passwordMatch = Tools::ConstantTimeStringCompare(passwordToCompare, dbPlayerData.secret);
 	if (!providedPassword.empty() && passwordMatch) {
 		bool shouldEstablish = true;
 		{
@@ -2001,7 +2000,7 @@ ServerLobbyThread::TimerUpdateClientLoginLock(const boost::system::error_code &e
 		while (i != end) {
 			TimerClientAddressMap::iterator next = i;
 			++next;
-			if (i->second.elapsed().total_seconds() > static_cast<int>(SERVER_INIT_LOGIN_CLIENT_LOCK_SEC))
+			if (i->second.elapsed().total_seconds() > static_cast<boost::int64_t>(SERVER_INIT_LOGIN_CLIENT_LOCK_SEC))
 				m_timerClientAddressMap.erase(i);
 			i = next;
 		}

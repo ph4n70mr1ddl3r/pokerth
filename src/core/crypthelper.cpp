@@ -185,6 +185,16 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 	if (fileName.empty() || fileName.find("..") != std::string::npos) {
 		return false;
 	}
+	if (fileName[0] == '/' || fileName[0] == '\\') {
+		LOG_ERROR("MD5Sum: Absolute paths not allowed: " << fileName);
+		return false;
+	}
+	boost::system::error_code ec;
+	boost::filesystem::path p(fileName);
+	if (boost::filesystem::is_symlink(p, ec) && !ec) {
+		LOG_ERROR("MD5Sum: Symbolic links not allowed: " << fileName);
+		return false;
+	}
 	bool retVal = false;
 	FILE *file = fopen(fileName.c_str(), "rb");
 

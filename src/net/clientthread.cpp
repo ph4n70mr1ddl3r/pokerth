@@ -1563,7 +1563,7 @@ ClientThread::GetStatData() const
 bool
 ClientThread::IsSessionEstablished() const
 {
-	return m_sessionEstablished;
+	return m_sessionEstablished.load(std::memory_order_acquire);
 }
 
 void

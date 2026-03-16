@@ -548,22 +548,21 @@ void
 ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned playerIdWho, unsigned timeoutSec)
 {
 	if (IsRunning() && byWhom->GetPlayerData()) {
-		// Retrieve only the number of human players.
+		unsigned playerIdByWhom = byWhom->GetPlayerData()->GetUniqueId();
+		if (playerIdByWhom == playerIdWho) {
+			InternalDenyAskVoteKick(byWhom, playerIdWho, KICK_DENIED_CANNOT_KICK_SELF);
+			return;
+		}
 		size_t numPlayers = GetSessionManager().GetPlayerIdList(SessionData::Game).size();
 		if (numPlayers > 2) {
-			// Check whether the player to be kicked exists.
 			if (IsValidPlayer(playerIdWho)) {
-			// Lock the vote kick data.
 			boost::mutex::scoped_lock lock(m_voteKickDataMutex);
 			if (!m_voteKickData) {
-				// Initiate a vote kick.
-				unsigned playerIdByWhom = byWhom->GetPlayerData()->GetUniqueId();
 				m_voteKickData.reset(new VoteKickData);
 				m_voteKickData->petitionId = m_curPetitionId++;
 				m_voteKickData->kickPlayerId = playerIdWho;
 				m_voteKickData->numVotesToKick = static_cast<int>(ceil(numPlayers * 2.0 / 3.0));
 				m_voteKickData->timeLimitSec = timeoutSec + SERVER_KICK_TIMEOUT_ADD_DELAY_SEC;
-				// Consider first vote.
 				m_voteKickData->numVotesInFavourOfKicking = 1;
 				m_voteKickData->votedPlayerIds.push_back(playerIdByWhom);
 				unsigned petitionId = m_voteKickData->petitionId;

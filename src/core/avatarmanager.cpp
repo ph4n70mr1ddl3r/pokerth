@@ -371,6 +371,14 @@ AvatarManager::StoreAvatarInCache(const MD5Buf &md5buf, AvatarFileType avatarFil
 				std::ofstream o(fileName.c_str(), ios_base::out | ios_base::binary | ios_base::trunc);
 				if (!o.fail()) {
 					o.write((const char *)data, size);
+					o.flush();
+					if (o.fail()) {
+						LOG_ERROR("Failed to write avatar data to file: " << fileName);
+						o.close();
+						boost::system::error_code ec;
+						boost::filesystem::remove(fileName, ec);
+						return retVal;
+					}
 					o.close();
 					if (upload && m_useExternalServer) {
 						m_uploader->QueueUpload(m_externalServerAddress, m_externalServerUser, m_externalServerPassword, fileName, size);
