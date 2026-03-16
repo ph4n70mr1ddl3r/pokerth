@@ -401,7 +401,8 @@ NetPacketValidator::ValidatePlayerInfoRequestMessage(const NetPacket &packet)
 	bool retVal = false;
 	if (packet.GetMsg()->has_playerinforequestmessage()) {
 		const PlayerInfoRequestMessage &msg = packet.GetMsg()->playerinforequestmessage();
-		if (VALIDATE_LIST_SIZE(msg.playerid(), 1, 2)) {
+		constexpr int MAX_PLAYER_INFO_REQUEST_IDS = 50;
+		if (VALIDATE_LIST_SIZE(msg.playerid(), 1, MAX_PLAYER_INFO_REQUEST_IDS)) {
 			retVal = true;
 		}
 	}

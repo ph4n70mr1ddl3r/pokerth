@@ -1872,6 +1872,18 @@ ServerLobbyThread::UserInvalid(unsigned playerId)
 				it->second.firstFailTime = now;
 			}
 		}
+		constexpr size_t MAX_FAILED_LOGIN_MAP_SIZE = 10000;
+		if (m_failedLoginMap.size() > MAX_FAILED_LOGIN_MAP_SIZE) {
+			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+			for (auto mapIt = m_failedLoginMap.begin(); mapIt != m_failedLoginMap.end(); ) {
+				boost::posix_time::time_duration duration = now - mapIt->second.firstFailTime;
+				if (duration.total_seconds() > MAX_FAILED_LOGIN_RATE_LIMIT_SECONDS) {
+					mapIt = m_failedLoginMap.erase(mapIt);
+				} else {
+					++mapIt;
+				}
+			}
+		}
 		lock.unlock();
 		SessionError(session, ERR_NET_INVALID_PASSWORD);
 	}

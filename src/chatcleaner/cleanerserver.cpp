@@ -150,14 +150,12 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 			QString receivedSecret = QString::fromStdString(netInit.clientsecret());
 			QByteArray expectedBytes = clientSecret.toUtf8();
 			QByteArray receivedBytes = receivedSecret.toUtf8();
-			bool secretMatch = false;
-			if (expectedBytes.size() == receivedBytes.size()) {
-				volatile char result = 0;
-				for (int i = 0; i < expectedBytes.size(); ++i) {
-					result |= expectedBytes[i] ^ receivedBytes[i];
-				}
-				secretMatch = (result == 0);
+			volatile char result = 0;
+			for (int i = 0; i < expectedBytes.size(); ++i) {
+				unsigned char cb = (i < receivedBytes.size()) ? static_cast<unsigned char>(receivedBytes[i]) : 0;
+				result |= static_cast<unsigned char>(expectedBytes[i]) ^ cb;
 			}
+			bool secretMatch = (result == 0) && (expectedBytes.size() == receivedBytes.size());
 			if (secretMatch) {
 				error = false;
 
