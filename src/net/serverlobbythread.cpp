@@ -296,7 +296,20 @@ ServerLobbyThread::SignalTermination()
 void
 ServerLobbyThread::AddConnection(boost::shared_ptr<SessionData> sessionData)
 {
-	// Create a new session.
+	unsigned numLobbySessions = m_sessionManager.GetRawSessionCount();
+	unsigned numGameSessions = m_gameSessionManager.GetRawSessionCount();
+	if (numLobbySessions >= SERVER_MAX_NUM_LOBBY_SESSIONS
+			|| numLobbySessions + numGameSessions >= SERVER_MAX_NUM_TOTAL_SESSIONS) {
+		SessionError(sessionData, ERR_NET_SERVER_FULL);
+		return;
+	}
+
+	string ipAddress = sessionData->GetRemoteIPAddressFromSocket();
+	if (ipAddress.empty()) {
+		SessionError(sessionData, ERR_NET_INVALID_SESSION);
+		return;
+	}
+
 	m_sessionManager.AddSession(sessionData);
 
 	LOG_VERBOSE(sessionData->GetRemoteIPAddressFromSocket() << " Accepted connection - session #" << sessionData->GetId() << ".");
@@ -305,39 +318,23 @@ ServerLobbyThread::AddConnection(boost::shared_ptr<SessionData> sessionData)
 	sessionData->StartTimerGlobalTimeout(SERVER_SESSION_FORCED_TIMEOUT_SEC);
 	sessionData->StartTimerActivityTimeout(SERVER_SESSION_ACTIVITY_TIMEOUT_SEC, SERVER_TIMEOUT_WARNING_REMAINING_SEC);
 
-	unsigned numLobbySessions = m_sessionManager.GetRawSessionCount();
-	unsigned numGameSessions = m_gameSessionManager.GetRawSessionCount();
-	if (numLobbySessions <= SERVER_MAX_NUM_LOBBY_SESSIONS
-			&& numLobbySessions + numGameSessions <= SERVER_MAX_NUM_TOTAL_SESSIONS) {
-		string ipAddress = sessionData->GetRemoteIPAddressFromSocket();
-		if (!ipAddress.empty()) {
-			sessionData->SetClientAddr(ipAddress);
+	sessionData->SetClientAddr(ipAddress);
 
-			boost::shared_ptr<NetPacket> packet(new NetPacket);
-			packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AnnounceMessage);
-			AnnounceMessage *netAnnounce = packet->GetMsg()->mutable_announcemessage();
-			netAnnounce->mutable_protocolversion()->set_majorversion(NET_VERSION_MAJOR);
-			netAnnounce->mutable_protocolversion()->set_minorversion(NET_VERSION_MINOR);
-			netAnnounce->mutable_latestgameversion()->set_majorversion(POKERTH_VERSION_MAJOR);
-			netAnnounce->mutable_latestgameversion()->set_minorversion(POKERTH_VERSION_MINOR);
-			netAnnounce->set_latestbetarevision(POKERTH_BETA_REVISION);
-			netAnnounce->set_servertype(AnnounceMessage::serverTypeInternetAuth);
-			{
-				boost::mutex::scoped_lock lock(m_statMutex);
-				netAnnounce->set_numplayersonserver(m_statData.numberOfPlayersOnServer);
-			}
-			GetSender().Send(sessionData, packet);
-			sessionData->GetReceiveBuffer().StartAsyncRead(sessionData);
-		} else {
-			// We do not accept sessions if we cannot
-			// retrieve the client address.
-			SessionError(sessionData, ERR_NET_INVALID_SESSION);
-		}
-	} else {
-		// Server is full.
-		// Gracefully close this session.
-		SessionError(sessionData, ERR_NET_SERVER_FULL);
+	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AnnounceMessage);
+	AnnounceMessage *netAnnounce = packet->GetMsg()->mutable_announcemessage();
+	netAnnounce->mutable_protocolversion()->set_majorversion(NET_VERSION_MAJOR);
+	netAnnounce->mutable_protocolversion()->set_minorversion(NET_VERSION_MINOR);
+	netAnnounce->mutable_latestgameversion()->set_majorversion(POKERTH_VERSION_MAJOR);
+	netAnnounce->mutable_latestgameversion()->set_minorversion(POKERTH_VERSION_MINOR);
+	netAnnounce->set_latestbetarevision(POKERTH_BETA_REVISION);
+	netAnnounce->set_servertype(AnnounceMessage::serverTypeInternetAuth);
+	{
+		boost::mutex::scoped_lock lock(m_statMutex);
+		netAnnounce->set_numplayersonserver(m_statData.numberOfPlayersOnServer);
 	}
+	GetSender().Send(sessionData, packet);
+	sessionData->GetReceiveBuffer().StartAsyncRead(sessionData);
 }
 
 void
@@ -1484,7 +1481,7 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 			if (targetSession && targetSession->GetPlayerData()) {
 				boost::shared_ptr<ServerGame> tmpGame = targetSession->GetGame();
 				if (!tmpGame || !tmpGame->IsRunning()) {
-					if(GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId()) && chatRequest.chattext().substr (0, 3) == "gn ")
+					if(GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId()) && chatRequest.chattext().size() >= 3 && chatRequest.chattext().substr(0, 3) == "gn ")
 					{
 						LOG_ERROR("Global Notice: " << chatRequest.chattext().substr(3) << " von player_id " << session->GetPlayerData()->GetDBId());
 						SendGlobalChat(chatRequest.chattext().substr(3));
@@ -1872,7 +1869,7 @@ ServerLobbyThread::UserInvalid(unsigned playerId)
 				it->second.firstFailTime = now;
 			}
 		}
-		constexpr size_t MAX_FAILED_LOGIN_MAP_SIZE = 10000;
+		constexpr size_t MAX_FAILED_LOGIN_MAP_SIZE = 1000;
 		if (m_failedLoginMap.size() > MAX_FAILED_LOGIN_MAP_SIZE) {
 			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
 			for (auto mapIt = m_failedLoginMap.begin(); mapIt != m_failedLoginMap.end(); ) {
@@ -2335,7 +2332,10 @@ ServerLobbyThread::TimerSaveStatisticsFile(const boost::system::error_code &ec)
 				o << SERVER_STATISTICS_STR_MAX_GAMES " " << m_statData.maxGamesOpen << endl;
 				o << SERVER_STATISTICS_STR_CUR_PLAYERS " " << m_statData.numberOfPlayersOnServer << endl;
 				o << SERVER_STATISTICS_STR_CUR_GAMES " " << m_statData.numberOfGamesOpen << endl;
+				o.flush();
 				m_statDataChanged = false;
+			} else {
+				LOG_ERROR("Failed to open statistics file: " << m_statisticsFileName);
 			}
 		}
 		// Restart timer

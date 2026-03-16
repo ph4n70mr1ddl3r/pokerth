@@ -180,8 +180,10 @@ ChatCleanerManager::HandleRead(const boost::system::error_code &ec, size_t bytes
 	if (!ec) {
 		bool error = false;
 		if (m_recvBufUsed + bytesRead > sizeof(m_recvBuf)) {
-			LOG_ERROR("Buffer overflow detected in chat cleaner manager");
-			m_socket->close();
+			LOG_ERROR("Buffer overflow detected in chat cleaner manager - possible attack, resetting connection");
+			m_recvBufUsed = 0;
+			boost::system::error_code closeEc;
+			m_socket->close(closeEc);
 			return;
 		}
 		m_recvBufUsed += bytesRead;
