@@ -216,11 +216,10 @@ ServerBanManager::IsIPAddressBanned(const std::string &ipAddress) const
 void
 ServerBanManager::InitGameNameBadWordList(const std::list<string> &badWordList)
 {
-	auto i = badWordList.begin();
-	auto end = badWordList.end();
-	while (i != end) {
-		m_gameNameBadWordFilter.push_back(boost::regex(*i, boost::regex::extended | boost::regex::icase));
-		++i;
+	boost::mutex::scoped_lock lock(m_banMutex);
+	m_gameNameBadWordFilter.clear();
+	for (const auto &word : badWordList) {
+		m_gameNameBadWordFilter.push_back(boost::regex(word, boost::regex::extended | boost::regex::icase));
 	}
 }
 
@@ -228,14 +227,12 @@ bool
 ServerBanManager::IsBadGameName(const std::string &name) const
 {
 	bool retVal = false;
-	RegexList::const_iterator i = m_gameNameBadWordFilter.begin();
-	RegexList::const_iterator end = m_gameNameBadWordFilter.end();
-	while (i != end) {
-		if (regex_match(name, *i)) {
+	boost::mutex::scoped_lock lock(m_banMutex);
+	for (const auto &regex : m_gameNameBadWordFilter) {
+		if (regex_match(name, regex)) {
 			retVal = true;
 			break;
 		}
-		++i;
 	}
 	return retVal;
 }

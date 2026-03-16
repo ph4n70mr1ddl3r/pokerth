@@ -151,9 +151,11 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 			QByteArray expectedBytes = clientSecret.toUtf8();
 			QByteArray receivedBytes = receivedSecret.toUtf8();
 			volatile char result = 0;
-			for (int i = 0; i < expectedBytes.size(); ++i) {
-				unsigned char cb = (i < receivedBytes.size()) ? static_cast<unsigned char>(receivedBytes[i]) : 0;
-				result |= static_cast<unsigned char>(expectedBytes[i]) ^ cb;
+			const int maxLen = std::max(expectedBytes.size(), receivedBytes.size());
+			for (int i = 0; i < maxLen; ++i) {
+				unsigned char eb = (i < expectedBytes.size()) ? static_cast<unsigned char>(expectedBytes[i]) : 0;
+				unsigned char rb = (i < receivedBytes.size()) ? static_cast<unsigned char>(receivedBytes[i]) : 0;
+				result |= eb ^ rb;
 			}
 			bool secretMatch = (result == 0) && (expectedBytes.size() == receivedBytes.size());
 			if (secretMatch) {

@@ -68,13 +68,13 @@ private:
 
 	struct ClientWarnInfos {
 		QString nick;
-		int lastWarnType;
-		int warnLevel;
+		int lastWarnType = 0;
+		int warnLevel = 0;
 	};
 
 	struct ClientKickInfos {
-		size_t lastKickTimestamp;
-		int kickNumber;
+		size_t lastKickTimestamp = 0;
+		int kickNumber = 0;
 	};
 
 	QMap<unsigned, ClientWarnInfos> myClientWarnLevelList;
