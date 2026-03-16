@@ -34,6 +34,7 @@
 #include <boost/bind/bind.hpp>
 #include <core/loghelper.h>
 #include <third_party/protobuf/chatcleaner.pb.h>
+#include <tools.h>
 
 #include <sstream>
 
@@ -252,7 +253,7 @@ ChatCleanerManager::HandleMessage(ChatCleanerMessage &msg)
 	if (msg.messagetype() == ChatCleanerMessage::Type_CleanerInitAckMessage) {
 		const CleanerInitAckMessage &netAck = msg.cleanerinitackmessage();
 		if (netAck.serverversion() == CLEANER_PROTOCOL_VERSION) {
-			if (m_serverSecret == netAck.serversecret()) {
+			if (Tools::ConstantTimeStringCompare(m_serverSecret, netAck.serversecret())) {
 				m_connected = true;
 				error = false;
 				LOG_MSG("Successfully connected to chat cleaner.");
@@ -295,8 +296,9 @@ ChatCleanerManager::SendMessageToServer(ChatCleanerMessage &msg)
 unsigned
 ChatCleanerManager::GetNextRequestId()
 {
+	boost::mutex::scoped_lock lock(m_requestIdMutex);
 	m_curRequestId++;
-	if (m_curRequestId == 0) // 0 is an invalid id.
+	if (m_curRequestId == 0)
 		m_curRequestId++;
 
 	return m_curRequestId;

@@ -80,8 +80,8 @@ private:
 	QMap<unsigned, ClientWarnInfos> myClientWarnLevelList;
 	QMap<QString, ClientKickInfos> myClientKickCounterList;
 
-	int warnLevelToKick;
-	int kickNumberToBan;
+	int warnLevelToKick = 3;
+	int kickNumberToBan = 3;
 
 	CleanerConfig *config;
 

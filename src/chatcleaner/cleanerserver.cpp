@@ -230,6 +230,14 @@ void CleanerServer::refreshConfig()
 
 void CleanerServer::sendMessageToClient(ChatCleanerMessage &msg)
 {
+	if (!tcpSocket) {
+		qDebug() << "Cannot send message: socket is null";
+		return;
+	}
+	if (tcpSocket->state() != QAbstractSocket::ConnectedState) {
+		qDebug() << "Cannot send message: socket not connected";
+		return;
+	}
 	uint32_t packetSize = msg.ByteSizeLong();
 	std::vector<google::protobuf::uint8> buf(packetSize + CLEANER_NET_HEADER_SIZE);
 	*reinterpret_cast<uint32_t*>(buf.data()) = qToBigEndian(packetSize);

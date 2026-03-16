@@ -35,6 +35,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/thread.hpp>
 #include <string>
 #include <net/chatcleanercallback.h>
 
@@ -77,6 +78,7 @@ private:
 
 	bool m_connected;
 	unsigned m_curRequestId;
+	mutable boost::mutex m_requestIdMutex;
 	std::string m_serverAddr;
 	int m_serverPort;
 	bool m_useIpv6;
