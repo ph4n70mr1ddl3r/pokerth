@@ -30,6 +30,8 @@
  *****************************************************************************/
 #include "serverguiwrapper.h"
 #include <session.h>
+#include <net/netexception.h>
+#include <net/socket_msg.h>
 
 
 using namespace std;
@@ -48,7 +50,8 @@ void ServerGuiWrapper::initGui(int /*speed*/) {}
 
 boost::shared_ptr<Session> ServerGuiWrapper::getSession()
 {
-	assert(mySession.get());
+	if (!mySession.get())
+		throw NetException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return mySession;
 }
 

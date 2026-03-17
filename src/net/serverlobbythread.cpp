@@ -781,7 +781,8 @@ ServerLobbyThread::GetDatabase()
 ServerBanManager &
 ServerLobbyThread::GetBanManager()
 {
-	assert(m_banManager);
+	if (!m_banManager)
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_banManager;
 }
 
@@ -2361,7 +2362,8 @@ ServerLobbyThread::GetCallback()
 InternalServerCallback &
 ServerLobbyThread::GetSenderCallback()
 {
-	assert(m_internalServerCallback.get());
+	if (!m_internalServerCallback.get())
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_internalServerCallback;
 }
 

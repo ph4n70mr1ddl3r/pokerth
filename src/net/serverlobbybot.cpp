@@ -167,7 +167,8 @@ ServerLobbyBot::Join(bool wait)
 ServerLobbyThread &
 ServerLobbyBot::GetLobbyThread()
 {
-	assert(m_lobbyThread.get());
+	if (!m_lobbyThread.get())
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_lobbyThread;
 }
 

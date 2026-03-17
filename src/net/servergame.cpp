@@ -1146,7 +1146,8 @@ Game &
 ServerGame::GetGame()
 {
 	boost::mutex::scoped_lock lock(m_gameMutex);
-	assert(m_game.get());
+	if (!m_game.get())
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_game;
 }
 
@@ -1154,7 +1155,8 @@ const Game &
 ServerGame::GetGame() const
 {
 	boost::mutex::scoped_lock lock(m_gameMutex);
-	assert(m_game.get());
+	if (!m_game.get())
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_game;
 }
 

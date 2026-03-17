@@ -312,7 +312,8 @@ IrcThread::IrcThread(IrcCallback *callback)
 	  m_terminationTimer(boost::posix_time::time_duration(0, 0, 0), boost::timers::portable::microsec_timer::manual_start),
 	  m_lastConnectTimer(boost::posix_time::time_duration(0, 0, 0), boost::timers::portable::microsec_timer::manual_start)
 {
-	assert(callback);
+	if (!callback)
+		throw PokerTHException(__FILE__, __LINE__, ERR_IRC_INVALID_PARAM, 0);
 	m_context.reset(new IrcContext(*this));
 }
 
@@ -533,21 +534,24 @@ IrcThread::HandleIrcError(int errorCode)
 const IrcContext &
 IrcThread::GetContext() const
 {
-	assert(m_context.get());
+	if (!m_context.get())
+		throw PokerTHException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_context;
 }
 
 IrcContext &
 IrcThread::GetContext()
 {
-	assert(m_context.get());
+	if (!m_context.get())
+		throw PokerTHException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_context;
 }
 
 IrcCallback &
 IrcThread::GetCallback()
 {
-	assert(m_callback);
+	if (!m_callback)
+		throw PokerTHException(__FILE__, __LINE__, ERR_IRC_INVALID_PARAM, 0);
 	return *m_callback;
 }
 

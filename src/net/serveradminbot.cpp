@@ -419,7 +419,8 @@ ServerAdminBot::Join(bool wait)
 ServerLobbyThread &
 ServerAdminBot::GetLobbyThread()
 {
-	assert(m_lobbyThread.get());
+	if (!m_lobbyThread.get())
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_lobbyThread;
 }
 

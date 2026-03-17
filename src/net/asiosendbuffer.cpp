@@ -36,8 +36,9 @@
 #include <net/asiosendbuffer.h>
 #include <net/sessiondata.h>
 #include <net/netpacket.h>
+#include <net/netexception.h>
+#include <net/socket_msg.h>
 #include <cstring>
-#include <cassert>
 #include <utility>
 
 using namespace std;
@@ -190,7 +191,8 @@ AsioSendBuffer::ReallocSendBuf()
 void
 AsioSendBuffer::AppendToSendBufWithoutCheck(const char *data, size_t size)
 {
-    assert(sendBuf.size() >= sendBufUsed + size && "Buffer overflow detected");
+    if (sendBuf.size() < sendBufUsed + size)
+        throw NetException(__FILE__, __LINE__, ERR_SOCK_BUF_INVALID_SIZE, 0);
     std::memcpy(sendBuf.data() + sendBufUsed, data, size);
     sendBufUsed += size;
 }

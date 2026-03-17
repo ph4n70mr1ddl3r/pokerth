@@ -115,7 +115,8 @@ ServerManager::JoinAll(bool wait)
 ServerLobbyThread &
 ServerManager::GetLobbyThread()
 {
-	assert(m_lobbyThread);
+	if (!m_lobbyThread)
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_lobbyThread;
 }
 

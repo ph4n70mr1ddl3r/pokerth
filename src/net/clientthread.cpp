@@ -967,14 +967,16 @@ ClientThread::ResubscribeLobbyMsg()
 const ClientContext &
 ClientThread::GetContext() const
 {
-	assert(m_context.get());
+	if (!m_context.get())
+		throw NetException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_context;
 }
 
 ClientContext &
 ClientThread::GetContext()
 {
-	assert(m_context.get());
+	if (!m_context.get())
+		throw NetException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_context;
 }
 
@@ -1063,7 +1065,8 @@ ClientThread::CreateContextSession()
 ClientState &
 ClientThread::GetState()
 {
-	assert(m_curState);
+	if (!m_curState)
+		throw NetException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_curState;
 }
 
@@ -1086,7 +1089,8 @@ ClientThread::GetStateTimer()
 SenderHelper &
 ClientThread::GetSender()
 {
-	assert(m_senderHelper);
+	if (!m_senderHelper)
+		throw NetException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_senderHelper;
 }
 
@@ -1165,7 +1169,8 @@ ClientThread::GetGame()
 QtToolsInterface &
 ClientThread::GetQtToolsInterface()
 {
-	assert(myQtToolsInterface.get());
+	if (!myQtToolsInterface.get())
+		throw NetException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *myQtToolsInterface;
 }
 
@@ -1270,7 +1275,8 @@ ClientThread::MapPlayerDataList()
 {
 	// Retrieve the GUI player.
 	boost::shared_ptr<PlayerData> guiPlayer = GetPlayerDataByUniqueId(GetGuiPlayerId());
-	assert(guiPlayer.get());
+	if (!guiPlayer.get())
+		throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 	m_origGuiPlayerNum = guiPlayer->GetNumber();
 
 	// Create a copy of the player list so that the GUI player

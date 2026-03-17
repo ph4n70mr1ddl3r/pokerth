@@ -234,8 +234,7 @@ void Session::startNetworkClient(const string &serverAddress, unsigned serverPor
 void Session::startNetworkClientForLocalServer(const GameData &gameData)
 {
 	if (myNetClient || !myGui) {
-		assert(false);
-		return;
+		throw NetException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	}
 	myGameType = GAME_TYPE_NETWORK;
 
