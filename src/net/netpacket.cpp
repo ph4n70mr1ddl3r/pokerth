@@ -31,6 +31,7 @@
 
 #include <net/netpacket.h>
 #include <net/socket_msg.h>
+#include <core/loghelper.h>
 
 #include <memory>
 
@@ -55,12 +56,16 @@ NetPacket::Create(const char *data, size_t dataSize)
 {
 	boost::shared_ptr<NetPacket> tmpPacket;
 
-	// Check minimum requirements.
-	if (data && dataSize > 0) {
-		std::unique_ptr<PokerTHMessage> msg(PokerTHMessage::default_instance().New());
-		if (msg->ParseFromArray(data, static_cast<int>(dataSize))) {
-			tmpPacket.reset(new NetPacket(msg.release()));
-		}
+	if (!data || dataSize == 0) {
+		LOG_ERROR("NetPacket::Create - Invalid parameters: data is null or dataSize is 0");
+		return tmpPacket;
+	}
+
+	std::unique_ptr<PokerTHMessage> msg(PokerTHMessage::default_instance().New());
+	if (msg->ParseFromArray(data, static_cast<int>(dataSize))) {
+		tmpPacket.reset(new NetPacket(msg.release()));
+	} else {
+		LOG_ERROR("NetPacket::Create - Failed to parse message from " << dataSize << " bytes");
 	}
 	return tmpPacket;
 }

@@ -288,17 +288,17 @@ ServerGame::TimerVoteKick(const boost::system::error_code &ec)
 				netEndPetition->set_petitionendreason(static_cast<EndKickPetitionMessage::PetitionEndReason>(reason));
 				SendToAllPlayers(packet, SessionData::Game);
 
-				// Perform kick.
 				if (doKick)
 					KickPlayer(kickPlayerId);
-				// This petition has ended.
+				
 				boost::mutex::scoped_lock lock(m_voteKickDataMutex);
 				m_voteKickData.reset();
+			} else {
+				m_voteKickTimer.expires_after(milliseconds(SERVER_CHECK_VOTE_KICK_INTERVAL_MSEC));
+				m_voteKickTimer.async_wait(
+					boost::bind(
+						&ServerGame::TimerVoteKick, shared_from_this(), boost::asio::placeholders::error));
 			}
-			m_voteKickTimer.expires_after(milliseconds(SERVER_CHECK_VOTE_KICK_INTERVAL_MSEC));
-			m_voteKickTimer.async_wait(
-				boost::bind(
-					&ServerGame::TimerVoteKick, shared_from_this(), boost::asio::placeholders::error));
 		}
 	}
 }
@@ -338,7 +338,9 @@ ServerGame::InternalStartGame()
 		startData.numberOfPlayers = static_cast<int>(playerData.size());
 
 		int tmpDealerPos = 0;
-		Tools::GetRand(0, startData.numberOfPlayers-1, 1, &tmpDealerPos);
+		if (startData.numberOfPlayers > 0) {
+			Tools::GetRand(0, startData.numberOfPlayers-1, 1, &tmpDealerPos);
+		}
 		// The Player Id is not continuous. Therefore, the start dealer position
 		// needs to be converted to a player Id, and cannot be directly generated
 		// as player Id.
