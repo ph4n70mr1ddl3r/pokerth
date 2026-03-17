@@ -1599,6 +1599,7 @@ ClientThread::SetSessionEstablished(bool flag)
 bool
 ClientThread::IsSynchronized() const
 {
+	boost::mutex::scoped_lock lock(m_playerInfoRequestListMutex);
 	return m_playerInfoRequestList.empty();
 }
 
