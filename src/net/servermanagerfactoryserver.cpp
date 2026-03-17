@@ -34,5 +34,5 @@
 boost::shared_ptr<ServerManager>
 ServerManagerFactory::CreateServerManager(ConfigFile &config, GuiInterface &gui, ServerMode mode, AvatarManager &avatarManager)
 {
-	return boost::shared_ptr<ServerManager>(new ServerManager(config, gui, mode, avatarManager));
+	return boost::make_shared<ServerManager>(config, gui, mode, avatarManager);
 }

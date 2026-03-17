@@ -59,7 +59,7 @@ ServerManagerIrc::Init(unsigned serverPort, unsigned websocketPort, bool ipv6, i
 	boost::shared_ptr<IrcThread> tmpIrcLobbyThread;
 	ConfigFile &myConfig = GetConfig();
 	if (myConfig.readConfigInt("UseAdminIRC")) {
-		tmpIrcAdminThread = boost::shared_ptr<IrcThread>(new IrcThread(m_adminBot.get()));
+		tmpIrcAdminThread = boost::make_shared<IrcThread>(m_adminBot.get());
 
 		tmpIrcAdminThread->Init(
 			myConfig.readConfigString("AdminIRCServerAddress"),
@@ -71,7 +71,7 @@ ServerManagerIrc::Init(unsigned serverPort, unsigned websocketPort, bool ipv6, i
 	}
 
 	if (myConfig.readConfigInt("UseLobbyIRC")) {
-		tmpIrcLobbyThread = boost::shared_ptr<IrcThread>(new IrcThread(m_lobbyBot.get()));
+		tmpIrcLobbyThread = boost::make_shared<IrcThread>(m_lobbyBot.get());
 
 		tmpIrcLobbyThread->Init(
 			myConfig.readConfigString("LobbyIRCServerAddress"),

@@ -63,8 +63,8 @@ CleanerServer::CleanerServer(): config(nullptr), blockConnection(false), m_recvB
 
 	configRefreshTimer = std::make_unique<QTimer>();
 
-	connect(configRefreshTimer.get(), SIGNAL(timeout()), this, SLOT(refreshConfig()));
-	connect(tcpServer.get(), SIGNAL(newConnection()), this, SLOT(newCon()));
+	connect(configRefreshTimer.get(), &QTimer::timeout, this, &CleanerServer::refreshConfig);
+	connect(tcpServer.get(), &QTcpServer::newConnection, this, &CleanerServer::newCon);
 
 	refreshConfig();
 	configRefreshTimer->start(10000);
@@ -77,8 +77,8 @@ void CleanerServer::newCon()
 {
 	if(!blockConnection) {
 		tcpSocket = tcpServer->nextPendingConnection();
-		connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(onRead()));
-		connect(tcpSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(socketStateChanged(QAbstractSocket::SocketState)));
+		connect(tcpSocket, &QTcpSocket::readyRead, this, &CleanerServer::onRead);
+		connect(tcpSocket, &QTcpSocket::stateChanged, this, &CleanerServer::socketStateChanged);
 		blockConnection = true;
 		tcpServer->pauseAccepting();
 	}

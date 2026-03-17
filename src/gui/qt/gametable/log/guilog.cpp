@@ -850,9 +850,9 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 	}
 
 	// open sqlite log-db
-	sqlite3 *mySqliteLogDb;
-	sqlite3_open(fileStringPdb.toStdString().c_str(), &mySqliteLogDb);
-	if( mySqliteLogDb != 0 ) {
+	sqlite3 *mySqliteLogDb = nullptr;
+	int rc = sqlite3_open(fileStringPdb.toStdString().c_str(), &mySqliteLogDb);
+	if (rc == SQLITE_OK && mySqliteLogDb != nullptr) {
 
 		// read session
 		sql = "SELECT * FROM Session";

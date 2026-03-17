@@ -51,19 +51,19 @@ ClientEngineFactory::~ClientEngineFactory() noexcept
 boost::shared_ptr<HandInterface>
 ClientEngineFactory::createHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost::shared_ptr<BoardInterface> b, Log *l, PlayerList sl, PlayerList apl, PlayerList rpl, int id, int sP, int dP, int sB,int sC)
 {
-	return boost::shared_ptr<HandInterface>(new ClientHand(f, g, b, l, sl, apl, rpl, id, sP, dP, sB, sC));
+	return boost::make_shared<ClientHand>(f, g, b, l, sl, apl, rpl, id, sP, dP, sB, sC);
 }
 
 boost::shared_ptr<BoardInterface>
 ClientEngineFactory::createBoard()
 {
-	return boost::shared_ptr<BoardInterface>(new ClientBoard());
+	return boost::make_shared<ClientBoard>();
 }
 
 boost::shared_ptr<PlayerInterface>
 ClientEngineFactory::createPlayer(int id, unsigned uniqueId, PlayerType type, std::string name, std::string avatar, int sC, bool aS, bool sotS, int mB)
 {
-	return 	boost::shared_ptr<PlayerInterface>(new ClientPlayer(nullptr, id, uniqueId, type, name, avatar, sC, aS, sotS, mB));
+	return boost::make_shared<ClientPlayer>(nullptr, id, uniqueId, type, name, avatar, sC, aS, sotS, mB);
 }
 
 std::vector<boost::shared_ptr<BeRoInterface> >
@@ -71,11 +71,11 @@ ClientEngineFactory::createBeRo(HandInterface *hi, unsigned dP, int sB)
 {
 	std::vector<boost::shared_ptr<BeRoInterface> > myBeRo;
 
-	myBeRo.push_back(boost::shared_ptr<BeRoInterface>(new ClientBeRo(hi, dP, sB, GAME_STATE_PREFLOP)));
-	myBeRo.push_back(boost::shared_ptr<BeRoInterface>(new ClientBeRo(hi, dP, sB, GAME_STATE_FLOP)));
-	myBeRo.push_back(boost::shared_ptr<BeRoInterface>(new ClientBeRo(hi, dP, sB, GAME_STATE_TURN)));
-	myBeRo.push_back(boost::shared_ptr<BeRoInterface>(new ClientBeRo(hi, dP, sB, GAME_STATE_RIVER)));
-	myBeRo.push_back(boost::shared_ptr<BeRoInterface>(new ClientBeRo(hi, dP, sB, GAME_STATE_POST_RIVER)));
+	myBeRo.push_back(boost::make_shared<ClientBeRo>(hi, dP, sB, GAME_STATE_PREFLOP));
+	myBeRo.push_back(boost::make_shared<ClientBeRo>(hi, dP, sB, GAME_STATE_FLOP));
+	myBeRo.push_back(boost::make_shared<ClientBeRo>(hi, dP, sB, GAME_STATE_TURN));
+	myBeRo.push_back(boost::make_shared<ClientBeRo>(hi, dP, sB, GAME_STATE_RIVER));
+	myBeRo.push_back(boost::make_shared<ClientBeRo>(hi, dP, sB, GAME_STATE_POST_RIVER));
 
 	return myBeRo;
 
