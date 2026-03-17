@@ -51,6 +51,8 @@
 #include <playerdata.h>
 #include <gamedata.h>
 
+constexpr size_t MAX_PLAYER_INFO_CACHE_SIZE = 500;
+
 class ClientContext;
 class ClientState;
 class SenderHelper;
@@ -328,7 +330,9 @@ private:
 	PlayerIdList m_playerInfoRequestList;
 	mutable boost::mutex m_playerInfoRequestListMutex;
 	PlayerIdList m_avatarShouldRequestList;
+	mutable boost::mutex m_avatarShouldRequestListMutex;
 	PlayerIdList m_avatarHasRequestedList;
+	mutable boost::mutex m_avatarHasRequestedListMutex;
 
 	unsigned m_curGameId = 0;
 	mutable boost::mutex m_curGameIdMutex;

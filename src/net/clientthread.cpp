@@ -697,11 +697,14 @@ ClientThread::RequestPlayerInfo(const list<unsigned> &idList, bool requestAvatar
 			}
 		}
 	}
-	for(unsigned playerId : idList) {
-		if (requestAvatar) {
-			m_avatarShouldRequestList.push_back(playerId);
-			if (m_avatarShouldRequestList.size() > 1000) {
-				m_avatarShouldRequestList.pop_front();
+	{
+		boost::mutex::scoped_lock lock(m_avatarShouldRequestListMutex);
+		for(unsigned playerId : idList) {
+			if (requestAvatar) {
+				m_avatarShouldRequestList.push_back(playerId);
+				if (m_avatarShouldRequestList.size() > 1000) {
+					m_avatarShouldRequestList.pop_front();
+				}
 			}
 		}
 	}
@@ -715,11 +718,6 @@ ClientThread::SetPlayerInfo(unsigned id, const PlayerInfo &info)
 {
 	{
 		boost::mutex::scoped_lock lock(m_playerInfoMapMutex);
-		// Remove previous player entry with different id
-		// for the same player name if it exists.
-		// This can only be one entry, since every time a duplicate
-		// name is added one is removed.
-		// Only erase non computer player entries.
 		if (info.playerName.substr(0, sizeof(SERVER_COMPUTER_PLAYER_NAME) - 1) != SERVER_COMPUTER_PLAYER_NAME) {
 			PlayerInfoMap::iterator i = m_playerInfoMap.begin();
 			PlayerInfoMap::iterator end = m_playerInfoMap.end();
@@ -732,6 +730,9 @@ ClientThread::SetPlayerInfo(unsigned id, const PlayerInfo &info)
 			}
 		}
 		m_playerInfoMap[id] = info;
+		while (m_playerInfoMap.size() > MAX_PLAYER_INFO_CACHE_SIZE) {
+			m_playerInfoMap.erase(m_playerInfoMap.begin());
+		}
 	}
 
 	// Update player data for current game.
@@ -753,14 +754,19 @@ ClientThread::SetPlayerInfo(unsigned id, const PlayerInfo &info)
 		// Skip avatar here, the game is already running.
 	}
 
-	if (find(m_avatarShouldRequestList.begin(), m_avatarShouldRequestList.end(), id) != m_avatarShouldRequestList.end()) {
-		m_avatarShouldRequestList.remove(id);
-		// Retrieve avatar if needed.
-		RetrieveAvatarIfNeeded(id, info);
+	{
+		boost::mutex::scoped_lock lock(m_avatarShouldRequestListMutex);
+		if (find(m_avatarShouldRequestList.begin(), m_avatarShouldRequestList.end(), id) != m_avatarShouldRequestList.end()) {
+			m_avatarShouldRequestList.remove(id);
+			lock.unlock();
+			RetrieveAvatarIfNeeded(id, info);
+		}
 	}
 
-	// Remove it from the request list.
-	m_playerInfoRequestList.remove(id);
+	{
+		boost::mutex::scoped_lock lock(m_playerInfoRequestListMutex);
+		m_playerInfoRequestList.remove(id);
+	}
 
 	// Notify GUI
 	GetCallback().SignalNetClientPlayerChanged(id, info.playerName);
@@ -770,9 +776,14 @@ ClientThread::SetPlayerInfo(unsigned id, const PlayerInfo &info)
 void
 ClientThread::SetUnknownPlayer(unsigned id)
 {
-	// Just remove it from the request list.
-	m_playerInfoRequestList.remove(id);
-	m_avatarShouldRequestList.remove(id);
+	{
+		boost::mutex::scoped_lock lock(m_playerInfoRequestListMutex);
+		m_playerInfoRequestList.remove(id);
+	}
+	{
+		boost::mutex::scoped_lock lock(m_avatarShouldRequestListMutex);
+		m_avatarShouldRequestList.remove(id);
+	}
 	LOG_ERROR("Server reported unknown player id: " << id);
 }
 
@@ -793,29 +804,33 @@ ClientThread::SetNewGameAdmin(unsigned id)
 void
 ClientThread::RetrieveAvatarIfNeeded(unsigned id, const PlayerInfo &info)
 {
-	if (find(m_avatarHasRequestedList.begin(), m_avatarHasRequestedList.end(), id) == m_avatarHasRequestedList.end()) {
+	{
+		boost::mutex::scoped_lock lock(m_avatarHasRequestedListMutex);
+		if (find(m_avatarHasRequestedList.begin(), m_avatarHasRequestedList.end(), id) != m_avatarHasRequestedList.end()) {
+			return;
+		}
 		if (info.hasAvatar && !info.avatar.IsZero() && !GetAvatarManager().HasAvatar(info.avatar)) {
 			m_avatarHasRequestedList.push_back(id);
-			// Limit list size to prevent unbounded growth
 			if (m_avatarHasRequestedList.size() > 1000) {
 				m_avatarHasRequestedList.pop_front();
 			}
-
-			// Download from avatar server if applicable.
-			string avatarServerAddress(GetContext().GetAvatarServerAddr());
-			if (!avatarServerAddress.empty() && m_avatarDownloader) {
-				string serverFileName(info.avatar.ToString() + AvatarManager::GetAvatarFileExtension(info.avatarType));
-				m_avatarDownloader->QueueDownload(
-					id, avatarServerAddress + serverFileName, GetContext().GetCacheDir() + TEMP_AVATAR_FILENAME);
-			} else {
-				boost::shared_ptr<NetPacket> packet(new NetPacket);
-				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AvatarRequestMessage);
-				AvatarRequestMessage *netAvatar = packet->GetMsg()->mutable_avatarrequestmessage();
-				netAvatar->set_requestid(id);
-				netAvatar->set_avatarhash(info.avatar.GetData(), MD5_DATA_SIZE);
-				GetSender().Send(GetContext().GetSessionData(), packet);
-			}
+		} else {
+			return;
 		}
+	}
+
+	string avatarServerAddress(GetContext().GetAvatarServerAddr());
+	if (!avatarServerAddress.empty() && m_avatarDownloader) {
+		string serverFileName(info.avatar.ToString() + AvatarManager::GetAvatarFileExtension(info.avatarType));
+		m_avatarDownloader->QueueDownload(
+			id, avatarServerAddress + serverFileName, GetContext().GetCacheDir() + TEMP_AVATAR_FILENAME);
+	} else {
+		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AvatarRequestMessage);
+		AvatarRequestMessage *netAvatar = packet->GetMsg()->mutable_avatarrequestmessage();
+		netAvatar->set_requestid(id);
+		netAvatar->set_avatarhash(info.avatar.GetData(), MD5_DATA_SIZE);
+		GetSender().Send(GetContext().GetSessionData(), packet);
 	}
 }
 
