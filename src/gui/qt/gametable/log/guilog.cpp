@@ -811,6 +811,23 @@ void guiLog::exportLogPdbToTxt(QString fileStringPdb, QString exportFileString)
 
 }
 
+static int safeGetPlayerIndex(const char* str, int maxPlayers) {
+	if (!str || !*str) return -1;
+	try {
+		int idx = std::stoi(str);
+		if (idx < 1 || idx > maxPlayers) return -1;
+		return idx - 1;
+	} catch (...) {
+		return -1;
+	}
+}
+
+static string safeGetPlayerName(const char* str, string* playerArray, int maxPlayers) {
+	int idx = safeGetPlayerIndex(str, maxPlayers);
+	if (idx < 0) return "Unknown";
+	return playerArray[idx].empty() ? "Unknown" : playerArray[idx];
+}
+
 void guiLog::showLog(QString fileStringPdb, QTextBrowser *tb_tmp, int uniqueGameID)
 {
 	tb = tb_tmp;
@@ -1157,7 +1174,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					}
 					// log dealer and blind setting
 					for(i=1; i<=nRow_Action; i++) {
-						log_string += player[std::stoi(results.result_Action[3*i])-1];
+						log_string += safeGetPlayerName(results.result_Action[3*i], player, MAX_NUMBER_OF_PLAYERS);
 						log_string += " ";
 						log_string += std::string(results.result_Action[3*i+1]);
 						if(results.result_Action[3*i+2]) {
@@ -1204,7 +1221,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					}
 
 					// log small blind
-					log_string += player[std::stoi(results.result_Action[2])-1];
+					log_string += safeGetPlayerName(results.result_Action[2], player, MAX_NUMBER_OF_PLAYERS);
 					log_string += " ($";
 					log_string += std::string(results.result_Action[3]);
 					log_string += "), ";
@@ -1228,7 +1245,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					}
 
 					// log big blind
-					log_string += player[std::stoi(results.result_Action[2])-1];
+					log_string += safeGetPlayerName(results.result_Action[2], player, MAX_NUMBER_OF_PLAYERS);
 					log_string += " ($";
 					log_string += std::string(results.result_Action[3]);
 					log_string += ")";
@@ -1266,7 +1283,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						default:
 							;
 						}
-						log_string += player[std::stoi(results.result_Action[2])-1];
+						log_string += safeGetPlayerName(results.result_Action[2], player, MAX_NUMBER_OF_PLAYERS);
 						log_string += " starts as dealer.";
 					}
 
@@ -1389,12 +1406,12 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 							;
 						}
 						if(!neu && std::string(results.result_Action[3*action_ctr+1]) == "wins (side pot)") {
-							action_string += player[std::stoi(results.result_Action[3*action_ctr])-1];
+							action_string += safeGetPlayerName(results.result_Action[3*action_ctr], player, MAX_NUMBER_OF_PLAYERS);
 							action_string += " wins $";
 							action_string += std::string(results.result_Action[3*action_ctr+2]);
 							action_string += " (side pot)";
 						} else {
-							action_string += player[std::stoi(results.result_Action[3*action_ctr])-1];
+							action_string += safeGetPlayerName(results.result_Action[3*action_ctr], player, MAX_NUMBER_OF_PLAYERS);
 							action_string += " ";
 							action_string += std::string(results.result_Action[3*action_ctr+1]);
 							if(results.result_Action[3*action_ctr+2]) {
