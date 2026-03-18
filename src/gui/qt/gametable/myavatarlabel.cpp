@@ -229,7 +229,7 @@ void MyAvatarLabel::refreshTooltips()
 {
 	boost::shared_ptr<Game> currentGame = myW->myStartWindow->getSession()->getCurrentGame();
 	PlayerListConstIterator it_c;
-	int seatPlace;
+	int seatPlace = 0;
 	PlayerList seatsList = currentGame->getSeatsList();
 	for (seatPlace=0,it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
 		if((*it_c)->getMyStayOnTableStatus() == true || (*it_c)->getMyActiveStatus()) {

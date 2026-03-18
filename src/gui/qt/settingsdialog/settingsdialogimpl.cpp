@@ -632,7 +632,7 @@ void settingsDialogImpl::isAccepted()
 	myConfig->writeConfigInt("InternetGameType", comboBox_internetGameType->currentIndex());
 	myConfig->writeConfigString("InternetGameName", lineEdit_internetGameName->text().toUtf8().constData());
 
-	int k;
+	int k = 0;
 	std::list<std::string> playerIgnoreList;
 	for(k=0; k<treeWidget_internetGameIgnoredPlayers->topLevelItemCount(); k++) {
 		playerIgnoreList.push_back(QString("%1").arg(treeWidget_internetGameIgnoredPlayers->topLevelItem(k)->text(0)).toUtf8().constData());
@@ -972,7 +972,7 @@ void settingsDialogImpl::setSelectedGameTableStyleActivated()
 {
 	QTreeWidgetItem* selectedItem = treeWidget_gameTableStyles->currentItem();
 	if(selectedItem) {
-		int i;
+		int i = 0;
 		for(i=0; i < treeWidget_gameTableStyles->topLevelItemCount(); i++) {
 			QTreeWidgetItem *item = treeWidget_gameTableStyles->topLevelItem(i);
 			if(item == selectedItem) {
@@ -996,7 +996,7 @@ void settingsDialogImpl::addGameTableStyle()
 
 	if (!fileName.isEmpty()) {
 
-		int i;
+		int i = 0;
 		bool fileNameAlreadyFound(false);
 		for(i=0; i < treeWidget_gameTableStyles->topLevelItemCount(); i++) {
 			QTreeWidgetItem *item = treeWidget_gameTableStyles->topLevelItem(i);
@@ -1098,7 +1098,7 @@ void settingsDialogImpl::setSelectedCardDeckStyleActivated()
 {
 	QTreeWidgetItem* selectedItem = treeWidget_cardDeckStyles->currentItem();
 	if(selectedItem) {
-		int i;
+		int i = 0;
 		for(i=0; i < treeWidget_cardDeckStyles->topLevelItemCount(); i++) {
 			QTreeWidgetItem *item = treeWidget_cardDeckStyles->topLevelItem(i);
 			if(item == selectedItem) {
@@ -1122,7 +1122,7 @@ void settingsDialogImpl::addCardDeckStyle()
 
 	if (!fileName.isEmpty()) {
 
-		int i;
+		int i = 0;
 		bool fileNameAlreadyFound(false);
 		for(i=0; i < treeWidget_cardDeckStyles->topLevelItemCount(); i++) {
 			QTreeWidgetItem *item = treeWidget_cardDeckStyles->topLevelItem(i);

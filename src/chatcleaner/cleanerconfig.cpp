@@ -580,7 +580,7 @@ list<int> CleanerConfig::readConfigIntList(string varName) const
 	}
 
 	istringstream isst;
-	int tempInt;
+	int tempInt = 0;
 	for (auto it = tempStringList.begin(); it != tempStringList.end(); ++it)
 	{
 

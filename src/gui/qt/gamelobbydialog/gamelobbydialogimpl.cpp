@@ -285,17 +285,14 @@ gameLobbyDialogImpl::~gameLobbyDialogImpl() noexcept
 {
 	if (myChat) {
 		delete myChat;
-		myChat = nullptr;
 	}
 
 	if (inviteOnlyInfoMsgBox) {
 		delete inviteOnlyInfoMsgBox;
-		inviteOnlyInfoMsgBox = nullptr;
 	}
 
 	if (myCreateInternetGameDialog) {
 		delete myCreateInternetGameDialog;
-		myCreateInternetGameDialog = nullptr;
 	}
 }
 

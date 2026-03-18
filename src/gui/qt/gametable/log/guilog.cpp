@@ -80,6 +80,13 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 		if(pErrMsg) {
 			std::string err = q.lastError().text().toStdString();
 			char* errMsg = strdup(err.c_str());
+			if (!errMsg) {
+				*pErrMsg = nullptr;
+				*pazResult = nullptr;
+				*pnRow = 0;
+				*pnColumn = 0;
+				return SQLITE_NOMEM;
+			}
 			*pErrMsg = errMsg;
 		}
 		*pazResult = nullptr;
@@ -785,7 +792,9 @@ void guiLog::exportLogPdbToHtml(QString fileStringPdb, QString exportFileString)
 
 	myHtmlLogFile = std::make_unique<QFile>(exportFileString);
 
-	myHtmlLogFile->open( QIODevice::ReadWrite | QFile::Truncate);
+	if (!myHtmlLogFile->open(QIODevice::ReadWrite | QFile::Truncate)) {
+		return;
+	}
 
 	string log_string = "<html>\n";
 	log_string += "<head>\n";
@@ -805,7 +814,9 @@ void guiLog::exportLogPdbToTxt(QString fileStringPdb, QString exportFileString)
 
 	myTxtLogFile = std::make_unique<QFile>(exportFileString);
 
-	myTxtLogFile->open( QIODevice::ReadWrite | QFile::Truncate );
+	if (!myTxtLogFile->open(QIODevice::ReadWrite | QFile::Truncate)) {
+		return;
+	}
 
 	exportLog(fileStringPdb,2);
 
