@@ -855,22 +855,24 @@ ClientThread::AddTempAvatarFile(unsigned playerId, unsigned avatarSize, AvatarFi
 	tmpAvatar->fileType = type;
 	tmpAvatar->reportedSize = avatarSize;
 
+	boost::mutex::scoped_lock lock(m_tempAvatarMapMutex);
 	m_tempAvatarMap[playerId] = tmpAvatar;
 }
 
 void
 ClientThread::StoreInTempAvatarFile(unsigned playerId, const vector<unsigned char> &data)
 {
+	boost::mutex::scoped_lock lock(m_tempAvatarMapMutex);
 	AvatarFileMap::iterator pos = m_tempAvatarMap.find(playerId);
 	if (pos == m_tempAvatarMap.end())
 		throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_REQUEST_ID, 0);
-	// We trust the server (concerning size of the data).
 	std::copy(data.begin(), data.end(), back_inserter(pos->second->fileData));
 }
 
 void
 ClientThread::CompleteTempAvatarFile(unsigned playerId)
 {
+	boost::mutex::scoped_lock lock(m_tempAvatarMapMutex);
 	AvatarFileMap::iterator pos = m_tempAvatarMap.find(playerId);
 	if (pos == m_tempAvatarMap.end())
 		throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_REQUEST_ID, 0);
@@ -881,7 +883,6 @@ ClientThread::CompleteTempAvatarFile(unsigned playerId)
 	else
 		PassAvatarFileToManager(playerId, tmpAvatar);
 
-	// Free memory.
 	m_tempAvatarMap.erase(pos);
 }
 
@@ -911,6 +912,7 @@ ClientThread::PassAvatarFileToManager(unsigned playerId, boost::shared_ptr<Avata
 void
 ClientThread::SetUnknownAvatar(unsigned playerId)
 {
+	boost::mutex::scoped_lock lock(m_tempAvatarMapMutex);
 	m_tempAvatarMap.erase(playerId);
 	LOG_ERROR("Server reported unknown avatar for player: " << playerId);
 }
@@ -1065,6 +1067,7 @@ ClientThread::CreateContextSession()
 ClientState &
 ClientThread::GetState()
 {
+	boost::mutex::scoped_lock lock(m_curStateMutex);
 	if (!m_curState)
 		throw NetException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_curState;
@@ -1073,10 +1076,15 @@ ClientThread::GetState()
 void
 ClientThread::SetState(ClientState &newState)
 {
-	if (m_curState) {
-		m_curState->Exit(shared_from_this());
+	ClientState *oldState = nullptr;
+	{
+		boost::mutex::scoped_lock lock(m_curStateMutex);
+		oldState = m_curState;
+		m_curState = &newState;
 	}
-	m_curState = &newState;
+	if (oldState) {
+		oldState->Exit(shared_from_this());
+	}
 	m_curState->Enter(shared_from_this());
 }
 

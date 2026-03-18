@@ -1650,23 +1650,25 @@ QList<int> guiLog::getGameList(QString fileStringPdb)
 
 	QList<int> gameList;
 
-	// open sqlite log-db
-	sqlite3 *mySqliteLogDb;
-	sqlite3_open(fileStringPdb.toStdString().c_str(), &mySqliteLogDb);
-	if( mySqliteLogDb != 0 ) {
+	sqlite3 *mySqliteLogDb = nullptr;
+	int rc = sqlite3_open(fileStringPdb.toStdString().c_str(), &mySqliteLogDb);
+	if (rc != SQLITE_OK || mySqliteLogDb == nullptr) {
+		if (mySqliteLogDb)
+			sqlite3_close(mySqliteLogDb);
+		return gameList;
+	}
 
-		string sql = "SELECT * FROM Game";
-		if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Game,&nRow_Game,&nCol_Game,&errmsg) != SQLITE_OK) {
-			cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
-		} else {
-			for(game_ctr=1; game_ctr<=nRow_Game; game_ctr++) {
-				for(i=0; i<nCol_Game; i++) {
-					if(std::string(results.result_Game[i]) == "UniqueGameID") {
-						try {
-							gameList.append(std::stoi(results.result_Game[i+nCol_Game*game_ctr]));
-						} catch (const std::exception&) {
-							cout << "Invalid UniqueGameID in log database" << endl;
-						}
+	string sql = "SELECT * FROM Game";
+	if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Game,&nRow_Game,&nCol_Game,&errmsg) != SQLITE_OK) {
+		cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+	} else {
+		for(game_ctr=1; game_ctr<=nRow_Game; game_ctr++) {
+			for(i=0; i<nCol_Game; i++) {
+				if(std::string(results.result_Game[i]) == "UniqueGameID") {
+					try {
+						gameList.append(std::stoi(results.result_Game[i+nCol_Game*game_ctr]));
+					} catch (const std::exception&) {
+						cout << "Invalid UniqueGameID in log database" << endl;
 					}
 				}
 			}

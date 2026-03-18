@@ -72,7 +72,7 @@ ServerGame::ServerGame(boost::shared_ptr<ServerLobbyThread> lobbyThread, u_int32
 	: m_adminPlayerId(adminPlayerId), m_lobbyThread(lobbyThread), m_gui(gui),
 	  m_gameData(gameData), m_curState(nullptr), m_id(id), m_name(name),
 	  m_password(pwd), m_creatorPlayerDBId(creatorPlayerDBId), m_playerConfig(playerConfig),
-	  m_gameNum(1), m_curPetitionId(1), m_voteKickTimer(lobbyThread->GetIOService()),
+	  m_curPetitionId(1), m_voteKickTimer(lobbyThread->GetIOService()),
 	  m_stateTimer1(lobbyThread->GetIOService()), m_stateTimer2(lobbyThread->GetIOService()),
 	  m_isNameReported(false)
 {
@@ -379,6 +379,7 @@ ServerGame::InternalStartGame()
 void
 ServerGame::InitRankingMap(const PlayerDataList &playerDataList)
 {
+	boost::mutex::scoped_lock lock(m_rankingMapMutex);
 	PlayerDataList::const_iterator i = playerDataList.begin();
 	PlayerDataList::const_iterator end = playerDataList.end();
 	while (i != end) {

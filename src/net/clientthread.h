@@ -297,6 +297,7 @@ private:
 
 	boost::shared_ptr<ClientContext> m_context;
 	ClientState *m_curState;
+	mutable boost::mutex m_curStateMutex;
 	GuiInterface &m_gui;
 	AvatarManager &m_avatarManager;
 
@@ -341,6 +342,7 @@ private:
 	mutable boost::mutex m_curPetitionIdMutex;
 
 	AvatarFileMap m_tempAvatarMap;
+	mutable boost::mutex m_tempAvatarMapMutex;
 
 	unsigned m_curGameNum = 1;
 	unsigned m_guiPlayerId = 0;

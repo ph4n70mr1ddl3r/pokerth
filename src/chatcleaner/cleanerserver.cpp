@@ -179,8 +179,12 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 		unsigned gameId = netRequest.gameid();
 
 		QStringList checkreturn = myMessageFilter->check(gameId, playerId, nick, message);
-		QString checkAction = checkreturn.at(0);
-		QString checkMessage = checkreturn.at(1);
+		QString checkAction;
+		QString checkMessage;
+		if (checkreturn.size() >= 2) {
+			checkAction = checkreturn.at(0);
+			checkMessage = checkreturn.at(1);
+		}
 
 		if (!checkAction.isEmpty()) {
 			boost::shared_ptr<ChatCleanerMessage> tmpReply(ChatCleanerMessage::default_instance().New());

@@ -242,7 +242,7 @@ private:
 	const std::string	m_password;
 	const unsigned		m_creatorPlayerDBId;
 	ConfigFile		   &m_playerConfig;
-	unsigned			m_gameNum;
+	std::atomic<unsigned> m_gameNum{1};
 	std::atomic<unsigned> m_curPetitionId;
 	boost::asio::steady_timer m_voteKickTimer;
 	boost::asio::steady_timer m_stateTimer1;
