@@ -39,6 +39,7 @@
 
 #include <QtGui>
 #include <QtCore>
+#include <localexception.h>
 
 #include <gamedata.h>
 #include "createinternetgamedialogimpl.h"
@@ -74,7 +75,8 @@ public:
 	void setSession(boost::shared_ptr<Session> session);
 	boost::shared_ptr<Session> getSession()
 	{
-		assert(mySession.get());
+		if (!mySession)
+			throw LocalException(__FILE__, __LINE__, "Session not initialized");
 		return mySession;
 	}
 

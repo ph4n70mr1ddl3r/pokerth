@@ -32,7 +32,7 @@
 #define STARTWINDOWIMPL_H
 
 #include <boost/shared_ptr.hpp>
-#include <assert.h>
+#include <localexception.h>
 
 #ifdef GUI_800x480
 #include "ui_startwindow_800x480.h"
@@ -78,7 +78,8 @@ public:
 	}
 	boost::shared_ptr<Session> getSession()
 	{
-		assert(mySession.get());
+		if (!mySession)
+			throw LocalException(__FILE__, __LINE__, "Session not initialized");
 		return mySession;
 	}
 	connectToServerDialogImpl* getMyConnectToServerDialog() const
