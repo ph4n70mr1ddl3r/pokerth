@@ -318,12 +318,12 @@ ServerGame::InternalStartGame()
 		else
 			m_database.reset(new ServerDBNoAction);
 
-		// Randomize player list.
-		// Note: This does not use a cryptographically strong
-		// random number generator.
 		vector<boost::shared_ptr<PlayerData> > tmpData(playerData.begin(), playerData.end());
 		std::random_device rd;
-		mt19937 rng(rd());
+		std::array<unsigned int, std::mt19937::state_size> seedData;
+		std::generate(seedData.begin(), seedData.end(), std::ref(rd));
+		std::seed_seq seed(seedData.begin(), seedData.end());
+		mt19937 rng(seed);
 		shuffle(tmpData.begin(), tmpData.end(), rng);
 		copy(tmpData.begin(), tmpData.end(), playerData.begin());
 

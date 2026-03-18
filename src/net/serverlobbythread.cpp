@@ -1182,19 +1182,34 @@ ServerLobbyThread::HandleNetPacketAvatarFile(boost::shared_ptr<SessionData> sess
 		boost::shared_ptr<AvatarFile> tmpAvatar = session->GetPlayerData()->GetNetAvatarFile();
 		const string &avatarBlock = avatarData.avatarblock();
 		
-		size_t newSize = tmpAvatar->fileData.size() + avatarBlock.size();
-		if (tmpAvatar && !avatarBlock.empty() && 
-			newSize <= static_cast<size_t>(tmpAvatar->reportedSize) &&
-			newSize <= MAX_AVATAR_FILE_SIZE) {
-			std::copy(avatarBlock.begin(), avatarBlock.end(), back_inserter(tmpAvatar->fileData));
-		} else if (tmpAvatar && !avatarBlock.empty()) {
-			LOG_ERROR("Session " << session->GetId() << " - Avatar upload rejected: size mismatch or exceeds limit. "
-			          << "Current size: " << tmpAvatar->fileData.size() 
-			          << ", Block size: " << avatarBlock.size()
-			          << ", Reported size: " << tmpAvatar->reportedSize
-			          << ", Max allowed: " << MAX_AVATAR_FILE_SIZE);
-			session->GetPlayerData()->SetNetAvatarFile(boost::shared_ptr<AvatarFile>());
+		if (!tmpAvatar) {
+			LOG_ERROR("Session " << session->GetId() << " - Avatar upload rejected: no avatar file allocated");
+			SessionError(session, ERR_NET_INVALID_AVATAR_SIZE);
+			return;
 		}
+		if (avatarBlock.empty()) {
+			return;
+		}
+		size_t currentSize = tmpAvatar->fileData.size();
+		size_t blockSize = avatarBlock.size();
+		if (blockSize > MAX_AVATAR_FILE_SIZE || currentSize > MAX_AVATAR_FILE_SIZE - blockSize) {
+			LOG_ERROR("Session " << session->GetId() << " - Avatar upload rejected: size overflow. "
+			          << "Current size: " << currentSize 
+			          << ", Block size: " << blockSize
+			          << ", Max allowed: " << MAX_AVATAR_FILE_SIZE);
+			SessionError(session, ERR_NET_WRONG_AVATAR_SIZE);
+			return;
+		}
+		size_t newSize = currentSize + blockSize;
+		if (newSize > static_cast<size_t>(tmpAvatar->reportedSize)) {
+			LOG_ERROR("Session " << session->GetId() << " - Avatar upload rejected: exceeds reported size. "
+			          << "Current size: " << currentSize 
+			          << ", Block size: " << blockSize
+			          << ", Reported size: " << tmpAvatar->reportedSize);
+			SessionError(session, ERR_NET_WRONG_AVATAR_SIZE);
+			return;
+		}
+		std::copy(avatarBlock.begin(), avatarBlock.end(), back_inserter(tmpAvatar->fileData));
 	}
 }
 

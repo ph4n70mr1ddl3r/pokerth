@@ -75,7 +75,7 @@ AsioReceiveBuffer::HandleRead(boost::shared_ptr<SessionData> session, const boos
     if (error != boost::asio::error::operation_aborted) {
         try {
             if (!error) {
-                if (bytesRead > RECV_BUF_SIZE || recvBufUsed > RECV_BUF_SIZE - bytesRead) {
+                if (recvBufUsed >= RECV_BUF_SIZE || bytesRead > RECV_BUF_SIZE - recvBufUsed) {
                     LOG_ERROR("Session " << session->GetId() << " - Buffer overflow detected: recvBufUsed=" 
                               << recvBufUsed << ", bytesRead=" << bytesRead << ", maxSize=" << RECV_BUF_SIZE);
                     session->Close();
