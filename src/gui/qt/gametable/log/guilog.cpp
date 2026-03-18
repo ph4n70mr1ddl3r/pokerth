@@ -817,7 +817,7 @@ static int safeGetPlayerIndex(const char* str, int maxPlayers) {
 		int idx = std::stoi(str);
 		if (idx < 1 || idx > maxPlayers) return -1;
 		return idx - 1;
-	} catch (...) {
+	} catch (const std::exception&) {
 		return -1;
 	}
 }
@@ -970,7 +970,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				if(std::string(results.result_Game[i]) == "UniqueGameID") {
 					try {
 						uniqueGameID = std::stoi(results.result_Game[i+nCol_Game*game_ctr]);
-					} catch (...) {
+					} catch (const std::exception&) {
 						LOG_ERROR("Invalid UniqueGameID in log database");
 						cleanUp(results, mySqliteLogDb);
 						return 1;
@@ -990,7 +990,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				if(std::string(results.result_Game[i]) == "GameID") {
 					try {
 						gameID = std::stoi(results.result_Game[i+nCol_Game*game_ctr]);
-					} catch (...) {
+					} catch (const std::exception&) {
 						LOG_ERROR("Invalid GameID in log database");
 						cleanUp(results, mySqliteLogDb);
 						return 1;
@@ -1010,6 +1010,11 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			sql += " ORDER BY Seat;";
 			if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Player,&nRow_Player,&nCol_Player,&errmsg) != SQLITE_OK) {
 				cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+				cleanUp(results, mySqliteLogDb);
+				return 1;
+			}
+			if(nRow_Player > MAX_NUMBER_OF_PLAYERS) {
+				cout << "Too many players in log database: " << nRow_Player << endl;
 				cleanUp(results, mySqliteLogDb);
 				return 1;
 			}
@@ -1359,7 +1364,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 											int cardInt = 0;
 											try {
 												cardInt = std::stoi(results.result_Hand[j+nCol_Hand]);
-											} catch (...) {
+											} catch (const std::exception&) {
 												cout << "Invalid board card integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
 												cleanUp(results, mySqliteLogDb);
 												return 1;
@@ -1524,7 +1529,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 									int cardInt = 0;
 									try {
 										cardInt = std::stoi(results.result_Hand[i+nCol_Hand]);
-                                    } catch (...) {
+                                    } catch (const std::exception&) {
                                         cout << "Invalid hole card integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
                                         cleanUp(results, mySqliteLogDb);
                                         return 1;
@@ -1559,7 +1564,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 									int cardInt = 0;
 									try {
 										cardInt = std::stoi(results.result_Hand[i+nCol_Hand]);
-                                    } catch (...) {
+                                    } catch (const std::exception&) {
                                         cout << "Invalid hole card 2 integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
                                         cleanUp(results, mySqliteLogDb);
                                         return 1;
@@ -1658,7 +1663,7 @@ QList<int> guiLog::getGameList(QString fileStringPdb)
 					if(std::string(results.result_Game[i]) == "UniqueGameID") {
 						try {
 							gameList.append(std::stoi(results.result_Game[i+nCol_Game*game_ctr]));
-						} catch (...) {
+						} catch (const std::exception&) {
 							cout << "Invalid UniqueGameID in log database" << endl;
 						}
 					}

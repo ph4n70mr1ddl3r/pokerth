@@ -283,9 +283,15 @@ int gameLobbyDialogImpl::exec()
 
 gameLobbyDialogImpl::~gameLobbyDialogImpl() noexcept
 {
-	delete myChat;
+	if (myChat) {
+		delete myChat;
+		myChat = nullptr;
+	}
 
-	delete inviteOnlyInfoMsgBox;
+	if (inviteOnlyInfoMsgBox) {
+		delete inviteOnlyInfoMsgBox;
+		inviteOnlyInfoMsgBox = nullptr;
+	}
 }
 
 void gameLobbyDialogImpl::setSession(boost::shared_ptr<Session> session)
