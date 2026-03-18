@@ -80,7 +80,7 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 		if(pErrMsg) {
 			std::string err = q.lastError().text().toStdString();
 			char* errMsg = strdup(err.c_str());
-			*pErrMsg = errMsg ? errMsg : const_cast<char*>("Out of memory");
+			*pErrMsg = errMsg;
 		}
 		*pazResult = nullptr;
 		*pnRow = 0;
@@ -540,10 +540,11 @@ void guiLog::logFlipHoleCardsMsg(QString playerName, int card1, int card2, int c
 				auto game = session ? session->getCurrentGame() : nullptr;
 				auto playerList = game ? game->getActivePlayerList() : nullptr;
 				if (playerList) {
-					tempHandName.fromStdString(CardsValue::determineHandName(cardsValueInt, playerList));
+					tempHandName = QString::fromStdString(CardsValue::determineHandName(cardsValueInt, playerList));
+					logFileStreamString += playerName+" "+showHas+" [ <b>"+translateCardCode(card1).at(0)+"</b>"+translateCardCode(card1).at(1)+",<b>"+translateCardCode(card2).at(0)+"</b>"+translateCardCode(card2).at(1)+"] - "+tempHandName+"</br>\n";
+				} else {
+					logFileStreamString += playerName+" "+showHas+" [ <b>"+translateCardCode(card1).at(0)+"</b>"+translateCardCode(card1).at(1)+",<b>"+translateCardCode(card2).at(0)+"</b>"+translateCardCode(card2).at(1)+"]</br>\n";
 				}
-
-				logFileStreamString += playerName+" "+showHas+" [ <b>"+translateCardCode(card1).at(0)+"</b>"+translateCardCode(card1).at(1)+",<b>"+translateCardCode(card2).at(0)+"</b>"+translateCardCode(card2).at(1)+"] - "+tempHandName+"</br>\n";
 
 				if(myConfig->readConfigInt("LogInterval") == 0) {
 					writeLogFileStream(logFileStreamString);

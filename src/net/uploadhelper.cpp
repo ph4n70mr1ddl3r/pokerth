@@ -66,8 +66,8 @@ UploadHelper::~UploadHelper() noexcept
 void
 UploadHelper::InternalInit(const string &/*url*/, const string &targetFileName, const string &user, const string &password, size_t filesize, const string &httpPost)
 {
-	curl_easy_setopt(GetData()->curlHandle, CURLOPT_SSL_VERIFYPEER, 0L);
-	curl_easy_setopt(GetData()->curlHandle, CURLOPT_SSL_VERIFYHOST, 0L);
+	curl_easy_setopt(GetData()->curlHandle, CURLOPT_SSL_VERIFYPEER, 1L);
+	curl_easy_setopt(GetData()->curlHandle, CURLOPT_SSL_VERIFYHOST, 2L);
 
 	if (!user.empty() || !password.empty()) {
 		GetData()->userCredentials = user + ":" + password;

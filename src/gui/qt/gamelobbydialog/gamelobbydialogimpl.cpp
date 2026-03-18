@@ -292,6 +292,11 @@ gameLobbyDialogImpl::~gameLobbyDialogImpl() noexcept
 		delete inviteOnlyInfoMsgBox;
 		inviteOnlyInfoMsgBox = nullptr;
 	}
+
+	if (myCreateInternetGameDialog) {
+		delete myCreateInternetGameDialog;
+		myCreateInternetGameDialog = nullptr;
+	}
 }
 
 void gameLobbyDialogImpl::setSession(boost::shared_ptr<Session> session)
@@ -429,10 +434,10 @@ void gameLobbyDialogImpl::refresh(int actionID)
 		myGameListSortFilterProxyModel->invalidate();
 		myNickListModel->clear();
 		myNickListSelectionModel->clear();
-		myNickListSelectionModel->clearSelection();;
+		myNickListSelectionModel->clearSelection();
 
 		QStringList headerList;
-		headerList << tr("Game") << tr("Players") << tr("State") << tr("T") << tr("P") << tr("Time");;
+		headerList << tr("Game") << tr("Players") << tr("State") << tr("T") << tr("P") << tr("Time");
 		myGameListModel->setHorizontalHeaderLabels(headerList);
 
 #ifdef GUI_800x480
@@ -995,6 +1000,10 @@ void gameLobbyDialogImpl::joinedNetworkGame(unsigned playerId, QString playerNam
 
 void gameLobbyDialogImpl::addConnectedPlayer(unsigned playerId, QString playerName, bool isGameAdmin)
 {
+	if (!mySession) {
+		LOG_ERROR("addConnectedPlayer - mySession is null");
+		return;
+	}
 	GameInfo info(mySession->getClientGameInfo(mySession->getClientCurrentGameId()));
 	QTreeWidgetItem *item = new QTreeWidgetItem(treeWidget_connectedPlayers, 0);
 	item->setData(0, Qt::UserRole, playerId);

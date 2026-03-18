@@ -566,8 +566,20 @@ ClientThread::Main()
 	}
 	// Close the socket.
 	boost::system::error_code ec;
-	if(GetContext().GetSessionData()->GetAsioSocket())
-		GetContext().GetSessionData()->GetAsioSocket()->close(ec);
+	auto sessionData = GetContext().GetSessionData();
+	if (sessionData) {
+		if (GetContext().GetTls()) {
+			auto sslStream = sessionData->GetSslStream();
+			if (sslStream) {
+				sslStream->lowest_layer().close(ec);
+			}
+		} else {
+			auto socket = sessionData->GetAsioSocket();
+			if (socket) {
+				socket->close(ec);
+			}
+		}
+	}
 	// Set a state which does not do anything.
 	SetState(CLIENT_FINAL_STATE::Instance());
 	// Cancel timers.
@@ -1119,8 +1131,6 @@ ClientThread::SetGameId(unsigned id)
 Gsasl *
 ClientThread::GetAuthContext()
 {
-	if (!m_authContext)
-		throw NetException(__FILE__, __LINE__, ERR_NET_GSASL_INIT_FAILED, 0);
 	return m_authContext;
 }
 
