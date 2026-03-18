@@ -73,6 +73,7 @@ using namespace boost::chrono;
 
 #define CLIENT_WAIT_TIMEOUT_MSEC	50
 #define CLIENT_CONNECT_TIMEOUT_SEC	10
+#define CLIENT_SERVER_LIST_REFRESH_INTERVAL_SEC	86400	// 1 day
 
 
 ClientState::~ClientState() noexcept
@@ -205,7 +206,7 @@ ClientStateStartServerListDownload::Enter(boost::shared_ptr<ClientThread> client
 		// Download the current server list once a day.
 		// If the previous file is older than one day, delete it.
 		// Also delete the file if it is empty.
-		if (file_size(tmpServerListPath) == 0 || (last_write_time(tmpServerListPath) + 86400 < time(nullptr))) {
+		if (file_size(tmpServerListPath) == 0 || (last_write_time(tmpServerListPath) + CLIENT_SERVER_LIST_REFRESH_INTERVAL_SEC < time(nullptr))) {
 			remove(tmpServerListPath);
 		}
 	}

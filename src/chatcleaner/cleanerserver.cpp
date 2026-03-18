@@ -107,7 +107,7 @@ void CleanerServer::onRead()
 				uint32_t nativeVal;
 				memcpy(&nativeVal, &m_recvBuf[0], sizeof(uint32_t));
 				size_t packetSize = qFromBigEndian(nativeVal);
-				if (packetSize > MAX_CLEANER_PACKET_SIZE) {
+				if (packetSize == 0 || packetSize > MAX_CLEANER_PACKET_SIZE) {
 					m_recvBufUsed = 0;
 					qDebug() << "Invalid packet size: " << packetSize;
 				} else if (m_recvBufUsed >= packetSize + CLEANER_NET_HEADER_SIZE) {

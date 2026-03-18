@@ -48,6 +48,7 @@
 
 #define SQLITE_OK 0
 #define SQLITE_ERROR 1
+#define SQLITE_NOMEM 7
 
 struct sqlite3 {
 	QString connName;
