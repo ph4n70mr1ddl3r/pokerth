@@ -44,6 +44,7 @@
 #include "mytimeoutlabel.h"
 #include "guilog.h"
 #include "chattools.h"
+#include <core/loghelper.h>
 
 #include "playerinterface.h"
 #include "boardinterface.h"
@@ -617,7 +618,10 @@ void gameTableImpl::initGui(int speed)
 
 	//set WindowTitle dynamically
 	QString titleString = "";
-	assert(myStartWindow->getSession());
+	if (!myStartWindow->getSession()) {
+		LOG_ERROR("init - session is null");
+		return;
+	}
 	if(myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_INTERNET || myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_NETWORK) {
 		GameInfo info(myStartWindow->getSession()->getClientGameInfo(myStartWindow->getSession()->getClientCurrentGameId()));
 		titleString = QString::fromUtf8(info.name.c_str())+" - ";
@@ -680,7 +684,10 @@ void gameTableImpl::initGui(int speed)
 
 boost::shared_ptr<Session> gameTableImpl::getSession()
 {
-	assert(myStartWindow->getSession().get());
+	if (!myStartWindow || !myStartWindow->getSession()) {
+		LOG_ERROR("getSession - session is null");
+		return boost::shared_ptr<Session>();
+	}
 	return myStartWindow->getSession();
 }
 
@@ -1697,9 +1704,16 @@ void gameTableImpl::meInAction()
 
 void gameTableImpl::startTimeoutAnimation(int playerId, int timeoutSec)
 {
-	assert(playerId >= 0 && playerId < myStartWindow->getSession()->getCurrentGame()->getStartQuantityPlayers());
+	if (!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
+		LOG_ERROR("startTimeoutAnimation - invalid session or game");
+		return;
+	}
+	int maxPlayers = myStartWindow->getSession()->getCurrentGame()->getStartQuantityPlayers();
+	if (playerId < 0 || playerId >= maxPlayers) {
+		LOG_ERROR("startTimeoutAnimation - invalid playerId: " << playerId);
+		return;
+	}
 
-	//beep for player 0
 	if(playerId) {
 		timeoutLabelArray[playerId]->startTimeOutAnimation(timeoutSec, false);
 	} else {
@@ -1709,7 +1723,15 @@ void gameTableImpl::startTimeoutAnimation(int playerId, int timeoutSec)
 
 void gameTableImpl::stopTimeoutAnimation(int playerId)
 {
-	assert(playerId >= 0 && playerId < myStartWindow->getSession()->getCurrentGame()->getStartQuantityPlayers());
+	if (!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
+		LOG_ERROR("stopTimeoutAnimation - invalid session or game");
+		return;
+	}
+	int maxPlayers = myStartWindow->getSession()->getCurrentGame()->getStartQuantityPlayers();
+	if (playerId < 0 || playerId >= maxPlayers) {
+		LOG_ERROR("stopTimeoutAnimation - invalid playerId: " << playerId);
+		return;
+	}
 	timeoutLabelArray[playerId]->stopTimeOutAnimation();
 }
 
@@ -3168,15 +3190,13 @@ void gameTableImpl::spinBoxBetValueChanged(int value)
 void gameTableImpl::leaveCurrentNetworkGame()
 {
 
-	if (myStartWindow->getSession()->isNetworkClientRunning()) {
+	if (myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->isNetworkClientRunning()) {
 
 		if(!myUniversalMessageDialog->checkIfMesssageWillBeDisplayed(BACKTO_LOBBY_QUESTION)) {
 
-			assert(myStartWindow->getSession());
 			myStartWindow->getSession()->sendLeaveCurrentGame();
 		} else {
 			if (myUniversalMessageDialog->exec(BACKTO_LOBBY_QUESTION, tr("Attention! Do you really want to leave the current game\nand go back to the lobby?"), tr("PokerTH - Internet Game Message"), QPixmap(":/gfx/logoChip3D.png"), QDialogButtonBox::Yes|QDialogButtonBox::No, true) == QDialog::Accepted) {
-				assert(myStartWindow->getSession());
 				myStartWindow->getSession()->sendLeaveCurrentGame();
 			}
 		}
@@ -3186,7 +3206,10 @@ void gameTableImpl::leaveCurrentNetworkGame()
 void gameTableImpl::triggerVoteOnKick(int id)
 {
 
-	assert(myStartWindow->getSession()->getCurrentGame());
+	if (!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
+		LOG_ERROR("triggerVoteOnKick - invalid session or game");
+		return;
+	}
 	PlayerList seatList = myStartWindow->getSession()->getCurrentGame()->getSeatsList();
 	int playerCount = static_cast<int>(seatList->size());
 	if (id < playerCount) {

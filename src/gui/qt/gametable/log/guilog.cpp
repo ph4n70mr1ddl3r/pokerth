@@ -968,7 +968,13 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			data_found = false;
 			for(i=0; i<nCol_Game; i++) {
 				if(std::string(results.result_Game[i]) == "UniqueGameID") {
-					uniqueGameID = std::stoi(results.result_Game[i+nCol_Game*game_ctr]);
+					try {
+						uniqueGameID = std::stoi(results.result_Game[i+nCol_Game*game_ctr]);
+					} catch (...) {
+						LOG_ERROR("Invalid UniqueGameID in log database");
+						cleanUp(results, mySqliteLogDb);
+						return 1;
+					}
 					data_found = true;
 				}
 			}
@@ -982,7 +988,13 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			data_found = false;
 			for(i=0; i<nCol_Game; i++) {
 				if(std::string(results.result_Game[i]) == "GameID") {
-					gameID = std::stoi(results.result_Game[i+nCol_Game*game_ctr]);
+					try {
+						gameID = std::stoi(results.result_Game[i+nCol_Game*game_ctr]);
+					} catch (...) {
+						LOG_ERROR("Invalid GameID in log database");
+						cleanUp(results, mySqliteLogDb);
+						return 1;
+					}
 					data_found = true;
 				}
 			}
@@ -1344,7 +1356,15 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 									if(std::string(results.result_Hand[j]) == "BoardCard_"+std::string(i)) {
 										if(results.result_Hand[j+nCol_Hand]) {
 											if(modus == 1 || modus == 3) round_string += "<b>";
-											string_tmp = convertCardIntToString(std::stoi(results.result_Hand[j+nCol_Hand]),modus);
+											int cardInt = 0;
+											try {
+												cardInt = std::stoi(results.result_Hand[j+nCol_Hand]);
+											} catch (...) {
+												cout << "Invalid board card integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
+												cleanUp(results, mySqliteLogDb);
+												return 1;
+											}
+											string_tmp = convertCardIntToString(cardInt,modus);
 											if(string_tmp == "") {
 												cout << "Implausible board card in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
 												cleanUp(results, mySqliteLogDb);
@@ -1501,7 +1521,15 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 								cmpString += std::string(results.result_Action[3*action_ctr]);
 								cmpString += "_Card_1";
 								if(std::string(results.result_Hand[i]) == cmpString) {
-									string_tmp = convertCardIntToString(std::stoi(results.result_Hand[i+nCol_Hand]),modus);
+									int cardInt = 0;
+									try {
+										cardInt = std::stoi(results.result_Hand[i+nCol_Hand]);
+                                    } catch (...) {
+                                        cout << "Invalid hole card integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
+                                        cleanUp(results, mySqliteLogDb);
+                                        return 1;
+                                    }
+									string_tmp = convertCardIntToString(cardInt,modus);
 									if(string_tmp == "") {
 										cout << "Hole card information implausible in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
 										cleanUp(results, mySqliteLogDb);
@@ -1528,7 +1556,15 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 								cmpString += std::string(results.result_Action[3*action_ctr]);
 								cmpString += "_Card_2";
 								if(std::string(results.result_Hand[i]) == cmpString) {
-									string_tmp = convertCardIntToString(std::stoi(results.result_Hand[i+nCol_Hand]),modus);
+									int cardInt = 0;
+									try {
+										cardInt = std::stoi(results.result_Hand[i+nCol_Hand]);
+                                    } catch (...) {
+                                        cout << "Invalid hole card 2 integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
+                                        cleanUp(results, mySqliteLogDb);
+                                        return 1;
+                                    }
+									string_tmp = convertCardIntToString(cardInt,modus);
 									if(string_tmp == "") {
 										cout << "Hole card information implausible in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
 										cleanUp(results, mySqliteLogDb);
@@ -1620,7 +1656,11 @@ QList<int> guiLog::getGameList(QString fileStringPdb)
 			for(game_ctr=1; game_ctr<=nRow_Game; game_ctr++) {
 				for(i=0; i<nCol_Game; i++) {
 					if(std::string(results.result_Game[i]) == "UniqueGameID") {
-						gameList.append(std::stoi(results.result_Game[i+nCol_Game*game_ctr]));
+						try {
+							gameList.append(std::stoi(results.result_Game[i+nCol_Game*game_ctr]));
+						} catch (...) {
+							cout << "Invalid UniqueGameID in log database" << endl;
+						}
 					}
 				}
 			}

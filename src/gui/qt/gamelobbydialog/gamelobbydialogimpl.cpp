@@ -488,7 +488,10 @@ void gameLobbyDialogImpl::gameSelected(const QModelIndex &index)
 		groupBox_GameInfo->setEnabled(true);
 		groupBox_GameInfo->setTitle(tr("Game Info") + " - " + currentGameName);
 
-		assert(mySession);
+		if (!mySession) {
+			LOG_ERROR("gameSelected - mySession is null");
+			return;
+		}
 		GameInfo info(mySession->getClientGameInfo(myGameListModel->item(myGameListSortFilterProxyModel->mapToSource(index).row(), 0)->data(Qt::UserRole).toUInt()));
 
 		switch (info.data.gameType) {
@@ -738,9 +741,12 @@ void gameLobbyDialogImpl::gameAddPlayer(unsigned gameId, unsigned playerId)
 	if (!inGame) {
 		QItemSelectionModel *selection = treeView_GameList->selectionModel();
 		if (selection->hasSelection()) {
-			if(selection->selectedRows().at(0).data(Qt::UserRole).toUInt() == gameId) {
-				assert(mySession);
-				GameInfo info(mySession->getClientGameInfo(gameId));
+		if(selection->selectedRows().at(0).data(Qt::UserRole).toUInt() == gameId) {
+			if (!mySession) {
+				LOG_ERROR("gameAddPlayer - mySession is null");
+				return;
+			}
+			GameInfo info(mySession->getClientGameInfo(gameId));
 				bool admin = info.adminPlayerId == playerId;
 				PlayerInfo playerInfo(mySession->getClientPlayerInfo(playerId));
 
@@ -767,7 +773,10 @@ void gameLobbyDialogImpl::gameRemovePlayer(unsigned gameId, unsigned playerId)
 		QItemSelectionModel *selection = treeView_GameList->selectionModel();
 		if (selection->hasSelection()) {
 			if(selection->selectedRows().at(0).data(Qt::UserRole).toUInt() == gameId) {
-				assert(mySession);
+				if (!mySession) {
+					LOG_ERROR("gameRemovePlayer - mySession is null");
+					return;
+				}
 				PlayerInfo info(mySession->getClientPlayerInfo(playerId));
 				removePlayer(playerId, QString::fromUtf8(info.playerName.c_str()));
 			}
@@ -1298,7 +1307,10 @@ void gameLobbyDialogImpl::kickPlayer()
 									  QMessageBox::Close);
 			}
 		} else {
-			assert(mySession);
+			if (!mySession) {
+				LOG_ERROR("kickPlayer - mySession is null");
+				return;
+			}
 			mySession->kickPlayer(item->data(0, Qt::UserRole).toUInt());
 		}
 	}
@@ -1565,7 +1577,10 @@ void gameLobbyDialogImpl::showNickListContextMenu(QPoint p)
 {
 	if(myNickListModel->rowCount() && myNickListSelectionModel->currentIndex().isValid()) {
 
-		assert(mySession);
+		if (!mySession) {
+			LOG_ERROR("showNickListContextMenu - mySession is null");
+			return;
+		}
 		unsigned playerUid = myNickListSelectionModel->currentIndex().data(Qt::UserRole).toUInt();
 
 		if(inGame && mySession->getClientGameInfo(mySession->getClientCurrentGameId()).data.gameType == GAME_TYPE_INVITE_ONLY && playerUid != mySession->getClientUniquePlayerId()) {
@@ -1625,7 +1640,10 @@ void gameLobbyDialogImpl::showGameListContextMenu(QPoint p)
 {
 	if(myGameListModel->rowCount() && myGameListSelectionModel->currentIndex().isValid()) {
 
-		assert(mySession);
+		if (!mySession) {
+			LOG_ERROR("showGameListContextMenu - mySession is null");
+			return;
+		}
 		unsigned selectedGameId = myGameListSelectionModel->selectedRows().first().data(Qt::UserRole).toUInt();
 		if(selectedGameId == mySession->getClientCurrentGameId()) {
 			gameListAdminCloseGame->setDisabled(true);
@@ -1820,7 +1838,10 @@ void gameLobbyDialogImpl::showConnectedPlayersContextMenu(QPoint p)
 {
 	if(treeWidget_connectedPlayers->currentItem()) {
 
-		assert(mySession);
+		if (!mySession) {
+			LOG_ERROR("showConnectedPlayersContextMenu - mySession is null");
+			return;
+		}
 		unsigned playerUid = treeWidget_connectedPlayers->currentItem()->data(0, Qt::UserRole).toUInt();
 
 		//popup a little more to the right to avaoid double click action
