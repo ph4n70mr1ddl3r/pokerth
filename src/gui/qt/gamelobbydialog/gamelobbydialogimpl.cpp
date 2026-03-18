@@ -41,6 +41,7 @@
 #include <net/socket_msg.h>
 #include "mymessagedialogimpl.h"
 #include "soundevents.h"
+#include <core/loghelper.h>
 
 using namespace std;
 
@@ -295,7 +296,10 @@ void gameLobbyDialogImpl::setSession(boost::shared_ptr<Session> session)
 
 void gameLobbyDialogImpl::createGame()
 {
-	assert(mySession);
+    if (!mySession) {
+        LOG_ERROR("gameLobbyDialogImpl - mySession is null");
+        return;
+    }
 
 	myCreateInternetGameDialog = new createInternetGameDialogImpl(this, myConfig);
 	PlayerInfo playerInfo(mySession->getClientPlayerInfo(mySession->getClientUniquePlayerId()));
@@ -388,7 +392,10 @@ void gameLobbyDialogImpl::createGame()
 
 void gameLobbyDialogImpl::joinGame()
 {
-	assert(mySession);
+    if (!mySession) {
+        LOG_ERROR("gameLobbyDialogImpl - mySession is null");
+        return;
+    }
 	QItemSelectionModel *selection = treeView_GameList->selectionModel();
 	if (!inGame && selection->hasSelection()) {
 		unsigned gameId = selection->selectedRows().first().data(Qt::UserRole).toUInt();
@@ -535,7 +542,10 @@ void gameLobbyDialogImpl::gameSelected(const QModelIndex &index)
 
 void gameLobbyDialogImpl::updateGameItem(QList <QStandardItem*> itemList, unsigned gameId)
 {
-	assert(mySession);
+    if (!mySession) {
+        LOG_ERROR("gameLobbyDialogImpl - mySession is null");
+        return;
+    }
 	GameInfo info(mySession->getClientGameInfo(gameId));
 
 	itemList.at(0)->setData(gameId, Qt::UserRole);
@@ -872,7 +882,10 @@ void gameLobbyDialogImpl::clearDialog()
 
 void gameLobbyDialogImpl::checkPlayerQuantity()
 {
-	assert(mySession);
+    if (!mySession) {
+        LOG_ERROR("gameLobbyDialogImpl - mySession is null");
+        return;
+    }
 	GameInfo info(mySession->getClientGameInfo(mySession->getClientCurrentGameId()));
 
 	if(isGameAdministrator && info.data.gameType != GAME_TYPE_RANKING) {
@@ -943,7 +956,10 @@ void gameLobbyDialogImpl::joinedNetworkGame(unsigned playerId, QString playerNam
 	addConnectedPlayer(playerId, playerName, isGameAdmin);
 
 	//show msgBox about invite only game
-	assert(mySession);
+    if (!mySession) {
+        LOG_ERROR("gameLobbyDialogImpl - mySession is null");
+        return;
+    }
 	if(mySession->getClientGameInfo(mySession->getClientCurrentGameId()).data.gameType == GAME_TYPE_INVITE_ONLY) {
 		infoMsgToShowId = 2;
 		showInfoMsgBoxTimer->start(1000);
@@ -1136,7 +1152,10 @@ void gameLobbyDialogImpl::joinedGameDialogUpdate()
 	pushButton_Leave->setEnabled(true);
 
 	//this was added to show game infos even if no game was selected (e.g. invite only game)
-	assert(mySession);
+    if (!mySession) {
+        LOG_ERROR("gameLobbyDialogImpl - mySession is null");
+        return;
+    }
 	GameInfo info(mySession->getClientGameInfo(mySession->getClientCurrentGameId()));
 
 	groupBox_GameInfo->setTitle(tr("Game Info") + " - " + QString::fromUtf8(info.name.c_str()));
@@ -1240,14 +1259,20 @@ void gameLobbyDialogImpl::playerSelected(QTreeWidgetItem* item, QTreeWidgetItem*
 void gameLobbyDialogImpl::startGame()
 {
 
-	assert(mySession);
+    if (!mySession) {
+        LOG_ERROR("gameLobbyDialogImpl - mySession is null");
+        return;
+    }
 	mySession->sendStartEvent(checkBox_fillUpWithComputerOpponents->isChecked());
 }
 
 void gameLobbyDialogImpl::leaveGame()
 {
 
-	assert(mySession);
+    if (!mySession) {
+        LOG_ERROR("gameLobbyDialogImpl - mySession is null");
+        return;
+    }
 	mySession->sendLeaveCurrentGame();
 
 	//stop autoStartTimerOverlay
@@ -2079,7 +2104,10 @@ void gameLobbyDialogImpl::closeAllChildDialogs()
 
 void gameLobbyDialogImpl::reportBadGameName()
 {
-	assert(mySession);
+    if (!mySession) {
+        LOG_ERROR("gameLobbyDialogImpl - mySession is null");
+        return;
+    }
 	if (myGameListSelectionModel->hasSelection()) {
 		unsigned gameId = myGameListSelectionModel->selectedRows().first().data(Qt::UserRole).toUInt();
 		GameInfo info(mySession->getClientGameInfo(gameId));
@@ -2096,7 +2124,10 @@ void gameLobbyDialogImpl::reportBadGameName()
 
 void gameLobbyDialogImpl::adminActionCloseGame()
 {
-	assert(mySession);
+    if (!mySession) {
+        LOG_ERROR("gameLobbyDialogImpl - mySession is null");
+        return;
+    }
 	if (myGameListSelectionModel->hasSelection()) {
 		unsigned gameId = myGameListSelectionModel->selectedRows().first().data(Qt::UserRole).toUInt();
 		GameInfo info(mySession->getClientGameInfo(gameId));
@@ -2112,7 +2143,10 @@ void gameLobbyDialogImpl::adminActionCloseGame()
 
 void gameLobbyDialogImpl::adminActionTotalKickBan()
 {
-	assert(mySession);
+    if (!mySession) {
+        LOG_ERROR("gameLobbyDialogImpl - mySession is null");
+        return;
+    }
 	if (myNickListSelectionModel->hasSelection()) {
 		unsigned playerId = myNickListSelectionModel->selectedRows().first().data(Qt::UserRole).toUInt();
 		PlayerInfo info(mySession->getClientPlayerInfo(playerId));

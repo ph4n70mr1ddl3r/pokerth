@@ -38,11 +38,12 @@
 #include "mymessagedialogimpl.h"
 #include "chattools.h"
 #include <QSysInfo>
+#include <core/loghelper.h>
 
 using namespace std;
 
 MyAvatarLabel::MyAvatarLabel(QGroupBox* parent)
-	: QLabel(parent), voteRunning(false), transparent(false), myUniqueId(0), myPingState(0), myAvgPing(-1), myMinPing(-1), myMaxPing(-1)
+	: QLabel(parent), voteRunning(false), transparent(false), myUniqueId(0), myPingState(1), myAvgPing(-1), myMinPing(-1), myMaxPing(-1)
 {
 
 	myContextMenu = new QMenu;
@@ -71,15 +72,22 @@ MyAvatarLabel::~MyAvatarLabel() noexcept
 
 void MyAvatarLabel::contextMenuEvent ( QContextMenuEvent *event )
 {
-
-	assert(myW->getSession()->getCurrentGame());
+	if (!myW || !myW->getSession()) {
+		LOG_ERROR("MyAvatarLabel::contextMenuEvent - myW or session is null");
+		return;
+	}
+	
+	boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
+	if (!currentGame) {
+		LOG_ERROR("MyAvatarLabel::contextMenuEvent - currentGame is null");
+		return;
+	}
 	if (myW->getSession()->isNetworkClientRunning()) {
 
-		boost::shared_ptr<PlayerInterface> humanPlayer = myW->getSession()->getCurrentGame()->getSeatsList()->front();
+		boost::shared_ptr<PlayerInterface> humanPlayer = currentGame->getSeatsList()->front();
 		//only active players are allowed to start a vote
 		if(humanPlayer->getMyActiveStatus()) {
 
-			boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 			PlayerListConstIterator it_c;
 			int activePlayerCounter=0;
 			PlayerList seatList = currentGame->getSeatsList();
