@@ -1530,11 +1530,11 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 									int cardInt = 0;
 									try {
 										cardInt = std::stoi(results.result_Hand[i+nCol_Hand]);
-                                    } catch (const std::exception&) {
-                                        cout << "Invalid hole card integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
-                                        cleanUp(results, mySqliteLogDb);
-                                        return 1;
-                                    }
+									} catch (const std::exception&) {
+										cout << "Invalid hole card integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
+										cleanUp(results, mySqliteLogDb);
+										return 1;
+									}
 									string_tmp = convertCardIntToString(cardInt,modus);
 									if(string_tmp == "") {
 										cout << "Hole card information implausible in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
@@ -1565,11 +1565,11 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 									int cardInt = 0;
 									try {
 										cardInt = std::stoi(results.result_Hand[i+nCol_Hand]);
-                                    } catch (const std::exception&) {
-                                        cout << "Invalid hole card 2 integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
-                                        cleanUp(results, mySqliteLogDb);
-                                        return 1;
-                                    }
+									} catch (const std::exception&) {
+										cout << "Invalid hole card 2 integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
+										cleanUp(results, mySqliteLogDb);
+										return 1;
+									}
 									string_tmp = convertCardIntToString(cardInt,modus);
 									if(string_tmp == "") {
 										cout << "Hole card information implausible in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;

@@ -747,12 +747,12 @@ void gameLobbyDialogImpl::gameAddPlayer(unsigned gameId, unsigned playerId)
 	if (!inGame) {
 		QItemSelectionModel *selection = treeView_GameList->selectionModel();
 		if (selection->hasSelection()) {
-		if(selection->selectedRows().at(0).data(Qt::UserRole).toUInt() == gameId) {
-			if (!mySession) {
-				LOG_ERROR("gameAddPlayer - mySession is null");
-				return;
-			}
-			GameInfo info(mySession->getClientGameInfo(gameId));
+			if(selection->selectedRows().at(0).data(Qt::UserRole).toUInt() == gameId) {
+				if (!mySession) {
+					LOG_ERROR("gameAddPlayer - mySession is null");
+					return;
+				}
+				GameInfo info(mySession->getClientGameInfo(gameId));
 				bool admin = info.adminPlayerId == playerId;
 				PlayerInfo playerInfo(mySession->getClientPlayerInfo(playerId));
 
