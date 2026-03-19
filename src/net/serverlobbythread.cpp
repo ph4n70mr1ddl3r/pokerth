@@ -1501,18 +1501,21 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 			if (targetSession && targetSession->GetPlayerData()) {
 				boost::shared_ptr<ServerGame> tmpGame = targetSession->GetGame();
 				if (!tmpGame || !tmpGame->IsRunning()) {
-					if(GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId()) && chatRequest.chattext().size() >= 3 && chatRequest.chattext().substr(0, 3) == "gn ")
-					{
-						LOG_ERROR("Global Notice: " << chatRequest.chattext().substr(3) << " von player_id " << session->GetPlayerData()->GetDBId());
-						SendGlobalChat(chatRequest.chattext().substr(3));
-					}else{
-
+					const string &chatText = chatRequest.chattext();
+					if (chatText.empty() || chatText.size() >= MAX_CHAT_TEXT_SIZE) {
+						return;
+					}
+					if (GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId())
+						&& chatText.size() >= 3 && chatText.substr(0, 3) == "gn ") {
+						LOG_ERROR("Global Notice: " << chatText.substr(3) << " by player_id " << session->GetPlayerData()->GetDBId());
+						SendGlobalChat(chatText.substr(3));
+					} else {
 						boost::shared_ptr<NetPacket> packet(new NetPacket);
 						packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatMessage);
 						ChatMessage *netChat = packet->GetMsg()->mutable_chatmessage();
 						netChat->set_chattype(ChatMessage::chatTypePrivate);
 						netChat->set_playerid(session->GetPlayerData()->GetUniqueId());
-						netChat->set_chattext(chatRequest.chattext());
+						netChat->set_chattext(chatText);
 
 						GetSender().Send(targetSession, packet);
 						chatSent = true;
