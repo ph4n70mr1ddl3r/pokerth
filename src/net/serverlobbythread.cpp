@@ -1481,9 +1481,9 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 	bool chatSent = false;
 	if (session->GetPlayerData()) {
 		if (!chatRequest.has_targetgameid() && !chatRequest.has_targetplayerid()) {
-			string chatMsg(chatRequest.chattext());
+            string chatMsg(chatRequest.chattext());
 
-			boost::shared_ptr<NetPacket> packet(new NetPacket);
+            boost::shared_ptr<NetPacket> packet(new NetPacket);
 			packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatMessage);
 			ChatMessage *netChat = packet->GetMsg()->mutable_chatmessage();
 			netChat->set_chattype(ChatMessage::chatTypeLobby);
