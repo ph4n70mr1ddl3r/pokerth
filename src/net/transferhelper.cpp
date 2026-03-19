@@ -70,8 +70,10 @@ TransferHelper::Init(const string &url, const string &targetFileName, const stri
 
 	// Use a copy of the url string, because some curl versions require a copy.
 	m_data->curlUrl = url;
-	if (curl_easy_setopt(m_data->curlHandle, CURLOPT_URL, m_data->curlUrl.c_str()) != CURLE_OK)
+	if (curl_easy_setopt(m_data->curlHandle, CURLOPT_URL, m_data->curlUrl.c_str()) != CURLE_OK) {
+		Cleanup();
 		throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_INVALID_URL, 0);
+	}
 
 	InternalInit(url, targetFileName, user, password, filesize, httpPost);
 

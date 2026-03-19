@@ -105,8 +105,10 @@ SessionManager::GetSessionByPlayerName(const string &playerName) const
 		// Check all players which are fully connected.
 		if (session_i->second->GetState() != SessionData::Init) {
 			boost::shared_ptr<PlayerData> tmpPlayer(session_i->second->GetPlayerData());
-			if (!tmpPlayer)
-				throw ServerException(__FILE__, __LINE__, ERR_NET_INVALID_SESSION, 0);
+			if (!tmpPlayer) {
+				++session_i;
+				continue;
+			}
 			if (tmpPlayer->GetName() == playerName) {
 				tmpSession = session_i->second;
 				break;

@@ -40,6 +40,7 @@
 #include <net/socket_msg.h>
 #include <cstring>
 #include <utility>
+#include <limits>
 
 using namespace std;
 
@@ -142,10 +143,11 @@ AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::strea
 void
 AsioSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> /*session*/, boost::shared_ptr<NetPacket> packet)
 {
-	uint32_t packetSize = packet->GetMsg()->ByteSizeLong();
-	if (packetSize > MAX_SEND_BUF_SIZE) {
+	size_t rawSize = packet->GetMsg()->ByteSizeLong();
+	if (rawSize > MAX_SEND_BUF_SIZE || rawSize > std::numeric_limits<uint32_t>::max()) {
 		return;
 	}
+	uint32_t packetSize = static_cast<uint32_t>(rawSize);
 	std::vector<google::protobuf::uint8> buf(packetSize + NET_HEADER_SIZE);
 	uint32_t netSize = htonl(packetSize);
 	std::memcpy(buf.data(), &netSize, sizeof(netSize));

@@ -89,6 +89,8 @@ struct IrcContext {
 void irc_auto_rename_nick(irc_session_t *session)
 {
 	IrcContext *context = static_cast<IrcContext *>(irc_get_ctx(session));
+	if (!context)
+		return;
 
 	if (context->renameTries <= IRC_MAX_RENAME_TRIES) { // Limit number of rename tries.
 		// Automatically rename the nick on collision.
@@ -117,6 +119,8 @@ void irc_auto_rename_nick(irc_session_t *session)
 void irc_notify_player_list(irc_session_t *session, const char *players)
 {
 	IrcContext *context = static_cast<IrcContext *>(irc_get_ctx(session));
+	if (!context)
+		return;
 
 	istringstream input(players);
 	string name;
@@ -130,6 +134,8 @@ void irc_notify_player_list(irc_session_t *session, const char *players)
 void irc_handle_server_error(irc_session_t *session, unsigned irc_error_code)
 {
 	IrcContext *context = static_cast<IrcContext *>(irc_get_ctx(session));
+	if (!context)
+		return;
 
 	context->ircThread.GetCallback().SignalIrcServerError(irc_error_code);
 }
@@ -138,6 +144,8 @@ void
 irc_event_connect(irc_session_t *session, const char * /*irc_event*/, const char *origin, const char ** /*params*/, unsigned /*count*/)
 {
 	IrcContext *context = static_cast<IrcContext *>(irc_get_ctx(session));
+	if (!context)
+		return;
 
 	context->ircThread.GetCallback().SignalIrcConnect(origin);
 	irc_cmd_join(session, context->channel.c_str(), context->channelPassword.c_str());
@@ -148,6 +156,8 @@ irc_event_join(irc_session_t *session, const char * /*irc_event*/, const char *o
 {
 	// someone joined the channel.
 	IrcContext *context = static_cast<IrcContext *>(irc_get_ctx(session));
+	if (!context)
+		return;
 
 	if (context->nick == origin)
 		context->ircThread.GetCallback().SignalIrcSelfJoined(context->nick, context->channel);
@@ -160,6 +170,8 @@ irc_event_nick(irc_session_t *session, const char * /*irc_event*/, const char *o
 {
 	// someone changed his/her nick
 	IrcContext *context = static_cast<IrcContext *>(irc_get_ctx(session));
+	if (!context)
+		return;
 
 	if (count && context->nick != params[0]) { // only act if this was not an auto-rename
 		if (context->nick == origin)
@@ -173,6 +185,8 @@ irc_event_kick(irc_session_t *session, const char * /*irc_event*/, const char *o
 {
 	// someone got kicked
 	IrcContext *context = static_cast<IrcContext *>(irc_get_ctx(session));
+	if (!context)
+		return;
 
 	string byWhom(origin);
 	string who;
@@ -191,6 +205,8 @@ irc_event_leave(irc_session_t *session, const char * /*irc_event*/, const char *
 {
 	// someone left the channel.
 	IrcContext *context = static_cast<IrcContext *>(irc_get_ctx(session));
+	if (!context)
+		return;
 
 	context->ircThread.GetCallback().SignalIrcPlayerLeft(origin);
 }
@@ -199,6 +215,8 @@ void
 irc_event_channel(irc_session_t *session, const char * /*irc_event*/, const char *origin, const char **params, unsigned count)
 {
 	IrcContext *context = static_cast<IrcContext *>(irc_get_ctx(session));
+	if (!context)
+		return;
 
 	if (count >= 2 && boost::algorithm::iequals(context->channel, params[0])) { // check whether this message is for our channel
 		// Signal the message (if any) to GUI.
@@ -211,6 +229,8 @@ void
 irc_event_unknown(irc_session_t *session, const char * irc_event, const char * /*origin*/, const char ** /*params*/, unsigned /*count*/)
 {
 	IrcContext *context = static_cast<IrcContext *>(irc_get_ctx(session));
+	if (!context)
+		return;
 
 	if (boost::algorithm::iequals(irc_event, "PONG")) {
 		context->sendingBlocked = false;

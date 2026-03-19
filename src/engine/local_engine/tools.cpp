@@ -39,12 +39,20 @@
 #include <core/loghelper.h>
 #include <core/openssl_wrapper.h>
 #include <random>
+#include <ctime>
 
 using namespace std;
 
 namespace {
-	thread_local random_device t_rand_device;
-	thread_local mt19937 t_rng(t_rand_device());
+	thread_local std::mt19937 t_rng = []() {
+		try {
+			std::random_device rd;
+			return std::mt19937(rd());
+		} catch (...) {
+			unsigned seed = static_cast<unsigned>(std::time(nullptr));
+			return std::mt19937(seed);
+		}
+	}();
 }
 
 void Tools::ShuffleArrayNonDeterministic(int *inout, unsigned count)
