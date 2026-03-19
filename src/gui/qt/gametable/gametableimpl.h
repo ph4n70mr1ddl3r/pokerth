@@ -227,9 +227,9 @@ public slots:
 
 	void myFold();
 	void myCheck();
-	int getMyCallAmount();
-	int getBetRaisePushButtonValue();
-	int getMyBetAmount();
+	int getMyCallAmount() const;
+	int getBetRaisePushButtonValue() const;
+	int getMyBetAmount() const;
 	void myCall();
 	void mySet();
 	void myAllIn();
@@ -372,7 +372,7 @@ public slots:
 	void tabsButtonClose();
 #endif
 	void pingUpdate(unsigned, unsigned, unsigned);
-	int getAndroidApiVersion();
+	int getAndroidApiVersion() const;
 
 private:
 

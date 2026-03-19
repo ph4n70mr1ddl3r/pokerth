@@ -58,7 +58,7 @@ public slots:
 	void isAccepted();
 	void isRejected();
 
-	QString getAvatarLink();
+	QString getAvatarLink() const;
 	void setExternalAvatar();
 
 	bool getSettingsCorrect() const

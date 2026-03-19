@@ -900,7 +900,7 @@ void startWindowImpl::networkStart(boost::shared_ptr<Game> game)
 }
 
 
-QStringList startWindowImpl::getPlayerNicksList()
+QStringList startWindowImpl::getPlayerNicksList() const
 {
 
 	QStringList list;

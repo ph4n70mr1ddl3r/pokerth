@@ -105,7 +105,7 @@ public:
 		return myState;
 	}
 
-	QString getMyStateToolTipInfo();
+	QString getMyStateToolTipInfo() const;
 	void showErrorMessage();
 	void showLeftItemsErrorMessage();
 	void showCardsLeftErrorMessage();

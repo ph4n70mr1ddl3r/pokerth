@@ -226,7 +226,7 @@ void selectAvatarDialogImpl::toggleGroupBox2(bool /*toggleState*/)
 	if(groupBox_2->isChecked()) groupBox->setChecked(false);
 }
 
-QString selectAvatarDialogImpl::getAvatarLink()
+QString selectAvatarDialogImpl::getAvatarLink() const
 {
 
 	QList<QListWidgetItem *> myItemList = listWidget->selectedItems();

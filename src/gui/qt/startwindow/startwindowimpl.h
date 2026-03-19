@@ -160,7 +160,7 @@ public slots:
 	void networkMessage(unsigned);
 
 	void networkStart(boost::shared_ptr<Game> game);
-	QStringList getPlayerNicksList();
+	QStringList getPlayerNicksList() const;
 
 	QString checkForFirstStartAfterUpdated();
 

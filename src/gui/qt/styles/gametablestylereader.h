@@ -332,7 +332,7 @@ public:
 	}
 
 	QString getFallBackFieldContent(QString field, int type); // type: 0 = string, 1= picture
-	QString getMyStateToolTipInfo();
+	QString getMyStateToolTipInfo() const;
 
 private:
 	//style values

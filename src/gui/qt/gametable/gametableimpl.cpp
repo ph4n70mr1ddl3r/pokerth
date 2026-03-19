@@ -1807,7 +1807,7 @@ void gameTableImpl::myCheck()
 	myActionDone();
 }
 
-int gameTableImpl::getMyCallAmount()
+int gameTableImpl::getMyCallAmount() const
 {
 
 	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
@@ -1822,14 +1822,14 @@ int gameTableImpl::getMyCallAmount()
 	}
 }
 
-int gameTableImpl::getBetRaisePushButtonValue()
+int gameTableImpl::getBetRaisePushButtonValue() const
 {
 
 	int betValue = pushButton_BetRaise->text().simplified().remove(QRegularExpression("[^0-9]")).toInt();
 	return betValue;
 }
 
-int gameTableImpl::getMyBetAmount()
+int gameTableImpl::getMyBetAmount() const
 {
 
 	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
@@ -3679,7 +3679,7 @@ void gameTableImpl::pingUpdate(unsigned minPing, unsigned avgPing, unsigned maxP
 	label_Avatar0->refreshPing(minPing, avgPing, maxPing);
 }
 
-int gameTableImpl::getAndroidApiVersion()
+int gameTableImpl::getAndroidApiVersion() const
 {
     int api = -1;
 #ifdef ANDROID

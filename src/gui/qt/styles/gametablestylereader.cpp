@@ -1732,7 +1732,7 @@ QString GameTableStyleReader::getFallBackFieldContent(QString field, int type)
 	return QString("");
 }
 
-QString GameTableStyleReader::getMyStateToolTipInfo()
+QString GameTableStyleReader::getMyStateToolTipInfo() const
 {
 	switch (myState) {
 	case GT_STYLE_OK:

@@ -199,7 +199,7 @@ void CardDeckStyleReader::showErrorMessage()
 	}
 }
 
-QString CardDeckStyleReader::getMyStateToolTipInfo()
+QString CardDeckStyleReader::getMyStateToolTipInfo() const
 {
 	switch (myState) {
 	case CD_STYLE_OK:

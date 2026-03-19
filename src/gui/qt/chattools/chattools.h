@@ -68,7 +68,7 @@ public slots:
 
 	void fillChatLinesHistory(QString fillString);
 	void showChatHistoryIndex(int index);
-	int getChatLinesHistorySize()
+	int getChatLinesHistorySize() const
 	{
 		return chatLinesHistory.size();
 	}
@@ -84,7 +84,7 @@ public slots:
 	{
 		myNick = theValue;
 	}
-	QString getMyNick ()
+	QString getMyNick () const
 	{
 		return myNick;
 	}
