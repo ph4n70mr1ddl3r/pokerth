@@ -275,12 +275,17 @@ ServerLobbyThread::Init(const string &logDir)
 		m_statisticsFileName = logPath.string();
 		ReadStatisticsFile();
 	}
-	m_database->Init(
-		m_serverConfig.readConfigString("DBServerAddress"),
-		m_serverConfig.readConfigString("DBServerUser"),
-		m_serverConfig.readConfigString("DBServerPassword"),
-		m_serverConfig.readConfigString("DBServerDatabaseName"),
-		m_serverConfig.readConfigString("DBServerEncryptionKey"));
+	try {
+		m_database->Init(
+			m_serverConfig.readConfigString("DBServerAddress"),
+			m_serverConfig.readConfigString("DBServerUser"),
+			m_serverConfig.readConfigString("DBServerPassword"),
+			m_serverConfig.readConfigString("DBServerDatabaseName"),
+			m_serverConfig.readConfigString("DBServerEncryptionKey"));
+	} catch (const std::exception& e) {
+		LOG_ERROR("Failed to initialize database connection: " << e.what());
+		throw ServerException(__FILE__, __LINE__, ERR_DB_INIT_FAILED, 0);
+	}
 	m_database->AsyncQueryAdminPlayers(0);
 
 	GetBanManager().InitGameNameBadWordList(m_serverConfig.readConfigStringList("GameNameBadWordList"));
@@ -306,6 +311,7 @@ ServerLobbyThread::AddConnection(boost::shared_ptr<SessionData> sessionData)
 
 	string ipAddress = sessionData->GetRemoteIPAddressFromSocket();
 	if (ipAddress.empty()) {
+		LOG_ERROR("Failed to get IP address for session " << sessionData->GetId());
 		SessionError(sessionData, ERR_NET_INVALID_SESSION);
 		return;
 	}
@@ -1834,10 +1840,13 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
     }
 
 	std::string providedPassword = tmpSession->AuthGetPassword();
-	std::string emptyPassword;
-	std::string passwordToCompare = providedPassword.empty() ? std::string(dbPlayerData.secret.size(), '\0') : providedPassword;
-	bool passwordMatch = Tools::ConstantTimeStringCompare(passwordToCompare, dbPlayerData.secret);
-	if (!providedPassword.empty() && passwordMatch) {
+	if (providedPassword.empty()) {
+		LOG_MSG("Empty password rejected for player " << playerId);
+		SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
+		return;
+	}
+	bool passwordMatch = Tools::ConstantTimeStringCompare(providedPassword, dbPlayerData.secret);
+	if (passwordMatch) {
 		bool shouldEstablish = true;
 		{
 			boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
@@ -1984,52 +1993,60 @@ ServerLobbyThread::RequestPlayerAvatar(boost::shared_ptr<SessionData> session)
 void
 ServerLobbyThread::TimerRemoveGame(const boost::system::error_code &ec)
 {
-	if (!ec) {
-		std::vector<boost::shared_ptr<ServerGame>> gamesToRemove;
-		{
-			boost::mutex::scoped_lock lock(m_gameMapMutex);
-			GameMap::iterator i = m_gameMap.begin();
-			GameMap::iterator end = m_gameMap.end();
-			while (i != end) {
-				boost::shared_ptr<ServerGame> tmpGame = i->second;
-				if (!tmpGame->GetSessionManager().HasSessionWithState(SessionData::Game)) {
-					gamesToRemove.push_back(tmpGame);
-				}
-				++i;
-			}
+	if (ec) {
+		if (ec != boost::asio::error::operation_aborted) {
+			LOG_ERROR("TimerRemoveGame error: " << ec.message());
 		}
-		for (auto& game : gamesToRemove) {
-			InternalRemoveGame(game);
-		}
-		m_removeGameTimer.expires_after(milliseconds(SERVER_REMOVE_GAME_INTERVAL_MSEC));
-		m_removeGameTimer.async_wait(
-			boost::bind(
-				&ServerLobbyThread::TimerRemoveGame, shared_from_this(), boost::asio::placeholders::error));
+		return;
 	}
+	std::vector<boost::shared_ptr<ServerGame>> gamesToRemove;
+	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		GameMap::iterator i = m_gameMap.begin();
+		GameMap::iterator end = m_gameMap.end();
+		while (i != end) {
+			boost::shared_ptr<ServerGame> tmpGame = i->second;
+			if (!tmpGame->GetSessionManager().HasSessionWithState(SessionData::Game)) {
+				gamesToRemove.push_back(tmpGame);
+			}
+			++i;
+		}
+	}
+	for (auto& game : gamesToRemove) {
+		InternalRemoveGame(game);
+	}
+	m_removeGameTimer.expires_after(milliseconds(SERVER_REMOVE_GAME_INTERVAL_MSEC));
+	m_removeGameTimer.async_wait(
+		boost::bind(
+			&ServerLobbyThread::TimerRemoveGame, shared_from_this(), boost::asio::placeholders::error));
 }
 
 void
 ServerLobbyThread::TimerUpdateClientLoginLock(const boost::system::error_code &ec)
 {
-	if (!ec) {
-		boost::mutex::scoped_lock lock(m_timerClientAddressMapMutex);
-
-		TimerClientAddressMap::iterator i = m_timerClientAddressMap.begin();
-		TimerClientAddressMap::iterator end = m_timerClientAddressMap.end();
-
-		while (i != end) {
-			TimerClientAddressMap::iterator next = i;
-			++next;
-			if (i->second.elapsed().total_seconds() > static_cast<boost::int64_t>(SERVER_INIT_LOGIN_CLIENT_LOCK_SEC))
-				m_timerClientAddressMap.erase(i);
-			i = next;
+	if (ec) {
+		if (ec != boost::asio::error::operation_aborted) {
+			LOG_ERROR("TimerUpdateClientLoginLock error: " << ec.message());
 		}
-		// Restart timer
-		m_loginLockTimer.expires_after(milliseconds(SERVER_UPDATE_LOGIN_LOCK_INTERVAL_MSEC));
-		m_loginLockTimer.async_wait(
-			boost::bind(
-				&ServerLobbyThread::TimerUpdateClientLoginLock, shared_from_this(), boost::asio::placeholders::error));
+		return;
 	}
+	boost::mutex::scoped_lock lock(m_timerClientAddressMapMutex);
+
+	TimerClientAddressMap::iterator i = m_timerClientAddressMap.begin();
+	TimerClientAddressMap::iterator end = m_timerClientAddressMap.end();
+
+	while (i != end) {
+		TimerClientAddressMap::iterator next = i;
+		++next;
+		if (i->second.elapsed().total_seconds() > static_cast<boost::int64_t>(SERVER_INIT_LOGIN_CLIENT_LOCK_SEC))
+			m_timerClientAddressMap.erase(i);
+		i = next;
+	}
+	// Restart timer
+	m_loginLockTimer.expires_after(milliseconds(SERVER_UPDATE_LOGIN_LOCK_INTERVAL_MSEC));
+	m_loginLockTimer.async_wait(
+		boost::bind(
+			&ServerLobbyThread::TimerUpdateClientLoginLock, shared_from_this(), boost::asio::placeholders::error));
 }
 
 bool

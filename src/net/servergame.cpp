@@ -393,6 +393,9 @@ ServerGame::InitRankingMap(const PlayerDataList &playerDataList)
 void
 ServerGame::UpdateRankingMap()
 {
+	boost::mutex::scoped_lock lock(m_gameMutex);
+	if (!m_game)
+		return;
 	list<boost::shared_ptr<PlayerInterface> > activePlayers = *m_game->getActivePlayerList();
 	int currentRank = static_cast<int>(activePlayers.size());
 	list<boost::shared_ptr<PlayerInterface> > tmpRemovedPlayers;

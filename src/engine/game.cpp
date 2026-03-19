@@ -78,6 +78,8 @@ Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
 
 	// create board
 	currentBoard = myFactory->createBoard();
+	if (!currentBoard)
+		throw LocalException(__FILE__, __LINE__, ERR_BOARD_NOT_FOUND);
 
 	// create player lists
 	seatsList = boost::make_shared<std::list<boost::shared_ptr<PlayerInterface>>>();

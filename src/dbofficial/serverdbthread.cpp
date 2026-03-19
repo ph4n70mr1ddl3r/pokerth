@@ -425,15 +425,22 @@ ServerDBThread::IsConnected() const
 void
 ServerDBThread::Main()
 {
+	int reconnectDelay = 250;
+	const int maxReconnectDelay = 30000;
 	while (!ShouldTerminate() && !HasPermanentError()) {
 		try {
 			if (HasDBConnection()) {
 				SetConnected(true);
+				reconnectDelay = 250;
 				m_semaphore.wait();
 				HandleNextQuery();
 			} else {
 				SetConnected(false);
 				EstablishDBConnection();
+				if (!HasDBConnection()) {
+					Msleep(reconnectDelay);
+					reconnectDelay = std::min(reconnectDelay * 2, maxReconnectDelay);
+				}
 			}
 		} catch (const mysqlpp::Exception &e) {
 			string errorMsg = string("Database exception: ") + e.what();
@@ -486,8 +493,6 @@ ServerDBThread::EstablishDBConnection()
 		boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::ConnectFailed, &m_callback, m_connData->conn.error()));
 		if (!m_previouslyConnected)
 			m_permanentError = true;
-		else
-			Msleep(250);
 	} else {
 		mysqlpp::Query prepareNick = m_connData->conn.query();
 		/*

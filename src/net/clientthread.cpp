@@ -644,23 +644,28 @@ ClientThread::ClearAuthContext()
 void
 ClientThread::InitGame()
 {
-	// Store current session guid, in case we need to rejoin the game.
-	WriteSessionGuidToFile();
+	try {
+		// Store current session guid, in case we need to rejoin the game.
+		WriteSessionGuidToFile();
 
-	// EngineFactory erstellen
-	boost::shared_ptr<EngineFactory> factory(new ClientEngineFactory); // LocalEngine erstellen
+		// EngineFactory erstellen
+		boost::shared_ptr<EngineFactory> factory(new ClientEngineFactory); // LocalEngine erstellen
 
-	MapPlayerDataList();
-	m_startData.numberOfPlayers = static_cast<int>(GetPlayerDataList().size());
-	m_game.reset(new Game(&m_gui, factory, GetPlayerDataList(), GetGameData(), GetStartData(), m_curGameNum++, m_clientLog.get()));
-	// Initialize Minimum GUI speed.
-	int minimumGuiSpeed = 1;
-	if(GetGameData().delayBetweenHandsSec < 11) {
-		minimumGuiSpeed = 12-GetGameData().delayBetweenHandsSec;
+		MapPlayerDataList();
+		m_startData.numberOfPlayers = static_cast<int>(GetPlayerDataList().size());
+		m_game.reset(new Game(&m_gui, factory, GetPlayerDataList(), GetGameData(), GetStartData(), m_curGameNum++, m_clientLog.get()));
+		// Initialize Minimum GUI speed.
+		int minimumGuiSpeed = 1;
+		if(GetGameData().delayBetweenHandsSec < 11) {
+			minimumGuiSpeed = 12-GetGameData().delayBetweenHandsSec;
+		}
+		GetGui().initGui(minimumGuiSpeed);
+		// Signal start of game to GUI.
+		GetCallback().SignalNetClientGameStart(m_game);
+	} catch (const std::exception& e) {
+		LOG_ERROR("Failed to initialize game: " << e.what());
+		throw ClientException(__FILE__, __LINE__, ERR_GAME_INIT_FAILED, 0);
 	}
-	GetGui().initGui(minimumGuiSpeed);
-	// Signal start of game to GUI.
-	GetCallback().SignalNetClientGameStart(m_game);
 }
 
 void
