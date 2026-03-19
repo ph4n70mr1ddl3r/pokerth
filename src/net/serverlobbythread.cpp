@@ -584,7 +584,8 @@ ServerLobbyThread::RemoveGameByPlayerName(const std::string &playerName)
 	if (session) {
 		boost::shared_ptr<ServerGame> game = session->GetGame();
 		if (game) {
-			boost::asio::post(*m_ioService, boost::bind(&ServerLobbyThread::InternalRemoveGame, shared_from_this(), game));
+			auto self = shared_from_this();
+			boost::asio::post(*m_ioService, [self, game]() { self->InternalRemoveGame(game); });
 			retVal = true;
 		}
 	}
@@ -623,13 +624,15 @@ ServerLobbyThread::GetPlayerNameFromId(unsigned playerId) const
 void
 ServerLobbyThread::RemovePlayer(unsigned playerId, unsigned errorCode)
 {
-	boost::asio::post(*m_ioService, boost::bind(&ServerLobbyThread::InternalRemovePlayer, shared_from_this(), playerId, errorCode));
+	auto self = shared_from_this();
+	boost::asio::post(*m_ioService, [self, playerId, errorCode]() { self->InternalRemovePlayer(playerId, errorCode); });
 }
 
 void
 ServerLobbyThread::MutePlayerInGame(unsigned playerId)
 {
-	boost::asio::post(*m_ioService, boost::bind(&ServerLobbyThread::InternalMutePlayerInGame, shared_from_this(), playerId));
+	auto self = shared_from_this();
+	boost::asio::post(*m_ioService, [self, playerId]() { self->InternalMutePlayerInGame(playerId); });
 }
 
 void
@@ -857,21 +860,19 @@ ServerLobbyThread::Main()
 void
 ServerLobbyThread::RegisterTimers()
 {
+	auto self = shared_from_this();
 	// Remove closed games.
 	m_removeGameTimer.expires_after(milliseconds(SERVER_REMOVE_GAME_INTERVAL_MSEC));
 	m_removeGameTimer.async_wait(
-		boost::bind(
-			&ServerLobbyThread::TimerRemoveGame, shared_from_this(), boost::asio::placeholders::error));
+		[self](const boost::system::error_code& ec) { self->TimerRemoveGame(ec); });
 	// Update the statistics file.
 	m_saveStatisticsTimer.expires_after(seconds(SERVER_SAVE_STATISTICS_INTERVAL_SEC));
 	m_saveStatisticsTimer.async_wait(
-		boost::bind(
-			&ServerLobbyThread::TimerSaveStatisticsFile, shared_from_this(), boost::asio::placeholders::error));
+		[self](const boost::system::error_code& ec) { self->TimerSaveStatisticsFile(ec); });
 	// Update the avatar upload locks.
 	m_loginLockTimer.expires_after(milliseconds(SERVER_UPDATE_LOGIN_LOCK_INTERVAL_MSEC));
 	m_loginLockTimer.async_wait(
-		boost::bind(
-			&ServerLobbyThread::TimerUpdateClientLoginLock, shared_from_this(), boost::asio::placeholders::error));
+		[self](const boost::system::error_code& ec) { self->TimerUpdateClientLoginLock(ec); });
 }
 
 void
