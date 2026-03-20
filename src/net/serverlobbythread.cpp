@@ -813,8 +813,10 @@ ServerLobbyThread::GetNextUniquePlayerId()
 {
 	boost::mutex::scoped_lock lock(m_curUniquePlayerIdMutex);
 	m_curUniquePlayerId++;
-	if (m_curUniquePlayerId == 0) // 0 is an invalid id.
+	if (m_curUniquePlayerId == 0) {
+		LOG_WARN("Unique player ID counter wrapped around - potential ID collision risk");
 		m_curUniquePlayerId++;
+	}
 
 	return m_curUniquePlayerId;
 }
@@ -824,8 +826,10 @@ ServerLobbyThread::GetNextGameId()
 {
 	boost::mutex::scoped_lock lock(m_curGameIdMutex);
 	m_curGameId++;
-	if (m_curGameId == 0) // 0 is an invalid id.
+	if (m_curGameId == 0) {
+		LOG_WARN("Game ID counter wrapped around - potential ID collision risk");
 		m_curGameId++;
+	}
 
 	return m_curGameId;
 }

@@ -363,11 +363,25 @@ AvatarManager::StoreAvatarInCache(const MD5Buf &md5buf, AvatarFileType avatarFil
 	try {
 		string ext(GetAvatarFileExtension(avatarFileType));
 		if (!ext.empty() && !cacheDir.empty()) {
-			// Check header before storing file.
 			if (IsValidAvatarFileType(avatarFileType, data, size)) {
 				path tmpPath(cacheDir);
 				tmpPath /= (md5buf.ToString() + ext);
 				string fileName(tmpPath.string());
+				boost::system::error_code ec;
+				path canonicalCacheDir = canonical(path(cacheDir), ec);
+				if (ec) {
+					LOG_ERROR("Failed to resolve cache directory: " << ec.message());
+					return retVal;
+				}
+				path canonicalFilePath = canonical(tmpPath.parent_path(), ec) / tmpPath.filename();
+				if (ec) {
+					LOG_ERROR("Failed to resolve avatar file path: " << ec.message());
+					return retVal;
+				}
+				if (!starts_with(canonicalFilePath, canonicalCacheDir)) {
+					LOG_ERROR("Path traversal attempt detected - file path outside cache directory");
+					return retVal;
+				}
 				std::ofstream o(fileName.c_str(), ios_base::out | ios_base::binary | ios_base::trunc);
 				if (!o.fail()) {
 					o.write((const char *)data, size);

@@ -68,6 +68,26 @@ using namespace std;
 #define IRC_RENAME_ATTACH					"|Lobby"
 #define IRC_MAX_NICK_LEN					16
 
+namespace {
+	string SanitizeIrcNick(const string& nick) {
+		string result;
+		result.reserve(nick.size());
+		for (char c : nick) {
+			if (std::isalnum(static_cast<unsigned char>(c)) || c == '[' || c == ']' ||
+				c == '{' || c == '}' || c == '\\' || c == '|' || c == '^' || c == '_' ||
+				c == '-' || c == '`') {
+				result += c;
+			}
+		}
+		if (result.empty())
+			result = "Player";
+		if (!std::isalpha(static_cast<unsigned char>(result[0])))
+			result = "P" + result;
+		if (result.length() > IRC_MAX_NICK_LEN)
+			result = result.substr(0, IRC_MAX_NICK_LEN);
+		return result;
+	}
+}
 
 struct IrcContext {
 	IrcContext(IrcThread &t) : ircThread(t), session(nullptr), serverPort(0), useIPv6(false), renameTries(0), sendingBlocked(false), sendCounter(0) {}
@@ -359,8 +379,8 @@ IrcThread::Init(const std::string &serverAddress, unsigned serverPort, bool ipv6
 	context.serverAddress	= serverAddress;
 	context.serverPort		= serverPort;
 	context.useIPv6			= ipv6;
-	context.origNick		= nick;
-	context.nick			= nick;
+	context.origNick		= SanitizeIrcNick(nick);
+	context.nick			= context.origNick;
 	context.channel			= channel;
 	context.channelPassword	= channelPassword;
 }

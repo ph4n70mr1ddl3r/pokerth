@@ -235,10 +235,32 @@ ServerDBThread::SetGamePlayerPlace(unsigned requestId, DB_id playerId, unsigned 
 	m_semaphore.post();
 }
 
+namespace {
+	bool IsValidIpAddress(const std::string& ip) {
+		if (ip.empty() || ip.length() > 45)
+			return false;
+		int dotCount = 0;
+		int colonCount = 0;
+		for (char c : ip) {
+			if (c == '.') dotCount++;
+			else if (c == ':') colonCount++;
+			else if (!std::isalnum(static_cast<unsigned char>(c)) && c != '%')
+				return false;
+		}
+		if (colonCount > 0 && dotCount > 0) return colonCount >= 2 && dotCount <= 3;
+		return (dotCount == 3 && colonCount == 0) || (colonCount >= 2 && dotCount == 0);
+	}
+}
+
 void
 ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, std::vector<long> last_games, std::string playerIp)
 {
 	LOG_ERROR("ServerDBThread::SetPlayerLastGames() entered.");
+
+	if (!IsValidIpAddress(playerIp)) {
+		LOG_ERROR("Invalid IP address format rejected: " << playerIp);
+		playerIp = "0.0.0.0";
+	}
 
 	std::ostringstream oss;
     std::copy(last_games.begin(), last_games.end(), std::ostream_iterator<int>(oss, ","));
