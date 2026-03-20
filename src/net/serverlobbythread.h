@@ -141,6 +141,10 @@ protected:
 		FailedLoginEntry() : count(0), firstFailTime(boost::posix_time::not_a_date_time) {}
 	};
 	typedef std::map<std::string, FailedLoginEntry> FailedLoginMap;
+	struct ChatRateEntry {
+		std::vector<boost::posix_time::ptime> messageTimes;
+	};
+	typedef std::map<unsigned, ChatRateEntry> ChatRateMap;
 	typedef std::list<unsigned> RemoveGameList;
 	typedef std::map<unsigned, boost::shared_ptr<ServerGame> > GameMap;
 
@@ -255,6 +259,9 @@ private:
 
 	FailedLoginMap m_failedLoginMap;
 	mutable boost::mutex m_failedLoginMapMutex;
+
+	ChatRateMap m_chatRateMap;
+	mutable boost::mutex m_chatRateMapMutex;
 
 	GuiInterface &m_gui;
 	AvatarManager &m_avatarManager;

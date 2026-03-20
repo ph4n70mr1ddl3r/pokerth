@@ -812,26 +812,24 @@ u_int32_t
 ServerLobbyThread::GetNextUniquePlayerId()
 {
 	boost::mutex::scoped_lock lock(m_curUniquePlayerIdMutex);
-	m_curUniquePlayerId++;
-	if (m_curUniquePlayerId == 0) {
-		LOG_WARN("Unique player ID counter wrapped around - potential ID collision risk");
-		m_curUniquePlayerId++;
+	constexpr u_int32_t MAX_SAFE_PLAYER_ID = std::numeric_limits<u_int32_t>::max() - 1000;
+	if (m_curUniquePlayerId >= MAX_SAFE_PLAYER_ID) {
+		LOG_ERROR("Unique player ID counter near overflow - server capacity exhausted");
+		throw ServerException(__FILE__, __LINE__, ERR_NET_SERVER_FULL, 0);
 	}
-
-	return m_curUniquePlayerId;
+	return ++m_curUniquePlayerId;
 }
 
 u_int32_t
 ServerLobbyThread::GetNextGameId()
 {
 	boost::mutex::scoped_lock lock(m_curGameIdMutex);
-	m_curGameId++;
-	if (m_curGameId == 0) {
-		LOG_WARN("Game ID counter wrapped around - potential ID collision risk");
-		m_curGameId++;
+	constexpr u_int32_t MAX_SAFE_GAME_ID = std::numeric_limits<u_int32_t>::max() - 100;
+	if (m_curGameId >= MAX_SAFE_GAME_ID) {
+		LOG_ERROR("Game ID counter near overflow - cannot create new games");
+		throw ServerException(__FILE__, __LINE__, ERR_NET_SERVER_FULL, 0);
 	}
-
-	return m_curGameId;
+	return ++m_curGameId;
 }
 
 void
@@ -1159,9 +1157,15 @@ ServerLobbyThread::HandleNetPacketAvatarHeader(boost::shared_ptr<SessionData> se
 {
 	if (session->GetPlayerData()) {
 		if (avatarHeader.avatarsize() >= MIN_AVATAR_FILE_SIZE && avatarHeader.avatarsize() <= MAX_AVATAR_FILE_SIZE) {
+			int rawType = avatarHeader.avatartype();
+			if (rawType < AVATAR_FILE_TYPE_UNKNOWN || rawType > AVATAR_FILE_TYPE_GIF) {
+				LOG_WARN("Session " << session->GetId() << " - Invalid avatar type: " << rawType);
+				SessionError(session, ERR_NET_INVALID_AVATAR_SIZE);
+				return;
+			}
 			boost::shared_ptr<AvatarFile> tmpAvatarFile(new AvatarFile);
 			tmpAvatarFile->fileData.reserve(avatarHeader.avatarsize());
-			tmpAvatarFile->fileType = static_cast<AvatarFileType>(avatarHeader.avatartype());
+			tmpAvatarFile->fileType = static_cast<AvatarFileType>(rawType);
 			tmpAvatarFile->reportedSize = avatarHeader.avatarsize();
 			// Ignore request id for now.
 
@@ -1484,9 +1488,44 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 {
 	bool chatSent = false;
 	if (session->GetPlayerData()) {
+		const string &chatMsg(chatRequest.chattext());
+		if (chatMsg.empty()) {
+			return;
+		}
+		constexpr size_t MAX_CHAT_RATE_MESSAGES = 10;
+		constexpr int MAX_CHAT_RATE_WINDOW_SEC = 10;
+		constexpr size_t MAX_CHAT_RATE_MAP_SIZE = 5000;
+		unsigned playerId = session->GetPlayerData()->GetUniqueId();
+		{
+			boost::mutex::scoped_lock lock(m_chatRateMapMutex);
+			ChatRateEntry &entry = m_chatRateMap[playerId];
+			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+			boost::posix_time::ptime cutoff = now - boost::posix_time::seconds(MAX_CHAT_RATE_WINDOW_SEC);
+			entry.messageTimes.erase(
+				std::remove_if(entry.messageTimes.begin(), entry.messageTimes.end(),
+					[cutoff](const boost::posix_time::ptime& t) { return t < cutoff; }),
+				entry.messageTimes.end());
+			if (entry.messageTimes.size() >= MAX_CHAT_RATE_MESSAGES) {
+				LOG_WARN("Chat rate limited for player " << playerId);
+				boost::shared_ptr<NetPacket> packet(new NetPacket);
+				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatRejectMessage);
+				ChatRejectMessage *netReject = packet->GetMsg()->mutable_chatrejectmessage();
+				netReject->set_chattext(chatMsg);
+				GetSender().Send(session, packet);
+				return;
+			}
+			entry.messageTimes.push_back(now);
+			if (m_chatRateMap.size() > MAX_CHAT_RATE_MAP_SIZE) {
+				for (auto it = m_chatRateMap.begin(); it != m_chatRateMap.end(); ) {
+					if (it->second.messageTimes.empty()) {
+						it = m_chatRateMap.erase(it);
+					} else {
+						++it;
+					}
+				}
+			}
+		}
 		if (!chatRequest.has_targetgameid() && !chatRequest.has_targetplayerid()) {
-            string chatMsg(chatRequest.chattext());
-
             boost::shared_ptr<NetPacket> packet(new NetPacket);
 			packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatMessage);
 			ChatMessage *netChat = packet->GetMsg()->mutable_chatmessage();
@@ -1909,6 +1948,7 @@ ServerLobbyThread::UserInvalid(unsigned playerId)
 			}
 		}
 		constexpr size_t MAX_FAILED_LOGIN_MAP_SIZE = 1000;
+		constexpr size_t MAX_FAILED_LOGIN_MAP_HARD_LIMIT = 2000;
 		if (m_failedLoginMap.size() > MAX_FAILED_LOGIN_MAP_SIZE) {
 			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
 			for (auto mapIt = m_failedLoginMap.begin(); mapIt != m_failedLoginMap.end(); ) {
@@ -1917,6 +1957,21 @@ ServerLobbyThread::UserInvalid(unsigned playerId)
 					mapIt = m_failedLoginMap.erase(mapIt);
 				} else {
 					++mapIt;
+				}
+			}
+			if (m_failedLoginMap.size() > MAX_FAILED_LOGIN_MAP_HARD_LIMIT) {
+				LOG_WARN("Failed login map at hard limit, evicting oldest entries");
+				while (m_failedLoginMap.size() > MAX_FAILED_LOGIN_MAP_SIZE) {
+					auto oldest = std::min_element(
+						m_failedLoginMap.begin(), m_failedLoginMap.end(),
+						[](const auto& a, const auto& b) {
+							return a.second.firstFailTime < b.second.firstFailTime;
+						});
+					if (oldest != m_failedLoginMap.end()) {
+						m_failedLoginMap.erase(oldest);
+					} else {
+						break;
+					}
 				}
 			}
 		}
