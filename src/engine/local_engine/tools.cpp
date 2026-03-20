@@ -45,13 +45,15 @@ using namespace std;
 
 namespace {
 	thread_local std::mt19937 t_rng = []() {
-		try {
-			std::random_device rd;
-			return std::mt19937(rd());
-		} catch (...) {
-			unsigned seed = static_cast<unsigned>(std::time(nullptr));
-			return std::mt19937(seed);
+		std::random_device rd;
+		std::random_device::result_type seed;
+		if (rd.entropy() > 0) {
+			seed = rd();
+		} else {
+			LOG_ERROR("Random device has insufficient entropy, using time-based fallback");
+			seed = static_cast<std::random_device::result_type>(std::time(nullptr));
 		}
+		return std::mt19937(seed);
 	}();
 }
 
