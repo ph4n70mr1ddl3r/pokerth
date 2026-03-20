@@ -142,6 +142,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 	//start reading the file and fill vars
 	string tempString1("");
 	QDomDocument xmlDoc;
+	xmlDoc.setResolveExternals(false);
 	xmlDoc.setContent(fileContent);
 
 	if(!xmlDoc.documentElement().isNull()){
@@ -1711,6 +1712,7 @@ QString GameTableStyleReader::getFallBackFieldContent(QString field, int type)
 		string tempString1("");
 
 		QDomDocument xmlDoc;
+		xmlDoc.setResolveExternals(false);
 		xmlDoc.setContent(thisContent);
 
 		if(!xmlDoc.documentElement().isNull()){

@@ -84,6 +84,7 @@ void CardDeckStyleReader::readStyleFile(QString file)
 	string tempString1("");
 
 	QDomDocument xmlDoc;
+	xmlDoc.setResolveExternals(false);
 	xmlDoc.setContent(fileContent);
 
 	if(!xmlDoc.documentElement().isNull()){
