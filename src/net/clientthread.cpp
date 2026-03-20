@@ -1264,9 +1264,6 @@ ClientThread::AddPlayerData(boost::shared_ptr<PlayerData> playerData)
 			GetCallback().SignalNetClientSelfJoined(playerData->GetUniqueId(), playerData->GetName(), playerData->IsGameAdmin());
 		else {
 			GetCallback().SignalNetClientPlayerJoined(playerData->GetUniqueId(), playerData->GetName(), playerData->IsGameAdmin());
-//			if(m_game) {
-//				m_clientLog->logPlayerAction(playerData->GetName(),LOG_ACTION_JOIN);
-//			}
 		}
 	}
 }

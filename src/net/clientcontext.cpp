@@ -34,7 +34,7 @@
 
 
 ClientContext::ClientContext()
-	: m_sctp(false), m_tls(false), m_tlsVerifyPeer(false), m_addrFamily(AF_INET), m_useServerList(false), m_serverPort(0),
+	: m_sctp(false), m_tls(false), m_tlsVerifyPeer(true), m_addrFamily(AF_INET), m_useServerList(false), m_serverPort(0),
 	  m_playerRights(PLAYER_RIGHTS_NORMAL), m_hasSubscribedLobbyMsg(true)
 {
 }

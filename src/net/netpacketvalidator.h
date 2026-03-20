@@ -42,6 +42,7 @@ class NetPacketValidator
 {
 public:
 	NetPacketValidator();
+	~NetPacketValidator() noexcept = default;
 
 	bool IsValidPacket(const NetPacket &packet) const;
 
