@@ -72,8 +72,11 @@
 #define SERVER_REMOVE_PLAYER_INTERVAL_MSEC			100
 #define SERVER_UPDATE_LOGIN_LOCK_INTERVAL_MSEC		1000
 #define SERVER_PROCESS_SEND_INTERVAL_MSEC			10
+#define SERVER_CLEANUP_RATE_MAPS_INTERVAL_MSEC		60000	// Cleanup rate limiting maps every minute
 
 #define SERVER_INIT_LOGIN_CLIENT_LOCK_SEC			NetHelper::GetLoginLockSec()
+#define SERVER_MAX_AVATAR_REPORTS					100
+#define SERVER_MAX_GAME_REPORTS					100
 
 #define SERVER_INIT_SESSION_TIMEOUT_SEC				60
 #define SERVER_TIMEOUT_WARNING_REMAINING_SEC		60
@@ -881,6 +884,10 @@ ServerLobbyThread::RegisterTimers()
 	m_loginLockTimer.expires_after(milliseconds(SERVER_UPDATE_LOGIN_LOCK_INTERVAL_MSEC));
 	m_loginLockTimer.async_wait(
 		[self](const boost::system::error_code& ec) { self->TimerUpdateClientLoginLock(ec); });
+	// Cleanup rate limiting maps periodically.
+	m_cleanupRateMapsTimer.expires_after(milliseconds(SERVER_CLEANUP_RATE_MAPS_INTERVAL_MSEC));
+	m_cleanupRateMapsTimer.async_wait(
+		[self](const boost::system::error_code& ec) { self->TimerCleanupRateMaps(ec); });
 }
 
 void
@@ -889,6 +896,7 @@ ServerLobbyThread::CancelTimers()
 	m_removeGameTimer.cancel();
 	m_saveStatisticsTimer.cancel();
 	m_loginLockTimer.cancel();
+	m_cleanupRateMapsTimer.cancel();
 }
 
 void

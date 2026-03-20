@@ -195,6 +195,9 @@ protected:
 	void TimerRemovePlayer(const boost::system::error_code &ec);
 	void TimerUpdateClientLoginLock(const boost::system::error_code &ec);
 	void TimerCleanupAvatarCache(const boost::system::error_code &ec);
+	void TimerCleanupRateMaps(const boost::system::error_code &ec);
+	void CleanupChatRateMap();
+	void CleanupReportLists();
 
 	bool IsGameNameInUse(const std::string &gameName) const;
 	boost::shared_ptr<ServerGame> InternalGetGameFromId(unsigned gameId);
@@ -288,6 +291,7 @@ private:
 	boost::asio::steady_timer m_removeGameTimer;
 	boost::asio::steady_timer m_saveStatisticsTimer;
 	boost::asio::steady_timer m_loginLockTimer;
+	boost::asio::steady_timer m_cleanupRateMapsTimer;
 
 	boost::uuids::random_generator m_sessionIdGenerator;
 
