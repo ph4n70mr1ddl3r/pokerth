@@ -40,6 +40,7 @@
 #include <sstream>
 #include <vector>
 #include <climits>
+#include <algorithm>
 
 using namespace std;
 
@@ -924,27 +925,17 @@ LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType ty
 	////////////////////////////
 
 	int i = 0;
-	for(i=0; i<3; i++) {
-		myNiveau[i] = 0;
-	}
-	for(i=0; i<2; i++) {
-		myCards[i] = -1;
-	}
+	std::fill(std::begin(myNiveau), std::end(myNiveau), 0);
+	std::fill(std::begin(myCards), std::end(myCards), -1);
 
 	// myBestHandPosition mit -1 initialisieren
-	for(i=0; i<5; i++) {
-		myBestHandPosition[i] = -1;
-	}
+	std::fill(std::begin(myBestHandPosition), std::end(myBestHandPosition), -1);
 
 	// myAverageSets initialisieren
-	for(i=0; i<4; i++) {
-		myAverageSets[i] = 0;
-	}
+	std::fill(std::begin(myAverageSets), std::end(myAverageSets), 0);
 
 	// myAggressive initialisieren
-	for(i=0; i<7; i++) {
-		myAggressive[i] = 0;
-	}
+	std::fill(std::begin(myAggressive), std::end(myAggressive), 0);
 
 	// Dude zuweisen
 	Tools::GetRand(3, 5, 1, &myDude);
