@@ -309,6 +309,9 @@ void gameLobbyDialogImpl::createGame()
         return;
     }
 
+	if (myCreateInternetGameDialog) {
+		delete myCreateInternetGameDialog;
+	}
 	myCreateInternetGameDialog = new createInternetGameDialogImpl(this, myConfig);
 	PlayerInfo playerInfo(mySession->getClientPlayerInfo(mySession->getClientUniquePlayerId()));
 	myCreateInternetGameDialog->exec(QString::fromUtf8(playerInfo.playerName.c_str()));
