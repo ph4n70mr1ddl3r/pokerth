@@ -93,7 +93,7 @@ NetPacket::IsClientActivity() const
 string
 NetPacket::ToString() const
 {
-	return m_msg ? m_msg->SerializeAsString() : "NULL";
+	return m_msg ? m_msg->SerializeAsString() : "nullptr";
 }
 
 void

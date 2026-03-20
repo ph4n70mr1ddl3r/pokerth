@@ -58,7 +58,7 @@ AsyncDBReportGame::Init(DBIdManager& idManager)
 		// Add game id as last parameter (where-clause).
 		params.push_back(paramStream.str());
 	} else {
-		params.push_back("NULL");
+		params.push_back("nullptr");
 	}
 	SetParams(params);
 }

@@ -618,7 +618,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(ActionAllInI18NPic == "") {
 				ActionAllInI18NPic = getFallBackFieldContent("ActionAllInI18NPic", 1);
 				leftItems << "ActionAllInI18NPic";
-			} else if(ActionAllInI18NPic != QString(currentDir+"NULL") && !QFile(ActionAllInI18NPic).exists()) {
+			} else if(ActionAllInI18NPic != QString(currentDir+"nullptr") && !QFile(ActionAllInI18NPic).exists()) {
 				itemPicsLeft << "ActionAllInI18NPic = "+ActionAllInI18NPic;
 				ActionAllInI18NPic = getFallBackFieldContent("ActionAllInI18NPic", 1);
 			}
@@ -626,7 +626,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(ActionRaiseI18NPic == "") {
 				ActionRaiseI18NPic = getFallBackFieldContent("ActionRaiseI18NPic", 1);
 				leftItems << "ActionRaiseI18NPic";
-			} else if(ActionRaiseI18NPic != QString(currentDir+"NULL") && !QFile(ActionRaiseI18NPic).exists()) {
+			} else if(ActionRaiseI18NPic != QString(currentDir+"nullptr") && !QFile(ActionRaiseI18NPic).exists()) {
 				itemPicsLeft << "ActionRaiseI18NPic = "+ActionRaiseI18NPic;
 				ActionRaiseI18NPic = getFallBackFieldContent("ActionRaiseI18NPic", 1);
 			}
@@ -634,7 +634,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(ActionBetI18NPic == "") {
 				ActionBetI18NPic = getFallBackFieldContent("ActionBetI18NPic", 1);
 				leftItems << "ActionBetI18NPic";
-			} else if(ActionBetI18NPic != QString(currentDir+"NULL") && !QFile(ActionBetI18NPic).exists()) {
+			} else if(ActionBetI18NPic != QString(currentDir+"nullptr") && !QFile(ActionBetI18NPic).exists()) {
 				itemPicsLeft << "ActionBetI18NPic = "+ActionBetI18NPic;
 				ActionBetI18NPic = getFallBackFieldContent("ActionBetI18NPic", 1);
 			}
@@ -642,7 +642,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(ActionCallI18NPic == "") {
 				ActionCallI18NPic = getFallBackFieldContent("ActionCallI18NPic", 1);
 				leftItems << "ActionCallI18NPic";
-			} else if(ActionCallI18NPic != QString(currentDir+"NULL") && !QFile(ActionCallI18NPic).exists()) {
+			} else if(ActionCallI18NPic != QString(currentDir+"nullptr") && !QFile(ActionCallI18NPic).exists()) {
 				itemPicsLeft << "ActionCallI18NPic = "+ActionCallI18NPic;
 				ActionCallI18NPic = getFallBackFieldContent("ActionCallI18NPic", 1);
 			}
@@ -650,7 +650,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(ActionCheckI18NPic == "") {
 				ActionCheckI18NPic = getFallBackFieldContent("ActionCheckI18NPic", 1);
 				leftItems << "ActionCheckI18NPic";
-			} else if(ActionCheckI18NPic != QString(currentDir+"NULL") && !QFile(ActionCheckI18NPic).exists()) {
+			} else if(ActionCheckI18NPic != QString(currentDir+"nullptr") && !QFile(ActionCheckI18NPic).exists()) {
 				itemPicsLeft << "ActionCheckI18NPic = "+ActionCheckI18NPic;
 				ActionCheckI18NPic = getFallBackFieldContent("ActionCheckI18NPic", 1);
 			}
@@ -658,7 +658,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(ActionFoldI18NPic == "") {
 				ActionFoldI18NPic = getFallBackFieldContent("ActionFoldI18NPic", 1);
 				leftItems << "ActionFoldI18NPic";
-			} else if(ActionFoldI18NPic != QString(currentDir+"NULL") && !QFile(ActionFoldI18NPic).exists()) {
+			} else if(ActionFoldI18NPic != QString(currentDir+"nullptr") && !QFile(ActionFoldI18NPic).exists()) {
 				itemPicsLeft << "ActionFoldI18NPic = "+ActionFoldI18NPic;
 				ActionFoldI18NPic = getFallBackFieldContent("ActionFoldI18NPic", 1);
 			}
@@ -666,7 +666,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(ActionWinnerI18NPic == "") {
 				ActionWinnerI18NPic = getFallBackFieldContent(" ActionWinnerI18NPic", 1);
 				leftItems << "ActionWinnerI18NPic";
-			} else if(ActionWinnerI18NPic != QString(currentDir+"NULL") && !QFile(ActionWinnerI18NPic).exists()) {
+			} else if(ActionWinnerI18NPic != QString(currentDir+"nullptr") && !QFile(ActionWinnerI18NPic).exists()) {
 				itemPicsLeft << "ActionWinnerI18NPic = "+ActionWinnerI18NPic;
 				ActionWinnerI18NPic = getFallBackFieldContent(" ActionWinnerI18NPic", 1);
 			}
@@ -675,7 +675,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(BigBlindPuck == "") {
 				BigBlindPuck = getFallBackFieldContent("BigBlindPuck", 1);
 				leftItems << "BigBlindPuck";
-			} else if(BigBlindPuck != QString(currentDir+"NULL") && !QFile(BigBlindPuck).exists()) {
+			} else if(BigBlindPuck != QString(currentDir+"nullptr") && !QFile(BigBlindPuck).exists()) {
 				itemPicsLeft << "BigBlindPuck = "+BigBlindPuck;
 				BigBlindPuck = getFallBackFieldContent("BigBlindPuck", 1);
 			}
@@ -683,7 +683,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(SmallBlindPuck == "") {
 				SmallBlindPuck = getFallBackFieldContent("SmallBlindPuck", 1);
 				leftItems << "SmallBlindPuck";
-			} else if(SmallBlindPuck != QString(currentDir+"NULL") && !QFile(SmallBlindPuck).exists()) {
+			} else if(SmallBlindPuck != QString(currentDir+"nullptr") && !QFile(SmallBlindPuck).exists()) {
 				itemPicsLeft << "SmallBlindPuck = "+SmallBlindPuck;
 				SmallBlindPuck = getFallBackFieldContent("SmallBlindPuck", 1);
 			}
@@ -691,7 +691,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(DealerPuck == "") {
 				DealerPuck = getFallBackFieldContent("DealerPuck", 1);
 				leftItems << "DealerPuck";
-			} else if(DealerPuck != QString(currentDir+"NULL") && !QFile(DealerPuck).exists()) {
+			} else if(DealerPuck != QString(currentDir+"nullptr") && !QFile(DealerPuck).exists()) {
 				itemPicsLeft << "DealerPuck = "+DealerPuck;
 				DealerPuck = getFallBackFieldContent("DealerPuck", 1);
 			}
@@ -699,7 +699,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(DefaultAvatar == "") {
 				DefaultAvatar = getFallBackFieldContent("DefaultAvatar", 1);
 				leftItems << "DefaultAvatar";
-			} else if(DefaultAvatar != QString(currentDir+"NULL") && !QFile(DefaultAvatar).exists()) {
+			} else if(DefaultAvatar != QString(currentDir+"nullptr") && !QFile(DefaultAvatar).exists()) {
 				itemPicsLeft << "DefaultAvatar = "+DefaultAvatar;
 				DefaultAvatar = getFallBackFieldContent("DefaultAvatar", 1);
 			}
@@ -707,7 +707,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(CardHolderFlop == "") {
 				CardHolderFlop = getFallBackFieldContent("CardHolderFlop", 1);
 				leftItems << "CardHolderFlop";
-			} else if(CardHolderFlop != QString(currentDir+"NULL") && !QFile(CardHolderFlop).exists()) {
+			} else if(CardHolderFlop != QString(currentDir+"nullptr") && !QFile(CardHolderFlop).exists()) {
 				itemPicsLeft << "CardHolderFlop = "+CardHolderFlop;
 				CardHolderFlop = getFallBackFieldContent("CardHolderFlop", 1);
 			}
@@ -715,7 +715,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(CardHolderTurn == "") {
 				CardHolderTurn = getFallBackFieldContent("CardHolderTurn", 1);
 				leftItems << "CardHolderTurn";
-			} else if(CardHolderTurn != QString(currentDir+"NULL") && !QFile(CardHolderTurn).exists()) {
+			} else if(CardHolderTurn != QString(currentDir+"nullptr") && !QFile(CardHolderTurn).exists()) {
 				itemPicsLeft << "CardHolderTurn = "+CardHolderTurn;
 				CardHolderTurn = getFallBackFieldContent("CardHolderTurn", 1);
 			}
@@ -723,7 +723,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(CardHolderRiver == "") {
 				CardHolderRiver = getFallBackFieldContent("CardHolderRiver", 1);
 				leftItems << "CardHolderRiver";
-			} else if(CardHolderRiver != QString(currentDir+"NULL") && !QFile(CardHolderRiver).exists()) {
+			} else if(CardHolderRiver != QString(currentDir+"nullptr") && !QFile(CardHolderRiver).exists()) {
 				itemPicsLeft << "CardHolderRiver = "+CardHolderRiver;
 				CardHolderRiver = getFallBackFieldContent("CardHolderRiver", 1);
 			}
@@ -731,7 +731,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(FoldButtonDefault == "") {
 				FoldButtonDefault = getFallBackFieldContent("FoldButtonDefault", 1);
 				leftItems << "FoldButtonDefault";
-			} else if(FoldButtonDefault != QString(currentDir+"NULL") && !QFile(FoldButtonDefault).exists()) {
+			} else if(FoldButtonDefault != QString(currentDir+"nullptr") && !QFile(FoldButtonDefault).exists()) {
 				itemPicsLeft << "FoldButtonDefault = "+FoldButtonDefault;
 				FoldButtonDefault = getFallBackFieldContent("FoldButtonDefault", 1);
 			}
@@ -739,7 +739,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(FoldButtonHover == "") {
 				FoldButtonHover = getFallBackFieldContent("FoldButtonHover", 1);
 				leftItems << "FoldButtonHover";
-			} else if(FoldButtonHover != QString(currentDir+"NULL") && !QFile(FoldButtonHover).exists()) {
+			} else if(FoldButtonHover != QString(currentDir+"nullptr") && !QFile(FoldButtonHover).exists()) {
 				itemPicsLeft << "FoldButtonHover = "+FoldButtonHover;
 				FoldButtonHover = getFallBackFieldContent("FoldButtonHover", 1);
 			}
@@ -747,7 +747,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(FoldButtonChecked == "") {
 				FoldButtonChecked = getFallBackFieldContent("FoldButtonChecked", 1);
 				leftItems << "FoldButtonChecked";
-			} else if(FoldButtonChecked != QString(currentDir+"NULL") && !QFile(FoldButtonChecked).exists()) {
+			} else if(FoldButtonChecked != QString(currentDir+"nullptr") && !QFile(FoldButtonChecked).exists()) {
 				itemPicsLeft << "FoldButtonChecked = "+FoldButtonChecked;
 				FoldButtonChecked = getFallBackFieldContent("FoldButtonChecked", 1);
 			}
@@ -755,7 +755,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(FoldButtonCheckedHover == "") {
 				FoldButtonCheckedHover = getFallBackFieldContent("FoldButtonCheckedHover", 1);
 				leftItems << "FoldButtonCheckedHover";
-			} else if(FoldButtonCheckedHover != QString(currentDir+"NULL") && !QFile(FoldButtonCheckedHover).exists()) {
+			} else if(FoldButtonCheckedHover != QString(currentDir+"nullptr") && !QFile(FoldButtonCheckedHover).exists()) {
 				itemPicsLeft << "FoldButtonCheckedHover = "+FoldButtonCheckedHover;
 				FoldButtonCheckedHover = getFallBackFieldContent("FoldButtonCheckedHover", 1);
 			}
@@ -763,7 +763,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(CheckCallButtonDefault == "") {
 				CheckCallButtonDefault = getFallBackFieldContent("CheckCallButtonDefault", 1);
 				leftItems << "CheckCallButtonDefault";
-			} else if(CheckCallButtonDefault != QString(currentDir+"NULL") && !QFile(CheckCallButtonDefault).exists()) {
+			} else if(CheckCallButtonDefault != QString(currentDir+"nullptr") && !QFile(CheckCallButtonDefault).exists()) {
 				itemPicsLeft << "CheckCallButtonDefault = "+CheckCallButtonDefault;
 				CheckCallButtonDefault = getFallBackFieldContent("CheckCallButtonDefault", 1);
 			}
@@ -771,7 +771,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(CheckCallButtonHover == "") {
 				CheckCallButtonHover = getFallBackFieldContent("CheckCallButtonHover", 1);
 				leftItems << "CheckCallButtonHover";
-			} else if(CheckCallButtonHover != QString(currentDir+"NULL") && !QFile(CheckCallButtonHover).exists()) {
+			} else if(CheckCallButtonHover != QString(currentDir+"nullptr") && !QFile(CheckCallButtonHover).exists()) {
 				itemPicsLeft << "CheckCallButtonHover = "+CheckCallButtonHover;
 				CheckCallButtonHover = getFallBackFieldContent("CheckCallButtonHover", 1);
 			}
@@ -779,7 +779,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(CheckCallButtonChecked == "") {
 				CheckCallButtonChecked = getFallBackFieldContent("CheckCallButtonChecked", 1);
 				leftItems << "CheckCallButtonChecked";
-			} else if(CheckCallButtonChecked != QString(currentDir+"NULL") && !QFile(CheckCallButtonChecked).exists()) {
+			} else if(CheckCallButtonChecked != QString(currentDir+"nullptr") && !QFile(CheckCallButtonChecked).exists()) {
 				itemPicsLeft << "CheckCallButtonChecked = "+CheckCallButtonChecked;
 				CheckCallButtonChecked = getFallBackFieldContent("CheckCallButtonChecked", 1);
 			}
@@ -787,7 +787,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(CheckCallButtonCheckedHover == "") {
 				CheckCallButtonCheckedHover = getFallBackFieldContent("CheckCallButtonCheckedHover", 1);
 				leftItems << "CheckCallButtonCheckedHover";
-			} else if(CheckCallButtonCheckedHover != QString(currentDir+"NULL") && !QFile(CheckCallButtonCheckedHover).exists()) {
+			} else if(CheckCallButtonCheckedHover != QString(currentDir+"nullptr") && !QFile(CheckCallButtonCheckedHover).exists()) {
 				itemPicsLeft << "CheckCallButtonCheckedHover = "+CheckCallButtonCheckedHover;
 				CheckCallButtonCheckedHover = getFallBackFieldContent("CheckCallButtonCheckedHover", 1);
 			}
@@ -795,7 +795,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(BetRaiseButtonDefault == "") {
 				BetRaiseButtonDefault = getFallBackFieldContent("BetRaiseButtonDefault", 1);
 				leftItems << "BetRaiseButtonDefault";
-			} else if(BetRaiseButtonDefault != QString(currentDir+"NULL") && !QFile(BetRaiseButtonDefault).exists()) {
+			} else if(BetRaiseButtonDefault != QString(currentDir+"nullptr") && !QFile(BetRaiseButtonDefault).exists()) {
 				itemPicsLeft << "BetRaiseButtonDefault = "+BetRaiseButtonDefault;
 				BetRaiseButtonDefault = getFallBackFieldContent("BetRaiseButtonDefault", 1);
 			}
@@ -803,7 +803,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(BetRaiseButtonHover == "") {
 				BetRaiseButtonHover = getFallBackFieldContent("BetRaiseButtonHover", 1);
 				leftItems << "BetRaiseButtonHover";
-			} else if(BetRaiseButtonHover != QString(currentDir+"NULL") && !QFile(BetRaiseButtonHover).exists()) {
+			} else if(BetRaiseButtonHover != QString(currentDir+"nullptr") && !QFile(BetRaiseButtonHover).exists()) {
 				itemPicsLeft << "BetRaiseButtonHover = "+BetRaiseButtonHover;
 				BetRaiseButtonHover = getFallBackFieldContent("BetRaiseButtonHover", 1);
 			}
@@ -811,7 +811,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(BetRaiseButtonChecked == "") {
 				BetRaiseButtonChecked = getFallBackFieldContent("BetRaiseButtonChecked", 1);
 				leftItems << "BetRaiseButtonChecked";
-			} else if(BetRaiseButtonChecked != QString(currentDir+"NULL") && !QFile(BetRaiseButtonChecked).exists()) {
+			} else if(BetRaiseButtonChecked != QString(currentDir+"nullptr") && !QFile(BetRaiseButtonChecked).exists()) {
 				itemPicsLeft << "BetRaiseButtonChecked = "+BetRaiseButtonChecked;
 				BetRaiseButtonChecked = getFallBackFieldContent("BetRaiseButtonChecked", 1);
 			}
@@ -819,7 +819,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(BetRaiseButtonCheckedHover == "") {
 				BetRaiseButtonCheckedHover = getFallBackFieldContent("BetRaiseButtonCheckedHover", 1);
 				leftItems << "BetRaiseButtonCheckedHover";
-			} else if(BetRaiseButtonCheckedHover != QString(currentDir+"NULL") && !QFile(BetRaiseButtonCheckedHover).exists()) {
+			} else if(BetRaiseButtonCheckedHover != QString(currentDir+"nullptr") && !QFile(BetRaiseButtonCheckedHover).exists()) {
 				itemPicsLeft << "BetRaiseButtonCheckedHover = "+BetRaiseButtonCheckedHover;
 				BetRaiseButtonCheckedHover = getFallBackFieldContent("BetRaiseButtonCheckedHover", 1);
 			}
@@ -827,7 +827,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(AllInButtonDefault == "") {
 				AllInButtonDefault = getFallBackFieldContent("AllInButtonDefault", 1);
 				leftItems << "AllInButtonDefault";
-			} else if(AllInButtonDefault != QString(currentDir+"NULL") && !QFile(AllInButtonDefault).exists()) {
+			} else if(AllInButtonDefault != QString(currentDir+"nullptr") && !QFile(AllInButtonDefault).exists()) {
 				itemPicsLeft << "AllInButtonDefault = "+AllInButtonDefault;
 				AllInButtonDefault = getFallBackFieldContent("AllInButtonDefault", 1);
 			}
@@ -835,7 +835,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(AllInButtonHover == "") {
 				AllInButtonHover = getFallBackFieldContent("AllInButtonHover", 1);
 				leftItems << "AllInButtonHover";
-			} else if(AllInButtonHover != QString(currentDir+"NULL") && !QFile(AllInButtonHover).exists()) {
+			} else if(AllInButtonHover != QString(currentDir+"nullptr") && !QFile(AllInButtonHover).exists()) {
 				itemPicsLeft << "AllInButtonHover = "+AllInButtonHover;
 				AllInButtonHover = getFallBackFieldContent("AllInButtonHover", 1);
 			}
@@ -843,7 +843,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(AllInButtonChecked == "") {
 				AllInButtonChecked = getFallBackFieldContent("AllInButtonChecked", 1);
 				leftItems << "AllInButtonChecked";
-			} else if(AllInButtonChecked != QString(currentDir+"NULL") && !QFile(AllInButtonChecked).exists()) {
+			} else if(AllInButtonChecked != QString(currentDir+"nullptr") && !QFile(AllInButtonChecked).exists()) {
 				itemPicsLeft << "AllInButtonChecked = "+AllInButtonChecked;
 				AllInButtonChecked = getFallBackFieldContent("AllInButtonChecked", 1);
 			}
@@ -851,7 +851,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(AllInButtonCheckedHover == "") {
 				AllInButtonCheckedHover = getFallBackFieldContent("AllInButtonCheckedHover", 1);
 				leftItems << "AllInButtonCheckedHover";
-			} else if(AllInButtonCheckedHover != QString(currentDir+"NULL") && !QFile(AllInButtonCheckedHover).exists()) {
+			} else if(AllInButtonCheckedHover != QString(currentDir+"nullptr") && !QFile(AllInButtonCheckedHover).exists()) {
 				itemPicsLeft << "AllInButtonCheckedHover = "+AllInButtonCheckedHover;
 				AllInButtonCheckedHover = getFallBackFieldContent("AllInButtonCheckedHover", 1);
 			}
@@ -859,7 +859,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(RadioButtonPressed == "") {
 				RadioButtonPressed = getFallBackFieldContent("RadioButtonPressed", 1);
 				leftItems << "RadioButtonPressed";
-			} else if(RadioButtonPressed != QString(currentDir+"NULL") && !QFile(RadioButtonPressed).exists()) {
+			} else if(RadioButtonPressed != QString(currentDir+"nullptr") && !QFile(RadioButtonPressed).exists()) {
 				itemPicsLeft << "RadioButtonPressed = "+RadioButtonPressed;
 				RadioButtonPressed = getFallBackFieldContent("RadioButtonPressed", 1);
 			}
@@ -867,7 +867,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(RadioButtonChecked == "") {
 				RadioButtonChecked = getFallBackFieldContent("RadioButtonChecked", 1);
 				leftItems << "RadioButtonChecked";
-			} else if(RadioButtonChecked != QString(currentDir+"NULL") && !QFile(RadioButtonChecked).exists()) {
+			} else if(RadioButtonChecked != QString(currentDir+"nullptr") && !QFile(RadioButtonChecked).exists()) {
 				itemPicsLeft << "RadioButtonChecked = "+RadioButtonChecked;
 				RadioButtonChecked = getFallBackFieldContent("RadioButtonChecked", 1);
 			}
@@ -875,7 +875,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(RadioButtonCheckedHover == "") {
 				RadioButtonCheckedHover = getFallBackFieldContent("RadioButtonCheckedHover", 1);
 				leftItems << "RadioButtonCheckedHover";
-			} else if(RadioButtonCheckedHover != QString(currentDir+"NULL") && !QFile(RadioButtonCheckedHover).exists()) {
+			} else if(RadioButtonCheckedHover != QString(currentDir+"nullptr") && !QFile(RadioButtonCheckedHover).exists()) {
 				itemPicsLeft << "RadioButtonCheckedHover = "+RadioButtonCheckedHover;
 				RadioButtonCheckedHover = getFallBackFieldContent("RadioButtonCheckedHover", 1);
 			}
@@ -883,7 +883,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(RadioButtonUnchecked == "") {
 				RadioButtonUnchecked = getFallBackFieldContent("RadioButtonUnchecked", 1);
 				leftItems << "RadioButtonUnchecked";
-			} else if(RadioButtonUnchecked != QString(currentDir+"NULL") && !QFile(RadioButtonUnchecked).exists()) {
+			} else if(RadioButtonUnchecked != QString(currentDir+"nullptr") && !QFile(RadioButtonUnchecked).exists()) {
 				itemPicsLeft << "RadioButtonUnchecked = "+RadioButtonUnchecked;
 				RadioButtonUnchecked = getFallBackFieldContent("RadioButtonUnchecked", 1);
 			}
@@ -891,7 +891,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(RadioButtonUncheckedHover == "") {
 				RadioButtonUncheckedHover = getFallBackFieldContent("RadioButtonUncheckedHover", 1);
 				leftItems << "RadioButtonUncheckedHover";
-			} else if(RadioButtonUncheckedHover != QString(currentDir+"NULL") && !QFile(RadioButtonUncheckedHover).exists()) {
+			} else if(RadioButtonUncheckedHover != QString(currentDir+"nullptr") && !QFile(RadioButtonUncheckedHover).exists()) {
 				itemPicsLeft << "RadioButtonUncheckedHover = "+RadioButtonUncheckedHover;
 				RadioButtonUncheckedHover = getFallBackFieldContent("RadioButtonUncheckedHover", 1);
 			}
@@ -899,7 +899,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(PlayerTopSeatActive == "") {
 				PlayerTopSeatActive = getFallBackFieldContent("PlayerTopSeatActive", 1);
 				leftItems << "PlayerTopSeatActive";
-			} else if(PlayerTopSeatActive != QString(currentDir+"NULL") && !QFile(PlayerTopSeatActive).exists()) {
+			} else if(PlayerTopSeatActive != QString(currentDir+"nullptr") && !QFile(PlayerTopSeatActive).exists()) {
 				itemPicsLeft << "PlayerTopSeatActive = "+PlayerTopSeatActive;
 				PlayerTopSeatActive = getFallBackFieldContent("PlayerTopSeatActive", 1);
 			}
@@ -907,7 +907,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(PlayerTopSeatInactive == "") {
 				PlayerTopSeatInactive = getFallBackFieldContent("PlayerTopSeatInactive", 1);
 				leftItems << "PlayerTopSeatInactive";
-			} else if(PlayerTopSeatInactive != QString(currentDir+"NULL") && !QFile(PlayerTopSeatInactive).exists()) {
+			} else if(PlayerTopSeatInactive != QString(currentDir+"nullptr") && !QFile(PlayerTopSeatInactive).exists()) {
 				itemPicsLeft << "PlayerTopSeatInactive = "+PlayerTopSeatInactive;
 				PlayerTopSeatInactive = getFallBackFieldContent("PlayerTopSeatInactive", 1);
 			}
@@ -915,7 +915,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(PlayerBottomSeatActive == "") {
 				PlayerBottomSeatActive = getFallBackFieldContent("PlayerBottomSeatActive", 1);
 				leftItems << "PlayerBottomSeatActive";
-			} else if(PlayerBottomSeatActive != QString(currentDir+"NULL") && !QFile(PlayerBottomSeatActive).exists()) {
+			} else if(PlayerBottomSeatActive != QString(currentDir+"nullptr") && !QFile(PlayerBottomSeatActive).exists()) {
 				itemPicsLeft << "PlayerBottomSeatActive = "+PlayerBottomSeatActive;
 				PlayerBottomSeatActive = getFallBackFieldContent("PlayerBottomSeatActive", 1);
 			}
@@ -923,7 +923,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(PlayerBottomSeatInactive == "") {
 				PlayerBottomSeatInactive = getFallBackFieldContent("PlayerBottomSeatInactive", 1);
 				leftItems << "PlayerBottomSeatInactive";
-			} else if(PlayerBottomSeatInactive != QString(currentDir+"NULL") && !QFile(PlayerBottomSeatInactive).exists()) {
+			} else if(PlayerBottomSeatInactive != QString(currentDir+"nullptr") && !QFile(PlayerBottomSeatInactive).exists()) {
 				itemPicsLeft << "PlayerBottomSeatInactive = "+PlayerBottomSeatInactive;
 				PlayerBottomSeatInactive = getFallBackFieldContent("PlayerBottomSeatInactive", 1);
 			}
@@ -931,7 +931,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(Table == "") {
 				Table = getFallBackFieldContent("Table", 1);
 				leftItems << "Table";
-			} else if(Table != QString(currentDir+"NULL") && !QFile(Table).exists()) {
+			} else if(Table != QString(currentDir+"nullptr") && !QFile(Table).exists()) {
 				itemPicsLeft << "Table = "+Table;
 				Table = getFallBackFieldContent("Table", 1);
 			}
@@ -939,7 +939,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(HandRanking == "") {
 				HandRanking = getFallBackFieldContent("HandRanking", 1);
 				leftItems << "HandRanking";
-			} else if(HandRanking != QString(currentDir+"NULL") && !QFile(HandRanking).exists()) {
+			} else if(HandRanking != QString(currentDir+"nullptr") && !QFile(HandRanking).exists()) {
 				itemPicsLeft << "HandRanking = "+HandRanking;
 				HandRanking = getFallBackFieldContent("HandRanking", 1);
 			}
@@ -947,7 +947,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(ToolBoxBackground == "") {
 				ToolBoxBackground = getFallBackFieldContent("ToolBoxBackground", 1);
 				leftItems << "ToolBoxBackground";
-			} else if(ToolBoxBackground != QString(currentDir+"NULL") && !QFile(ToolBoxBackground).exists()) {
+			} else if(ToolBoxBackground != QString(currentDir+"nullptr") && !QFile(ToolBoxBackground).exists()) {
 				itemPicsLeft << "ToolBoxBackground = "+ToolBoxBackground;
 				ToolBoxBackground = getFallBackFieldContent("ToolBoxBackground", 1);
 			}
@@ -955,7 +955,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(ShowMyCardsButtonDefault == "") {
 				ShowMyCardsButtonDefault = getFallBackFieldContent("ShowMyCardsButtonDefault", 1);
 				leftItems << "ShowMyCardsButtonDefault";
-			} else if(ShowMyCardsButtonDefault != QString(currentDir+"NULL") && !QFile(ShowMyCardsButtonDefault).exists()) {
+			} else if(ShowMyCardsButtonDefault != QString(currentDir+"nullptr") && !QFile(ShowMyCardsButtonDefault).exists()) {
 				itemPicsLeft << "ShowMyCardsButtonDefault = "+ShowMyCardsButtonDefault;
 				ShowMyCardsButtonDefault = getFallBackFieldContent("ShowMyCardsButtonDefault", 1);
 			}
@@ -963,7 +963,7 @@ void GameTableStyleReader::readStyleFile(QString file)
 			if(ShowMyCardsButtonHover == "") {
 				ShowMyCardsButtonHover = getFallBackFieldContent("ShowMyCardsButtonHover", 1);
 				leftItems << "ShowMyCardsButtonHover";
-			} else if(ShowMyCardsButtonHover != QString(currentDir+"NULL") && !QFile(ShowMyCardsButtonHover).exists()) {
+			} else if(ShowMyCardsButtonHover != QString(currentDir+"nullptr") && !QFile(ShowMyCardsButtonHover).exists()) {
 				itemPicsLeft << "ShowMyCardsButtonHover = "+ShowMyCardsButtonHover;
 				ShowMyCardsButtonHover = getFallBackFieldContent("ShowMyCardsButtonHover", 1);
 			}
@@ -971,63 +971,63 @@ void GameTableStyleReader::readStyleFile(QString file)
 
 			//I18N ACTION STRINGS
 			if(ActionAllInI18NString == "") {
-				ActionAllInI18NString = "NULL";
+				ActionAllInI18NString = "nullptr";
 				leftItems << "ActionAllInI18NString";
 			}
 			if(ActionRaiseI18NString == "") {
-				ActionRaiseI18NString = "NULL";
+				ActionRaiseI18NString = "nullptr";
 				leftItems << "ActionRaiseI18NString";
 			}
 			if(ActionBetI18NString == "") {
-				ActionBetI18NString = "NULL";
+				ActionBetI18NString = "nullptr";
 				leftItems << "ActionBetI18NString";
 			}
 			if(ActionCallI18NString == "") {
-				ActionCallI18NString = "NULL";
+				ActionCallI18NString = "nullptr";
 				leftItems << "ActionCallI18NString";
 			}
 			if(ActionCheckI18NString == "") {
-				ActionCheckI18NString = "NULL";
+				ActionCheckI18NString = "nullptr";
 				leftItems << "ActionCheckI18NString";
 			}
 			if(ActionFoldI18NString == "") {
-				ActionFoldI18NString = "NULL";
+				ActionFoldI18NString = "nullptr";
 				leftItems << "ActionFoldI18NString";
 			}
 			if(PotI18NString == "") {
-				PotI18NString = "NULL";
+				PotI18NString = "nullptr";
 				leftItems << "PotI18NString";
 			}
 			if(TotalI18NString == "") {
-				TotalI18NString = "NULL";
+				TotalI18NString = "nullptr";
 				leftItems << "TotalI18NString";
 			}
 			if(BetsI18NString == "") {
-				BetsI18NString = "NULL";
+				BetsI18NString = "nullptr";
 				leftItems << "BetsI18NString";
 			}
 			if(GameI18NString == "") {
-				GameI18NString = "NULL";
+				GameI18NString = "nullptr";
 				leftItems << "GameI18NString";
 			}
 			if(HandI18NString == "") {
-				HandI18NString = "NULL";
+				HandI18NString = "nullptr";
 				leftItems << "HandI18NString";
 			}
 			if(PreflopI18NString == "") {
-				PreflopI18NString = "NULL";
+				PreflopI18NString = "nullptr";
 				leftItems << "PreflopI18NString";
 			}
 			if(FlopI18NString == "") {
-				FlopI18NString = "NULL";
+				FlopI18NString = "nullptr";
 				leftItems << "FlopI18NString";
 			}
 			if(TurnI18NString == "") {
-				TurnI18NString = "NULL";
+				TurnI18NString = "nullptr";
 				leftItems << "TurnI18NString";
 			}
 			if(RiverI18NString == "") {
-				RiverI18NString = "NULL";
+				RiverI18NString = "nullptr";
 				leftItems << "RiverI18NString";
 			}
 
@@ -1305,7 +1305,7 @@ void GameTableStyleReader::showLeftItemsErrorMessage()
 {
 	QString items = leftItems.join("\n");
 	QString EMail;
-	if(StyleMaintainerEMail != "NULL") EMail = StyleMaintainerEMail;
+	if(StyleMaintainerEMail != "nullptr") EMail = StyleMaintainerEMail;
 
 	myMessageDialogImpl dialog(myConfig, myW);
 
@@ -1319,7 +1319,7 @@ void GameTableStyleReader::showItemPicsLeftErrorMessage()
 {
 	QString pics = itemPicsLeft.join("\n");
 	QString EMail;
-	if(StyleMaintainerEMail != "NULL") EMail = StyleMaintainerEMail;
+	if(StyleMaintainerEMail != "nullptr") EMail = StyleMaintainerEMail;
 
 	myMessageDialogImpl dialog(myConfig, myW);
 
@@ -1331,7 +1331,7 @@ void GameTableStyleReader::showItemPicsLeftErrorMessage()
 void GameTableStyleReader::showOutdatedErrorMessage()
 {
 	QString EMail;
-	if(StyleMaintainerEMail != "NULL") EMail = StyleMaintainerEMail;
+	if(StyleMaintainerEMail != "nullptr") EMail = StyleMaintainerEMail;
 
 	myMessageDialogImpl dialog(myConfig, myW);
 
@@ -1508,49 +1508,49 @@ QString GameTableStyleReader::getActionPic(int action)
 	// 	1 = fold, 2 = check, 3 = call, 4 = bet, 5 = raise, 6 = allin, 7 = winner
 	switch(action) {
 	case 1: {
-		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionFoldI18NPic.endsWith("NULL"))
+		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionFoldI18NPic.endsWith("nullptr"))
 			return myAppDataPath+"gfx/gui/misc/actionpics/action_fold.png";
 		else
 			return ActionFoldI18NPic;
 	}
 	break;
 	case 2: {
-		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionCheckI18NPic.endsWith("NULL"))
+		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionCheckI18NPic.endsWith("nullptr"))
 			return myAppDataPath+"gfx/gui/misc/actionpics/action_check.png";
 		else
 			return ActionCheckI18NPic;
 	}
 	break;
 	case 3: {
-		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionCallI18NPic.endsWith("NULL"))
+		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionCallI18NPic.endsWith("nullptr"))
 			return myAppDataPath+"gfx/gui/misc/actionpics/action_call.png";
 		else
 			return ActionCallI18NPic;
 	}
 	break;
 	case 4: {
-		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionBetI18NPic.endsWith("NULL"))
+		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionBetI18NPic.endsWith("nullptr"))
 			return myAppDataPath+"gfx/gui/misc/actionpics/action_bet.png";
 		else
 			return ActionBetI18NPic;
 	}
 	break;
 	case 5: {
-		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionRaiseI18NPic.endsWith("NULL"))
+		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionRaiseI18NPic.endsWith("nullptr"))
 			return myAppDataPath+"gfx/gui/misc/actionpics/action_raise.png";
 		else
 			return ActionRaiseI18NPic;
 	}
 	break;
 	case 6: {
-		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionAllInI18NPic.endsWith("NULL"))
+		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionAllInI18NPic.endsWith("nullptr"))
 			return myAppDataPath+"gfx/gui/misc/actionpics/action_allin.png";
 		else
 			return ActionAllInI18NPic;
 	}
 	break;
 	case 7: {
-		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionWinnerI18NPic.endsWith("NULL"))
+		if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || ActionWinnerI18NPic.endsWith("nullptr"))
 			return myAppDataPath+"gfx/gui/misc/actionpics/action_winner.png";
 		else
 			return ActionWinnerI18NPic;

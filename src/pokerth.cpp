@@ -254,7 +254,7 @@ int main( int argc, char **argv )
 // #ifndef ANDROID_TEST
 // 	JavaVM *currVM = (JavaVM *)QApplication::platformNativeInterface()->nativeResourceForIntegration("JavaVM");
 // 	JNIEnv* env;
-// 	if (currVM->AttachCurrentThread(&env, NULL)<0) {
+// 	if (currVM->AttachCurrentThread(&env, nullptr)<0) {
 // 		qCritical()<<"AttachCurrentThread failed";
 // 	} else {
 // 		jclass jclassApplicationClass = env->FindClass("android/os/Build$VERSION");

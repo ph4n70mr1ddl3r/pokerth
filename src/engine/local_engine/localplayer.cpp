@@ -863,8 +863,8 @@ static const RoundData FlopValues[] = {
 LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType type, std::string name, std::string avatar, int sC, bool aS, bool sotS, int mB)
 	: PlayerInterface(), myConfig(c), currentHand(0), myID(id), myUniqueID(uniqueId), myType(type), myName(name), myAvatar(avatar),
 	  myDude(0), myDude4(0), myCardsValueInt(0), myOdds(-1.0), logHoleCardsDone(false), myCash(sC), mySet(0), myLastRelativeSet(0), myAction(PLAYER_ACTION_NONE),
-	  myButton(mB), myActiveStatus(aS), myStayOnTableStatus(sotS), myTurn(0), myCardsFlip(0), myRoundStartCash(0), lastMoneyWon(0),
-	  sBluff(0), sBluffStatus(false), m_actionTimeoutCounter(0), m_isSessionActive(false), m_isKicked(false), m_isMuted(false)
+	  myButton(mB), myActiveStatus(aS), myStayOnTableStatus(sotS), myTurn(0), myCardsFlip(0), myRoundStartCash(0), myLastMoneyWon(0),
+	  mySBluff(0), mySBluffStatus(false), myActionTimeoutCounter(0), myIsSessionActive(false), myIsKicked(false), myIsMuted(false)
 {
 
 	// !!!!!!!!!!!!!!!!!!!!!!!! testing !!!!!!!!!!!!!!!!!!!!!!!!
@@ -1295,15 +1295,15 @@ void LocalPlayer::preflopEngine()
 		}
 	}
 
-	// 	cout << sBluff << endl;
+	// 	cout << mySBluff << endl;
 
-	// auf sBluff testen --> raise statt call oder fold
+	// auf mySBluff testen --> raise statt call oder fold
 	int activePlayerCount = static_cast<int>(currentHand->getActivePlayerList()->size());
 	int bluffThreshold = (activePlayerCount > 2) ? 100/((activePlayerCount-2)*6)+3 : INT_MAX;
-	if(((sBluff < bluffThreshold) && myOdds < myNiveau[2] && currentHand->getCurrentBeRo()->getHighestSet() == 2*currentHand->getSmallBlind() && !sBluffStatus) || sBluffStatus) {
+	if(((mySBluff < bluffThreshold) && myOdds < myNiveau[2] && currentHand->getCurrentBeRo()->getHighestSet() == 2*currentHand->getSmallBlind() && !mySBluffStatus) || mySBluffStatus) {
 
 		// 		cout << "sBLUFF!" << endl;
-		sBluffStatus = true;
+		mySBluffStatus = true;
 
 		// Gegner raisen ebenfalls -> call
 		if(currentHand->getCurrentBeRo()->getHighestSet() >= 4*currentHand->getSmallBlind()) {
@@ -1320,7 +1320,7 @@ void LocalPlayer::preflopEngine()
 		// Standard-Raise-Routine
 		else {
 			// raise-Betrag ermitteln
-			raise = (sBluff/(8-min(7,static_cast<int>(currentHand->getActivePlayerList()->size()))))*currentHand->getSmallBlind();
+			raise = (mySBluff/(8-min(7,static_cast<int>(currentHand->getActivePlayerList()->size()))))*currentHand->getSmallBlind();
 			// all in bei nur wenigen Chips oder knappem raise
 			if(myCash/(2*currentHand->getSmallBlind()) <= 6 || raise >= (myCash*4)/5) {
 				raise = myCash;
@@ -1336,7 +1336,7 @@ void LocalPlayer::preflopEngine()
 
 	}
 
-	// 	cout << myID << ": " << myOdds << " - " << myNiveau[0] << " " << myNiveau[2] << " - " << "Bluff: " << sBluffStatus << endl;
+	// 	cout << myID << ": " << myOdds << " - " << myNiveau[0] << " " << myNiveau[2] << " - " << "Bluff: " << mySBluffStatus << endl;
 
 	if(DEBUG_MODE) {
 		switch(myUniqueID) {
@@ -1674,12 +1674,12 @@ void LocalPlayer::flopEngine()
 
 	}
 
-	// auf sBluffStatus testen --> raise statt call und bet statt check
+	// auf mySBluffStatus testen --> raise statt call und bet statt check
 
 	// aktiv oder passiv?
 	if(currentHand->getCurrentBeRo()->getHighestSet() > 0) {
 
-		if(sBluffStatus && myOdds < myNiveau[2]) {
+		if(mySBluffStatus && myOdds < myNiveau[2]) {
 
 			// 		cout << "sBLUFF!" << endl;
 
@@ -1709,7 +1709,7 @@ void LocalPlayer::flopEngine()
 			}
 		}
 	} else {
-		if(sBluffStatus && myOdds < myNiveau[1]) {
+		if(mySBluffStatus && myOdds < myNiveau[1]) {
 
 			// 		cout << "sBLUFF!" << endl;
 
@@ -2133,12 +2133,12 @@ void LocalPlayer::turnEngine()
 		}
 	}
 
-	// auf sBluffStatus testen --> raise statt call und bet statt check
+	// auf mySBluffStatus testen --> raise statt call und bet statt check
 
 	// aktiv oder passiv?
 	if(currentHand->getCurrentBeRo()->getHighestSet() > 0) {
 
-		if(sBluffStatus && myOdds < myNiveau[2]) {
+		if(mySBluffStatus && myOdds < myNiveau[2]) {
 
 			// 		cout << "sBLUFF!" << endl;
 
@@ -2168,7 +2168,7 @@ void LocalPlayer::turnEngine()
 			}
 		}
 	} else {
-		if(sBluffStatus && myOdds < myNiveau[1]) {
+		if(mySBluffStatus && myOdds < myNiveau[1]) {
 
 			// 		cout << "sBLUFF!" << endl;
 
@@ -2645,12 +2645,12 @@ raise = ((static_cast<int>(myOdds)-myNiveau[2])/2)*2*currentHand->getSmallBlind(
 
 	}
 
-	// auf sBluffStatus testen --> raise statt call und bet statt check
+	// auf mySBluffStatus testen --> raise statt call und bet statt check
 
 	// aktiv oder passiv?
 	if(currentHand->getCurrentBeRo()->getHighestSet() > 0) {
 
-		if(sBluffStatus && myOdds < myNiveau[2]) {
+		if(mySBluffStatus && myOdds < myNiveau[2]) {
 
 			// 		cout << "sBLUFF!" << endl;
 
@@ -2680,7 +2680,7 @@ raise = ((static_cast<int>(myOdds)-myNiveau[2])/2)*2*currentHand->getSmallBlind(
 			}
 		}
 	} else {
-		if(sBluffStatus && myOdds < myNiveau[1]) {
+		if(mySBluffStatus && myOdds < myNiveau[1]) {
 
 			// 		cout << "sBLUFF!" << endl;
 
@@ -4830,32 +4830,32 @@ void LocalPlayer::riverEngine3()
 
 void LocalPlayer::setIsSessionActive(bool active)
 {
-	m_isSessionActive = active;
+	myIsSessionActive = active;
 }
 
 bool LocalPlayer::isSessionActive() const
 {
-	return m_isSessionActive;
+	return myIsSessionActive;
 }
 
 void LocalPlayer::setIsKicked(bool kicked)
 {
-	m_isKicked = kicked;
+	myIsKicked = kicked;
 }
 
 bool LocalPlayer::isKicked() const
 {
-	return m_isKicked;
+	return myIsKicked;
 }
 
 void LocalPlayer::setIsMuted(bool muted)
 {
-	m_isMuted = muted;
+	myIsMuted = muted;
 }
 
 bool LocalPlayer::isMuted() const
 {
-	return m_isMuted;
+	return myIsMuted;
 }
 
 bool LocalPlayer::checkIfINeedToShowCards()

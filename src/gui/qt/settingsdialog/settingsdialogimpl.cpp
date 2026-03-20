@@ -948,7 +948,7 @@ void settingsDialogImpl::showCurrentGameTableStylePreview()
 		}
 
 		QString maintainerEMailString;
-		if(style.getStyleMaintainerEMail() != "NULL" && style.getStyleMaintainerEMail() != "") {
+		if(style.getStyleMaintainerEMail() != "nullptr" && style.getStyleMaintainerEMail() != "") {
 			maintainerEMailString = "<b>"+MaintainerEMail+":</b> "+style.getStyleMaintainerEMail()+"<br>";
 		}
 
@@ -1074,7 +1074,7 @@ void settingsDialogImpl::showCurrentCardDeckStylePreview()
 		QString CreateDate = tr("Create Date");
 
 		QString maintainerEMailString;
-		if(style.getStyleMaintainerEMail() != "NULL" && style.getStyleMaintainerEMail() != "") {
+		if(style.getStyleMaintainerEMail() != "nullptr" && style.getStyleMaintainerEMail() != "") {
 			maintainerEMailString = "<b>"+MaintainerEMail+":</b> "+style.getStyleMaintainerEMail()+"<br>";
 		}
 

@@ -225,7 +225,7 @@ void CardDeckStyleReader::showLeftItemsErrorMessage()
 {
 	QString items = leftItems.join("\n");
 	QString EMail;
-	if(StyleMaintainerEMail != "NULL") EMail = StyleMaintainerEMail;
+	if(StyleMaintainerEMail != "nullptr") EMail = StyleMaintainerEMail;
 
 	myMessageDialogImpl dialog(myConfig, myW);
 
@@ -239,7 +239,7 @@ void CardDeckStyleReader::showCardsLeftErrorMessage()
 {
 	QString pics = cardsLeft.join("\n");
 	QString EMail;
-	if(StyleMaintainerEMail != "NULL") EMail = StyleMaintainerEMail;
+	if(StyleMaintainerEMail != "nullptr") EMail = StyleMaintainerEMail;
 
 	myMessageDialogImpl dialog(myConfig, myW);
 
@@ -251,7 +251,7 @@ void CardDeckStyleReader::showCardsLeftErrorMessage()
 void CardDeckStyleReader::showOutdatedErrorMessage()
 {
 	QString EMail;
-	if(StyleMaintainerEMail != "NULL") EMail = StyleMaintainerEMail;
+	if(StyleMaintainerEMail != "nullptr") EMail = StyleMaintainerEMail;
 
 	myMessageDialogImpl dialog(myConfig, myW);
 

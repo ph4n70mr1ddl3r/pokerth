@@ -3425,77 +3425,77 @@ void gameTableImpl::refreshGameTableStyle()
 //	label_Handranking->setPixmap(myGameTableStyle->getHandRanking());
 #endif
 
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getActionCallI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getActionCallI18NString() == "nullptr") {
 		CallString = "Call";
 	} else {
 		CallString = myGameTableStyle->getActionCallI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getActionCheckI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getActionCheckI18NString() == "nullptr") {
 		CheckString = "Check";
 	} else {
 		CheckString = myGameTableStyle->getActionCheckI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getActionBetI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getActionBetI18NString() == "nullptr") {
 		BetString = "Bet";
 	} else {
 		BetString = myGameTableStyle->getActionBetI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getActionRaiseI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getActionRaiseI18NString() == "nullptr") {
 		RaiseString = "Raise";
 	} else {
 		RaiseString = myGameTableStyle->getActionRaiseI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getActionFoldI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getActionFoldI18NString() == "nullptr") {
 		FoldString = "Fold";
 	} else {
 		FoldString = myGameTableStyle->getActionFoldI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getActionAllInI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getActionAllInI18NString() == "nullptr") {
 		AllInString = "All-In";
 	} else {
 		AllInString = myGameTableStyle->getActionAllInI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getPotI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getPotI18NString() == "nullptr") {
 		PotString = "Pot";
 	} else {
 		PotString = myGameTableStyle->getPotI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getTotalI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getTotalI18NString() == "nullptr") {
 		TotalString = "Total";
 	} else {
 		TotalString = myGameTableStyle->getTotalI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getBetsI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getBetsI18NString() == "nullptr") {
 		BetsString = "Bets";
 	} else {
 		BetsString = myGameTableStyle->getBetsI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getGameI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getGameI18NString() == "nullptr") {
 		GameString = "Game";
 	} else {
 		GameString = myGameTableStyle->getGameI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getHandI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getHandI18NString() == "nullptr") {
 		HandString = "Hand";
 	} else {
 		HandString = myGameTableStyle->getHandI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getPreflopI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getPreflopI18NString() == "nullptr") {
 		PreflopString = "Preflop";
 	} else {
 		PreflopString = myGameTableStyle->getPreflopI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getFlopI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getFlopI18NString() == "nullptr") {
 		FlopString = "Flop";
 	} else {
 		FlopString = myGameTableStyle->getFlopI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getTurnI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getTurnI18NString() == "nullptr") {
 		TurnString = "Turn";
 	} else {
 		TurnString = myGameTableStyle->getTurnI18NString();
 	}
-	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getRiverI18NString() == "NULL") {
+	if(myConfig->readConfigInt("DontTranslateInternationalPokerStringsFromStyle") || myGameTableStyle->getRiverI18NString() == "nullptr") {
 		RiverString = "River";
 	} else {
 		RiverString = myGameTableStyle->getRiverI18NString();

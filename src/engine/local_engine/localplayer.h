@@ -268,11 +268,11 @@ public:
 
 	void setLastMoneyWon ( int theValue )
 	{
-		lastMoneyWon = theValue;
+		myLastMoneyWon = theValue;
 	}
 	int getLastMoneyWon() const
 	{
-		return lastMoneyWon;
+		return myLastMoneyWon;
 	}
 
 	void setMyAverageSets(int theValue)
@@ -306,20 +306,20 @@ public:
 
 	void setSBluff ( int theValue )
 	{
-		sBluff = theValue;
+		mySBluff = theValue;
 	}
 	int getSBluff() const
 	{
-		return sBluff;
+		return mySBluff;
 	}
 
 	void setSBluffStatus ( bool theValue )
 	{
-		sBluffStatus = theValue;
+		mySBluffStatus = theValue;
 	}
 	bool getSBluffStatus() const
 	{
-		return sBluffStatus;
+		return mySBluffStatus;
 	}
 
 	void action();
@@ -389,18 +389,18 @@ private:
 	bool myTurn; // 0 = no, 1 = yes
 	bool myCardsFlip; // 0 = cards are not fliped, 1 = cards are already flipped,
 	int myRoundStartCash;
-	int lastMoneyWon;
+	int myLastMoneyWon;
 
 	std::array<int, 4> myAverageSets;
 	std::array<bool, 7> myAggressive;
 
-	int sBluff;
-	bool sBluffStatus;
+	int mySBluff;
+	bool mySBluffStatus;
 
-	unsigned m_actionTimeoutCounter;
-	bool m_isSessionActive;
-	bool m_isKicked;
-	bool m_isMuted;
+	unsigned myActionTimeoutCounter;
+	bool myIsSessionActive;
+	bool myIsKicked;
+	bool myIsMuted;
 	boost::timers::portable::microsec_timer m_lastRemoteActionTimer;
 };
 

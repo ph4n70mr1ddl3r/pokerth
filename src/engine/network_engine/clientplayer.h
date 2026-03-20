@@ -197,17 +197,17 @@ private:
 	bool myTurn; // 0 = no, 1 = yes
 	bool myCardsFlip; // 0 = cards are not fliped, 1 = cards are already flipped,
 	int myRoundStartCash;
-	int lastMoneyWon;
+	int myLastMoneyWon;
 
 	std::array<int, 4> myAverageSets;
 	std::array<bool, 7> myAggressive;
 
-	int sBluff;
-	bool sBluffStatus;
+	int mySBluff;
+	bool mySBluffStatus;
 
-	bool m_isSessionActive;
-	bool m_isKicked;
-	bool m_isMuted;
+	bool myIsSessionActive;
+	bool myIsKicked;
+	bool myIsMuted;
 };
 
 #endif
