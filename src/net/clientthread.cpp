@@ -436,7 +436,6 @@ ClientThread::CloseSession(boost::shared_ptr<SessionData> /*session*/)
 void
 ClientThread::HandlePacket(boost::shared_ptr<SessionData> /*session*/, boost::shared_ptr<NetPacket> packet)
 {
-	qDebug() << "[AUTH DEBUG] ClientThread::HandlePacket - Received packet, message type:" << packet->GetMsg()->messagetype();
 	GetState().HandlePacket(shared_from_this(), packet);
 }
 
