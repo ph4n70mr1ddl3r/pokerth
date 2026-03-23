@@ -421,6 +421,8 @@ bool MyAvatarLabel::playerIsOnIgnoreList(QString playerName)
 
 void MyAvatarLabel::putPlayerOnIgnoreList()
 {
+	if (!myW->getSession() || !myW->getSession()->getCurrentGame())
+		return;
 	QStringList list;
 	PlayerListConstIterator it_c;
 	PlayerList seatList = myW->getSession()->getCurrentGame()->getSeatsList();
@@ -443,6 +445,8 @@ void MyAvatarLabel::putPlayerOnIgnoreList()
 
 void MyAvatarLabel::removePlayerFromIgnoreList()
 {
+	if (!myW->getSession() || !myW->getSession()->getCurrentGame())
+		return;
 	QStringList list;
 	PlayerListConstIterator it_c;
 	PlayerList seatList = myW->getSession()->getCurrentGame()->getSeatsList();
@@ -464,6 +468,8 @@ void MyAvatarLabel::removePlayerFromIgnoreList()
 
 void MyAvatarLabel::reportBadAvatar()
 {
+	if (!myW->getSession() || !myW->getSession()->getCurrentGame())
+		return;
 
 	boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 	int j=0;
@@ -494,6 +500,8 @@ void MyAvatarLabel::reportBadAvatar()
 
 void MyAvatarLabel::startEditTip()
 {
+	if (!myW->getSession() || !myW->getSession()->getCurrentGame())
+		return;
 	boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 	int j=0;
 	PlayerListConstIterator it_c;

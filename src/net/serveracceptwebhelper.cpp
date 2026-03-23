@@ -200,8 +200,3 @@ context_ptr ServerAcceptWebHelper::on_tls_init(websocketpp::connection_hdl hdl) 
     }
     return ctx;
 }
-    } catch (std::exception& e) {
-        std::cout << e.what() << std::endl;
-    }
-    return ctx;
-}
