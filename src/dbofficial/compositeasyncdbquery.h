@@ -45,22 +45,21 @@ public:
 	CompositeAsyncDBQuery(const AsyncQueryList &queries);
 	virtual ~CompositeAsyncDBQuery() noexcept;
 
-	virtual void Init(DBIdManager& idManager);
+	virtual void Init(DBIdManager& idManager) override;
 
-	virtual std::string GetPreparedName() const;
-	virtual void GetParams(std::list<std::string> &params) const;
-	virtual void SetParams(const std::list<std::string> &params);
+	virtual std::string GetPreparedName() const override;
+	virtual void GetParams(std::list<std::string> &params) const override;
+	virtual void SetParams(const std::list<std::string> &params) override;
 
-	virtual void HandleResult(mysqlpp::Query &query, DBIdManager& idManager, mysqlpp::StoreQueryResult& result, boost::asio::io_context &service, ServerDBCallback &cb);
-	virtual void HandleNoResult(mysqlpp::Query &query, DBIdManager& idManager, boost::asio::io_context &service, ServerDBCallback &cb);
-	// One error will cancel the rest of the composite query.
-	virtual void HandleError(boost::asio::io_context &service, ServerDBCallback &cb);
+	virtual void HandleResult(mysqlpp::Query &query, DBIdManager& idManager, mysqlpp::StoreQueryResult& result, boost::asio::io_context &service, ServerDBCallback &cb) override;
+	virtual void HandleNoResult(mysqlpp::Query &query, DBIdManager& idManager, boost::asio::io_context &service, ServerDBCallback &cb) override;
+	virtual void HandleError(boost::asio::io_context &service, ServerDBCallback &cb) override;
 
-	virtual bool RequiresResultSet() const;
-	virtual bool Next();
+	virtual bool RequiresResultSet() const override;
+	virtual bool Next() override;
 
-	virtual unsigned GetLastGameDBId() const;
-	virtual void SetLastGameDBId(unsigned id);
+	virtual unsigned GetLastGameDBId() const override;
+	virtual void SetLastGameDBId(unsigned id) override;
 
 private:
 	AsyncQueryList				m_list;

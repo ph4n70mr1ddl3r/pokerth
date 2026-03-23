@@ -76,7 +76,7 @@ public:
 	virtual void SignalIrcError(int errorCode) override;
 	virtual void SignalIrcServerError(int errorCode) override;
 
-	virtual void SignalLobbyMessage(unsigned playerId, const std::string &playerName, const std::string &msg);
+	virtual void SignalLobbyMessage(unsigned playerId, const std::string &playerName, const std::string &msg) override;
 
 protected:
 	ServerLobbyThread &GetLobbyThread();

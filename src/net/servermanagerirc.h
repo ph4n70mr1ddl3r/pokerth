@@ -49,10 +49,10 @@ public:
 					  const std::string &webSocketResource, const std::string &webSocketOrigin);
 
 	// Main start function.
-	virtual void RunAll();
+	virtual void RunAll() override;
 
-	virtual void SignalTerminationAll();
-	virtual bool JoinAll(bool wait);
+	virtual void SignalTerminationAll() override;
+	virtual bool JoinAll(bool wait) override;
 
 	GuiInterface &GetGui();
 

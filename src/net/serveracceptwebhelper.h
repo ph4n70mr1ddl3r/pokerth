@@ -44,9 +44,9 @@ public:
 						  const std::string &webSocketResource, const std::string &webSocketOrigin, const bool &websocketTls );
 
 	virtual void Listen(unsigned serverPort, bool ipv6, const std::string &logDir,
-						boost::shared_ptr<ServerLobbyThread> lobbyThread);
+						boost::shared_ptr<ServerLobbyThread> lobbyThread) override;
 
-	virtual void Close();
+	virtual void Close() override;
 
 protected:
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L) // c++11

@@ -193,7 +193,7 @@ protected:
 	};
 
 	// Main function of the thread.
-	virtual void Main();
+	virtual void Main() override;
 	void RegisterTimers();
 	void CancelTimers();
 

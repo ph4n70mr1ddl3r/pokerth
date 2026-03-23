@@ -253,7 +253,7 @@ void LogFileDialog::uploadInProgressAnimationStart()
 	//const QString buttonText(tr("Upload in progress"));
 	ui->pushButton_analyseLogfile->setDisabled(true);
 
-	QMovie *movie = new QMovie(":/gfx/loader.gif");
+	QMovie *movie = new QMovie(":/gfx/loader.gif", QByteArray(), this);
 	ui->label_animation->setMovie(movie);
 	ui->label_animation->setMaximumWidth(32);
 	ui->horizontalLayout_animation->setSpacing(-1);

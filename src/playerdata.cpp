@@ -257,6 +257,10 @@ PlayerData::AddPlayerLastGame(long lastGame)
 	boost::mutex::scoped_lock lock(m_dataMutex);
 
 	m_last_games.push_back(lastGame);
+	constexpr size_t MAX_LAST_GAMES = 100;
+	if (m_last_games.size() > MAX_LAST_GAMES) {
+		m_last_games.erase(m_last_games.begin(), m_last_games.end() - MAX_LAST_GAMES);
+	}
 }
 
 std::vector<long>
