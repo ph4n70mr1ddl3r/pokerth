@@ -47,65 +47,65 @@ class LocalBoard : public BoardInterface
 {
 public:
 	LocalBoard();
-	~LocalBoard() noexcept;
+	~LocalBoard() noexcept override;
 
-	void setPlayerLists(PlayerList, PlayerList, PlayerList);
+	void setPlayerLists(PlayerList, PlayerList, PlayerList) override;
 
-	void setMyCards(const std::array<int, 5> &theValue)
+	void setMyCards(const std::array<int, 5> &theValue) override
 	{
 		myCards = theValue;
 	}
-	void getMyCards(std::array<int, 5> &theValue)
+	void getMyCards(std::array<int, 5> &theValue) override
 	{
 		theValue = myCards;
 	}
 
-	void setAllInCondition(bool theValue)
+	void setAllInCondition(bool theValue) override
 	{
 		allInCondition = theValue;
 	}
-	void setLastActionPlayerID(unsigned theValue)
+	void setLastActionPlayerID(unsigned theValue) override
 	{
 		lastActionPlayerID = theValue;
 	}
 
-	int getPot() const
+	int getPot() const override
 	{
 		return pot;
 	}
-	void setPot(int theValue)
+	void setPot(int theValue) override
 	{
 		pot = theValue;
 	}
-	int getSets() const
+	int getSets() const override
 	{
 		return sets;
 	}
-	void setSets(int theValue)
+	void setSets(int theValue) override
 	{
 		sets = theValue;
 	}
 
-	void collectSets() ;
-	void collectPot() ;
+	void collectSets() override;
+	void collectPot() override;
 
-	void distributePot(unsigned dealerPosition);
-	void determinePlayerNeedToShowCards();
+	void distributePot(unsigned dealerPosition) override;
+	void determinePlayerNeedToShowCards() override;
 
-	std::list<unsigned> getWinners() const
+	std::list<unsigned> getWinners() const override
 	{
 		return winners;
 	}
-	void setWinners(const std::list<unsigned> &w)
+	void setWinners(const std::list<unsigned> &w) override
 	{
 		winners = w;
 	}
 
-	std::list<unsigned> getPlayerNeedToShowCards() const
+	std::list<unsigned> getPlayerNeedToShowCards() const override
 	{
 		return playerNeedToShowCards;
 	}
-	void setPlayerNeedToShowCards(const std::list<unsigned> &p)
+	void setPlayerNeedToShowCards(const std::list<unsigned> &p) override
 	{
 		playerNeedToShowCards = p;
 	}

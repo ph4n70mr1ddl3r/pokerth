@@ -47,145 +47,145 @@ class LocalHand : public HandInterface
 {
 public:
 	LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface*, boost::shared_ptr<BoardInterface>, Log*, PlayerList, PlayerList, PlayerList, int, int, unsigned, int, int);
-	~LocalHand() noexcept;
+	~LocalHand() noexcept override;
 
-	void start();
+	void start() override;
 
-	PlayerList getSeatsList() const
+	PlayerList getSeatsList() const override
 	{
 		return seatsList;
 	}
-	PlayerList getActivePlayerList() const
+	PlayerList getActivePlayerList() const override
 	{
 		return activePlayerList;
 	}
-	PlayerList getRunningPlayerList() const
+	PlayerList getRunningPlayerList() const override
 	{
 		return runningPlayerList;
 	}
 
-	boost::shared_ptr<BoardInterface> getBoard() const
+	boost::shared_ptr<BoardInterface> getBoard() const override
 	{
 		return myBoard;
 	}
-	boost::shared_ptr<BeRoInterface> getPreflop() const
+	boost::shared_ptr<BeRoInterface> getPreflop() const override
 	{
 		return myBeRo[GAME_STATE_PREFLOP];
 	}
-	boost::shared_ptr<BeRoInterface> getFlop() const
+	boost::shared_ptr<BeRoInterface> getFlop() const override
 	{
 		return myBeRo[GAME_STATE_FLOP];
 	}
-	boost::shared_ptr<BeRoInterface> getTurn() const
+	boost::shared_ptr<BeRoInterface> getTurn() const override
 	{
 		return myBeRo[GAME_STATE_TURN];
 	}
-	boost::shared_ptr<BeRoInterface> getRiver() const
+	boost::shared_ptr<BeRoInterface> getRiver() const override
 	{
 		return myBeRo[GAME_STATE_RIVER];
 	}
-	GuiInterface* getGuiInterface() const
+	GuiInterface* getGuiInterface() const override
 	{
 		return myGui;
 	}
-	boost::shared_ptr<BeRoInterface> getCurrentBeRo() const
+	boost::shared_ptr<BeRoInterface> getCurrentBeRo() const override
 	{
 		return myBeRo[currentRound];
 	}
 
-	Log* getLog() const
+	Log* getLog() const override
 	{
 		return myLog;
 	}
 
-	void setMyID(int theValue)
+	void setMyID(int theValue) override
 	{
 		myID = theValue;
 	}
-	int getMyID() const
+	int getMyID() const override
 	{
 		return myID;
 	}
 
-	void setStartQuantityPlayers(int theValue)
+	void setStartQuantityPlayers(int theValue) override
 	{
 		startQuantityPlayers = theValue;
 	}
-	int getStartQuantityPlayers() const
+	int getStartQuantityPlayers() const override
 	{
 		return startQuantityPlayers;
 	}
 
-	void setCurrentRound(GameState theValue)
+	void setCurrentRound(GameState theValue) override
 	{
 		currentRound = theValue;
 		if(myLog) myLog->setCurrentRound(currentRound);
 	}
-	GameState getCurrentRound() const
+	GameState getCurrentRound() const override
 	{
 		return currentRound;
 	}
-	GameState getRoundBeforePostRiver() const
+	GameState getRoundBeforePostRiver() const override
 	{
 		return roundBeforePostRiver;
 	}
 
-	void setDealerPosition(int theValue)
+	void setDealerPosition(int theValue) override
 	{
 		dealerPosition = theValue;
 	}
-	int getDealerPosition() const
+	int getDealerPosition() const override
 	{
 		return dealerPosition;
 	}
 
-	void setSmallBlind(int theValue)
+	void setSmallBlind(int theValue) override
 	{
 		smallBlind = theValue;
 	}
-	int getSmallBlind() const
+	int getSmallBlind() const override
 	{
 		return smallBlind;
 	}
 
-	void setAllInCondition(bool theValue)
+	void setAllInCondition(bool theValue) override
 	{
 		allInCondition = theValue;
 	}
-	bool getAllInCondition() const
+	bool getAllInCondition() const override
 	{
 		return allInCondition;
 	}
 
-	void setStartCash(int theValue)
+	void setStartCash(int theValue) override
 	{
 		startCash = theValue;
 	}
-	int getStartCash() const
+	int getStartCash() const override
 	{
 		return startCash;
 	}
 
-	void setPreviousPlayerID(int theValue)
+	void setPreviousPlayerID(int theValue) override
 	{
 		previousPlayerID = theValue;
 	}
-	int getPreviousPlayerID() const
+	int getPreviousPlayerID() const override
 	{
 		return previousPlayerID;
 	}
 
-	void setLastActionPlayerID ( unsigned theValue );
-	unsigned getLastActionPlayerID() const
+	void setLastActionPlayerID ( unsigned theValue ) override;
+	unsigned getLastActionPlayerID() const override
 	{
 		return lastActionPlayerID;
 	}
 
-	void setCardsShown(bool theValue)
+	void setCardsShown(bool theValue) override
 	{
 		cardsShown = theValue;
 	}
-	bool getCardsShown() const
+	bool getCardsShown() const override
 	{
 		return cardsShown;
 	}
@@ -193,12 +193,12 @@ public:
 	void assignButtons();
 	void setBlinds();
 
-	void switchRounds();
+	void switchRounds() override;
 
 protected:
-	PlayerListIterator getSeatIt(unsigned) const;
-	PlayerListIterator getActivePlayerIt(unsigned) const;
-	PlayerListIterator getRunningPlayerIt(unsigned) const;
+	PlayerListIterator getSeatIt(unsigned) const override;
+	PlayerListIterator getActivePlayerIt(unsigned) const override;
+	PlayerListIterator getRunningPlayerIt(unsigned) const override;
 
 private:
 

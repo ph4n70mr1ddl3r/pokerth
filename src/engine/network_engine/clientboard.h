@@ -46,32 +46,32 @@ class ClientBoard : public BoardInterface
 {
 public:
 	ClientBoard();
-	~ClientBoard() noexcept;
+	~ClientBoard() noexcept override;
 
-	void setPlayerLists(PlayerList, PlayerList, PlayerList);
+	void setPlayerLists(PlayerList, PlayerList, PlayerList) override;
 
-	void setMyCards(const std::array<int, 5> &theValue);
-	void getMyCards(std::array<int, 5> &theValue);
+	void setMyCards(const std::array<int, 5> &theValue) override;
+	void getMyCards(std::array<int, 5> &theValue) override;
 
-	int getPot() const;
-	void setPot(int theValue);
-	int getSets() const;
-	void setSets(int theValue);
+	int getPot() const override;
+	void setPot(int theValue) override;
+	int getSets() const override;
+	void setSets(int theValue) override;
 
-	void setAllInCondition(bool theValue);
-	void setLastActionPlayerID(unsigned theValue);
+	void setAllInCondition(bool theValue) override;
+	void setLastActionPlayerID(unsigned theValue) override;
 
-	void collectSets();
-	void collectPot();
+	void collectSets() override;
+	void collectPot() override;
 
-	void distributePot(unsigned);
-	void determinePlayerNeedToShowCards();
+	void distributePot(unsigned) override;
+	void determinePlayerNeedToShowCards() override;
 
-	std::list<unsigned> getWinners() const;
-	void setWinners(const std::list<unsigned> &winners);
+	std::list<unsigned> getWinners() const override;
+	void setWinners(const std::list<unsigned> &winners) override;
 
-	std::list<unsigned> getPlayerNeedToShowCards() const;
-	void setPlayerNeedToShowCards(const std::list<unsigned> &playerNeedToShowCards);
+	std::list<unsigned> getPlayerNeedToShowCards() const override;
+	void setPlayerNeedToShowCards(const std::list<unsigned> &playerNeedToShowCards) override;
 
 private:
 	mutable boost::recursive_mutex m_syncMutex;

@@ -265,7 +265,7 @@ int MyAvatarLabel::getPlayerRating(QString playerName)
 	QString result="0";
 	for(auto iterator = tipsList.begin(); iterator != tipsList.end(); ++iterator) {
 		playerInfo=QString::fromUtf8(iterator->c_str()).split("(!#$%)", Qt::KeepEmptyParts, Qt::CaseSensitive);
-		if(playerInfo.at(0)==playerName) {
+		if(playerInfo.size() >= 3 && playerInfo.at(0)==playerName) {
 			result=playerInfo.at(2);
 			break;
 		}
@@ -280,7 +280,7 @@ QString MyAvatarLabel::getPlayerTip(QString playerName)
 	QStringList playerInfo;
 	for(auto iterator = tipsList.begin(); iterator != tipsList.end(); ++iterator) {
 		playerInfo=QString::fromUtf8(iterator->c_str()).split("(!#$%)", Qt::KeepEmptyParts, Qt::CaseSensitive);
-		if(playerInfo.at(0)==playerName)return playerInfo.at(1);
+		if(playerInfo.size() >= 2 && playerInfo.at(0)==playerName)return playerInfo.at(1);
 	}
 	return QString("");
 }

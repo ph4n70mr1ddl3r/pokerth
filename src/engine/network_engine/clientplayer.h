@@ -46,93 +46,93 @@ class ClientPlayer : public PlayerInterface
 {
 public:
 	ClientPlayer(ConfigFile*, int id, unsigned uniqueId, PlayerType type, std::string name, std::string avatar, int sC, bool aS, bool sotS, int mB);
-	~ClientPlayer() noexcept;
+	~ClientPlayer() noexcept override;
 
-	void setHand(HandInterface *);
+	void setHand(HandInterface *) override;
 
-	int getMyID() const;
-	void setMyUniqueID(unsigned newId);
-	unsigned getMyUniqueID() const;
-	void setMyGuid(const std::string &theValue);
-	std::string getMyGuid() const;
-	PlayerType getMyType() const;
+	int getMyID() const override;
+	void setMyUniqueID(unsigned newId) override;
+	unsigned getMyUniqueID() const override;
+	void setMyGuid(const std::string &theValue) override;
+	std::string getMyGuid() const override;
+	PlayerType getMyType() const override;
 
-	void setMyDude(int theValue);
-	int getMyDude() const;
+	void setMyDude(int theValue) override;
+	int getMyDude() const override;
 
-	void setMyDude4(int theValue);
-	int getMyDude4() const;
+	void setMyDude4(int theValue) override;
+	int getMyDude4() const override;
 
-	void setMyName(const std::string& theValue);
-	std::string getMyName() const;
+	void setMyName(const std::string& theValue) override;
+	std::string getMyName() const override;
 
-	void setMyAvatar(const std::string& theValue);
-	std::string getMyAvatar() const;
+	void setMyAvatar(const std::string& theValue) override;
+	std::string getMyAvatar() const override;
 
-	void setMyCash(int theValue);
-	int getMyCash() const;
+	void setMyCash(int theValue) override;
+	int getMyCash() const override;
 
-	void setMySet(int theValue);
-	void setMySetAbsolute(int theValue);
-	void setMySetNull();
-	int getMySet() const;
-	int getMyLastRelativeSet() const;
+	void setMySet(int theValue) override;
+	void setMySetAbsolute(int theValue) override;
+	void setMySetNull() override;
+	int getMySet() const override;
+	int getMyLastRelativeSet() const override;
 
-	void setMyAction(PlayerAction theValue, bool human);
-	PlayerAction getMyAction() const;
+	void setMyAction(PlayerAction theValue, bool human) override;
+	PlayerAction getMyAction() const override;
 
-	void setMyButton(int theValue);
-	int getMyButton() const;
+	void setMyButton(int theValue) override;
+	int getMyButton() const override;
 
-	void setMyActiveStatus(bool theValue);
-	bool getMyActiveStatus() const;
+	void setMyActiveStatus(bool theValue) override;
+	bool getMyActiveStatus() const override;
 
-	void setMyStayOnTableStatus(bool theValue);
-	bool getMyStayOnTableStatus() const;
+	void setMyStayOnTableStatus(bool theValue) override;
+	bool getMyStayOnTableStatus() const override;
 
-	void setMyCards(const std::array<int, 2> &theValue);
-	void getMyCards(std::array<int, 2> &theValue) const;
+	void setMyCards(const std::array<int, 2> &theValue) override;
+	void getMyCards(std::array<int, 2> &theValue) const override;
 
-	void setMyTurn(bool theValue);
-	bool getMyTurn() const;
+	void setMyTurn(bool theValue) override;
+	bool getMyTurn() const override;
 
-	void setMyCardsFlip(bool theValue, int state);
-	bool getMyCardsFlip() const;
+	void setMyCardsFlip(bool theValue, int state) override;
+	bool getMyCardsFlip() const override;
 
-	void setMyCardsValueInt(int theValue);
-	int getMyCardsValueInt() const;
+	void setMyCardsValueInt(int theValue) override;
+	int getMyCardsValueInt() const override;
 
-	void setLogHoleCardsDone(bool theValue);
-	bool getLogHoleCardsDone() const;
+	void setLogHoleCardsDone(bool theValue) override;
+	bool getLogHoleCardsDone() const override;
 
-	void setMyBestHandPosition(const std::array<int, 5> &theValue);
-	void getMyBestHandPosition(std::array<int, 5> &theValue) const;
+	void setMyBestHandPosition(const std::array<int, 5> &theValue) override;
+	void getMyBestHandPosition(std::array<int, 5> &theValue) const override;
 
-	void setMyRoundStartCash(int theValue);
-	int getMyRoundStartCash() const;
+	void setMyRoundStartCash(int theValue) override;
+	int getMyRoundStartCash() const override;
 
-	void setLastMoneyWon ( int theValue );
-	int getLastMoneyWon() const;
+	void setLastMoneyWon ( int theValue ) override;
+	int getLastMoneyWon() const override;
 
-	void setMyAverageSets(int theValue);
-	int getMyAverageSets() const;
+	void setMyAverageSets(int theValue) override;
+	int getMyAverageSets() const override;
 
-	void setMyAggressive(bool theValue);
-	int getMyAggressive() const;
+	void setMyAggressive(bool theValue) override;
+	int getMyAggressive() const override;
 
-	void setSBluff (int theValue);
-	int getSBluff() const;
+	void setSBluff (int theValue) override;
+	int getSBluff() const override;
 
-	void setSBluffStatus (bool theValue);
-	bool getSBluffStatus() const;
+	void setSBluffStatus (bool theValue) override;
+	bool getSBluffStatus() const override;
 
-	void action();
-	int checkMyAction(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind);
+	void action() override;
+	int checkMyAction(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind) override;
 
-	void preflopEngine();
-	void flopEngine();
-	void turnEngine();
-	void riverEngine();
+	void preflopEngine() override;
+	void flopEngine() override;
+	void turnEngine() override;
+	void riverEngine() override;
 
 	void preflopEngine3();
 	void flopEngine3();
@@ -147,17 +147,17 @@ public:
 
 	void evaluation(int, int);
 
-	void setIsSessionActive(bool active);
-	bool isSessionActive() const;
-	void setIsKicked(bool kicked);
-	bool isKicked() const;
-	void setIsMuted(bool muted);
-	bool isMuted() const;
+	void setIsSessionActive(bool active) override;
+	bool isSessionActive() const override;
+	void setIsKicked(bool kicked) override;
+	bool isKicked() const override;
+	void setIsMuted(bool muted) override;
+	bool isMuted() const override;
 
-	bool checkIfINeedToShowCards();
+	bool checkIfINeedToShowCards() override;
 
-	void markRemoteAction() {}
-	unsigned getTimeSecSinceLastRemoteAction() const
+	void markRemoteAction() override {}
+	unsigned getTimeSecSinceLastRemoteAction() const override
 	{
 		return 0;
 	}

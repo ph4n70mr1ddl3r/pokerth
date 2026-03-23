@@ -44,39 +44,39 @@ class ClientBeRo : public BeRoInterface
 {
 public:
 	ClientBeRo(HandInterface* hi, unsigned dP, int sB, GameState gS);
-	~ClientBeRo() noexcept;
+	~ClientBeRo() noexcept override;
 
-	GameState getMyBeRoID() const;
+	GameState getMyBeRoID() const override;
 
-	int getHighestCardsValue() const;
-	void setHighestCardsValue(int theValue);
+	int getHighestCardsValue() const override;
+	void setHighestCardsValue(int theValue) override;
 
 	void setLastActionPlayer ( unsigned theValue );
 	unsigned getLastActionPlayer() const;
 
-	void setSmallBlindPositionId(unsigned theValue);
-	unsigned getSmallBlindPositionId() const;
+	void setSmallBlindPositionId(unsigned theValue) override;
+	unsigned getSmallBlindPositionId() const override;
 
-	void setBigBlindPositionId(unsigned theValue);
-	unsigned getBigBlindPositionId() const;
+	void setBigBlindPositionId(unsigned theValue) override;
+	unsigned getBigBlindPositionId() const override;
 
-	void setCurrentPlayersTurnId(unsigned theValue);
-	unsigned getCurrentPlayersTurnId() const;
+	void setCurrentPlayersTurnId(unsigned theValue) override;
+	unsigned getCurrentPlayersTurnId() const override;
 
 	void setFirstRoundLastPlayersTurnId(unsigned theValue);
 	unsigned getFirstRoundLastPlayersTurnId() const;
 
-	void setCurrentPlayersTurnIt(PlayerListIterator theValue);
-	PlayerListIterator getCurrentPlayersTurnIt() const;
+	void setCurrentPlayersTurnIt(PlayerListIterator theValue) override;
+	PlayerListIterator getCurrentPlayersTurnIt() const override;
 
 	void setLastPlayersTurnIt(PlayerListIterator theValue);
 	PlayerListIterator getLastPlayersTurnIt() const;
 
-	void setHighestSet(int theValue);
-	int getHighestSet() const;
+	void setHighestSet(int theValue) override;
+	int getHighestSet() const override;
 
 	void setFirstRound(bool theValue);
-	bool getFirstRound() const;
+	bool getFirstRound() const override;
 
 	void setSmallBlindPosition(int theValue);
 	int getSmallBlindPosition() const;
@@ -84,18 +84,18 @@ public:
 	void setSmallBlind(int theValue);
 	int getSmallBlind() const;
 
-	void setMinimumRaise ( int theValue );
-	int getMinimumRaise() const;
+	void setMinimumRaise ( int theValue ) override;
+	int getMinimumRaise() const override;
 
-	void setFullBetRule ( bool theValue );
-	bool getFullBetRule() const;
+	void setFullBetRule ( bool theValue ) override;
+	bool getFullBetRule() const override;
 
-	void skipFirstRunGui();
+	void skipFirstRunGui() override;
 
-	void nextPlayer();
-	void run();
+	void nextPlayer() override;
+	void run() override;
 
-	void postRiverRun();
+	void postRiverRun() override;
 
 private:
 

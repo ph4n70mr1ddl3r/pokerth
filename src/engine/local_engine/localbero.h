@@ -42,43 +42,43 @@ class LocalBeRo : public BeRoInterface
 {
 public:
 	LocalBeRo(HandInterface* hi, unsigned dP, int sB, GameState gS);
-	~LocalBeRo() noexcept;
+	~LocalBeRo() noexcept override;
 
-	GameState getMyBeRoID() const
+	GameState getMyBeRoID() const override
 	{
 		return myBeRoID;
 	}
 
-	int getHighestCardsValue() const;
-	void setHighestCardsValue(int /*theValue*/) { }
+	int getHighestCardsValue() const override;
+	void setHighestCardsValue(int /*theValue*/) override { }
 
-	void setMinimumRaise ( int theValue )
+	void setMinimumRaise ( int theValue ) override
 	{
 		minimumRaise = theValue;
 	}
-	int getMinimumRaise() const
+	int getMinimumRaise() const override
 	{
 		return minimumRaise;
 	}
 
-	void setFullBetRule ( bool theValue )
+	void setFullBetRule ( bool theValue ) override
 	{
 		fullBetRule = theValue;
 	}
-	bool getFullBetRule() const
+	bool getFullBetRule() const override
 	{
 		return fullBetRule;
 	}
 
-	void skipFirstRunGui()
+	void skipFirstRunGui() override
 	{
 		firstRunGui = false;
 	}
 
-	void nextPlayer();
-	void run();
+	void nextPlayer() override;
+	void run() override;
 
-	void postRiverRun() {};
+	void postRiverRun() override {};
 
 
 protected:
