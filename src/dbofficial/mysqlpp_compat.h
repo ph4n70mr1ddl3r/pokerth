@@ -202,10 +202,24 @@ public:
     Query query() { return Query(this); }
 
     void set_option(SetCharsetNameOption *opt) {
-        // Try to set connection character set by executing a SET NAMES
         if (opt && m_db.isValid() && m_db.isOpen()) {
+            static const std::vector<std::string> allowedCharsets = {
+                "utf8", "utf8mb4", "latin1", "ascii", "binary", "utf16", "utf32"
+            };
+            const std::string& charset = opt->m_charset;
+            bool valid = false;
+            for (const auto& allowed : allowedCharsets) {
+                if (charset == allowed) {
+                    valid = true;
+                    break;
+                }
+            }
+            if (!valid) {
+                m_lastError = "Invalid charset: " + charset;
+                return;
+            }
             QSqlQuery q(m_db);
-            q.exec(QString::fromStdString("SET NAMES '" + opt->m_charset + "'"));
+            q.exec(QString::fromStdString("SET NAMES '" + charset + "'"));
         }
     }
 

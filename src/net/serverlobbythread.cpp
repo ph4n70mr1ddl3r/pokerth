@@ -1523,9 +1523,13 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 				return;
 			}
 			entry.messageTimes.push_back(now);
-			if (m_chatRateMap.size() > MAX_CHAT_RATE_MAP_SIZE) {
+			constexpr size_t CLEANUP_THRESHOLD = 1000;
+			if (m_chatRateMap.size() > CLEANUP_THRESHOLD) {
 				for (auto it = m_chatRateMap.begin(); it != m_chatRateMap.end(); ) {
-					if (it->second.messageTimes.empty()) {
+					const auto& times = it->second.messageTimes;
+					bool allOld = std::all_of(times.begin(), times.end(),
+						[cutoff](const boost::posix_time::ptime& t) { return t < cutoff; });
+					if (times.empty() || allOld) {
 						it = m_chatRateMap.erase(it);
 					} else {
 						++it;
