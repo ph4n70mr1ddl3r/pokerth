@@ -52,29 +52,29 @@ public:
 	ServerDBThread(ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService);
 	virtual ~ServerDBThread() noexcept;
 
-	virtual void SignalTermination();
+	virtual void SignalTermination() override;
 
 	virtual void Init(const std::string &host, const std::string &user, const std::string &pwd,
-					  const std::string &database, const std::string &encryptionKey);
+					  const std::string &database, const std::string &encryptionKey) override;
 
-	virtual void Start();
-	virtual void Stop();
+	virtual void Start() override;
+	virtual void Stop() override;
 
-	virtual void AsyncPlayerLogin(unsigned requestId, const std::string &playerName);
-	virtual void AsyncCheckAvatarBlacklist(unsigned requestId, const std::string &avatarHash);
-	virtual void PlayerPostLogin(DB_id playerId, const std::string &avatarHash, const std::string &avatarType);
-	virtual void PlayerLogout(DB_id playerId);
+	virtual void AsyncPlayerLogin(unsigned requestId, const std::string &playerName) override;
+	virtual void AsyncCheckAvatarBlacklist(unsigned requestId, const std::string &avatarHash) override;
+	virtual void PlayerPostLogin(DB_id playerId, const std::string &avatarHash, const std::string &avatarType) override;
+	virtual void PlayerLogout(DB_id playerId) override;
 
-	virtual void AsyncCreateGame(unsigned requestId, const std::string &gameName);
-	virtual void SetGamePlayerPlace(unsigned requestId, DB_id playerId, unsigned place);
-	virtual void SetPlayerLastGames(unsigned requestId, DB_id playerId, std::vector<long> last_games, std::string playerIp);
-	virtual void EndGame(unsigned requestId);
+	virtual void AsyncCreateGame(unsigned requestId, const std::string &gameName) override;
+	virtual void SetGamePlayerPlace(unsigned requestId, DB_id playerId, unsigned place) override;
+	virtual void SetPlayerLastGames(unsigned requestId, DB_id playerId, std::vector<long> last_games, std::string playerIp) override;
+	virtual void EndGame(unsigned requestId) override;
 
-	virtual void AsyncReportAvatar(unsigned requestId, unsigned replyId, DB_id reportedPlayerId, const std::string &avatarHash, const std::string &avatarType, DB_id *byPlayerId);
-	virtual void AsyncReportGame(unsigned requestId, unsigned replyId, DB_id *creatorPlayerId, unsigned gameId, const std::string &gameName, DB_id *byPlayerId);
+	virtual void AsyncReportAvatar(unsigned requestId, unsigned replyId, DB_id reportedPlayerId, const std::string &avatarHash, const std::string &avatarType, DB_id *byPlayerId) override;
+	virtual void AsyncReportGame(unsigned requestId, unsigned replyId, DB_id *creatorPlayerId, unsigned gameId, const std::string &gameName, DB_id *byPlayerId) override;
 
-	virtual void AsyncQueryAdminPlayers(unsigned requestId);
-	virtual void AsyncBlockPlayer(unsigned requestId, unsigned replyId, DB_id playerId, int valid, int active);
+	virtual void AsyncQueryAdminPlayers(unsigned requestId) override;
+	virtual void AsyncBlockPlayer(unsigned requestId, unsigned replyId, DB_id playerId, int valid, int active) override;
 
 	bool IsConnected() const;
 
@@ -82,7 +82,7 @@ protected:
 	typedef std::queue<boost::shared_ptr<AsyncDBQuery> > AsyncDBQueryQueue;
 
 	// Main function of the thread.
-	virtual void Main();
+	virtual void Main() override;
 
 	bool HasPermanentError() const;
 	bool HasDBConnection() const;

@@ -113,7 +113,7 @@ protected:
 	void TimerAdminTimeout(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
 	void SendStartEvent(ServerGame &server, bool fillWithComputerPlayers);
 
-	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) override;
 
 private:
 	static ServerGameStateInit s_state;
@@ -135,7 +135,7 @@ public:
 protected:
 	ServerGameStateStartGame();
 
-	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) override;
 	void TimerTimeout(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
 	void DoStart(boost::shared_ptr<ServerGame> server);
 
@@ -151,7 +151,7 @@ public:
 	virtual void HandleNewPlayer(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session) override;
 
 protected:
-	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) override;
 };
 
 class ServerGameStateHand : public AbstractServerGameStateRunning
@@ -169,7 +169,7 @@ public:
 protected:
 	ServerGameStateHand();
 
-	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) override;
 	void TimerLoop(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
 	void EngineLoop(boost::shared_ptr<ServerGame> server);
 	void TimerShowCards(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
@@ -206,7 +206,7 @@ public:
 protected:
 	ServerGameStateWaitPlayerAction();
 
-	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) override;
 	void TimerTimeout(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
 
 private:
@@ -228,7 +228,7 @@ public:
 protected:
 	ServerGameStateWaitNextHand();
 
-	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet);
+	virtual void InternalProcessPacket(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) override;
 	void TimerTimeout(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server);
 
 private:

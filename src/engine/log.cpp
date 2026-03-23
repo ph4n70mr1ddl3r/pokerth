@@ -91,10 +91,10 @@ Log::init()
                     int i = 0;
                     // create session table
                     sql += "CREATE TABLE Session (";
-                    sql += "PokerTH_Version TEXT NOT nullptr";
-                    sql += ",Date TEXT NOT nullptr";
-                    sql += ",Time TEXT NOT nullptr";
-                    sql += ",LogVersion INTEGER NOT nullptr";
+                    sql += "PokerTH_Version TEXT NOT NULL";
+                    sql += ",Date TEXT NOT NULL";
+                    sql += ",Time TEXT NOT NULL";
+                    sql += ",LogVersion INTEGER NOT NULL";
                     sql += ", PRIMARY KEY(Date,Time));";
 
                     {
@@ -113,29 +113,29 @@ Log::init()
                     // create game table
                     sql += "CREATE TABLE Game (";
                     sql += "UniqueGameID INTEGER PRIMARY KEY";
-                    sql += ",GameID INTEGER NOT nullptr";
-                    sql += ",Startmoney INTEGER NOT nullptr";
-                    sql += ",StartSb INTEGER NOT nullptr";
-                    sql += ",DealerPos INTEGER NOT nullptr";
+                    sql += ",GameID INTEGER NOT NULL";
+                    sql += ",Startmoney INTEGER NOT NULL";
+                    sql += ",StartSb INTEGER NOT NULL";
+                    sql += ",DealerPos INTEGER NOT NULL";
                     sql += ",Winner_Seat INTEGER";
                     sql += ");";
 
                     // create player table
                     sql += "CREATE TABLE Player (";
-                    sql += "UniqueGameID INTEGER NOT nullptr";
-                    sql += ",Seat INTEGER NOT nullptr";
-                    sql += ",Player TEXT NOT nullptr";
+                    sql += "UniqueGameID INTEGER NOT NULL";
+                    sql += ",Seat INTEGER NOT NULL";
+                    sql += ",Player TEXT NOT NULL";
                     sql += ",PRIMARY KEY(UniqueGameID,Seat));";
 
                     // create hand table
                     sql += "CREATE TABLE Hand (";
-                    sql += "HandID INTEGER NOT nullptr";
-                    sql += ",UniqueGameID INTEGER NOT nullptr";
+                    sql += "HandID INTEGER NOT NULL";
+                    sql += ",UniqueGameID INTEGER NOT NULL";
                     sql += ",Dealer_Seat INTEGER";
-                    sql += ",Sb_Amount INTEGER NOT nullptr";
-                    sql += ",Sb_Seat INTEGER NOT nullptr";
-                    sql += ",Bb_Amount INTEGER NOT nullptr";
-                    sql += ",Bb_Seat INTEGER NOT nullptr";
+                    sql += ",Sb_Amount INTEGER NOT NULL";
+                    sql += ",Sb_Seat INTEGER NOT NULL";
+                    sql += ",Bb_Amount INTEGER NOT NULL";
+                    sql += ",Bb_Seat INTEGER NOT NULL";
                     for(i=1; i<=MAX_NUMBER_OF_PLAYERS; i++) {
                         sql += ",Seat_" + std::to_string(i) + "_Cash INTEGER";
                         sql += ",Seat_" + std::to_string(i) + "_Card_1 INTEGER";
@@ -151,11 +151,11 @@ Log::init()
                     // create action table
                     sql += "CREATE TABLE Action (";
                     sql += "ActionID INTEGER PRIMARY KEY AUTOINCREMENT";
-                    sql += ",HandID INTEGER NOT nullptr";
-                    sql += ",UniqueGameID INTEGER NOT nullptr";
-                    sql += ",BeRo INTEGER NOT nullptr";
-                    sql += ",Player INTEGER NOT nullptr";
-                    sql += ",Action TEXT NOT nullptr";
+                    sql += ",HandID INTEGER NOT NULL";
+                    sql += ",UniqueGameID INTEGER NOT NULL";
+                    sql += ",BeRo INTEGER NOT NULL";
+                    sql += ",Player INTEGER NOT NULL";
+                    sql += ",Action TEXT NOT NULL";
                     sql += ",Amount INTEGER";
                     sql += ");";
 
