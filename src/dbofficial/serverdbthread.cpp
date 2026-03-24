@@ -47,6 +47,7 @@
 #include <core/loghelper.h>
 #include <ctime>
 #include <sstream>
+#include <memory>
 #include <dbofficial/mysqlpp_compat.h>
 
 #define QUERY_NICK_PREPARE				"nick_template"
@@ -65,13 +66,14 @@
 using namespace std;
 
 struct DBConnectionData {
-	DBConnectionData() : conn(false) {}
+	DBConnectionData() : conn(false), charsetOption(new mysqlpp::SetCharsetNameOption("utf8")) {}
 	string host;
 	string user;
 	string pwd;
 	string database;
 	string encryptionKey;
 	mysqlpp::Connection conn;
+	std::unique_ptr<mysqlpp::SetCharsetNameOption> charsetOption;
 };
 
 ServerDBThread::ServerDBThread(ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService)
@@ -509,7 +511,7 @@ ServerDBThread::HasDBConnection() const
 void
 ServerDBThread::EstablishDBConnection()
 {
-	m_connData->conn.set_option(new mysqlpp::SetCharsetNameOption("utf8"));
+	m_connData->conn.set_option(m_connData->charsetOption.get());
 	if (!m_connData->conn.connect(
 				m_connData->database.c_str(), m_connData->host.c_str(), m_connData->user.c_str(), m_connData->pwd.c_str())) {
 		boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::ConnectFailed, &m_callback, m_connData->conn.error()));

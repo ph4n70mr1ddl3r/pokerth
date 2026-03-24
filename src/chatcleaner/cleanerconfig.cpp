@@ -207,7 +207,7 @@ CleanerConfig::CleanerConfig()
 
 	// Prüfen ob Configfile existiert --> sonst anlegen
 	QDomDocument xmlDoc;
-	QFile file(std::filesystem::path((const char8_t*)&configFileName));
+	QFile file(QString::fromStdString(configFileName));
 	if (!file.open(QIODevice::ReadOnly) || !xmlDoc.setContent(&file))
 	{
 		file.close();
@@ -248,7 +248,7 @@ void CleanerConfig::fillBuffer()
 	string tempString2("");
 
 	QDomDocument xmlDoc;
-	QFile file(std::filesystem::path((const char8_t*)&configFileName));
+	QFile file(QString::fromStdString(configFileName));
 	if (file.open(QIODevice::ReadOnly) && xmlDoc.setContent(&file))
 	{
 		file.close();
@@ -259,13 +259,13 @@ void CleanerConfig::fillBuffer()
 			if (!conf.isNull())
 			{
 
-				const char *tmpStr1 = conf.attribute("value", "").toStdString().c_str();
-				if (tmpStr1)
+				std::string tmpStr1 = conf.attribute("value", "").toStdString();
+				if (!tmpStr1.empty())
 					tempString1 = tmpStr1;
 				configBufferList[i].defaultValue = tempString1;
 
-				const char *tmpStr2 = conf.attribute("type").toStdString().c_str();
-				if (tmpStr2)
+				std::string tmpStr2 = conf.attribute("type").toStdString();
+				if (!tmpStr2.empty())
 				{
 					tempString2 = tmpStr2;
 					if (tempString2 == "list")
@@ -394,7 +394,7 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 	if (myConfigState == OLD)
 	{
 		QDomDocument oldDoc;
-		QFile file(std::filesystem::path((const char8_t*)&configFileName));
+		QFile file(QString::fromStdString(configFileName));
 		if (file.open(QIODevice::ReadOnly) && oldDoc.setContent(&file))
 		{
 			file.close();
@@ -429,15 +429,15 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 						QDomElement tmpElement = newDoc.createElement(QString::fromStdString(configList[i].name));
 						config.appendChild(tmpElement);
 
-						const char *tmpStr1 = oldConf.attribute("value").toStdString().c_str();
+						std::string tmpStr1 = oldConf.attribute("value").toStdString();
 
-						if (tmpStr1)
+						if (!tmpStr1.empty())
 							tempString1 = tmpStr1;
 						tmpElement.setAttribute("value", QString::fromStdString(tempString1));
 
 						// for lists copy elements
-						const char *tmpStr2 = oldConf.attribute("type").toStdString().c_str();
-						if (tmpStr2)
+						std::string tmpStr2 = oldConf.attribute("type").toStdString();
+						if (!tmpStr2.empty())
 						{
 							tempString2 = tmpStr2;
 							if (tempString2 == "list")
@@ -669,7 +669,8 @@ std::string CleanerConfig::stringToUtf8(const std::string &myString)
 {
 
 	QString tmpString = QString::fromStdString(myString);
-	std::string myUtf8String = tmpString.toUtf8().constData();
+	QByteArray utf8Data = tmpString.toUtf8();
+	std::string myUtf8String(utf8Data.constData());
 
 	return myUtf8String;
 }

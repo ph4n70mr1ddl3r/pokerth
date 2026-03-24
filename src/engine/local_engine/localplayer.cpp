@@ -1601,7 +1601,7 @@ void LocalPlayer::flopEngine()
 
 		} else {
 			// call -> über niveau0, schon einiges gesetzt im flop, schon einiges insgesamt gesetzt
-			if(myOdds >= myNiveau[0] || (mySet >= currentHand->getCurrentBeRo()->getHighestSet()/2 && myOdds >= myNiveau[0]-5) || (myRoundStartCash-myCash > individualHighestSet && myNiveau[0]-3)) {
+			if(myOdds >= myNiveau[0] || (mySet >= currentHand->getCurrentBeRo()->getHighestSet()/2 && myOdds >= myNiveau[0]-5) || (myRoundStartCash-myCash > individualHighestSet && myOdds >= myNiveau[0]-3)) {
 				// all in bei knappem call
 				if(currentHand->getCurrentBeRo()->getHighestSet() > (myCash*3.0)/4.0) {
 					raise = myCash;
@@ -2060,7 +2060,7 @@ void LocalPlayer::turnEngine()
 			if(cBluff > 60 && myOdds >= myNiveau[2] + 15) myAction = PLAYER_ACTION_CALL;
 		} else {
 			// call -> über niveau0, schon einiges gesetzt im flop, schon einiges insgesamt gesetzt
-			if(myOdds >= myNiveau[0] || (mySet >= currentHand->getCurrentBeRo()->getHighestSet()/2 && myOdds >= myNiveau[0]-5) || (myRoundStartCash-myCash > individualHighestSet && myNiveau[0]-3)) {
+			if(myOdds >= myNiveau[0] || (mySet >= currentHand->getCurrentBeRo()->getHighestSet()/2 && myOdds >= myNiveau[0]-5) || (myRoundStartCash-myCash > individualHighestSet && myOdds >= myNiveau[0]-3)) {
 				// all in bei knappem call
 				if(currentHand->getCurrentBeRo()->getHighestSet() > (myCash*3.0)/4.0) {
 					raise = myCash;
@@ -2576,7 +2576,7 @@ raise = ((static_cast<int>(myOdds)-myNiveau[2])/2)*2*currentHand->getSmallBlind(
 			}
 		} else {
 			// call -> über niveau0, schon einiges gesetzt im flop, schon einiges insgesamt gesetzt
-			if(myOdds >= myNiveau[0] || (mySet >= currentHand->getCurrentBeRo()->getHighestSet()/2 && myOdds >= myNiveau[0]-5) || (myRoundStartCash-myCash > individualHighestSet && myNiveau[0]-3)) {
+			if(myOdds >= myNiveau[0] || (mySet >= currentHand->getCurrentBeRo()->getHighestSet()/2 && myOdds >= myNiveau[0]-5) || (myRoundStartCash-myCash > individualHighestSet && myOdds >= myNiveau[0]-3)) {
 				// all in bei knappem call
 				if(myCash-currentHand->getCurrentBeRo()->getHighestSet() <= (myCash*1)/4) {
 					raise = myCash;

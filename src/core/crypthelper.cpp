@@ -324,6 +324,8 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 	#if OPENSSL_VERSION_NUMBER >= 0x10100000L
 		EvpCipherCtxPtr encryptCtxPtr(EVP_CIPHER_CTX_new());
 		if (!encryptCtxPtr) {
+			SecureClearMemory(key, sizeof(key));
+			SecureClearMemory(iv, sizeof(iv));
 			outCipher.clear();
 			return retVal;
 		}
@@ -339,11 +341,11 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 		int success = EVP_EncryptInit(encryptCtx, EVP_aes_128_cbc(), key, iv);
 		EVP_CIPHER_CTX_set_padding(encryptCtx, 0);
 		if (success) {
-			success = EVP_EncryptUpdate(encryptCtx, &outCipher[0], &outCipherSize, paddedPlainStr.data(), paddedPlainSize);
+			success = EVP_EncryptUpdate(encryptCtx, outCipher.data(), &outCipherSize, paddedPlainStr.data(), paddedPlainSize);
 
 			if (success && outCipherSize) {
 				// Since padding is off, this will not modify the cipher. However, parameters need to be set.
-				EVP_EncryptFinal(encryptCtx, &outCipher[0], &outCipherSize);
+				EVP_EncryptFinal(encryptCtx, outCipher.data(), &outCipherSize);
 				retVal = true;
 			}
 		} else
@@ -355,7 +357,7 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 		if (!err) {
 			gcry_cipher_setkey(hd, key, sizeof(key));
 			gcry_cipher_setiv(hd, iv, sizeof(iv));
-			err = gcry_cipher_encrypt(hd, &outCipher[0], cipherSize, paddedPlainStr.data(), paddedPlainSize);
+			err = gcry_cipher_encrypt(hd, outCipher.data(), cipherSize, paddedPlainStr.data(), paddedPlainSize);
 			if (!err)
 				retVal = true;
 			else
@@ -365,6 +367,8 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 
 		gcry_cipher_close(hd);
 #endif
+		SecureClearMemory(key, sizeof(key));
+		SecureClearMemory(iv, sizeof(iv));
 	}
 	return retVal;
 }
@@ -382,6 +386,8 @@ CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const
 	#if OPENSSL_VERSION_NUMBER >= 0x10100000L
 		EvpCipherCtxPtr decryptCtxPtr(EVP_CIPHER_CTX_new());
 		if (!decryptCtxPtr) {
+			SecureClearMemory(key, sizeof(key));
+			SecureClearMemory(iv, sizeof(iv));
 			outPlain.clear();
 			return retVal;
 		}
@@ -397,7 +403,7 @@ CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const
 		int success = EVP_DecryptInit(decryptCtx, EVP_aes_128_cbc(), key, iv);
 		EVP_CIPHER_CTX_set_padding(decryptCtx, 0);
 		if (success) {
-			success = EVP_DecryptUpdate(decryptCtx, (unsigned char *)&outPlain[0], &outPlainSize, cipher, cipherSize);
+			success = EVP_DecryptUpdate(decryptCtx, reinterpret_cast<unsigned char*>(&outPlain[0]), &outPlainSize, cipher, cipherSize);
 
 			if (success && outPlainSize) {
 				// Since padding is off, this will not modify the plain text. However, parameters need to be set.
@@ -423,6 +429,8 @@ CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const
 
 		gcry_cipher_close(hd);
 #endif
+		SecureClearMemory(key, sizeof(key));
+		SecureClearMemory(iv, sizeof(iv));
 		// Remove trailing zeroes (padding).
 		if (!outPlain.empty()) {
 			size_t pos = outPlain.find_first_of('\0');

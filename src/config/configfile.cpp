@@ -564,7 +564,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState)
 				for (auto it = tempList.begin(); it != tempList.end(); ++it)
 				{
 
-					QDomElement tmpSubElement = xmlDoc.createElement(QString::fromStdString(configBufferList[i].defaultValue));
+					QDomElement tmpSubElement = xmlDoc.createElement(QString::fromStdString(configList[i].defaultValue));
 					tmpElement.appendChild(tmpSubElement);
 					tmpSubElement.setAttribute("value", QString::fromStdString(*it));
 				}

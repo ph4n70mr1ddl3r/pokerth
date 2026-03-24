@@ -30,8 +30,8 @@
  *****************************************************************************/
 /* Helper class for character conversion functions. */
 
-#ifndef _CRYPTHELPER_H_
-#define _CRYPTHELPER_H_
+#ifndef _CONVHELPER_H_
+#define _CONVHELPER_H_
 
 #include <string>
 

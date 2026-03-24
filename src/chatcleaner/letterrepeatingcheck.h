@@ -50,4 +50,4 @@ private:
 	int letterNumberToTrigger;
 };
 
-#endif // CAPSFLOODCHECK_H
+#endif // LETTERREPEATINGCHECK_H
