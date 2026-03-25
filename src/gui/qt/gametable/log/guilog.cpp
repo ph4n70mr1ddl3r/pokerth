@@ -126,7 +126,9 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 	for(int c=0;c<nCol;++c) {
 		char* dup = strdup(columnNames[c].toStdString().c_str());
 		if (!dup) {
+			resultGuard.release();
 			for(int j=0;j<idx;++j) free(result[j]);
+			free(result);
 			return SQLITE_NOMEM;
 		}
 		result[idx++] = dup;
@@ -138,7 +140,9 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 			else {
 				char* dup = strdup(v.toStdString().c_str());
 				if (!dup) {
+					resultGuard.release();
 					for(int j=0;j<idx;++j) free(result[j]);
+					free(result);
 					return SQLITE_NOMEM;
 				}
 				result[idx++] = dup;

@@ -48,6 +48,7 @@
 #include <core/loghelper.h>
 #include <core/openssl_wrapper.h>
 #include <configfile.h>
+#include <limits>
 #include <playerinterface.h>
 #include <tools.h>
 
@@ -1163,6 +1164,8 @@ ServerLobbyThread::HandleNetPacketAuthClientResponse(boost::shared_ptr<SessionDa
 void
 ServerLobbyThread::HandleNetPacketAvatarHeader(boost::shared_ptr<SessionData> session, const AvatarHeaderMessage &avatarHeader)
 {
+	if (!session)
+		return;
 	if (session->GetPlayerData()) {
 		if (avatarHeader.avatarsize() >= MIN_AVATAR_FILE_SIZE && avatarHeader.avatarsize() <= MAX_AVATAR_FILE_SIZE) {
 			int rawType = avatarHeader.avatartype();
@@ -1189,6 +1192,8 @@ ServerLobbyThread::HandleNetPacketAvatarHeader(boost::shared_ptr<SessionData> se
 void
 ServerLobbyThread::HandleNetPacketUnknownAvatar(boost::shared_ptr<SessionData> session, const UnknownAvatarMessage &/*unknownAvatar*/)
 {
+	if (!session)
+		return;
 	if (session->GetPlayerData()) {
 		// Free memory (just in case).
 		session->GetPlayerData()->SetNetAvatarFile(boost::shared_ptr<AvatarFile>());
@@ -1201,6 +1206,8 @@ ServerLobbyThread::HandleNetPacketUnknownAvatar(boost::shared_ptr<SessionData> s
 void
 ServerLobbyThread::HandleNetPacketAvatarFile(boost::shared_ptr<SessionData> session, const AvatarDataMessage &avatarData)
 {
+	if (!session)
+		return;
 	if (session->GetPlayerData()) {
 		boost::shared_ptr<AvatarFile> tmpAvatar = session->GetPlayerData()->GetNetAvatarFile();
 		const string &avatarBlock = avatarData.avatarblock();
@@ -1239,11 +1246,19 @@ ServerLobbyThread::HandleNetPacketAvatarFile(boost::shared_ptr<SessionData> sess
 void
 ServerLobbyThread::HandleNetPacketAvatarEnd(boost::shared_ptr<SessionData> session, const AvatarEndMessage &/*avatarEnd*/)
 {
+	if (!session)
+		return;
 	if (session->GetPlayerData()) {
 		boost::shared_ptr<AvatarFile> tmpAvatar = session->GetPlayerData()->GetNetAvatarFile();
 		MD5Buf avatarMD5 = session->GetPlayerData()->GetAvatarMD5();
 		if (!avatarMD5.IsZero() && tmpAvatar.get() && !tmpAvatar->fileData.empty()) {
-			unsigned avatarSize = static_cast<unsigned>(tmpAvatar->fileData.size());
+			size_t avatarSizeT = tmpAvatar->fileData.size();
+			if (avatarSizeT > static_cast<size_t>(std::numeric_limits<unsigned>::max())) {
+				LOG_ERROR("Session " << session->GetId() << " - Avatar size overflow.");
+				SessionError(session, ERR_NET_WRONG_AVATAR_SIZE);
+				return;
+			}
+			unsigned avatarSize = static_cast<unsigned>(avatarSizeT);
 			if (avatarSize == tmpAvatar->reportedSize) {
 				if (!GetAvatarManager().StoreAvatarInCache(avatarMD5, tmpAvatar->fileType, tmpAvatar->fileData.data(), avatarSize, true)) {
 					session->GetPlayerData()->SetAvatarMD5(MD5Buf());

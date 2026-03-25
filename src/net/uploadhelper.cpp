@@ -83,30 +83,27 @@ UploadHelper::InternalInit(const string &/*url*/, const string &targetFileName, 
 		curl_easy_setopt(GetData()->curlHandle, CURLOPT_UPLOAD, 1L);
 		curl_easy_setopt(GetData()->curlHandle, CURLOPT_INFILESIZE, filesize);
 	} else {
-		curl_mime *mime = curl_mime_init(&GetData()->curlHandle);
+		curl_mime *mime = curl_mime_init(GetData()->curlHandle);
 		if (!mime)
 			throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_INIT_FAILED, 0);
+		GetData()->post = mime;
 		curl_mimepart *part = curl_mime_addpart(mime);
 		if (!part) {
-			curl_mime_free(mime);
 			throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_INIT_FAILED, 0);
 		}
 		CURLcode rc;
 		rc = curl_mime_filedata(part, targetFileName.c_str());
 		if (rc != CURLE_OK) {
-			curl_mime_free(mime);
 			throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_INIT_FAILED, rc);
 		}
 		rc = curl_mime_name(part, httpPost.c_str());
 		if (rc != CURLE_OK) {
-			curl_mime_free(mime);
 			throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_INIT_FAILED, rc);
 		}
 		curl_easy_setopt(GetData()->curlHandle, CURLOPT_MIMEPOST, mime);
 		curl_easy_setopt(GetData()->curlHandle, CURLOPT_WRITEFUNCTION, writeFunction);
 		curl_easy_setopt(GetData()->curlHandle, CURLOPT_WRITEDATA, &GetData()->returnMessage);
 		rc = curl_easy_perform(GetData()->curlHandle);
-		curl_mime_free(mime);
 		if (rc != CURLE_OK)
 			throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_FAILED, rc);
 	}
