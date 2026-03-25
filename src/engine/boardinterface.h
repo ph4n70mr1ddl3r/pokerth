@@ -45,28 +45,28 @@ public:
 	virtual ~BoardInterface() noexcept;
 //
 	virtual void setPlayerLists(PlayerList, PlayerList, PlayerList) =0;
-//
+
 	virtual void setMyCards(const std::array<int, 5> &theValue) =0;
-	virtual void getMyCards(std::array<int, 5> &theValue) =0;
-//
-	virtual int getPot() const=0;
+	virtual void getMyCards(std::array<int, 5> &theValue) const =0;
+
+	[[nodiscard]] virtual int getPot() const=0;
 	virtual void setPot(int theValue) =0;
-	virtual int getSets() const=0;
+	[[nodiscard]] virtual int getSets() const=0;
 	virtual void setSets(int theValue) =0;
 
 	virtual void setAllInCondition(bool theValue) =0;
 	virtual void setLastActionPlayerID(unsigned theValue) =0;
-//
+
 	virtual void collectSets() =0;
 	virtual void collectPot() =0;
 
 	virtual void distributePot(unsigned) =0;
 	virtual void determinePlayerNeedToShowCards() =0;
 
-	virtual std::list<unsigned> getWinners() const =0;
+	[[nodiscard]] virtual std::list<unsigned> getWinners() const =0;
 	virtual void setWinners(const std::list<unsigned> &winners) =0;
 
-	virtual std::list<unsigned> getPlayerNeedToShowCards() const =0;
+	[[nodiscard]] virtual std::list<unsigned> getPlayerNeedToShowCards() const =0;
 	virtual void setPlayerNeedToShowCards(const std::list<unsigned> &playerNeedToShowCards) =0;
 
 };

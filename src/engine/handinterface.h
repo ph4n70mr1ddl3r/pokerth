@@ -46,49 +46,49 @@ public:
 
 	virtual void start() = 0;
 
-	virtual PlayerList getSeatsList() const =0;
-	virtual PlayerList getActivePlayerList() const =0;
-	virtual PlayerList getRunningPlayerList() const =0;
+	[[nodiscard]] virtual PlayerList getSeatsList() const =0;
+	[[nodiscard]] virtual PlayerList getActivePlayerList() const =0;
+	[[nodiscard]] virtual PlayerList getRunningPlayerList() const =0;
 
-	virtual boost::shared_ptr<BoardInterface> getBoard() const =0;
-	virtual boost::shared_ptr<BeRoInterface> getPreflop() const =0;
-	virtual boost::shared_ptr<BeRoInterface> getFlop() const =0;
-	virtual boost::shared_ptr<BeRoInterface> getTurn() const =0;
-	virtual boost::shared_ptr<BeRoInterface> getRiver() const =0;
-	virtual GuiInterface* getGuiInterface() const =0;
-	virtual boost::shared_ptr<BeRoInterface> getCurrentBeRo() const =0;
-	virtual Log* getLog() const =0;
+	[[nodiscard]] virtual boost::shared_ptr<BoardInterface> getBoard() const =0;
+	[[nodiscard]] virtual boost::shared_ptr<BeRoInterface> getPreflop() const =0;
+	[[nodiscard]] virtual boost::shared_ptr<BeRoInterface> getFlop() const =0;
+	[[nodiscard]] virtual boost::shared_ptr<BeRoInterface> getTurn() const =0;
+	[[nodiscard]] virtual boost::shared_ptr<BeRoInterface> getRiver() const =0;
+	[[nodiscard]] virtual GuiInterface* getGuiInterface() const =0;
+	[[nodiscard]] virtual boost::shared_ptr<BeRoInterface> getCurrentBeRo() const =0;
+	[[nodiscard]] virtual Log* getLog() const =0;
 
 	virtual void setMyID(int theValue) =0;
-	virtual int getMyID() const =0;
+	[[nodiscard]] virtual int getMyID() const =0;
 
 	virtual void setStartQuantityPlayers(int theValue) =0;
-	virtual int getStartQuantityPlayers() const =0;
+	[[nodiscard]] virtual int getStartQuantityPlayers() const =0;
 
 	virtual void setCurrentRound(GameState theValue) =0;
-	virtual GameState getCurrentRound() const =0;
-	virtual GameState getRoundBeforePostRiver() const =0;
+	[[nodiscard]] virtual GameState getCurrentRound() const =0;
+	[[nodiscard]] virtual GameState getRoundBeforePostRiver() const =0;
 
 	virtual void setDealerPosition(int theValue) =0;
-	virtual int getDealerPosition() const =0;
+	[[nodiscard]] virtual int getDealerPosition() const =0;
 
 	virtual void setSmallBlind(int theValue) =0;
-	virtual int getSmallBlind() const =0;
+	[[nodiscard]] virtual int getSmallBlind() const =0;
 
 	virtual void setAllInCondition(bool theValue) =0;
-	virtual bool getAllInCondition() const =0;
+	[[nodiscard]] virtual bool getAllInCondition() const =0;
 
 	virtual void setStartCash(int theValue) =0;
-	virtual int getStartCash() const =0;
+	[[nodiscard]] virtual int getStartCash() const =0;
 
 	virtual void setPreviousPlayerID(int theValue) =0;
-	virtual int getPreviousPlayerID() const =0;
+	[[nodiscard]] virtual int getPreviousPlayerID() const =0;
 
 	virtual void setLastActionPlayerID( unsigned theValue ) =0;
-	virtual unsigned getLastActionPlayerID() const =0;
+	[[nodiscard]] virtual unsigned getLastActionPlayerID() const =0;
 
 	virtual void setCardsShown(bool theValue) =0;
-	virtual bool getCardsShown() const =0;
+	[[nodiscard]] virtual bool getCardsShown() const =0;
 
 	virtual void switchRounds() =0;
 

@@ -42,87 +42,87 @@ class PlayerInterface
 {
 public:
 
-	virtual ~PlayerInterface() noexcept =0;
+	virtual ~PlayerInterface() noexcept = default;
 
 	virtual void setHand(HandInterface *) =0;
 
-	virtual int getMyID() const =0;
+	[[nodiscard]] virtual int getMyID() const =0;
 	virtual void setMyUniqueID(unsigned newId) =0;
-	virtual unsigned getMyUniqueID() const =0;
+	[[nodiscard]] virtual unsigned getMyUniqueID() const =0;
 
 	virtual void setMyGuid(const std::string &theValue) =0;
-	virtual std::string getMyGuid() const =0;
+	[[nodiscard]] virtual std::string getMyGuid() const =0;
 
-	virtual PlayerType getMyType() const =0;
+	[[nodiscard]] virtual PlayerType getMyType() const =0;
 
 	virtual void setMyDude(int theValue) =0;
-	virtual int getMyDude() const =0;
+	[[nodiscard]] virtual int getMyDude() const =0;
 
 	virtual void setMyDude4(int theValue) =0;
-	virtual int getMyDude4() const =0;
+	[[nodiscard]] virtual int getMyDude4() const =0;
 
 	virtual void setMyName(const std::string& theValue) =0;
-	virtual std::string getMyName() const =0;
+	[[nodiscard]] virtual std::string getMyName() const =0;
 
 	virtual void setMyAvatar(const std::string& theValue) =0;
-	virtual std::string getMyAvatar() const =0;
+	[[nodiscard]] virtual std::string getMyAvatar() const =0;
 
 	virtual void setMyCash(int theValue) =0;
-	virtual int getMyCash() const =0;
+	[[nodiscard]] virtual int getMyCash() const =0;
 
 	virtual void setMySet(int theValue) =0;
 	virtual void setMySetAbsolute(int theValue) =0;
 	virtual void setMySetNull() =0;
-	virtual int getMySet() const =0;
-	virtual int getMyLastRelativeSet() const =0;
+	[[nodiscard]] virtual int getMySet() const =0;
+	[[nodiscard]] virtual int getMyLastRelativeSet() const =0;
 
 	virtual void setMyAction(PlayerAction theValue, bool human=0) =0;
-	virtual PlayerAction getMyAction() const =0;
+	[[nodiscard]] virtual PlayerAction getMyAction() const =0;
 
 	virtual void setMyButton(int theValue) =0;
-	virtual int getMyButton() const	=0;
+	[[nodiscard]] virtual int getMyButton() const	=0;
 
 	virtual void setMyActiveStatus(bool theValue) =0;
-	virtual bool getMyActiveStatus() const =0;
+	[[nodiscard]] virtual bool getMyActiveStatus() const =0;
 
 	virtual void setMyStayOnTableStatus(bool theValue) =0;
-	virtual bool getMyStayOnTableStatus() const =0;
+	[[nodiscard]] virtual bool getMyStayOnTableStatus() const =0;
 
 	virtual void setMyCards(const std::array<int, 2> &theValue) =0;
 	virtual void getMyCards(std::array<int, 2> &theValue) const =0;
 
 	virtual void setMyTurn(bool theValue) =0;
-	virtual bool getMyTurn() const =0;
+	[[nodiscard]] virtual bool getMyTurn() const =0;
 
 	virtual void setMyCardsFlip(bool theValue, int state) =0;
-	virtual bool getMyCardsFlip() const =0;
+	[[nodiscard]] virtual bool getMyCardsFlip() const =0;
 
 	virtual void setMyCardsValueInt(int theValue) =0;
-	virtual int getMyCardsValueInt() const =0;
+	[[nodiscard]] virtual int getMyCardsValueInt() const =0;
 
 	virtual void setLogHoleCardsDone(bool theValue) =0;
-	virtual bool getLogHoleCardsDone() const =0;
+	[[nodiscard]] virtual bool getLogHoleCardsDone() const =0;
 
 	virtual void setMyBestHandPosition(const std::array<int, 5> &theValue) =0;
 	virtual void getMyBestHandPosition(std::array<int, 5> &theValue) const =0;
 
 	virtual void setMyRoundStartCash(int theValue) =0;
-	virtual int getMyRoundStartCash() const =0;
+	[[nodiscard]] virtual int getMyRoundStartCash() const =0;
 
 	virtual void setMyAverageSets(int theValue) =0;
-	virtual int getMyAverageSets() const =0;
+	[[nodiscard]] virtual int getMyAverageSets() const =0;
 
 	virtual void setLastMoneyWon ( int theValue ) =0;
-	virtual int getLastMoneyWon() const =0;
+	[[nodiscard]] virtual int getLastMoneyWon() const =0;
 
 	virtual void setMyAggressive(bool theValue) =0;
-	virtual int getMyAggressive() const =0;
+	[[nodiscard]] virtual int getMyAggressive() const =0;
 
 	virtual void setSBluff ( int theValue ) =0;
-	virtual int getSBluff() const =0;
+	[[nodiscard]] virtual int getSBluff() const =0;
 
 	virtual void setSBluffStatus ( bool theValue ) =0;
-	virtual bool getSBluffStatus() const =0;
+	[[nodiscard]] virtual bool getSBluffStatus() const =0;
 
 	virtual void action() =0;
 	virtual int checkMyAction(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind) = 0;
@@ -133,11 +133,11 @@ public:
 	virtual void riverEngine() =0;
 
 	virtual void setIsSessionActive(bool connected) =0;
-	virtual bool isSessionActive() const=0;
+	[[nodiscard]] virtual bool isSessionActive() const=0;
 	virtual void setIsKicked(bool kicked) =0;
-	virtual bool isKicked() const=0;
+	[[nodiscard]] virtual bool isKicked() const=0;
 	virtual void setIsMuted(bool muted) =0;
-	virtual bool isMuted() const=0;
+	[[nodiscard]] virtual bool isMuted() const=0;
 
 	virtual bool checkIfINeedToShowCards() =0;
 
