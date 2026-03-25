@@ -1145,6 +1145,8 @@ void LocalPlayer::preflopEngine()
 	// Temporary: preflopValue and flopValue not yet adjusted for six and seven players
 	int players = currentHand->getActivePlayerList()->size();
 	if(players > 5) players = 5;
+	// paranoia - ensure valid bounds for array access
+	if(players < 2) players = 2;
 
 	// Read myOdds
 	calcMyOdds();
@@ -1486,6 +1488,8 @@ void LocalPlayer::flopEngine()
 	// Temporary: preflopValue and flopValue not yet adjusted
 	int players = currentHand->getActivePlayerList()->size();
 	if(players > 5) players = 5;
+	// paranoia - ensure valid bounds for array access
+	if(players < 2) players = 2;
 
 	calcMyOdds();
 
