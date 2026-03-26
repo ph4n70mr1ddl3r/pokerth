@@ -363,7 +363,9 @@ ServerGame::InternalStartGame()
 		GuiInterface &gui = GetGui();
 		{
 			boost::mutex::scoped_lock lock(m_gameMutex);
-			assert(factory != nullptr && "Factory must not be null when creating Game");
+			if (!factory) {
+				throw ServerException(__FILE__, __LINE__, "Factory must not be null when creating Game");
+			}
 			m_game.reset(new Game(&gui, factory, playerData, GetGameData(), GetStartData(), GetNextGameNum(), nullptr));
 		}
 
