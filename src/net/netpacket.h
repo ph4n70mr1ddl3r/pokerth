@@ -75,15 +75,15 @@ public:
 		return m_msg.get();
 	}
 
-	bool IsClientActivity() const;
+	[[nodiscard]] bool IsClientActivity() const;
 
-	std::string ToString() const;
+	[[nodiscard]] std::string ToString() const;
 
 	static void SetGameData(const GameData &inData, NetGameInfo &outData);
 	static void GetGameData(const NetGameInfo &inData, GameData &outData);
 
-	static int NetErrorToGameError(ErrorMessage::ErrorReason netErrorReason);
-	static ErrorMessage::ErrorReason GameErrorToNetError(int gameErrorReason);
+	[[nodiscard]] static int NetErrorToGameError(ErrorMessage::ErrorReason netErrorReason);
+	[[nodiscard]] static ErrorMessage::ErrorReason GameErrorToNetError(int gameErrorReason);
 
 private:
 	std::unique_ptr<PokerTHMessage> m_msg;

@@ -69,34 +69,34 @@ public:
 	SessionData(boost::shared_ptr<WebSocketData> webData, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int filler);
 	~SessionData() noexcept;
 
-	SessionId GetId() const;
+	[[nodiscard]] SessionId GetId() const;
 
-	boost::shared_ptr<ServerGame> GetGame() const;
+	[[nodiscard]] boost::shared_ptr<ServerGame> GetGame() const;
 	void SetGame(boost::shared_ptr<ServerGame> game);
 
-	State GetState() const;
+	[[nodiscard]] State GetState() const;
 	void SetState(State state);
 
-	boost::shared_ptr<boost::asio::ip::tcp::socket> GetAsioSocket();
-	boost::shared_ptr<WebSocketData> GetWebData();
+	[[nodiscard]] boost::shared_ptr<boost::asio::ip::tcp::socket> GetAsioSocket();
+	[[nodiscard]] boost::shared_ptr<WebSocketData> GetWebData();
 
 	bool CreateServerAuthSession(Gsasl *context);
 	bool CreateClientAuthSession(Gsasl *context, const std::string &userName, const std::string &password);
 	bool AuthStep(int stepNum, const std::string &inData);
-	std::string AuthGetUser() const;
+	[[nodiscard]] std::string AuthGetUser() const;
 	void AuthSetPassword(const std::string &password);
-	std::string AuthGetPassword() const;
-	std::string AuthGetNextOutMsg() const;
-	int AuthGetCurStepNum() const;
+	[[nodiscard]] std::string AuthGetPassword() const;
+	[[nodiscard]] std::string AuthGetNextOutMsg() const;
+	[[nodiscard]] int AuthGetCurStepNum() const;
 
 	void SetReadyFlag();
 	void ResetReadyFlag();
-	bool IsReady() const;
+	[[nodiscard]] bool IsReady() const;
 	void SetWantsLobbyMsg();
 	void ResetWantsLobbyMsg();
-	bool WantsLobbyMsg() const;
+	[[nodiscard]] bool WantsLobbyMsg() const;
 
-	const std::string &GetClientAddr() const;
+	[[nodiscard]] const std::string &GetClientAddr() const;
 	void SetClientAddr(const std::string &addr);
 
 	ReceiveBuffer &GetReceiveBuffer()
@@ -127,13 +127,13 @@ public:
 	void CancelTimers();
 
 	void SetPlayerData(boost::shared_ptr<PlayerData> player);
-	boost::shared_ptr<PlayerData> GetPlayerData() const;
+	[[nodiscard]] boost::shared_ptr<PlayerData> GetPlayerData() const;
 
-	std::string GetRemoteIPAddressFromSocket() const;
+	[[nodiscard]] std::string GetRemoteIPAddressFromSocket() const;
 
 	// New helpers
-	bool IsSsl() const;
-	boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> GetSslStream();
+	[[nodiscard]] bool IsSsl() const;
+	[[nodiscard]] boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> GetSslStream();
 
 protected:
 	SessionData(const SessionData &other);
