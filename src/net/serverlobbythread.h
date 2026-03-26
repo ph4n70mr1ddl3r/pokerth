@@ -91,10 +91,10 @@ public:
 	void HandleAdminRemoveGame(boost::shared_ptr<SessionData> session, const AdminRemoveGameMessage &removeGame);
 	void HandleAdminBanPlayer(boost::shared_ptr<SessionData> session, const AdminBanPlayerMessage &banPlayer);
 
-	bool KickPlayerByName(const std::string &playerName);
-	bool RemoveGameByPlayerName(const std::string &playerName);
-	std::string GetPlayerIPAddress(const std::string &playerName) const;
-	std::string GetPlayerNameFromId(unsigned playerId) const;
+	[[nodiscard]] bool KickPlayerByName(const std::string &playerName);
+	[[nodiscard]] bool RemoveGameByPlayerName(const std::string &playerName);
+	[[nodiscard]] std::string GetPlayerIPAddress(const std::string &playerName) const;
+	[[nodiscard]] std::string GetPlayerNameFromId(unsigned playerId) const;
 	void RemovePlayer(unsigned playerId, unsigned errorCode);
 	void MutePlayerInGame(unsigned playerId);
 
@@ -107,26 +107,26 @@ public:
 	void AddComputerPlayer(boost::shared_ptr<PlayerData> player);
 	void RemoveComputerPlayer(boost::shared_ptr<PlayerData> player);
 
-	bool SendToLobbyPlayer(unsigned playerId, boost::shared_ptr<NetPacket> packet);
+	[[nodiscard]] bool SendToLobbyPlayer(unsigned playerId, boost::shared_ptr<NetPacket> packet);
 
-	u_int32_t GetNextSessionId();
-	u_int32_t GetNextUniquePlayerId();
-	u_int32_t GetNextGameId();
-	ServerCallback &GetCallback();
+	[[nodiscard]] u_int32_t GetNextSessionId();
+	[[nodiscard]] u_int32_t GetNextUniquePlayerId();
+	[[nodiscard]] u_int32_t GetNextGameId();
+	[[nodiscard]] ServerCallback &GetCallback();
 
-	AvatarManager &GetAvatarManager();
-	ChatCleanerManager &GetChatCleaner();
+	[[nodiscard]] AvatarManager &GetAvatarManager();
+	[[nodiscard]] ChatCleanerManager &GetChatCleaner();
 
-	ServerStats GetStats() const;
-	boost::posix_time::ptime GetStartTime() const;
-	ServerMode GetServerMode() const;
+	[[nodiscard]] ServerStats GetStats() const;
+	[[nodiscard]] boost::posix_time::ptime GetStartTime() const;
+	[[nodiscard]] ServerMode GetServerMode() const;
 
-	SenderHelper &GetSender();
-	boost::asio::io_context &GetIOService();
-	boost::shared_ptr<ServerDBInterface> GetDatabase();
-	ServerBanManager &GetBanManager();
+	[[nodiscard]] SenderHelper &GetSender();
+	[[nodiscard]] boost::asio::io_context &GetIOService();
+	[[nodiscard]] boost::shared_ptr<ServerDBInterface> GetDatabase();
+	[[nodiscard]] ServerBanManager &GetBanManager();
 
-	SessionDataCallback &GetSessionDataCallback();
+	[[nodiscard]] SessionDataCallback &GetSessionDataCallback();
 
 protected:
 

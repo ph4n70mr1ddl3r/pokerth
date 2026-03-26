@@ -60,18 +60,18 @@ public:
 	void initHand();
 	void startHand();
 
-	boost::shared_ptr<HandInterface> getCurrentHand();
-	const boost::shared_ptr<HandInterface> getCurrentHand() const;
+	[[nodiscard]] boost::shared_ptr<HandInterface> getCurrentHand();
+	[[nodiscard]] const boost::shared_ptr<HandInterface> getCurrentHand() const;
 
-	PlayerList getSeatsList() const
+	[[nodiscard]] PlayerList getSeatsList() const
 	{
 		return seatsList;
 	}
-	PlayerList getActivePlayerList() const
+	[[nodiscard]] PlayerList getActivePlayerList() const
 	{
 		return activePlayerList;
 	}
-	PlayerList getRunningPlayerList() const
+	[[nodiscard]] PlayerList getRunningPlayerList() const
 	{
 		return runningPlayerList;
 	}
@@ -80,7 +80,7 @@ public:
 	{
 		startQuantityPlayers = theValue;
 	}
-	int getStartQuantityPlayers() const
+	[[nodiscard]] int getStartQuantityPlayers() const
 	{
 		return startQuantityPlayers;
 	}
@@ -89,7 +89,7 @@ public:
 	{
 		startSmallBlind = theValue;
 	}
-	int getStartSmallBlind() const
+	[[nodiscard]] int getStartSmallBlind() const
 	{
 		return startSmallBlind;
 	}
@@ -98,12 +98,12 @@ public:
 	{
 		startCash = theValue;
 	}
-	int getStartCash() const
+	[[nodiscard]] int getStartCash() const
 	{
 		return startCash;
 	}
 
-	int getMyGameID() const
+	[[nodiscard]] int getMyGameID() const
 	{
 		return myGameID;
 	}
@@ -112,7 +112,7 @@ public:
 	{
 		currentSmallBlind = theValue;
 	}
-	int getCurrentSmallBlind() const
+	[[nodiscard]] int getCurrentSmallBlind() const
 	{
 		return currentSmallBlind;
 	}
@@ -121,12 +121,12 @@ public:
 	{
 		currentHandID = theValue;
 	}
-	int getCurrentHandID() const
+	[[nodiscard]] int getCurrentHandID() const
 	{
 		return currentHandID;
 	}
 
-	unsigned getDealerPosition() const
+	[[nodiscard]] unsigned getDealerPosition() const
 	{
 		return dealerPosition;
 	}
@@ -137,10 +137,10 @@ public:
 			dealerPosition = newDealer;
 	}
 
-	boost::shared_ptr<PlayerInterface> getPlayerByUniqueId(unsigned id);
-	boost::shared_ptr<PlayerInterface> getPlayerByNumber(int number);
-	boost::shared_ptr<PlayerInterface> getPlayerByName(const std::string &name);
-	boost::shared_ptr<PlayerInterface> getCurrentPlayer();
+	[[nodiscard]] boost::shared_ptr<PlayerInterface> getPlayerByUniqueId(unsigned id);
+	[[nodiscard]] boost::shared_ptr<PlayerInterface> getPlayerByNumber(int number);
+	[[nodiscard]] boost::shared_ptr<PlayerInterface> getPlayerByName(const std::string &name);
+	[[nodiscard]] boost::shared_ptr<PlayerInterface> getCurrentPlayer();
 
 	void raiseBlinds();
 

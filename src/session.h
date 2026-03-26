@@ -70,16 +70,16 @@ public:
 	void startLocalGame(const GameData &gameData, const StartData &startData);
 	void startClientGame(boost::shared_ptr<Game> game);
 
-	boost::shared_ptr<Game> getCurrentGame();
+	[[nodiscard]] boost::shared_ptr<Game> getCurrentGame();
 
-	GuiInterface *getGui();
-	Log* getMyLog() const
+	[[nodiscard]] GuiInterface *getGui();
+	[[nodiscard]] Log* getMyLog() const
 	{
 		return myLog;
 	}
-	GameType getGameType() const;
+	[[nodiscard]] GameType getGameType() const;
 
-	boost::shared_ptr<AvatarManager> getAvatarManager() const;
+	[[nodiscard]] boost::shared_ptr<AvatarManager> getAvatarManager() const;
 
 	void startInternetClient();
 	void startNetworkClient(const std::string &serverAddress, unsigned serverPort, bool ipv6, bool sctp);
@@ -120,18 +120,18 @@ public:
 
 	void adminActionCloseGame(unsigned gameId);
 
-	bool isNetworkClientRunning() const;
-	bool isNetworkServerRunning() const;
+	[[nodiscard]] bool isNetworkClientRunning() const;
+	[[nodiscard]] bool isNetworkServerRunning() const;
 
-	ServerInfo getClientServerInfo(unsigned serverId) const;
-	GameInfo getClientGameInfo(unsigned gameId) const;
-	PlayerInfo getClientPlayerInfo(unsigned playerId) const;
-	unsigned getGameIdOfPlayer(unsigned playerId) const;
-	ServerStats getClientStats() const;
-	unsigned getClientCurrentGameId() const;
-	unsigned getClientUniquePlayerId() const;
+	[[nodiscard]] ServerInfo getClientServerInfo(unsigned serverId) const;
+	[[nodiscard]] GameInfo getClientGameInfo(unsigned gameId) const;
+	[[nodiscard]] PlayerInfo getClientPlayerInfo(unsigned playerId) const;
+	[[nodiscard]] unsigned getGameIdOfPlayer(unsigned playerId) const;
+	[[nodiscard]] ServerStats getClientStats() const;
+	[[nodiscard]] unsigned getClientCurrentGameId() const;
+	[[nodiscard]] unsigned getClientUniquePlayerId() const;
 
-	bool getAvatarFile(const MD5Buf &avatarMD5, std::string &fileName);
+	[[nodiscard]] bool getAvatarFile(const MD5Buf &avatarMD5, std::string &fileName);
 
 private:
 
