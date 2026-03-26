@@ -40,6 +40,9 @@
 #include <core/openssl_wrapper.h>
 #include <random>
 #include <ctime>
+#include <chrono>
+#include <thread>
+#include <cstdint>
 
 using namespace std;
 
@@ -50,8 +53,13 @@ namespace {
 		if (rd.entropy() > 0) {
 			seed = rd();
 		} else {
-			LOG_ERROR("Random device has insufficient entropy, using time-based fallback");
-			seed = static_cast<std::random_device::result_type>(std::time(nullptr));
+			LOG_ERROR("Random device has insufficient entropy, using combined fallback");
+			auto now = std::chrono::high_resolution_clock::now();
+			auto ns = now.time_since_epoch().count();
+			auto tid = std::hash<std::thread::id>{}(std::this_thread::get_id());
+			uint64_t combined = static_cast<uint64_t>(ns) ^ (static_cast<uint64_t>(tid) << 32);
+			combined ^= static_cast<uint64_t>(std::time(nullptr)) * 0x9e3779b97f4a7c15ULL;
+			seed = static_cast<std::random_device::result_type>(combined ^ (combined >> 32));
 		}
 		return std::mt19937(seed);
 	}();
@@ -76,7 +84,8 @@ void Tools::GetRand(int minValue, int maxValue, unsigned count, int *out)
 bool Tools::ConstantTimeStringCompare(const std::string& a, const std::string& b)
 {
 	volatile unsigned char result = 0;
-	size_t maxLen = std::max(a.size(), b.size());
+	constexpr size_t maxCompareLen = 256;
+	size_t maxLen = maxCompareLen;
 	for (size_t i = 0; i < maxLen; ++i) {
 		unsigned char ca = i < a.size() ? static_cast<unsigned char>(a[i]) : 0;
 		unsigned char cb = i < b.size() ? static_cast<unsigned char>(b[i]) : 0;

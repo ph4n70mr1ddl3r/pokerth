@@ -627,7 +627,7 @@ ServerDBThread::HandleNextQuery()
 						}
 					paramQuery << "@param" << counter << " = ";
 					if (*i == "nullptr") {
-						paramQuery << "nullptr";
+						paramQuery << "NULL";
 					} else {
 						paramQuery << mysqlpp::quote << *i;
 					}

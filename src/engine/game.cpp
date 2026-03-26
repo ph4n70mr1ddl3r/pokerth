@@ -300,25 +300,35 @@ void Game::raiseBlinds()
 		}
 	}
 	if (raiseBlinds) {
-		// At this point, the blinds must be raised
-		// Now we check how the blinds should be raised
+		int maxBlind = startQuantityPlayers * startCash / 2;
 		if (myGameData.raiseMode == DOUBLE_BLINDS) {
-			currentSmallBlind *= 2;
+			if (currentSmallBlind <= maxBlind / 2) {
+				currentSmallBlind *= 2;
+			} else {
+				currentSmallBlind = maxBlind;
+			}
 		} else {
 			if(!blindsList.empty()) {
 				currentSmallBlind = blindsList.front();
 				blindsList.pop_front();
 			} else {
-				// The position exceeds the list
 				if (myGameData.afterManualBlindsMode == AFTERMB_DOUBLE_BLINDS) {
-					currentSmallBlind *= 2;
+					if (currentSmallBlind <= maxBlind / 2) {
+						currentSmallBlind *= 2;
+					} else {
+						currentSmallBlind = maxBlind;
+					}
 				} else {
 					if(myGameData.afterManualBlindsMode == AFTERMB_RAISE_ABOUT) {
-						currentSmallBlind += myGameData.afterMBAlwaysRaiseValue;
+						if (currentSmallBlind <= maxBlind - myGameData.afterMBAlwaysRaiseValue) {
+							currentSmallBlind += myGameData.afterMBAlwaysRaiseValue;
+						} else {
+							currentSmallBlind = maxBlind;
+						}
 					}
 				}
 			}
 		}
-		currentSmallBlind = min(currentSmallBlind,startQuantityPlayers*startCash/2);
+		currentSmallBlind = min(currentSmallBlind, maxBlind);
 	}
 }
