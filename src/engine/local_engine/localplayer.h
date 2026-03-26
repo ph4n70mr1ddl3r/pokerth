@@ -151,7 +151,7 @@ public:
 	void setMyAction(PlayerAction theValue, bool human = 0) override
 	{
 		myAction = theValue;
-		if(myAction && human) currentHand->getGuiInterface()->logPlayerActionMsg(myName, myAction, myLastRelativeSet);
+		if(myAction && human && currentHand && currentHand->getGuiInterface()) currentHand->getGuiInterface()->logPlayerActionMsg(myName, myAction, myLastRelativeSet);
 	}
 	PlayerAction getMyAction() const override
 	{
@@ -206,7 +206,7 @@ public:
 	void setMyCardsFlip(bool theValue, int state) override
 	{
 		myCardsFlip = theValue;
-		if(myCardsFlip) {
+		if(myCardsFlip && currentHand && currentHand->getGuiInterface()) {
 			switch(state) {
 			case 1:
 				currentHand->getGuiInterface()->logFlipHoleCardsMsg(myName, myCards[0], myCards[1], myCardsValueInt);

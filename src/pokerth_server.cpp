@@ -152,6 +152,9 @@ main(int argc, char *argv[])
 
 	signal(SIGTERM, TerminateHandler);
 	signal(SIGINT, TerminateHandler);
+#ifndef _WIN32
+	signal(SIGPIPE, SIG_IGN);
+#endif
 
 	socket_startup();
 
@@ -175,8 +178,10 @@ main(int argc, char *argv[])
 	// Create pseudo Gui Wrapper for the server.
 	boost::shared_ptr<GuiInterface> myServerGuiInterface = boost::make_shared<ServerGuiWrapper>(myConfig.get(), nullptr, nullptr);
 	boost::shared_ptr<Session> session = boost::make_shared<Session>(myServerGuiInterface.get(), myConfig.get(), nullptr);
-	if (!session->init())
+	if (!session->init()) {
 		LOG_ERROR("Missing files - please check your directory settings!");
+		return 1;
+	}
 	myServerGuiInterface->setSession(session);
 
 	myServerGuiInterface->getSession()->startNetworkServer(true);

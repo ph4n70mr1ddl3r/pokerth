@@ -62,7 +62,7 @@ private slots:
 
 private:
 	std::unique_ptr<QTcpServer> tcpServer;
-	QTcpSocket *tcpSocket;
+	QTcpSocket *tcpSocket = nullptr;
 	std::unique_ptr<QTimer> configRefreshTimer;
 	std::unique_ptr<MessageFilter> myMessageFilter;
 

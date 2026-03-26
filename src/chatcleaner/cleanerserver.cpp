@@ -95,6 +95,10 @@ void CleanerServer::onRead()
 		return;
 	}
 	
+	if (!tcpSocket) {
+		qDebug() << "Cannot read from null socket";
+		return;
+	}
 	qint64 bytesRead = tcpSocket->read(reinterpret_cast<char *>(m_recvBuf) + m_recvBufUsed, sizeof(m_recvBuf) - m_recvBufUsed);
 	bool error = bytesRead < 1;
 	if (!error) {

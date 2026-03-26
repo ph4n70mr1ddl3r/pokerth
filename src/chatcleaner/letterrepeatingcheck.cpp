@@ -39,6 +39,9 @@ LetterRepeatingCheck::LetterRepeatingCheck()
 
 bool LetterRepeatingCheck::run(QString msg)
 {
+	if (letterNumberToTrigger < 2) {
+		return false;
+	}
 	msg = msg.simplified().remove(" ");
 	QRegularExpression e(QString(".*(.)\\1{%1,}.*").arg(letterNumberToTrigger-1));
 	if(e.isValid()) {

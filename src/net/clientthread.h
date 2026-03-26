@@ -182,11 +182,11 @@ public:
 	AvatarManager &GetAvatarManager();
 
 protected:
-	typedef std::map<unsigned, GameInfo> GameInfoMap;
-	typedef std::list<boost::shared_ptr<NetPacket> > NetPacketList;
-	typedef std::map<unsigned, PlayerInfo> PlayerInfoMap;
-	typedef std::map<unsigned, boost::shared_ptr<AvatarFile> > AvatarFileMap;
-	typedef std::map<unsigned, ServerInfo> ServerInfoMap;
+	using GameInfoMap = std::map<unsigned, GameInfo>;
+	using NetPacketList = std::list<boost::shared_ptr<NetPacket>>;
+	using PlayerInfoMap = std::map<unsigned, PlayerInfo>;
+	using AvatarFileMap = std::map<unsigned, boost::shared_ptr<AvatarFile>>;
+	using ServerInfoMap = std::map<unsigned, ServerInfo>;
 	struct LoginData {
 		std::string userName;
 		std::string password;

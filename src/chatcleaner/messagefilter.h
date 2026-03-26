@@ -80,6 +80,8 @@ private:
 	QMap<unsigned, ClientWarnInfos> myClientWarnLevelList;
 	QMap<QString, ClientKickInfos> myClientKickCounterList;
 
+	mutable QMutex m_dataMutex;
+
 	int warnLevelToKick = 3;
 	int kickNumberToBan = 3;
 

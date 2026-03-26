@@ -363,7 +363,10 @@ void
 SessionData::ResetActivityTimer()
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);
-	m_activityTimeoutTimer.expires_after(seconds(m_activityTimeoutSec - m_activityWarningRemainingSec));
+	unsigned timeoutSec = m_activityTimeoutSec;
+	unsigned warningSec = m_activityWarningRemainingSec;
+	lock.unlock();
+	m_activityTimeoutTimer.expires_after(seconds(timeoutSec - warningSec));
 	m_activityTimeoutTimer.async_wait(
 		boost::bind(
 			&SessionData::TimerActivityWarning, shared_from_this(), boost::asio::placeholders::error));

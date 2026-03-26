@@ -74,6 +74,7 @@ MessageFilter::~MessageFilter() noexcept
 
 QStringList MessageFilter::check(unsigned gameId, unsigned playerId, QString nick, QString msg)
 {
+	QMutexLocker locker(&m_dataMutex);
 	QStringList returnList;
 	QString returnMessage;
 	QString returnAction;
@@ -235,6 +236,7 @@ void MessageFilter::refreshConfig()
 
 void MessageFilter::cleanKickCounterList()
 {
+	QMutexLocker locker(&m_dataMutex);
 	QMapIterator<QString, ClientKickInfos> it(myClientKickCounterList);
 	while (it.hasNext()) {
 		it.next();

@@ -79,7 +79,7 @@ public:
 	bool IsConnected() const;
 
 protected:
-	typedef std::queue<boost::shared_ptr<AsyncDBQuery> > AsyncDBQueryQueue;
+	using AsyncDBQueryQueue = std::queue<boost::shared_ptr<AsyncDBQuery>>;
 
 	// Main function of the thread.
 	virtual void Main() override;

@@ -478,6 +478,8 @@ void Session::selectServer(unsigned serverId)
 void
 Session::setLogin(const std::string &userName, const std::string &password)
 {
+	if (!myNetClient)
+		return;
 	myNetClient->SetLogin(userName, password);
 }
 

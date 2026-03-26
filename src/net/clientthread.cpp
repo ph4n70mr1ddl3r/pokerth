@@ -168,9 +168,16 @@ ClientThread::SendPlayerAction()
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_MyActionRequestMessage);
 	MyActionRequestMessage *netMyAction = packet->GetMsg()->mutable_myactionrequestmessage();
 	netMyAction->set_gameid(GetGameId());
-	boost::shared_ptr<PlayerInterface> myPlayer = GetGame()->getSeatsList()->front();
-	netMyAction->set_handnum(GetGame()->getCurrentHandID());
-	netMyAction->set_gamestate(static_cast<NetGameState>(GetGame()->getCurrentHand()->getCurrentRound()));
+	auto game = GetGame();
+	if (!game) {
+		return;
+	}
+	boost::shared_ptr<PlayerInterface> myPlayer = game->getSeatsList()->front();
+	if (!myPlayer) {
+		return;
+	}
+	netMyAction->set_handnum(game->getCurrentHandID());
+	netMyAction->set_gamestate(static_cast<NetGameState>(game->getCurrentHand()->getCurrentRound()));
 	netMyAction->set_myaction(static_cast<NetPlayerAction>(myPlayer->getMyAction()));
 	// Only send last bet if not fold/checked.
 	if (myPlayer->getMyAction() != PLAYER_ACTION_FOLD && myPlayer->getMyAction() != PLAYER_ACTION_CHECK)
