@@ -1662,7 +1662,9 @@ ClientThread::ReadSessionGuidFromFile()
 	if (guidStream.good()) {
 		std::vector<char> tmpGuid(CLIENT_GUID_SIZE);
 		guidStream.read(&tmpGuid[0], CLIENT_GUID_SIZE);
-		GetContext().SetSessionGuid(string(tmpGuid.begin(), tmpGuid.end()));
+		if (guidStream.good() || guidStream.gcount() == CLIENT_GUID_SIZE) {
+			GetContext().SetSessionGuid(string(tmpGuid.begin(), tmpGuid.end()));
+		}
 	}
 }
 

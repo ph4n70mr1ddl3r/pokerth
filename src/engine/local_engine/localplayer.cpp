@@ -1482,7 +1482,7 @@ void LocalPlayer::flopEngine()
 	// 	int i;
 	int cBluff = 0;
 	int pBluff = 0;
-	int rand = 0;
+	int randVal = 0;
 	PlayerListConstIterator it_c;
 
 	// Temporary: preflopValue and flopValue not yet adjusted
@@ -1685,8 +1685,8 @@ void LocalPlayer::flopEngine()
 			// Standard-Raise-Routine
 			else {
 				// Determine raise amount
-				Tools::GetRand(1, 8, 1, &rand);
-				raise = rand*currentHand->getSmallBlind();
+				Tools::GetRand(1, 8, 1, &randVal);
+				raise = randVal*currentHand->getSmallBlind();
 				// raise amount too small -> at least standard raise
 				// 				if(raise < currentHand->getCurrentBeRo()->getHighestSet()) {
 				// 					raise = currentHand->getCurrentBeRo()->getHighestSet();
@@ -1708,8 +1708,8 @@ void LocalPlayer::flopEngine()
 
 			// 		cout << "sBLUFF!" << endl;
 
-			Tools::GetRand(1, 8, 1, &rand);
-			bet = rand*currentHand->getSmallBlind();
+			Tools::GetRand(1, 8, 1, &randVal);
+			bet = randVal*currentHand->getSmallBlind();
 			// bet too small
 			if(bet < 2*currentHand->getSmallBlind()) {
 				bet = 2*currentHand->getSmallBlind();
@@ -1942,7 +1942,7 @@ void LocalPlayer::turnEngine()
 	// 	int i;
 	int cBluff = 0;
 	int pBluff = 0;
-	int rand = 0;
+	int randVal = 0;
 	PlayerListConstIterator it_c;
 
 	calcMyOdds();
@@ -2144,8 +2144,8 @@ void LocalPlayer::turnEngine()
 			// Standard-Raise-Routine
 			else {
 				// Determine raise amount
-				Tools::GetRand(1, 8, 1, &rand);
-				raise = rand*currentHand->getSmallBlind();
+				Tools::GetRand(1, 8, 1, &randVal);
+				raise = randVal*currentHand->getSmallBlind();
 				// raise amount too small -> at least standard raise
 				// 				if(raise < currentHand->getCurrentBeRo()->getHighestSet()) {
 				// 					raise = currentHand->getCurrentBeRo()->getHighestSet();
@@ -2167,8 +2167,8 @@ void LocalPlayer::turnEngine()
 
 			// 		cout << "sBLUFF!" << endl;
 
-			Tools::GetRand(1, 8, 1, &rand);
-			bet = rand*currentHand->getSmallBlind();
+			Tools::GetRand(1, 8, 1, &randVal);
+			bet = randVal*currentHand->getSmallBlind();
 			// bet too small
 			if(bet < 2*currentHand->getSmallBlind()) {
 				bet = 2*currentHand->getSmallBlind();
@@ -2467,7 +2467,7 @@ void LocalPlayer::riverEngine()
 	int raise = 0;
 	int bet = 0;
 	// 	int i;
-	int rand = 0;
+	int randVal = 0;
 	int pBluff = 0;
 	PlayerListConstIterator it_c;
 
@@ -2656,8 +2656,8 @@ raise = ((static_cast<int>(myOdds)-myNiveau[2])/2)*2*currentHand->getSmallBlind(
 			// Standard-Raise-Routine
 			else {
 				// Determine raise amount
-				Tools::GetRand(1, 8, 1, &rand);
-				raise = rand*currentHand->getSmallBlind();
+				Tools::GetRand(1, 8, 1, &randVal);
+				raise = randVal*currentHand->getSmallBlind();
 				// raise amount too small -> at least standard raise
 				// 				if(raise < currentHand->getCurrentBeRo()->getHighestSet()) {
 				// 					raise = currentHand->getCurrentBeRo()->getHighestSet();
@@ -2679,8 +2679,8 @@ raise = ((static_cast<int>(myOdds)-myNiveau[2])/2)*2*currentHand->getSmallBlind(
 
 			// 		cout << "sBLUFF!" << endl;
 
-			Tools::GetRand(1, 8, 1, &rand);
-			bet = rand*currentHand->getSmallBlind();
+			Tools::GetRand(1, 8, 1, &randVal);
+			bet = randVal*currentHand->getSmallBlind();
 			// bet too small
 			if(bet < 2*currentHand->getSmallBlind()) {
 				bet = 2*currentHand->getSmallBlind();

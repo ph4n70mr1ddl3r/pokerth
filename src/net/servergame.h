@@ -198,6 +198,25 @@ private:
 	ServerGame(const ServerGame &other);
 
 	SessionManager m_sessionManager;
+
+	// Lock ordering to prevent deadlocks:
+	// When acquiring multiple mutexes simultaneously, always acquire them in this order:
+	// 1. m_gameMutex (protects m_game)
+	// 2. m_curStateMutex (protects m_curState)
+	// 3. m_startDataMutex (protects m_startData)
+	// 4. m_voteKickDataMutex (protects m_voteKickData)
+	// 5. m_rankingMapMutex (protects m_rankingMap)
+	// 6. m_computerPlayerListMutex (protects m_computerPlayerList)
+	// 7. m_playerInvitationListMutex (protects m_playerInvitationList)
+	// 8. m_autoLeavePlayerListMutex (protects m_autoLeavePlayerList)
+	// 9. m_rejoinPlayerListMutex (protects m_rejoinPlayerList)
+	// 10. m_reactivatePlayerListMutex (protects m_reactivatePlayerList)
+	// 11. m_reportedAvatarListMutex (protects m_reportedAvatarList)
+	// 12. m_adminPlayerIdMutex (protects m_adminPlayerId)
+	// 13. m_numJoinsPerPlayerMutex (protects m_numJoinsPerPlayer)
+	// NEVER hold multiple mutexes from different lock ordering levels simultaneously.
+	// Use std::scoped_lock for acquiring multiple mutexes atomically if needed.
+
 	PlayerDataList m_computerPlayerList;
 	mutable boost::mutex m_computerPlayerListMutex;
 

@@ -238,6 +238,21 @@ protected:
 
 private:
 
+	// Lock ordering to prevent deadlocks:
+	// When acquiring multiple mutexes simultaneously, always acquire them in this order:
+	// 1. m_gameMapMutex (protects m_gameMap)
+	// 2. m_statMutex (protects m_statData, m_statDataChanged)
+	// 3. m_computerPlayersMutex (protects m_computerPlayers)
+	// 4. m_failedLoginMapMutex (protects m_failedLoginMap)
+	// 5. m_chatRateMapMutex (protects m_chatRateMap)
+	// 6. m_timerClientAddressMapMutex (protects m_timerClientAddressMap)
+	// 7. m_removeGameListMutex (protects m_removeGameList)
+	// 8. m_curGameIdMutex (protects m_curGameId)
+	// 9. m_curUniquePlayerIdMutex (protects m_curUniquePlayerId)
+	// 10. m_curSessionIdMutex (protects m_curSessionId)
+	// NEVER hold multiple mutexes from different lock ordering levels simultaneously.
+	// Use std::scoped_lock for acquiring multiple mutexes atomically if needed.
+
 	boost::shared_ptr<boost::asio::io_context> m_ioService;
 
 	boost::shared_ptr<InternalServerCallback> m_internalServerCallback;

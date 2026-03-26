@@ -1058,9 +1058,9 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 				// log game and hand id
 				log_string += "Game: ";
-				log_string += std::string(gameID);
+				log_string += std::to_string(gameID);
 				log_string += " | Hand: ";
-				log_string += std::string(results.result_Hand_ID[hand_ctr]);
+				log_string += std::to_string(results.result_Hand_ID[hand_ctr]);
 
 				switch(modus) {
 				case 1:

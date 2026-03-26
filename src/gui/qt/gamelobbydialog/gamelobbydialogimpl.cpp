@@ -283,7 +283,6 @@ int gameLobbyDialogImpl::exec()
 
 gameLobbyDialogImpl::~gameLobbyDialogImpl() noexcept
 {
-	delete myChat;
 }
 
 void gameLobbyDialogImpl::setSession(boost::shared_ptr<Session> session)
