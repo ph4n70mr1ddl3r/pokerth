@@ -38,6 +38,7 @@ BadWordCheck::BadWordCheck()
 
 bool BadWordCheck::run(QString msg)
 {
+	QMutexLocker locker(&m_mutex);
 	msg = msg.toLower();
 	bool badMessage(false);
 

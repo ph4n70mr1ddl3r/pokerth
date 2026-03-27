@@ -1551,7 +1551,7 @@ void LocalPlayer::flopEngine()
 	Tools::GetRand(1, 100, 1, &cBluff);
 
 	// Active or passive?
-	if(currentHand->getCurrentBeRo()->getHighestSet() > 0) {
+	if(currentHand->getCurrentBeRo()->getHighestSet() > 0 && individualHighestSet > 0) {
 
 		// Ratio Set / Cash for call
 		if(myCash/individualHighestSet >= 25) {
@@ -2008,7 +2008,7 @@ void LocalPlayer::turnEngine()
 	Tools::GetRand(1, 100, 1, &cBluff);
 
 	// Active or passive?
-	if(currentHand->getCurrentBeRo()->getHighestSet() > 0) {
+	if(currentHand->getCurrentBeRo()->getHighestSet() > 0 && individualHighestSet > 0) {
 
 		//		Verhaeltnis Set / Cash
 		if(myCash/individualHighestSet >= 25) {

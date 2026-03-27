@@ -46,10 +46,10 @@ AsyncDBPlayerLastGames::~AsyncDBPlayerLastGames() noexcept
 }
 
 void
-AsyncDBPlayerLastGames::HandleResult(mysqlpp::Query &/*query*/, DBIdManager &/*idManager*/, mysqlpp::StoreQueryResult &/*result*/, boost::asio::io_context &service, ServerDBCallback &cb)
+AsyncDBPlayerLastGames::HandleResult(mysqlpp::Query &query, DBIdManager &idManager, mysqlpp::StoreQueryResult &/*result*/, boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	// This query does not produce a result.
-	HandleError(service, cb);
+	// This query does not produce a result - treat unexpected result as success
+	HandleNoResult(query, idManager, service, cb);
 }
 
 void

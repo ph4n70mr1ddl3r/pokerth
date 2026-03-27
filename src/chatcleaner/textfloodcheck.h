@@ -32,6 +32,7 @@
 #define TEXTFLOODCHECK_H
 
 #include <QtCore>
+#include <QMutex>
 #ifndef Q_MOC_RUN
 #include <third_party/boost/timers.hpp>
 #endif
@@ -47,6 +48,7 @@ public:
 
 	void setTextFloodLevelToTrigger(int level)
 	{
+		QMutexLocker locker(&m_mutex);
 		textFloodLevelToTrigger = level;
 	}
 
@@ -57,6 +59,7 @@ public slots:
 	void removeNickFromList(unsigned);
 
 private:
+	mutable QMutex m_mutex;
 	std::unique_ptr<QTimer> cleanTimer;
 	boost::timers::portable::second_timer timer;
 	struct TextFloodInfos {
@@ -65,7 +68,7 @@ private:
 	};
 	QMap<unsigned, TextFloodInfos> msgTimesList;
 
-	int textFloodLevelToTrigger;
+	int textFloodLevelToTrigger = 3;
 };
 
 #endif // TEXTFLOODCHECK_H

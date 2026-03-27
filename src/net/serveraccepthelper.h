@@ -72,8 +72,12 @@ public:
                 );
 
                 // @TODO: find better way to specify cert and key files
-                m_sslContext->use_certificate_chain_file("/srv/pokerth_env/repos/pokerth-test/tls/server.crt");
-                m_sslContext->use_private_key_file("/srv/pokerth_env/repos/pokerth-test/tls/server.key", boost::asio::ssl::context::pem);
+                const char* certPath = std::getenv("POKERTH_TLS_CERT");
+                const char* keyPath = std::getenv("POKERTH_TLS_KEY");
+                std::string certFile = certPath ? certPath : "tls/server.crt";
+                std::string keyFile = keyPath ? keyPath : "tls/server.key";
+                m_sslContext->use_certificate_chain_file(certFile);
+                m_sslContext->use_private_key_file(keyFile, boost::asio::ssl::context::pem);
 
                 std::string ciphers = "ECDHE-RSA-AES128-GCM-SHA256:...";
                 if (SSL_CTX_set_cipher_list(m_sslContext->native_handle(), ciphers.c_str()) != 1) {

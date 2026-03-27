@@ -32,6 +32,7 @@
 #define URLCHECK_H
 
 #include <QtCore>
+#include <QMutex>
 
 class UrlCheck: public QObject
 {
@@ -41,16 +42,18 @@ public:
 
 	void setUrlStrings(QStringList us)
 	{
+		QMutexLocker locker(&m_mutex);
 		urlStrings = us;
 	}
 	void setUrlExceptionStrings(QStringList ues)
 	{
+		QMutexLocker locker(&m_mutex);
 		urlExceptionStrings = ues;
 	}
 	bool run(QString);
 
 private:
-
+	mutable QMutex m_mutex;
 	QStringList urlStrings;
 	QStringList urlExceptionStrings;
 };

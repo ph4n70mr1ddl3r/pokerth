@@ -38,6 +38,7 @@ UrlCheck::UrlCheck()
 
 bool UrlCheck::run(QString msg)
 {
+	QMutexLocker locker(&m_mutex);
 	msg = msg.toLower();
 
 	QStringListIterator it1(urlStrings);

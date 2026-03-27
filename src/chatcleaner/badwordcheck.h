@@ -32,6 +32,7 @@
 #define BADWORDCHECK_H
 
 #include <QtCore>
+#include <QMutex>
 
 class BadWordCheck: public QObject
 {
@@ -41,18 +42,20 @@ public:
 
 	void setBadWords(QStringList bw)
 	{
+		QMutexLocker locker(&m_mutex);
 		badWords = bw;
 	}
 
 	void setBadWordsException(QStringList bwe)
 	{
+		QMutexLocker locker(&m_mutex);
 		badWordsException = bwe;
 	}
 
 	bool run(QString);
 
 private:
-
+	mutable QMutex m_mutex;
 	QStringList badWords;
 	QStringList badWordsException;
 };

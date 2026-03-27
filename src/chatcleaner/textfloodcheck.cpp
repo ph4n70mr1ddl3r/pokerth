@@ -50,6 +50,7 @@ TextFloodCheck::~TextFloodCheck() noexcept
 
 bool TextFloodCheck::run(unsigned playerId)
 {
+	QMutexLocker locker(&m_mutex);
 
 	QMapIterator<unsigned, TextFloodInfos> it(msgTimesList);
 	while (it.hasNext()) {
@@ -92,6 +93,7 @@ bool TextFloodCheck::run(unsigned playerId)
 
 void TextFloodCheck::cleanMsgTimesList()
 {
+	QMutexLocker locker(&m_mutex);
 
 	QMapIterator<unsigned, TextFloodInfos> it(msgTimesList);
 	while (it.hasNext()) {
@@ -115,7 +117,7 @@ void TextFloodCheck::cleanMsgTimesList()
 
 void TextFloodCheck::removeNickFromList(unsigned playerId)
 {
-
+	QMutexLocker locker(&m_mutex);
 //	qDebug() << "id " << playerId << "removed from textfloodcheck list" << endl;
 	msgTimesList.remove(playerId);
 }

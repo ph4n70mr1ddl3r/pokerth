@@ -350,6 +350,9 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 			}
 		} else
 			outCipher.clear();
+	#if OPENSSL_VERSION_NUMBER < 0x10100000L
+		EVP_CIPHER_CTX_cleanup(encryptCtx);
+	#endif
 		// RAII handles cleanup for OpenSSL >= 1.1.0
 #else
 		gcry_cipher_hd_t hd;
@@ -412,6 +415,9 @@ CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const
 			}
 		} else
 			outPlain.clear();
+	#if OPENSSL_VERSION_NUMBER < 0x10100000L
+		EVP_CIPHER_CTX_cleanup(decryptCtx);
+	#endif
 		// RAII handles cleanup for OpenSSL >= 1.1.0
 #else
 		gcry_cipher_hd_t hd;
