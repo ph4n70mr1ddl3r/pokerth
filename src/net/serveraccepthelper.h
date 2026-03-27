@@ -71,7 +71,8 @@ public:
                     | boost::asio::ssl::context::no_sslv3
                 );
 
-                // @TODO: find better way to specify cert and key files
+                // TLS certificate and key paths can be configured via environment variables
+                // POKERTH_TLS_CERT and POKERTH_TLS_KEY, otherwise defaults to tls/server.crt and tls/server.key
                 const char* certPath = std::getenv("POKERTH_TLS_CERT");
                 const char* keyPath = std::getenv("POKERTH_TLS_KEY");
                 std::string certFile = certPath ? certPath : "tls/server.crt";

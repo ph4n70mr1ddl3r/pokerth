@@ -87,39 +87,39 @@ public:
 	PlayerData(const PlayerData &other);
 	~PlayerData() noexcept;
 
-	std::string GetName() const;
+	[[nodiscard]] std::string GetName() const;
 	void SetName(const std::string &name);
-	std::string GetCountry() const;
+	[[nodiscard]] std::string GetCountry() const;
 	void SetCountry(const std::string &country);
-	std::string GetAvatarFile() const;
+	[[nodiscard]] std::string GetAvatarFile() const;
 	void SetAvatarFile(const std::string &avatarFile);
-	MD5Buf GetAvatarMD5() const;
+	[[nodiscard]] MD5Buf GetAvatarMD5() const;
 	void SetAvatarMD5(const MD5Buf &avatarMD5);
-	boost::shared_ptr<AvatarFile> GetNetAvatarFile() const;
+	[[nodiscard]] boost::shared_ptr<AvatarFile> GetNetAvatarFile() const;
 	void SetNetAvatarFile(boost::shared_ptr<AvatarFile> AvatarFile);
-	PlayerType GetType() const;
+	[[nodiscard]] PlayerType GetType() const;
 	void SetType(PlayerType type);
-	PlayerRights GetRights() const;
+	[[nodiscard]] PlayerRights GetRights() const;
 	void SetRights(PlayerRights rights);
-	bool IsGameAdmin() const;
+	[[nodiscard]] bool IsGameAdmin() const;
 	void SetGameAdmin(bool isAdmin);
-	unsigned GetUniqueId() const;
-	int GetNumber() const;
+	[[nodiscard]] unsigned GetUniqueId() const;
+	[[nodiscard]] int GetNumber() const;
 	void SetNumber(int number);
-	std::string GetGuid() const;
+	[[nodiscard]] std::string GetGuid() const;
 	void SetGuid(const std::string &guid);
-	std::string GetOldGuid() const;
+	[[nodiscard]] std::string GetOldGuid() const;
 	void SetOldGuid(const std::string &guid);
-	DB_id GetDBId() const;
+	[[nodiscard]] DB_id GetDBId() const;
 	void SetDBId(DB_id id);
-	int GetStartCash() const;
+	[[nodiscard]] int GetStartCash() const;
 	void SetStartCash(int cash);
 
-	// @TODO: last_games here
+	// TODO: last_games here
 	void AddPlayerLastGame(long last_games);
 	void SetPlayerLastGames(std::vector<long> last_games);
-	std::vector<long> GetPlayerLastGames();
-	bool IsPlayerAllowedToJoinCreateLimitRank(std::string num, std::string period);
+	[[nodiscard]] std::vector<long> GetPlayerLastGames();
+	[[nodiscard]] bool IsPlayerAllowedToJoinCreateLimitRank(std::string num, std::string period);
 
 	bool operator<(const PlayerData &other) const;
 
