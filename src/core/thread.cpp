@@ -30,9 +30,11 @@
  *****************************************************************************/
 
 #include "thread.h"
+#include <engine/log.h>
 #include <boost/chrono/chrono.hpp>
 #include <chrono>
 #include <thread>
+#include <exception>
 
 
 
@@ -114,7 +116,13 @@ Thread::Msleep(unsigned msecs)
 void
 Thread::MainWrapper()
 {
-	this->Main();
+	try {
+		this->Main();
+	} catch (const std::exception& e) {
+		LOG_ERROR("Exception in thread: " << e.what());
+	} catch (...) {
+		LOG_ERROR("Unknown exception in thread");
+	}
 	m_isTerminatedSemaphore.post();
 }
 

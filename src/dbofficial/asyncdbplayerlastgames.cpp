@@ -30,6 +30,7 @@
  *****************************************************************************/
 
 #include <dbofficial/asyncdbplayerlastgames.h>
+#include <core/loghelper.h>
 
 
 using namespace std;
@@ -57,6 +58,7 @@ AsyncDBPlayerLastGames::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& /
 }
 
 void
-AsyncDBPlayerLastGames::HandleError(boost::asio::io_context &service, ServerDBCallback &cb)
+AsyncDBPlayerLastGames::HandleError(boost::asio::io_context &/*service*/, ServerDBCallback &/*cb*/)
 {
+	LOG_ERROR("AsyncDBPlayerLastGames::HandleError: Database error occurred for query " << GetId());
 }

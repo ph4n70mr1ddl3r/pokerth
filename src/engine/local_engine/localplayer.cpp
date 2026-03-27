@@ -864,7 +864,7 @@ static const RoundData FlopValues[] = {
 LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType type, std::string name, std::string avatar, int sC, bool aS, bool sotS, int mB)
 	: PlayerInterface(), myConfig(c), currentHand(0), myID(id), myUniqueID(uniqueId), myType(type), myName(name), myAvatar(avatar),
 	  myDude(0), myDude4(0), myCardsValueInt(0), myOdds(-1.0), logHoleCardsDone(false), myCash(sC), mySet(0), myLastRelativeSet(0), myAction(PLAYER_ACTION_NONE),
-	  myButton(mB), myActiveStatus(aS), myStayOnTableStatus(sotS), myTurn(0), myCardsFlip(0), myRoundStartCash(0), myLastMoneyWon(0),
+	  myButton(mB), myActiveStatus(aS), myStayOnTableStatus(sotS), myTurn(false), myCardsFlip(false), myRoundStartCash(0), myLastMoneyWon(0),
 	  mySBluff(0), mySBluffStatus(false), myActionTimeoutCounter(0), myIsSessionActive(false), myIsKicked(false), myIsMuted(false)
 {
 
@@ -1068,7 +1068,7 @@ void LocalPlayer::action()
 	// 	cout << checkMyAction(myAction, mySet - myOldSet, myOldSet, myOldCash, oldHighestSet, oldMinimumRaise, currentHand->getSmallBlind()) << endl;
 
 
-	myTurn = 0;
+	myTurn = false;
 	// 	cout << "jetzt" << endl;
 
 	//set that i was the last active player. need this for unhighlighting groupbox

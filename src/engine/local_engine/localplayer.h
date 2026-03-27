@@ -148,7 +148,7 @@ public:
 		return myLastRelativeSet;
 	}
 
-	void setMyAction(PlayerAction theValue, bool human = 0) override
+	void setMyAction(PlayerAction theValue, bool human = false) override
 	{
 		myAction = theValue;
 		if(myAction && human && currentHand && currentHand->getGuiInterface()) currentHand->getGuiInterface()->logPlayerActionMsg(myName, myAction, myLastRelativeSet);

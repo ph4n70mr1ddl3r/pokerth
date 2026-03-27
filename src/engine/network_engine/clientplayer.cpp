@@ -297,7 +297,7 @@ ClientPlayer::setMyCardsFlip(bool theValue, int state)
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
 	myCardsFlip = theValue;
 	// log flipping cards
-	if (myCardsFlip) {
+	if (myCardsFlip && currentHand && currentHand->getGuiInterface()) {
 		switch(state) {
 		case 1:
 			currentHand->getGuiInterface()->logFlipHoleCardsMsg(myName, myCards[0], myCards[1], myCardsValueInt);
@@ -381,14 +381,14 @@ void
 ClientPlayer::setLastMoneyWon ( int theValue )
 {
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
-	lastMoneyWon = theValue;
+	myLastMoneyWon = theValue;
 }
 
 int
 ClientPlayer::getLastMoneyWon() const
 {
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
-	return lastMoneyWon;
+	return myLastMoneyWon;
 }
 
 void

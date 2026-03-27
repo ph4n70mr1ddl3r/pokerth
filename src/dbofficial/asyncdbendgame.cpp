@@ -31,6 +31,7 @@
 
 #include <dbofficial/asyncdbendgame.h>
 #include <dbofficial/dbidmanager.h>
+#include <core/loghelper.h>
 
 
 using namespace std;
@@ -73,5 +74,5 @@ AsyncDBEndGame::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManag
 void
 AsyncDBEndGame::HandleError(boost::asio::io_context &/*service*/, ServerDBCallback &/*cb*/)
 {
-	// Ignore errors for now (as nothing important is done).
+	LOG_ERROR("AsyncDBEndGame::HandleError: Database error occurred while ending game " << GetId());
 }

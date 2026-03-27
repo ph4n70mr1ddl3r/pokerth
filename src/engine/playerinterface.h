@@ -76,7 +76,7 @@ public:
 	[[nodiscard]] virtual int getMySet() const =0;
 	[[nodiscard]] virtual int getMyLastRelativeSet() const =0;
 
-	virtual void setMyAction(PlayerAction theValue, bool human=0) =0;
+	virtual void setMyAction(PlayerAction theValue, bool human = false) =0;
 	[[nodiscard]] virtual PlayerAction getMyAction() const =0;
 
 	virtual void setMyButton(int theValue) =0;

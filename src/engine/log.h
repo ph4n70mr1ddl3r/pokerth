@@ -47,7 +47,7 @@ public:
     PlayerActionLog transformPlayerActionLog(PlayerAction action);
     void logBoardCards(std::array<int, 5> boardCards);
     void logHoleCardsHandName(PlayerList activePlayerList);
-    void logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerInterface> player, bool forceExecLog = 0);
+    void logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerInterface> player, bool forceExecLog = false);
     void logHandWinner(PlayerList activePlayerList, int highestCardsValue, std::list<unsigned> winners);
     void logGameWinner(PlayerList activePlayerList);
     void logPlayerSitsOut(PlayerList activePlayerList);
