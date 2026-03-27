@@ -952,46 +952,7 @@ LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType ty
 	}
 	myDude4 = (myDude4/count)-interval;
 
-	// !!!!!!!!!!!!!!!!!!!!!!!! testing !!!!!!!!!!!!!!!!!!!!!!!!
 	if(DEBUG_MODE) {
-
-		switch(myUniqueID) {
-
-		case 0: {
-			//                                myDude4=0;
-		} break;
-		case 1: {
-			//                                myDude4=-20;
-		} break;
-		case 2: {
-			//                                myDude4=0;
-		} break;
-		case 3: {
-			//                                myDude4=0;
-		} break;
-		case 4: {
-			//                                myDude4=0;
-		} break;
-		case 5: {
-			//                                myDude4=0;
-		} break;
-		case 6: {
-			//                                myDude4=0;
-		} break;
-		case 7: {
-			//                                myDude4=0;
-		} break;
-		case 8: {
-			//                                myDude4=0;
-		} break;
-		case 9: {
-			//                                myDude4=0;
-		} break;
-
-		default: {
-		}
-
-		}
 
 	}
 	////////////////////////////
@@ -1532,19 +1493,6 @@ void LocalPlayer::flopEngine()
 			myNiveau[2] -= 3;
 		}
 	}
-
-
-	// Read aggressiveness of humanPlayers -> only when active!
-	// 	it_c = currentHand->getActivePlayerIt(0);
-	// 	if( it_c != currentHand->getActivePlayerList()->end() ) {
-	// 		if( (*it_c)->getMyAction() != PLAYER_ACTION_FOLD ) {
-	// 			int aggValue = static_cast<int>((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
-	// 			for(i=0; i<3; i++) {
-	// 				myNiveau[i] -= aggValue;
-	// 			}
-	// 		}
-	//
-	// 	}
 
 
 	// Generate Check-Bluff
@@ -3081,7 +3029,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 	int temp2 = 0;
 	int temp2Array[2];
 	int tempValue = -1;
-	bool breakLoop = 0;
+	bool breakLoop = false;
 
 	// Kartenwerte umwandeln (z.B. [ 11 (Karo K�ig) -> 0 11 ] oder [ 31 (Pik 7) -> 2 5 ] )
 	for(j1=0; j1<5; j1++) {

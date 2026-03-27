@@ -1054,7 +1054,7 @@ vector< vector<int> > ArrayData::getHandChancePreflop(int handCode)
 
 	int check = -1;
 
-	int i;
+	int i = 0;
 
 	vector< vector<int> > chance(2);
 
