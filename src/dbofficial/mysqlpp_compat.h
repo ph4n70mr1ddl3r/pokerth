@@ -58,15 +58,18 @@ public:
 
 // Simple string wrapper to imitate mysqlpp::String
 struct String {
-    String() {}
-    explicit String(const std::string &s) : s(s) {}
-    explicit String(const char* c) : s(c ? c : "") {}
+    String() : m_isNull(true) {}
+    explicit String(const std::string &s) : s(s), m_isNull(false) {}
+    explicit String(const char* c) : s(c ? c : ""), m_isNull(!c) {}
     operator std::string() const { return s; }
     std::string s;
-    bool is_null() const { return s.empty(); }
+    bool is_null() const { return m_isNull; }
     void to_string(std::string &out) const { out = s; }
+    void setNull(bool n) { m_isNull = n; }
     operator int() const { try { return s.empty() ? 0 : std::stoi(s); } catch(const std::exception&) { return 0; } }
     operator unsigned int() const { try { return s.empty() ? 0u : static_cast<unsigned int>(std::stoul(s)); } catch(const std::exception&) { return 0u; } }
+private:
+    bool m_isNull = false;
 };
 
 // Simple DateTime wrapper that converts to a string acceptable by SQL
@@ -85,12 +88,20 @@ class Connection;
 class StoreQueryResult {
 public:
     struct Row {
-        Row(std::vector<std::string> &r) : row(r) {}
+        Row(std::vector<std::string> &r, std::vector<bool> &n) : row(r), nullFlags(n) {}
         String operator[](size_t i) const {
-            if (i < row.size()) return String(row[i]);
-            return String("");
+            if (i < row.size()) {
+                String s(row[i]);
+                if (i < nullFlags.size() && nullFlags[i])
+                    s.setNull(true);
+                return s;
+            }
+            String s;
+            s.setNull(true);
+            return s;
         }
         std::vector<std::string> &row;
+        std::vector<bool> &nullFlags;
         bool empty() const { return row.empty(); }
     };
 
@@ -100,13 +111,19 @@ public:
     explicit operator bool() const { return m_valid; }
 
     void addRow(const std::vector<std::string> &r) { m_rows.emplace_back(r); }
-    Row operator[](size_t i) { return Row(m_rows[i]); }
+    void addNullFlags(const std::vector<bool> &n) { m_nullFlags.emplace_back(n); }
+    Row operator[](size_t i) {
+        if (i >= m_rows.size())
+            throw std::out_of_range("StoreQueryResult index out of range");
+        return Row(m_rows[i], m_nullFlags[i]);
+    }
     size_t size() const { return m_rows.size(); }
     size_t num_rows() const { return m_rows.size(); }
 
 private:
     bool m_valid;
     std::vector<std::vector<std::string>> m_rows;
+    std::vector<std::vector<bool>> m_nullFlags;
 };
 
 // Simple quote manipulator used in original code
@@ -245,16 +262,23 @@ public:
             return false;
         }
         if (out) {
-            // fetch rows
             QSqlRecord rec = q.record();
             int cols = rec.count();
             while (q.next()) {
                 std::vector<std::string> row;
+                std::vector<bool> nullRow;
                 row.reserve(cols);
+                nullRow.reserve(cols);
                 for (int i=0;i<cols;++i) {
-                    row.push_back(q.value(i).toString().toStdString());
+                    nullRow.push_back(q.value(i).isNull());
+                    if (q.value(i).isNull()) {
+                        row.push_back("");
+                    } else {
+                        row.push_back(q.value(i).toString().toStdString());
+                    }
                 }
                 out->addRow(row);
+                out->addNullFlags(nullRow);
             }
             out->setValid(true);
         }

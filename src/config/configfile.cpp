@@ -59,7 +59,7 @@ using namespace std;
 ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 {
 
-	myArgv0 = argv0;
+	myArgv0 = argv0 ? argv0 : "";
 
 	myQtToolsInterface = std::unique_ptr<QtToolsInterface>(CreateQtToolsWrapper());
 
@@ -160,7 +160,7 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 #ifdef ANDROID
 	configList.push_back(ConfigInfo("AppDataDir", CONFIG_TYPE_STRING, ":/android/android-data/"));
 #else
-	configList.push_back(ConfigInfo("AppDataDir", CONFIG_TYPE_STRING, myQtToolsInterface->getDataPathStdString(myArgv0)));
+	configList.push_back(ConfigInfo("AppDataDir", CONFIG_TYPE_STRING, myQtToolsInterface->getDataPathStdString(myArgv0.c_str())));
 #endif
 	configList.push_back(ConfigInfo("Language", CONFIG_TYPE_INT, myQtToolsInterface->getDefaultLanguage()));
 	configList.push_back(ConfigInfo("ShowLeftToolBox", CONFIG_TYPE_INT, "1"));
@@ -356,9 +356,9 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 				{
 					confAppDataPath.setAttribute("value", ":/android/android-data/");
 #else
-				if (tempAppDataPath != QString::fromStdString(myQtToolsInterface->getDataPathStdString(myArgv0)))
-				{
-					confAppDataPath.setAttribute("value", QString::fromStdString(myQtToolsInterface->getDataPathStdString(myArgv0)));
+			if (tempAppDataPath != QString::fromStdString(myQtToolsInterface->getDataPathStdString(myArgv0.c_str())))
+			{
+				confAppDataPath.setAttribute("value", QString::fromStdString(myQtToolsInterface->getDataPathStdString(myArgv0.c_str())));
 #endif
 					QFile file(QString::fromStdString(configFileName));
 					if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -619,7 +619,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState)
 
 			QDomElement confElement1 = newDoc.createElement("AppDataDir");
 			config.appendChild(confElement1);
-			confElement1.setAttribute("value", QString::fromStdString(myQtToolsInterface->stringToUtf8(myQtToolsInterface->getDataPathStdString(myArgv0))));
+			confElement1.setAttribute("value", QString::fromStdString(myQtToolsInterface->stringToUtf8(myQtToolsInterface->getDataPathStdString(myArgv0.c_str()))));
 			noUpdateElemtsList.push_back("AppDataDir");
 
 			///////// VERSION HACK SECTION ///////////////////////

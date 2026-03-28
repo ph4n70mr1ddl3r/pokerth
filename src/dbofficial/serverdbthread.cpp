@@ -338,7 +338,7 @@ ServerDBThread::AsyncReportAvatar(unsigned requestId, unsigned replyId, DB_id re
 		paramStream << *byPlayerId;
 		params.push_back(paramStream.str());
 	} else {
-		params.push_back("nullptr");
+		params.push_back("__DB_NULL_PTR__");
 	}
 	params.push_back(mysqlpp::DateTime(time(nullptr)));
 
@@ -366,7 +366,7 @@ ServerDBThread::AsyncReportGame(unsigned requestId, unsigned replyId, DB_id *cre
 		paramStream << *creatorPlayerId;
 		params.push_back(paramStream.str());
 	} else {
-		params.push_back("nullptr");
+		params.push_back("__DB_NULL_PTR__");
 	}
 	params.push_back(gameName);
 	if (byPlayerId) {
@@ -374,7 +374,7 @@ ServerDBThread::AsyncReportGame(unsigned requestId, unsigned replyId, DB_id *cre
 		paramStream << *byPlayerId;
 		params.push_back(paramStream.str());
 	} else {
-		params.push_back("nullptr");
+		params.push_back("__DB_NULL_PTR__");
 	}
 	params.push_back(mysqlpp::DateTime(time(nullptr)));
 
@@ -626,7 +626,7 @@ ServerDBThread::HandleNextQuery()
 							executeQuery << ", ";
 						}
 					paramQuery << "@param" << counter << " = ";
-					if (*i == "nullptr") {
+				if (*i == "__DB_NULL_PTR__") {
 						paramQuery << "NULL";
 					} else {
 						paramQuery << mysqlpp::quote << *i;

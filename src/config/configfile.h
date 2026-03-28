@@ -106,7 +106,7 @@ private:
 	ConfigState myConfigState;
 	std::unique_ptr<QtToolsInterface> myQtToolsInterface;
 
-	char *myArgv0;
+	std::string myArgv0;
 };
 
 #endif

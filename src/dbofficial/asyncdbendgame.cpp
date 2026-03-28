@@ -51,9 +51,13 @@ AsyncDBEndGame::Init(DBIdManager& idManager)
 {
 	std::list<std::string> params;
 	GetParams(params);
+	DB_id gameDBId = idManager.GetGameDBId(GetId());
+	if (gameDBId == DB_ID_INVALID) {
+		LOG_ERROR("AsyncDBEndGame::Init: Game DB ID not found for game " << GetId());
+		return;
+	}
 	ostringstream paramStream;
-	paramStream << idManager.GetGameDBId(GetId());
-	// Add game id as last parameter (where-clause).
+	paramStream << gameDBId;
 	params.push_back(paramStream.str());
 	SetParams(params);
 }

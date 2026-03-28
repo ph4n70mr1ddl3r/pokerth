@@ -44,7 +44,7 @@
 
 using namespace std;
 
-CleanerServer::CleanerServer(): config(nullptr), blockConnection(false), m_recvBufUsed(0), secondsSinceLastConfigChange(0)
+CleanerServer::CleanerServer(): config(nullptr), blockConnection(false), m_recvBufUsed(0)
 {
 	config = std::make_unique<CleanerConfig>();
 
@@ -83,6 +83,11 @@ void CleanerServer::newCon()
 			tcpSocket = nullptr;
 		}
 		tcpSocket = tcpServer->nextPendingConnection();
+		if (!tcpSocket) {
+			blockConnection = false;
+			tcpServer->resumeAccepting();
+			return;
+		}
 		connect(tcpSocket, &QTcpSocket::readyRead, this, &CleanerServer::onRead);
 		connect(tcpSocket, &QTcpSocket::stateChanged, this, &CleanerServer::socketStateChanged);
 		blockConnection = true;
@@ -219,8 +224,10 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 			netReply->set_cleanertext(checkMessage.toUtf8());
 			sendMessageToClient(*tmpReply);
 		}
+	} else {
+		qDebug() << "Unknown message type received: " << msg.messagetype();
 	}
-	return false;
+	return error;
 }
 
 void CleanerServer::socketStateChanged(QAbstractSocket::SocketState state)

@@ -188,6 +188,11 @@ main(int argc, char *argv[])
 			g_pokerthTerminate = true;
 	}
 	myServerGuiInterface->getSession()->terminateNetworkServer();
+
+	if (!pidFile.empty()) {
+		remove(pidFile.c_str());
+	}
+
 	session.reset();
 	myServerGuiInterface.reset();
 	myConfig.reset();

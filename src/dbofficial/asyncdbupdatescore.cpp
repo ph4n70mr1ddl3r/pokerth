@@ -68,13 +68,12 @@ AsyncDBUpdateScore::HandleResult(mysqlpp::Query &query, DBIdManager& idManager, 
 }
 
 void
-AsyncDBUpdateScore::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& idManager, boost::asio::io_context &/*service*/, ServerDBCallback &/*cb*/)
+AsyncDBUpdateScore::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManager*/, boost::asio::io_context &/*service*/, ServerDBCallback &/*cb*/)
 {
-	idManager.RemoveGameId(GetId());
 }
 
 void
 AsyncDBUpdateScore::HandleError(boost::asio::io_context &/*service*/, ServerDBCallback &/*cb*/)
 {
-	// Ignore errors for now (as nothing important is done).
+	LOG_ERROR("AsyncDBUpdateScore::HandleError: Database error occurred while updating score for game " << GetId());
 }
