@@ -52,12 +52,6 @@ bool TextFloodCheck::run(unsigned playerId)
 {
 	QMutexLocker locker(&m_mutex);
 
-	QMapIterator<unsigned, TextFloodInfos> it(msgTimesList);
-	while (it.hasNext()) {
-		it.next();
-//		 qDebug() << "counter: " << msgTimesList.count() << " playerid: " << it.key() << " floodlevel: " << it.value().floodLevel << " timestamp: " <<  it.value().timeStamp;
-	}
-
 	QMap<unsigned, TextFloodInfos>::const_iterator i = msgTimesList.find(playerId);
 
 	if(i == msgTimesList.end()) {

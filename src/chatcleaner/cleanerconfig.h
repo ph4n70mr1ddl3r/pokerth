@@ -85,12 +85,9 @@ private:
 	std::vector<ConfigInfo> configBufferList;
 
 	std::string configFileName;
-	std::string logDir;
-	std::string dataDir;
-	std::string cacheDir;
 	int configRev;
 
-	ConfigState myConfigState;
+	ConfigState myConfigState{NONEXISTING};
 
 };
 

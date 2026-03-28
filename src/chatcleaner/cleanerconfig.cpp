@@ -244,9 +244,6 @@ CleanerConfig::~CleanerConfig() noexcept
 void CleanerConfig::fillBuffer()
 {
 
-	string tempString1("");
-	string tempString2("");
-
 	QDomDocument xmlDoc;
 	QFile file(QString::fromStdString(configFileName));
 	if (file.open(QIODevice::ReadOnly) && xmlDoc.setContent(&file))
@@ -259,34 +256,21 @@ void CleanerConfig::fillBuffer()
 			if (!conf.isNull())
 			{
 
-				std::string tmpStr1 = conf.attribute("value", "").toStdString();
-				if (!tmpStr1.empty())
-					tempString1 = tmpStr1;
-				configBufferList[i].defaultValue = tempString1;
+				configBufferList[i].defaultValue = conf.attribute("value", "").toStdString();
 
 				std::string tmpStr2 = conf.attribute("type").toStdString();
-				if (!tmpStr2.empty())
-				{
-					tempString2 = tmpStr2;
-					if (tempString2 == "list")
+				if (!tmpStr2.empty() && tmpStr2 == "list") {
+					list<string> tempStringList2;
+
+					QDomElement confList = xmlDoc.documentElement().firstChildElement("Configuration").firstChildElement(QString::fromStdString(configList[i].name)).firstChildElement();
+
+					for (QDomElement n = confList.firstChildElement(); !n.isNull(); n = n.nextSiblingElement())
 					{
-
-						list<string> tempStringList2;
-
-						QDomElement confList = xmlDoc.documentElement().firstChildElement("Configuration").firstChildElement(QString::fromStdString(configList[i].name)).firstChildElement();
-
-						for (QDomElement n = confList.firstChildElement(); !n.isNull(); n = n.nextSiblingElement())
-						{
-							tempStringList2.push_back(n.attribute("value").toStdString());
-						}
-
-						configBufferList[i].defaultListValue = tempStringList2;
+						tempStringList2.push_back(n.attribute("value").toStdString());
 					}
+
+					configBufferList[i].defaultListValue = tempStringList2;
 				}
-			}
-			else
-			{
-				qDebug("Could not find the root element in the config file!");
 			}
 		}
 	}
@@ -399,15 +383,12 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 		{
 			file.close();
 
-			string tempString1("");
-			string tempString2("");
-
 			QDomDocument newDoc;
 
 			QDomProcessingInstruction xmlVers = newDoc.createProcessingInstruction("xml", "version=\"1.0\" encoding='utf-8'");
 			newDoc.appendChild(xmlVers);
 
-			QDomElement root = newDoc.createElement("PokerTH");
+			QDomElement root = newDoc.createElement("PokerTHCleaner");
 			newDoc.appendChild(root);
 
 			QDomElement config = newDoc.createElement("Configuration");
@@ -422,7 +403,7 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 				QDomElement oldConf = oldDoc.documentElement().firstChildElement("Configuration").firstChildElement(QString::fromStdString(configList[i].name));
 
 				if (!oldConf.isNull())
-				{ // if element is already there --> take over the saved values
+				{
 
 					if (configList[i].name != "ConfigRevision")
 					{
@@ -430,35 +411,27 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 						config.appendChild(tmpElement);
 
 						std::string tmpStr1 = oldConf.attribute("value").toStdString();
+						tmpElement.setAttribute("value", QString::fromStdString(tmpStr1));
 
-						if (!tmpStr1.empty())
-							tempString1 = tmpStr1;
-						tmpElement.setAttribute("value", QString::fromStdString(tempString1));
-
-						// for lists copy elements
 						std::string tmpStr2 = oldConf.attribute("type").toStdString();
-						if (!tmpStr2.empty())
+						if (!tmpStr2.empty() && tmpStr2 == "list")
 						{
-							tempString2 = tmpStr2;
-							if (tempString2 == "list")
+							list<string> tempStringList2;
+
+							QDomElement oldConfList = oldDoc.documentElement().firstChildElement("Configuration").firstChildElement(QString::fromStdString(configList[i].name));
+
+							for (QDomElement n = oldConfList.firstChildElement(); !n.isNull(); n = n.nextSiblingElement())
 							{
-								list<string> tempStringList2;
+								tempStringList2.push_back(n.attribute("value").toStdString());
+							}
 
-								QDomElement oldConfList = oldDoc.documentElement().firstChildElement("Configuration").firstChildElement(QString::fromStdString(configList[i].name));
-
-								for (QDomElement n = oldConfList.firstChildElement(); !n.isNull(); n = n.nextSiblingElement())
-								{
-									tempStringList2.push_back(n.attribute("value").toStdString());
-								}
-
-						tmpElement.setAttribute("type", "list");
-						list<string> tempList = tempStringList2;
-						for (auto it = tempList.begin(); it != tempList.end(); ++it)
-								{
-									QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(tempString1));
-									tmpElement.appendChild(tmpSubElement);
-									tmpSubElement.setAttribute("value", QString::fromStdString(*it));
-								}
+							tmpElement.setAttribute("type", "list");
+							list<string> tempList = tempStringList2;
+							for (auto it = tempList.begin(); it != tempList.end(); ++it)
+							{
+								QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(configList[i].name));
+								tmpElement.appendChild(tmpSubElement);
+								tmpSubElement.setAttribute("value", QString::fromStdString(*it));
 							}
 						}
 					}

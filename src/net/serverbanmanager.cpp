@@ -261,7 +261,6 @@ ServerBanManager::TimerRemoveBan(const boost::system::error_code &ec, unsigned b
 unsigned
 ServerBanManager::GetNextBanId()
 {
-	boost::mutex::scoped_lock lock(m_banMutex);
 	m_curBanId++;
 	if (m_curBanId == 0)
 		m_curBanId++;

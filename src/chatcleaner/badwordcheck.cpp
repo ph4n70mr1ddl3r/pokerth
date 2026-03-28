@@ -44,20 +44,23 @@ bool BadWordCheck::run(QString msg)
 
 	QStringListIterator it(badWords);
 	while (it.hasNext()) {
-		QString bw=it.next();
+		QString bw = it.next();
 		if(msg.contains(bw)) {
-			badMessage=true;
-			//exception check
+			bool thisWordHasException = false;
 			QStringListIterator it2(badWordsException);
 			while (it2.hasNext()) {
-				QString bwe=it2.next();
+				QString bwe = it2.next();
 				if(bwe.contains(bw) && msg.contains(bwe)) {
-					badMessage=false;
+					thisWordHasException = true;
+					break;
 				}
+			}
+			if(!thisWordHasException) {
+				badMessage = true;
+				break;
 			}
 		}
 	}
 
-	if(badMessage) return true;
-	else return false;
+	return badMessage;
 }

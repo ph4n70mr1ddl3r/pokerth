@@ -73,8 +73,6 @@ private:
 
 	unsigned char m_recvBuf[2*MAX_CLEANER_PACKET_SIZE];
 	size_t m_recvBufUsed;
-
-	int secondsSinceLastConfigChange;
 };
 
 #endif // CLEANERSERVER_H

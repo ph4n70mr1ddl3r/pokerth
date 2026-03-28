@@ -76,6 +76,12 @@ CleanerServer::~CleanerServer() noexcept = default;
 void CleanerServer::newCon()
 {
 	if(!blockConnection) {
+		if (tcpSocket) {
+			tcpSocket->disconnect(this);
+			tcpSocket->close();
+			tcpSocket->deleteLater();
+			tcpSocket = nullptr;
+		}
 		tcpSocket = tcpServer->nextPendingConnection();
 		connect(tcpSocket, &QTcpSocket::readyRead, this, &CleanerServer::onRead);
 		connect(tcpSocket, &QTcpSocket::stateChanged, this, &CleanerServer::socketStateChanged);
@@ -116,19 +122,20 @@ void CleanerServer::onRead()
 					qDebug() << "Invalid packet size: " << packetSize;
 				} else if (m_recvBufUsed >= packetSize + CLEANER_NET_HEADER_SIZE) {
 					try {
-						// Try to decode the packet.
 						boost::shared_ptr<ChatCleanerMessage> recvMsg(ChatCleanerMessage::default_instance().New());
 						if (recvMsg->ParseFromArray(&m_recvBuf[CLEANER_NET_HEADER_SIZE], static_cast<int>(packetSize))) {
 							m_recvBufUsed -= (packetSize + CLEANER_NET_HEADER_SIZE);
 							if (m_recvBufUsed) {
 								memmove(m_recvBuf, m_recvBuf + packetSize + CLEANER_NET_HEADER_SIZE, m_recvBufUsed);
 							}
+							error = handleMessage(*recvMsg);
+							valid = true;
+						} else {
+							m_recvBufUsed = 0;
+							qDebug() << "Failed to parse protobuf message";
+							error = true;
 						}
-						// Handle the packet.
-						error = handleMessage(*recvMsg);
-						valid = true;
 					} catch (const exception &e) {
-						// Reset buffer on error.
 						m_recvBufUsed = 0;
 						qDebug() << "Exception while decoding packet: " << e.what();
 					}
@@ -213,13 +220,18 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 			sendMessageToClient(*tmpReply);
 		}
 	}
-	return error;
+	return false;
 }
 
 void CleanerServer::socketStateChanged(QAbstractSocket::SocketState state)
 {
 	qDebug() << "Socket state changed to: " << state;
 	if (state == QAbstractSocket::UnconnectedState) {
+		if (tcpSocket) {
+			tcpSocket->disconnect(this);
+			tcpSocket->deleteLater();
+			tcpSocket = nullptr;
+		}
 		blockConnection = false;
 		tcpServer->resumeAccepting();
 	}

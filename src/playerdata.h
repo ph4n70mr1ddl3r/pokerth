@@ -69,7 +69,7 @@ struct AvatarFile {
 };
 
 struct PlayerInfo {
-	PlayerInfo() : ptype(PLAYER_TYPE_HUMAN), isAdmin(false), hasAvatar(false), avatarType(AVATAR_FILE_TYPE_UNKNOWN) {}
+	PlayerInfo() : playerId(0), ptype(PLAYER_TYPE_HUMAN), isAdmin(false), hasAvatar(false), avatarType(AVATAR_FILE_TYPE_UNKNOWN) {}
 		unsigned	playerId;
 		std::string	playerName;
 		PlayerType	ptype;

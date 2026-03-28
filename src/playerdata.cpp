@@ -108,12 +108,14 @@ PlayerData::SetAvatarMD5(const MD5Buf &avatarMD5)
 boost::shared_ptr<AvatarFile>
 PlayerData::GetNetAvatarFile() const
 {
+	boost::mutex::scoped_lock lock(m_dataMutex);
 	return m_netAvatarFile;
 }
 
 void
 PlayerData::SetNetAvatarFile(boost::shared_ptr<AvatarFile> AvatarFile)
 {
+	boost::mutex::scoped_lock lock(m_dataMutex);
 	m_netAvatarFile = AvatarFile;
 }
 
@@ -239,8 +241,11 @@ PlayerData::SetStartCash(int cash)
 bool
 PlayerData::operator<(const PlayerData &other) const
 {
+	if (this == &other)
+		return false;
 	boost::mutex::scoped_lock lock(m_dataMutex);
-	return m_number < other.GetNumber();
+	boost::mutex::scoped_lock otherLock(other.m_dataMutex);
+	return m_number < other.m_number;
 }
 
 void

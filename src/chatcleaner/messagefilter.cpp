@@ -82,10 +82,10 @@ QStringList MessageFilter::check(unsigned gameId, unsigned playerId, QString nic
 	OffenceType offence = NONE;
 
 	if(myBadWordCheck->run(msg)) offence = BAD_WORD;
-	if(myCapsFloodCheck->run(msg)) offence = CAPS_FLOOD;
-	if(myLetterRepeatingCheck->run(msg)) offence = LETTER_REPEATING;
-	if(myUrlCheck->run(msg)) offence = URL;
-	if(myTextFloodCheck->run(playerId)) offence = TEXT_FLOOD_LINES;
+	if(myCapsFloodCheck->run(msg) && offence < CAPS_FLOOD) offence = CAPS_FLOOD;
+	if(myLetterRepeatingCheck->run(msg) && offence < LETTER_REPEATING) offence = LETTER_REPEATING;
+	if(myUrlCheck->run(msg) && offence < URL) offence = URL;
+	if(myTextFloodCheck->run(playerId) && offence < TEXT_FLOOD_LINES) offence = TEXT_FLOOD_LINES;
 
 	if(offence) {
 

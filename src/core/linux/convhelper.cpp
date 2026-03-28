@@ -76,9 +76,9 @@ ConvHelper::NativeToUtf8(const std::string &inStr)
 		if (retval == static_cast<size_t>(-1))
 			LOG_ERROR("iconv() failed: " << strerror(errno));
 		retStr = string(outBuf.data(), c_outsize - outsize);
+		iconv_close(conversion);
 	}
 
-	iconv_close(conversion);
 	return retStr;
 }
 
@@ -108,9 +108,9 @@ ConvHelper::Utf8ToNative(const std::string &inStr)
 		if (retval == static_cast<size_t>(-1))
 			LOG_ERROR("iconv() failed: " << strerror(errno));
 		retStr = string(outBuf.data(), c_outsize - outsize);
+		iconv_close(conversion);
 	}
 
-	iconv_close(conversion);
 	return retStr;
 }
 

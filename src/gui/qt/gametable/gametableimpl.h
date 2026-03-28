@@ -483,7 +483,7 @@ private:
 	bool betSliderChangedByInput;
 
 	// statistic testing
-	int statisticArray[15];
+	int statisticArray[15] = {};
 
 	QSemaphore guiUpdateSemaphore;
 

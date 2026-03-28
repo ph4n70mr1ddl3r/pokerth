@@ -172,7 +172,13 @@ public:
 
     bool connect(const char *dbName, const char *host, const char *user, const char *pwd) {
         std::lock_guard<std::mutex> l(m_mutex);
-        // Use QMYSQL driver
+        if (m_db.isValid() && m_db.isOpen()) {
+            m_db.close();
+            QString oldName = m_connName;
+            m_connName.clear();
+            m_db = QSqlDatabase();
+            QSqlDatabase::removeDatabase(oldName);
+        }
         static std::atomic<int> instance{0};
         m_connName = QString("pokerth_dbofficial_%1").arg(++instance);
         m_db = QSqlDatabase::addDatabase("QMYSQL", m_connName);
@@ -180,7 +186,6 @@ public:
         m_db.setDatabaseName(dbName);
         m_db.setUserName(user);
         m_db.setPassword(pwd);
-        // Try open
         if (!m_db.open()) {
             m_lastError = m_db.lastError().text().toStdString();
             m_connected = false;
@@ -193,7 +198,11 @@ public:
     void disconnect() {
         std::lock_guard<std::mutex> l(m_mutex);
         if (m_db.isValid() && m_db.isOpen()) m_db.close();
-        QSqlDatabase::removeDatabase(m_connName);
+        QString name = m_connName;
+        m_connName.clear();
+        m_db = QSqlDatabase();
+        if (!name.isEmpty())
+            QSqlDatabase::removeDatabase(name);
         m_connected = false;
     }
 
@@ -260,7 +269,7 @@ private:
     mutable std::mutex m_mutex;
     QSqlDatabase m_db;
     QString m_connName;
-    bool m_connected;
+    std::atomic<bool> m_connected;
     std::string m_lastError;
 };
 

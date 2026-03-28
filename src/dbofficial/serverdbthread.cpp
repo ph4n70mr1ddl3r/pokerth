@@ -257,7 +257,7 @@ namespace {
 void
 ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, std::vector<long> last_games, std::string playerIp)
 {
-	LOG_ERROR("ServerDBThread::SetPlayerLastGames() entered.");
+	LOG_MSG("ServerDBThread::SetPlayerLastGames() entered.");
 
 	if (!IsValidIpAddress(playerIp)) {
 		LOG_ERROR("Invalid IP address format rejected: " << playerIp);
@@ -265,7 +265,7 @@ ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, std::vect
 	}
 
 	std::ostringstream oss;
-    std::copy(last_games.begin(), last_games.end(), std::ostream_iterator<int>(oss, ","));
+    std::copy(last_games.begin(), last_games.end(), std::ostream_iterator<long>(oss, ","));
     std::string last_gamesFieldValue( oss.str() );
 	list<string> params;
 	ostringstream paramStream;
@@ -282,7 +282,7 @@ ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, std::vect
 		boost::mutex::scoped_lock lock(m_asyncQueueMutex);
 		m_asyncQueue.push(asyncQuery);
 	}
-	LOG_ERROR("Query posted.");
+	LOG_MSG("Query posted.");
 	m_semaphore.post();
 }
 
@@ -511,13 +511,13 @@ ServerDBThread::HasDBConnection() const
 void
 ServerDBThread::EstablishDBConnection()
 {
-	m_connData->conn.set_option(m_connData->charsetOption.get());
 	if (!m_connData->conn.connect(
 				m_connData->database.c_str(), m_connData->host.c_str(), m_connData->user.c_str(), m_connData->pwd.c_str())) {
 		boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::ConnectFailed, &m_callback, m_connData->conn.error()));
 		if (!m_previouslyConnected)
 			m_permanentError = true;
 	} else {
+		m_connData->conn.set_option(m_connData->charsetOption.get());
 		mysqlpp::Query prepareNick = m_connData->conn.query();
 		/*
 		prepareNick

@@ -911,5 +911,6 @@ void ConfigFile::writeConfigStringList(string varName, list<string> varCont)
 
 void ConfigFile::deleteConfigFile()
 {
+	boost::recursive_mutex::scoped_lock lock(m_configMutex);
 	remove(configFileName.c_str());
 }

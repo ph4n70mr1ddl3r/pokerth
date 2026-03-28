@@ -46,7 +46,7 @@
 struct DBConnectionData;
 class AsyncDBQuery;
 
-class ServerDBThread : public ServerDBInterface, public Thread, public boost::enable_shared_from_this<ServerDBThread>
+class ServerDBThread : public ServerDBInterface, public Thread
 {
 public:
 	ServerDBThread(ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService);

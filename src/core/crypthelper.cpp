@@ -128,8 +128,9 @@ HashBuf::operator==(const HashBuf &other) const
 bool
 HashBuf::operator<(const HashBuf &other) const
 {
-	int smallestDataSize = GetDataSize() < other.GetDataSize() ? GetDataSize() : other.GetDataSize();
-	return memcmp(GetData(), other.GetData(), smallestDataSize) < 0;
+	if (GetDataSize() != other.GetDataSize())
+		return GetDataSize() < other.GetDataSize();
+	return memcmp(GetData(), other.GetData(), GetDataSize()) < 0;
 }
 
 
