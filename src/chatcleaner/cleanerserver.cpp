@@ -55,7 +55,12 @@ CleanerServer::CleanerServer(): config(nullptr), blockConnection(false), m_recvB
 	tcpServer = std::make_unique<QTcpServer>();
 	tcpServer->setMaxPendingConnections(1);
 
-	if (!tcpServer->listen(QHostAddress(QString::fromUtf8(config->readConfigString("HostAddress").c_str())), config->readConfigInt("DefaultListenPort")) ) {
+	int listenPort = config->readConfigInt("DefaultListenPort");
+	if (listenPort < 0 || listenPort > 65535) {
+		qDebug() << "Invalid listen port:" << listenPort;
+		return;
+	}
+	if (!tcpServer->listen(QHostAddress(QString::fromUtf8(config->readConfigString("HostAddress").c_str())), static_cast<quint16>(listenPort)) ) {
 		qDebug() << QString("Unable to start the server: %1.").arg(tcpServer->errorString());
 		return;
 	}
@@ -266,10 +271,14 @@ void CleanerServer::sendMessageToClient(ChatCleanerMessage &msg)
 		qDebug() << "Cannot send message: socket not connected";
 		return;
 	}
-	uint32_t packetSize = msg.ByteSizeLong();
+	uint32_t packetSize = static_cast<uint32_t>(msg.ByteSizeLong());
 	std::vector<google::protobuf::uint8> buf(packetSize + CLEANER_NET_HEADER_SIZE);
-	*reinterpret_cast<uint32_t*>(buf.data()) = qToBigEndian(packetSize);
+	uint32_t beSize = qToBigEndian(packetSize);
+	memcpy(buf.data(), &beSize, sizeof(uint32_t));
 	msg.SerializeWithCachedSizesToArray(buf.data() + CLEANER_NET_HEADER_SIZE);
-	tcpSocket->write(reinterpret_cast<const char*>(buf.data()), packetSize + CLEANER_NET_HEADER_SIZE);
+	qint64 written = tcpSocket->write(reinterpret_cast<const char*>(buf.data()), packetSize + CLEANER_NET_HEADER_SIZE);
+	if (written < 0) {
+		qDebug() << "Failed to write to socket:" << tcpSocket->errorString();
+	}
 }
 

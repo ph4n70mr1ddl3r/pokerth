@@ -2549,7 +2549,7 @@ raise = ((static_cast<int>(myOdds)-myNiveau[2])/2)*2*currentHand->getSmallBlind(
 			}
 			// All-in with few chips
 			if(myCash/(2*currentHand->getSmallBlind()) <= 6) {
-				raise = myCash;
+				bet = myCash;
 			}
 			// All-in on close bet
 			if(bet > (myCash*4.0)/5.0) {
@@ -3777,7 +3777,11 @@ void LocalPlayer::calcMyOdds()
 			}
 		}
 
-		myOdds = 100.0*(countMy*1.0)/(countAll*1.0);
+		if(countAll > 0) {
+			myOdds = 100.0*(countMy*1.0)/(countAll*1.0);
+		} else {
+			myOdds = 0;
+		}
 
 	}
 	break;
@@ -3829,7 +3833,11 @@ void LocalPlayer::calcMyOdds()
 			}
 		}
 
-		myOdds = 100.0*(countMy*1.0)/(countAll*1.0);
+		if(countAll > 0) {
+			myOdds = 100.0*(countMy*1.0)/(countAll*1.0);
+		} else {
+			myOdds = 0;
+		}
 
 	}
 	break;
@@ -4330,12 +4338,16 @@ void LocalPlayer::flopEngine3()
 		}
 	}
 
-	double percent = (countMy*1.0)/(countAll*1.0);
+	double percent = (countAll > 0) ? (countMy*1.0)/(countAll*1.0) : 0.0;
 	// 	cout << "Prozent: " << percent << endl;
 
 	// 	Bauchgefhl (zufï¿œlig)
 	int tempRand = 0;
-	Tools::GetRand(static_cast<int>(percent*10.)-2, static_cast<int>(percent*10.)+2, 1, &tempRand);
+	{
+		int lo = std::max(0, static_cast<int>(percent*10.)-2);
+		int hi = std::max(lo, static_cast<int>(percent*10.)+2);
+		Tools::GetRand(lo, hi, 1, &tempRand);
+	}
 
 	// bluff, checkbluff
 	int bluff = 0;

@@ -664,11 +664,11 @@ void GameTableStyleReader::readStyleFile(QString file)
 			}
 
 			if(ActionWinnerI18NPic == "") {
-				ActionWinnerI18NPic = getFallBackFieldContent(" ActionWinnerI18NPic", 1);
+				ActionWinnerI18NPic = getFallBackFieldContent("ActionWinnerI18NPic", 1);
 				leftItems << "ActionWinnerI18NPic";
 			} else if(ActionWinnerI18NPic != QString(currentDir+"nullptr") && !QFile(ActionWinnerI18NPic).exists()) {
 				itemPicsLeft << "ActionWinnerI18NPic = "+ActionWinnerI18NPic;
-				ActionWinnerI18NPic = getFallBackFieldContent(" ActionWinnerI18NPic", 1);
+				ActionWinnerI18NPic = getFallBackFieldContent("ActionWinnerI18NPic", 1);
 			}
 
 			// Other Pics

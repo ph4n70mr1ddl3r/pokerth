@@ -73,7 +73,7 @@ private:
 	};
 
 	struct ClientKickInfos {
-		size_t lastKickTimestamp = 0;
+		long lastKickTimestamp = 0;
 		int kickNumber = 0;
 	};
 

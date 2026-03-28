@@ -39,6 +39,9 @@ CapsFloodCheck::CapsFloodCheck()
 
 bool CapsFloodCheck::run(QString msg)
 {
+	if (capsNumberToTrigger < 1) {
+		return false;
+	}
 	msg = msg.simplified().remove(" ");
 	QRegularExpression e(QString("[A-Z]{%1,}").arg(capsNumberToTrigger));
 	if(e.isValid()) {

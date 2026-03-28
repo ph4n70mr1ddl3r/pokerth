@@ -118,8 +118,8 @@ public:
 	// TODO: last_games here
 	void AddPlayerLastGame(long last_games);
 	void SetPlayerLastGames(std::vector<long> last_games);
-	[[nodiscard]] std::vector<long> GetPlayerLastGames();
-	[[nodiscard]] bool IsPlayerAllowedToJoinCreateLimitRank(std::string num, std::string period);
+	[[nodiscard]] std::vector<long> GetPlayerLastGames() const;
+	[[nodiscard]] bool IsPlayerAllowedToJoinCreateLimitRank(const std::string &num, const std::string &period) const;
 
 	bool operator<(const PlayerData &other) const;
 

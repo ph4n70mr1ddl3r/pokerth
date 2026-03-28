@@ -93,6 +93,9 @@ ConvHelper::Utf8ToNative(const std::string &inStr)
 	char *inbuf = const_cast<char *>(inStr.data());
 #endif
 
+	if (insize == 0)
+		return retStr;
+
 	const size_t c_outsize = insize;
 	size_t outsize = c_outsize;
 	std::vector<char> outBuf(c_outsize);

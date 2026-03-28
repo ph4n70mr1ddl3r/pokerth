@@ -59,6 +59,15 @@ Thread::Thread()
 
 Thread::~Thread() noexcept
 {
+	if (IsRunning()) {
+		SignalTermination();
+		m_isTerminatedSemaphore.wait();
+		boost::mutex::scoped_lock lock(m_threadObjMutex);
+		if (m_threadObj) {
+			m_threadObj->join();
+			m_threadObj.reset();
+		}
+	}
 }
 
 void

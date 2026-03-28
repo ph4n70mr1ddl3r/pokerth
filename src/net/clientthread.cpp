@@ -1125,15 +1125,16 @@ void
 ClientThread::SetState(ClientState &newState)
 {
 	ClientState *oldState = nullptr;
+	ClientState *newStatePtr = &newState;
 	{
 		boost::mutex::scoped_lock lock(m_curStateMutex);
 		oldState = m_curState;
-		m_curState = &newState;
+		m_curState = newStatePtr;
 	}
 	if (oldState) {
 		oldState->Exit(shared_from_this());
 	}
-	m_curState->Enter(shared_from_this());
+	newStatePtr->Enter(shared_from_this());
 }
 
 boost::asio::steady_timer &

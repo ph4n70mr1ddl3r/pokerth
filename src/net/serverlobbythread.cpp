@@ -111,42 +111,42 @@ public:
 	InternalServerCallback(ServerLobbyThread &server) : m_server(server) {}
 	virtual ~InternalServerCallback() noexcept {}
 
-	virtual void CloseSession(boost::shared_ptr<SessionData> session)
+	void CloseSession(boost::shared_ptr<SessionData> session) override
 	{
 		m_server.CloseSession(session);
 	}
 
-	virtual void SessionError(boost::shared_ptr<SessionData> session, int errorCode)
+	void SessionError(boost::shared_ptr<SessionData> session, int errorCode) override
 	{
 		m_server.SessionError(session, errorCode);
 	}
 
-	virtual void SessionTimeoutWarning(boost::shared_ptr<SessionData> session, unsigned remainingSec)
+	void SessionTimeoutWarning(boost::shared_ptr<SessionData> session, unsigned remainingSec) override
 	{
 		m_server.SessionTimeoutWarning(session, remainingSec);
 	}
 
-	virtual void HandlePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet)
+	void HandlePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet) override
 	{
 		m_server.DispatchPacket(session, packet);
 	}
 
-	virtual void SignalChatBotMessage(const string &msg)
+	void SignalChatBotMessage(const string &msg) override
 	{
 		m_server.SendChatBotMsg(msg);
 	}
 
-	virtual void SignalChatBotMessage(unsigned gameId, const std::string &msg)
+	void SignalChatBotMessage(unsigned gameId, const std::string &msg) override
 	{
 		m_server.SendChatBotMsg(gameId, msg);
 	}
 
-	virtual void SignalKickPlayer(unsigned playerId)
+	void SignalKickPlayer(unsigned playerId) override
 	{
 		m_server.RemovePlayer(playerId, ERR_NET_PLAYER_KICKED);
 	}
 
-	virtual void SignalBanPlayer(unsigned playerId)
+	void SignalBanPlayer(unsigned playerId) override
 	{
 		string playerName(m_server.GetPlayerNameFromId(playerId));
 		if (!playerName.empty()) {
@@ -155,92 +155,92 @@ public:
 		}
 	}
 
-	virtual void SignalMutePlayer(unsigned playerId)
+	void SignalMutePlayer(unsigned playerId) override
 	{
 		m_server.MutePlayerInGame(playerId);
 	}
 
-	virtual void ConnectSuccess()
+	void ConnectSuccess() override
 	{
 		LOG_MSG("Successfully connected to database.");
 	}
 
-	virtual void ConnectFailed(string error)
+	void ConnectFailed(string error) override
 	{
 		LOG_ERROR("DB connect error: " << error);
 	}
 
-	virtual void QueryError(string error)
+	void QueryError(string error) override
 	{
 		LOG_ERROR("DB query error: " << error);
 	}
 
-	virtual void PlayerLoginSuccess(unsigned requestId, boost::shared_ptr<DBPlayerData> dbPlayerData)
+	void PlayerLoginSuccess(unsigned requestId, boost::shared_ptr<DBPlayerData> dbPlayerData) override
 	{
 		m_server.UserValid(requestId, *dbPlayerData);
 	}
 
-	virtual void PlayerLoginFailed(unsigned requestId)
+	void PlayerLoginFailed(unsigned requestId) override
 	{
 		m_server.UserInvalid(requestId);
 	}
 
-	virtual void PlayerLoginBlocked(unsigned requestId)
+	void PlayerLoginBlocked(unsigned requestId) override
 	{
 		m_server.UserBlocked(requestId);
 	}
 
-	virtual void AvatarIsBlacklisted(unsigned requestId)
+	void AvatarIsBlacklisted(unsigned requestId) override
 	{
 		m_server.AvatarBlacklisted(requestId);
 	}
 
-	virtual void AvatarIsOK(unsigned requestId)
+	void AvatarIsOK(unsigned requestId) override
 	{
 		m_server.AvatarOK(requestId);
 	}
 
-	virtual void CreateGameSuccess(unsigned /*requestId*/)
+	void CreateGameSuccess(unsigned /*requestId*/) override
 	{
 		// Nothing to do.
 	}
 
-	virtual void CreateGameFailed(unsigned requestId) override
+	void CreateGameFailed(unsigned requestId) override
 	{
 		LOG_ERROR("DB create game failed for request " << requestId);
 	}
 
-	virtual void ReportAvatarSuccess(unsigned requestId, unsigned replyId)
+	void ReportAvatarSuccess(unsigned requestId, unsigned replyId) override
 	{
 		m_server.SendReportAvatarResult(requestId, replyId, true);
 	}
 
-	virtual void ReportAvatarFailed(unsigned requestId, unsigned replyId)
+	void ReportAvatarFailed(unsigned requestId, unsigned replyId) override
 	{
 		m_server.SendReportAvatarResult(requestId, replyId, false);
 	}
 
-	virtual void ReportGameSuccess(unsigned requestId, unsigned replyId)
+	void ReportGameSuccess(unsigned requestId, unsigned replyId) override
 	{
 		m_server.SendReportGameResult(requestId, replyId, true);
 	}
 
-	virtual void ReportGameFailed(unsigned requestId, unsigned replyId)
+	void ReportGameFailed(unsigned requestId, unsigned replyId) override
 	{
 		m_server.SendReportGameResult(requestId, replyId, false);
 	}
 
-	virtual void PlayerAdminList(unsigned /*requestId*/, std::list<DB_id> adminList)
+	void PlayerAdminList(unsigned /*requestId*/, std::list<DB_id> adminList) override
 	{
 		m_server.GetBanManager().SetAdminPlayerIds(adminList);
 	}
 
-	virtual void BlockPlayerSuccess(unsigned requestId, unsigned replyId)
+	void BlockPlayerSuccess(unsigned requestId, unsigned replyId) override
 	{
 		m_server.SendAdminBanPlayerResult(requestId, replyId, true);
 	}
 
-	virtual void BlockPlayerFailed(unsigned requestId, unsigned replyId)
+	void BlockPlayerFailed(unsigned requestId, unsigned replyId) override
 	{
 		m_server.SendAdminBanPlayerResult(requestId, replyId, false);
 	}
@@ -426,10 +426,18 @@ ServerLobbyThread::CloseSession(boost::shared_ptr<SessionData> session)
 		UpdateStatisticsNumberOfPlayers();
 
 		// Ignore error when shutting down the socket.
-		boost::shared_ptr<boost::asio::ip::tcp::socket> sock = session->GetAsioSocket();
-		if (sock) {
-			boost::system::error_code ec;
-			sock->shutdown(boost::asio::ip::tcp::socket::shutdown_receive, ec);
+		if (session->IsSsl()) {
+			auto sslStream = session->GetSslStream();
+			if (sslStream) {
+				boost::system::error_code ec;
+				sslStream->lowest_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_receive, ec);
+			}
+		} else {
+			boost::shared_ptr<boost::asio::ip::tcp::socket> sock = session->GetAsioSocket();
+			if (sock) {
+				boost::system::error_code ec;
+				sock->shutdown(boost::asio::ip::tcp::socket::shutdown_receive, ec);
+			}
 		}
 		// Close this session after send.
 		GetSender().SetCloseAfterSend(session);

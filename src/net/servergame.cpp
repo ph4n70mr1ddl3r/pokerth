@@ -210,7 +210,12 @@ ServerGame::RemoveAllSessions()
 void
 ServerGame::TimerVoteKick(const boost::system::error_code &ec)
 {
-	if (!ec && m_curState != &ServerGameStateFinal::Instance()) {
+	bool isFinal = false;
+	{
+		boost::mutex::scoped_lock lock(m_curStateMutex);
+		isFinal = (m_curState == &ServerGameStateFinal::Instance());
+	}
+	if (!ec && !isFinal) {
 		// Check whether someone should be kicked, or whether a vote kick should be aborted.
 		// Only one vote kick can be active at a time.
 		unsigned petitionId = 0;
@@ -364,7 +369,7 @@ ServerGame::InternalStartGame()
 		{
 			boost::mutex::scoped_lock lock(m_gameMutex);
 			if (!factory) {
-				throw ServerException(__FILE__, __LINE__, "Factory must not be null when creating Game");
+				throw ServerException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
 			}
 			m_game.reset(new Game(&gui, factory, playerData, GetGameData(), GetStartData(), GetNextGameNum(), nullptr));
 		}

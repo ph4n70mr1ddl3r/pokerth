@@ -195,8 +195,7 @@ protected:
 	typedef std::map<std::string, int> NumJoinsPerPlayerMap;
 
 private:
-	ServerGame(const ServerGame &other);
-
+	ServerGame(const ServerGame &other) = delete;
 	SessionManager m_sessionManager;
 
 	// Lock ordering to prevent deadlocks:

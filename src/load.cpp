@@ -95,6 +95,10 @@ receiveMessage(NetSession *session)
 			// Free the partially decoded message (if applicable).
 			ASN_STRUCT_FREE(asn_DEF_PokerTHMessage, msg);
 			msg = nullptr;
+			if (session->recBufPos >= BUF_SIZE) {
+				cerr << "Receive buffer too small for message" << endl;
+				return nullptr;
+			}
 			session->recBufPos += session->socket.receive(boost::asio::buffer(session->recBuf.c_array() + session->recBufPos, BUF_SIZE - session->recBufPos));
 		}
 	} while (msg == nullptr);
@@ -234,11 +238,12 @@ main(int argc, char *argv[])
 				errorCode = gsasl_step(session->authSession, nullptr, 0, &tmpOut, &tmpOutSize);
 				if (errorCode == GSASL_NEEDS_MORE) {
 					nextGsaslMsg = string(tmpOut, tmpOutSize);
+					gsasl_free(tmpOut);
 				} else {
+					gsasl_free(tmpOut);
 					cout << "gsasl step 1 failed" << endl;
 					return 1;
 				}
-				gsasl_free(tmpOut);
 
 				OCTET_STRING_fromBuf(&authLogin->clientUserData,
 									 nextGsaslMsg.c_str(),
@@ -263,11 +268,12 @@ main(int argc, char *argv[])
 				errorCode = gsasl_step(session->authSession, challengeStr.c_str(), challengeStr.size(), &tmpOut, &tmpOutSize);
 				if (errorCode == GSASL_NEEDS_MORE) {
 					nextGsaslMsg = string(tmpOut, tmpOutSize);
+					gsasl_free(tmpOut);
 				} else {
+					gsasl_free(tmpOut);
 					cout << "gsasl step 2 failed" << endl;
 					return 1;
 				}
-				gsasl_free(tmpOut);
 				ASN_STRUCT_FREE(asn_DEF_PokerTHMessage, msg);
 				msg = static_cast<PokerTHMessage_t*>(calloc(1, sizeof(PokerTHMessage_t)));
 				msg->present = PokerTHMessage_PR_authMessage;

@@ -74,7 +74,8 @@ AvatarManager::AvatarManager(bool useExternalServer, const std::string &external
 AvatarManager::~AvatarManager() noexcept
 {
 	m_uploader->SignalTermination();
-	m_uploader->Join(UPLOADER_THREAD_TERMINATE_TIMEOUT);
+	if (!m_uploader->Join(UPLOADER_THREAD_TERMINATE_TIMEOUT))
+		m_uploader->Join(THREAD_WAIT_INFINITE);
 }
 
 bool
@@ -378,7 +379,9 @@ AvatarManager::StoreAvatarInCache(const MD5Buf &md5buf, AvatarFileType avatarFil
 					LOG_ERROR("Failed to resolve avatar file path: " << ec.message());
 					return retVal;
 				}
-				if (!starts_with(canonicalFilePath, canonicalCacheDir)) {
+				if (!(canonicalFilePath.string().size() > canonicalCacheDir.string().size()
+				  && canonicalFilePath.string().compare(0, canonicalCacheDir.string().size(), canonicalCacheDir.string()) == 0
+				  && canonicalFilePath.string()[canonicalCacheDir.string().size()] == '/')) {
 					LOG_ERROR("Path traversal attempt detected - file path outside cache directory");
 					return retVal;
 				}
@@ -470,7 +473,7 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 					path filePath(i->second);
 					string fileString(filePath.string());
 					// Only consider files which are definitely in the cache dir.
-					if (fileString.size() > cacheDir.size() && fileString.substr(0, cacheDir.size()) == cacheDir) {
+					if (fileString.size() > cacheDir.size() && fileString.compare(0, cacheDir.size(), cacheDir) == 0 && fileString[cacheDir.size()] == '/') {
 						// Only consider files with MD5 as file name.
 						MD5Buf tmpBuf;
 						if (exists(filePath) && tmpBuf.FromString(filePath.stem().string())) {

@@ -118,6 +118,12 @@ CleanerConfig::CleanerConfig()
 		mkdir(configFileName.c_str(), MODUS);
 		// 		mkdir(logDir.c_str(), MODUS);
 	}
+	else
+	{
+		qWarning("Neither XDG_CONFIG_HOME nor HOME is set. Using current directory.");
+		configFileName = "./.pokerth/";
+		mkdir(configFileName.c_str(), MODUS);
+	}
 
 #endif
 

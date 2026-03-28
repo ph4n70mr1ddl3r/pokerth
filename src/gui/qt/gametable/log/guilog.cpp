@@ -749,13 +749,14 @@ void guiLog::writeLog(string log_string, int modus)
 
 	switch(modus) {
 	case 1:
-		writeLogFileStream(log_string,myHtmlLogFile);
+		writeLogFileStream(log_string, myHtmlLogFile.get());
 		break;
 	case 2:
-		writeLogFileStream(log_string,myTxtLogFile);
+		writeLogFileStream(log_string, myTxtLogFile.get());
 		break;
 	case 3:
-		tb->append(log_string.c_str());
+		if (tb)
+			tb->append(log_string.c_str());
 		break;
 	default:
 		;

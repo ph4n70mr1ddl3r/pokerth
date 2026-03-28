@@ -64,7 +64,7 @@ private:
 	boost::timers::portable::second_timer timer;
 	struct TextFloodInfos {
 		int floodLevel;
-		size_t timeStamp;
+		long timeStamp;
 	};
 	QMap<unsigned, TextFloodInfos> msgTimesList;
 

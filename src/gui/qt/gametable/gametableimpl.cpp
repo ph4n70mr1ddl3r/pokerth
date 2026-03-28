@@ -479,8 +479,7 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 
 gameTableImpl::~gameTableImpl() noexcept
 {
-
-
+	delete mySoundEventHandler;
 }
 
 void gameTableImpl::callSettingsDialog()
@@ -2916,23 +2915,23 @@ void gameTableImpl::changePlayingMode()
 
 bool gameTableImpl::eventFilter(QObject *obj, QEvent *event)
 {
-	QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+	if (event->type() == QEvent::KeyPress) {
+		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
 
-	if (/*obj == lineEdit_ChatInput && lineEdit_ChatInput->text() != "" && */event->type() == QEvent::KeyPress && keyEvent->key() == Qt::Key_Tab) {
-		myChat->nickAutoCompletition();
-		return true;
-	} else if (event->type() == QEvent::KeyPress && keyEvent->key() == Qt::Key_Back) {
-		event->ignore();
-		closeGameTable();
-		return true;
+		if (/*obj == lineEdit_ChatInput && lineEdit_ChatInput->text() != "" && */keyEvent->key() == Qt::Key_Tab) {
+			myChat->nickAutoCompletition();
+			return true;
+		} else if (keyEvent->key() == Qt::Key_Back) {
+			event->ignore();
+			closeGameTable();
+			return true;
+		}
 	} else if (event->type() == QEvent::Close) {
 		event->ignore();
 		closeGameTable();
 		return true;
-	} else {
-		// pass the event on to the parent class
-		return QMainWindow::eventFilter(obj, event);
 	}
+	return QMainWindow::eventFilter(obj, event);
 }
 
 void gameTableImpl::switchChatWindow()

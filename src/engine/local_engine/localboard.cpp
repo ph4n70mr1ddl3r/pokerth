@@ -91,7 +91,7 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 	std::vector<unsigned> playerSets;
 	for(it=seatsList->begin(); it!=seatsList->end(); ++it) {
 		if((*it)->getMyActiveStatus()) {
-			playerSets.push_back( ( ((*it)->getMyRoundStartCash()) - ((*it)->getMyCash()) ) );
+			playerSets.push_back( static_cast<unsigned>(std::max(0, ((*it)->getMyRoundStartCash()) - ((*it)->getMyCash()))) );
 		} else {
 			playerSets.push_back(0);
 		}
@@ -295,7 +295,7 @@ void LocalBoard::determinePlayerNeedToShowCards()
 
 		std::list<std::pair<int,int> > level;
 
-		PlayerListConstIterator lastActionPlayerIt;
+		PlayerListConstIterator lastActionPlayerIt = activePlayerList->end();
 		PlayerListConstIterator it_c;
 
 		// search lastActionPlayer
@@ -306,13 +306,17 @@ void LocalBoard::determinePlayerNeedToShowCards()
 			}
 		}
 
-		if(it_c == activePlayerList->end()) {
+		if(lastActionPlayerIt == activePlayerList->end()) {
 			for(it_c = activePlayerList->begin(); it_c != activePlayerList->end(); ++it_c) {
 				if((*it_c)->getMyAction() != PLAYER_ACTION_FOLD) {
 					lastActionPlayerIt = it_c;
 					break;
 				}
 			}
+		}
+
+		if(lastActionPlayerIt == activePlayerList->end()) {
+			return;
 		}
 
 		// the player who has done the last action has to show his cards first

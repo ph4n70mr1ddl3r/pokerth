@@ -30,6 +30,7 @@
  *****************************************************************************/
 
 #include <dbofficial/compositeasyncdbquery.h>
+#include <stdexcept>
 
 
 using namespace std;
@@ -38,7 +39,8 @@ using namespace std;
 CompositeAsyncDBQuery::CompositeAsyncDBQuery(const AsyncQueryList &queries)
 	: m_list(queries), m_errorFlag(false), m_lastGameDBId(0)
 {
-	assert(!m_list.empty() && "CompositeAsyncDBQuery requires at least one query");
+	if (m_list.empty())
+		throw std::invalid_argument("CompositeAsyncDBQuery requires at least one query");
 	m_currentQuery = m_list.begin();
 }
 

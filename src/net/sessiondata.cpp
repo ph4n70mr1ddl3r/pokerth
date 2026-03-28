@@ -366,6 +366,10 @@ SessionData::ResetActivityTimer()
 	unsigned timeoutSec = m_activityTimeoutSec;
 	unsigned warningSec = m_activityWarningRemainingSec;
 	lock.unlock();
+	if (warningSec >= timeoutSec) {
+		LOG_ERROR("ResetActivityTimer: warningSec >= timeoutSec");
+		return;
+	}
 	m_activityTimeoutTimer.expires_after(seconds(timeoutSec - warningSec));
 	m_activityTimeoutTimer.async_wait(
 		boost::bind(
@@ -399,6 +403,10 @@ SessionData::StartTimerActivityTimeout(unsigned timeoutSec, unsigned warningRema
 	m_activityTimeoutSec = timeoutSec;
 	m_activityWarningRemainingSec = warningRemainingSec;
 
+	if (warningRemainingSec >= timeoutSec) {
+		LOG_ERROR("StartTimerActivityTimeout: warningRemainingSec >= timeoutSec");
+		return;
+	}
 	m_activityTimeoutTimer.expires_after(seconds(timeoutSec - warningRemainingSec));
 	m_activityTimeoutTimer.async_wait(
 		boost::bind(

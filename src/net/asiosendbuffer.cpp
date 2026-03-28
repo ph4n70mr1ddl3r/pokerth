@@ -130,7 +130,7 @@ AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::strea
                 *sslStream,
                 boost::asio::buffer(curWriteBuf.data(), curWriteBufUsed),
                 boost::bind(&AsioSendBuffer::HandleWriteSsl,
-                            this,
+                            shared_from_this(),
                             sslStream,
                             boost::asio::placeholders::error));
         } else if (closeAfterSend) {

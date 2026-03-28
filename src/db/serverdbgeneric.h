@@ -57,7 +57,7 @@ public:
 
 	virtual void AsyncCreateGame(unsigned requestId, const std::string &gameName) override;
 	virtual void SetGamePlayerPlace(unsigned requestId, DB_id playerId, unsigned place) override;
-	virtual void SetPlayerLastGames(unsigned requestId, DB_id playerId, std::vector<long> last_games, std::string playerIp) override;
+	virtual void SetPlayerLastGames(unsigned requestId, DB_id playerId, const std::vector<long> &last_games, const std::string &playerIp) override;
 	virtual void EndGame(unsigned requestId) override;
 
 	virtual void AsyncReportAvatar(unsigned requestId, unsigned replyId, DB_id reportedPlayerId, const std::string &avatarHash, const std::string &avatarType, DB_id *byPlayerId) override;

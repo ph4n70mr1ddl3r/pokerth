@@ -243,8 +243,9 @@ PlayerData::operator<(const PlayerData &other) const
 {
 	if (this == &other)
 		return false;
-	boost::mutex::scoped_lock lock(m_dataMutex);
-	boost::mutex::scoped_lock otherLock(other.m_dataMutex);
+	boost::lock(m_dataMutex, other.m_dataMutex);
+	boost::mutex::scoped_lock lock(m_dataMutex, boost::adopt_lock);
+	boost::mutex::scoped_lock otherLock(other.m_dataMutex, boost::adopt_lock);
 	return m_number < other.m_number;
 }
 
@@ -269,14 +270,14 @@ PlayerData::AddPlayerLastGame(long lastGame)
 }
 
 std::vector<long>
-PlayerData::GetPlayerLastGames()
+PlayerData::GetPlayerLastGames() const
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);
 	return m_last_games;
 }
 
 bool
-PlayerData::IsPlayerAllowedToJoinCreateLimitRank(std::string num, std::string period)
+PlayerData::IsPlayerAllowedToJoinCreateLimitRank(const std::string &num, const std::string &period) const
 {
 	bool retVal = false;
 	boost::mutex::scoped_lock lock(m_dataMutex);

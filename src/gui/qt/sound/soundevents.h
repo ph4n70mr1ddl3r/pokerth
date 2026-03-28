@@ -53,9 +53,10 @@ public:
 	void reInitSoundEngine();
 
 protected:
-	// Prevent copy construction.
-	// This is only a declaration.
-	SoundEvents(const SoundEvents &);
+	SoundEvents(const SoundEvents &) = delete;
+	SoundEvents &operator=(const SoundEvents &) = delete;
+	SoundEvents(SoundEvents &&) = delete;
+	SoundEvents &operator=(SoundEvents &&) = delete;
 
 private:
 #ifdef ANDROID

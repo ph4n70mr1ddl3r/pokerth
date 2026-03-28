@@ -241,21 +241,57 @@ namespace {
 	bool IsValidIpAddress(const std::string& ip) {
 		if (ip.empty() || ip.length() > 45)
 			return false;
-		int dotCount = 0;
-		int colonCount = 0;
+
+		bool hasDot = false, hasColon = false;
 		for (char c : ip) {
-			if (c == '.') dotCount++;
-			else if (c == ':') colonCount++;
+			if (c == '.') hasDot = true;
+			else if (c == ':') hasColon = true;
 			else if (!std::isalnum(static_cast<unsigned char>(c)) && c != '%')
 				return false;
 		}
-		if (colonCount > 0 && dotCount > 0) return colonCount >= 2 && dotCount <= 3;
-		return (dotCount == 3 && colonCount == 0) || (colonCount >= 2 && dotCount == 0);
+
+		if (hasColon && !hasDot) {
+			int colonCount = 0;
+			for (char c : ip) if (c == ':') colonCount++;
+			return colonCount >= 2;
+		}
+
+		if (hasDot && !hasColon) {
+			int dotCount = 0;
+			for (char c : ip) if (c == '.') dotCount++;
+			if (dotCount != 3) return false;
+			std::istringstream iss(ip);
+			std::string octet;
+			while (std::getline(iss, octet, '.')) {
+				if (octet.empty() || octet.size() > 3) return false;
+				for (char c : octet) {
+					if (!std::isdigit(static_cast<unsigned char>(c))) return false;
+				}
+				try {
+					int val = std::stoi(octet);
+					if (val < 0 || val > 255) return false;
+				} catch (...) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		if (hasColon && hasDot) {
+			int colonCount = 0, dotCount = 0;
+			for (char c : ip) {
+				if (c == ':') colonCount++;
+				else if (c == '.') dotCount++;
+			}
+			return colonCount >= 2 && dotCount == 3;
+		}
+
+		return false;
 	}
 }
 
 void
-ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, std::vector<long> last_games, std::string playerIp)
+ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, const std::vector<long> &last_games, const std::string &playerIp)
 {
 	LOG_MSG("ServerDBThread::SetPlayerLastGames() entered.");
 

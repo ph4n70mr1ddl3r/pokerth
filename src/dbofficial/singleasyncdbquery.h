@@ -46,7 +46,7 @@ public:
 	virtual void GetParams(std::list<std::string> &params) const override;
 	virtual void SetParams(const std::list<std::string> &params) override;
 
-	virtual bool Next() noexcept
+	virtual bool Next() noexcept override
 	{
 		return false;
 	}

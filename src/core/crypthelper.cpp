@@ -346,8 +346,11 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 
 			if (success && outCipherSize) {
 				// Since padding is off, this will not modify the cipher. However, parameters need to be set.
-				EVP_EncryptFinal(encryptCtx, outCipher.data(), &outCipherSize);
-				retVal = true;
+				int finalSuccess = EVP_EncryptFinal(encryptCtx, outCipher.data(), &outCipherSize);
+				if (finalSuccess)
+					retVal = true;
+				else
+					outCipher.clear();
 			}
 		} else
 			outCipher.clear();
@@ -381,7 +384,7 @@ bool
 CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const unsigned char *cipher, unsigned cipherSize, string &outPlain)
 {
 	bool retVal = false;
-	if (keySize && cipherSize) {
+	if (keySize >= AES_BLOCK_SIZE && cipherSize && (cipherSize % AES_BLOCK_SIZE == 0)) {
 		unsigned char key[AES_BLOCK_SIZE];
 		unsigned char iv[AES_BLOCK_SIZE];
 		BytesToKey(keyData, keySize, key, iv);
@@ -411,8 +414,11 @@ CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const
 
 			if (success && outPlainSize) {
 				// Since padding is off, this will not modify the plain text. However, parameters need to be set.
-				EVP_DecryptFinal(decryptCtx, reinterpret_cast<unsigned char*>(&outPlain[0]), &outPlainSize);
-				retVal = true;
+				int finalSuccess = EVP_DecryptFinal(decryptCtx, reinterpret_cast<unsigned char*>(&outPlain[0]), &outPlainSize);
+				if (finalSuccess)
+					retVal = true;
+				else
+					outPlain.clear();
 			}
 		} else
 			outPlain.clear();
@@ -456,10 +462,7 @@ CryptHelper::SecureClearMemory(void *ptr, size_t len)
 #ifdef HAVE_OPENSSL
 	OPENSSL_cleanse(ptr, len);
 #else
-	volatile unsigned char *volatilePtr = static_cast<volatile unsigned char *>(ptr);
-	for (size_t i = 0; i < len; ++i) {
-		volatilePtr[i] = 0;
-	}
+	memset_explicit(ptr, 0, len);
 	gcry_fast_random_poll();
 #endif
 }

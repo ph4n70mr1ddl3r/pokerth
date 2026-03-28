@@ -218,7 +218,7 @@ int CardsValue::holeCardsClass(int one, int two)
 	}
 	}
 
-
+	return 0;
 }
 
 int CardsValue::holeCardsToIntCode(int* cards)

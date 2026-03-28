@@ -128,7 +128,7 @@ private:
 
 // Simple quote manipulator used in original code
 struct Quote {};
-static Quote quote;
+inline static Quote quote;
 
 // Query builder / executor
 class Query {
@@ -189,12 +189,14 @@ public:
 
     bool connect(const char *dbName, const char *host, const char *user, const char *pwd) {
         std::lock_guard<std::mutex> l(m_mutex);
-        if (m_db.isValid() && m_db.isOpen()) {
-            m_db.close();
+        if (m_db.isValid()) {
+            if (m_db.isOpen())
+                m_db.close();
             QString oldName = m_connName;
             m_connName.clear();
             m_db = QSqlDatabase();
-            QSqlDatabase::removeDatabase(oldName);
+            if (!oldName.isEmpty())
+                QSqlDatabase::removeDatabase(oldName);
         }
         static std::atomic<int> instance{0};
         m_connName = QString("pokerth_dbofficial_%1").arg(++instance);
