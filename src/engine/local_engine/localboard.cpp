@@ -262,7 +262,17 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 
 	// ERROR-Outputs
 
-	if(pot!=0) LOG_ERROR(__FILE__ << " (" << __LINE__ << "): distributePot-ERROR: Pot = " << pot);
+	if(pot!=0) {
+		LOG_ERROR(__FILE__ << " (" << __LINE__ << "): distributePot-ERROR: Pot = " << pot);
+		if (!winners.empty()) {
+			auto it = getSeatIt(winners.front());
+			if (it != seatsList->end()) {
+				(*it)->setMyCash((*it)->getMyCash() + pot);
+				(*it)->setLastMoneyWon((*it)->getLastMoneyWon() + pot);
+			}
+		}
+		pot = 0;
+	}
 
 	/*int sum = 0;
 
