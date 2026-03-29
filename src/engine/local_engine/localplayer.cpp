@@ -982,7 +982,11 @@ void LocalPlayer::action()
 	switch(currentHand->getCurrentRound()) {
 	case 0: {
 
-		if(myConfig->readConfigInt("EngineVersion")) preflopEngine3();
+		if(myConfig->readConfigInt("EngineVersion")) {
+			int oldSet = mySet;
+			preflopEngine3();
+			myLastRelativeSet = mySet - oldSet;
+		}
 		else preflopEngine();
 
 		currentHand->getBoard()->collectSets();
@@ -992,7 +996,11 @@ void LocalPlayer::action()
 	break;
 	case 1: {
 
-		if(myConfig->readConfigInt("EngineVersion")) flopEngine3();
+		if(myConfig->readConfigInt("EngineVersion")) {
+			int oldSet = mySet;
+			flopEngine3();
+			myLastRelativeSet = mySet - oldSet;
+		}
 		else flopEngine();
 
 		currentHand->getBoard()->collectSets();
@@ -1002,7 +1010,11 @@ void LocalPlayer::action()
 	break;
 	case 2: {
 
-		if(myConfig->readConfigInt("EngineVersion")) turnEngine3();
+		if(myConfig->readConfigInt("EngineVersion")) {
+			int oldSet = mySet;
+			turnEngine3();
+			myLastRelativeSet = mySet - oldSet;
+		}
 		else turnEngine();
 
 		currentHand->getBoard()->collectSets();
@@ -1012,7 +1024,11 @@ void LocalPlayer::action()
 	break;
 	case 3: {
 
-		if(myConfig->readConfigInt("EngineVersion")) riverEngine3();
+		if(myConfig->readConfigInt("EngineVersion")) {
+			int oldSet = mySet;
+			riverEngine3();
+			myLastRelativeSet = mySet - oldSet;
+		}
 		else riverEngine();
 
 		currentHand->getBoard()->collectSets();
@@ -3027,7 +3043,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 	int temp = 0;
 	int temp1 = 0;
 	int temp2 = 0;
-	int temp2Array[2];
+	int temp2Array[2] = {0, 0};
 	int tempValue = -1;
 	bool breakLoop = false;
 
@@ -3163,8 +3179,8 @@ int LocalPlayer::flopCardsValue(int* cards)
 									if(array[0][1] < array[j1+j2][1]) temp1++;
 								}
 							}
-							if(temp1 >= 2) temp1 = 1;
 							if(temp1 == 4) temp1 = 2;
+							else if(temp1 >= 2) temp1 = 1;
 
 							// 3.Stelle
 							for(j2=0; j2<4; j2++) {
@@ -4506,12 +4522,16 @@ void LocalPlayer::turnEngine3()
 		}
 	}
 
-	double percent = (countMy*1.0)/(countAll*1.0);
+	double percent = (countAll > 0) ? (countMy*1.0)/(countAll*1.0) : 0.0;
 	// 	cout << "Prozent: " << percent << endl;
 
 	// 	Bauchgefhl (zufÃ¯Â¿Ålig)
 	int tempRand = 0;
-	Tools::GetRand(static_cast<int>(percent*10.)-2, static_cast<int>(percent*10.)+2, 1, &tempRand);
+	{
+		int lo = std::max(0, static_cast<int>(percent*10.)-2);
+		int hi = std::max(lo, static_cast<int>(percent*10.)+2);
+		Tools::GetRand(lo, hi, 1, &tempRand);
+	}
 
 	// bluff, checkbluff
 	int bluff = 0;
@@ -4651,9 +4671,9 @@ void LocalPlayer::riverEngine3()
 	int countMy = 0;
 
 	for(i=0; i<49; i++) {
-		if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2]) {
+		if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2] && i != tempBoardCardsArray[3] && i != tempBoardCardsArray[4]) {
 			for(j=i+1; j<50; j++) {
-				if(j != myCards[0] && j != myCards[1] && j != tempBoardCardsArray[0] && j != tempBoardCardsArray[1] && j != tempBoardCardsArray[2]) {
+				if(j != myCards[0] && j != myCards[1] && j != tempBoardCardsArray[0] && j != tempBoardCardsArray[1] && j != tempBoardCardsArray[2] && j != tempBoardCardsArray[3] && j != tempBoardCardsArray[4]) {
 
 					countAll++;
 
@@ -4668,12 +4688,16 @@ void LocalPlayer::riverEngine3()
 		}
 	}
 
-	double percent = (countMy*1.0)/(countAll*1.0);
+	double percent = (countAll > 0) ? (countMy*1.0)/(countAll*1.0) : 0.0;
 	// 	cout << "Prozent: " << percent << endl;
 
 	// 	Bauchgefhl (zufÃ¯Â¿Ålig)
 	int tempRand = 0;
-	Tools::GetRand(static_cast<int>(percent*10.)-2, static_cast<int>(percent*10.)+2, 1, &tempRand);
+	{
+		int lo = std::max(0, static_cast<int>(percent*10.)-2);
+		int hi = std::max(lo, static_cast<int>(percent*10.)+2);
+		Tools::GetRand(lo, hi, 1, &tempRand);
+	}
 
 	// bluff, checkbluff
 	int bluff = 0;

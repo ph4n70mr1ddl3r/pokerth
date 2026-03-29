@@ -300,12 +300,13 @@ void Game::raiseBlinds()
 		}
 	}
 	if (raiseBlinds) {
-		int maxBlind = startQuantityPlayers * startCash / 2;
+		long long maxBlind = static_cast<long long>(startQuantityPlayers) * startCash / 2;
+		if (maxBlind > INT_MAX) maxBlind = INT_MAX;
 		if (myGameData.raiseMode == DOUBLE_BLINDS) {
 			if (currentSmallBlind <= maxBlind / 2) {
 				currentSmallBlind *= 2;
 			} else {
-				currentSmallBlind = maxBlind;
+				currentSmallBlind = static_cast<int>(maxBlind);
 			}
 		} else {
 			if(!blindsList.empty()) {
@@ -316,19 +317,19 @@ void Game::raiseBlinds()
 					if (currentSmallBlind <= maxBlind / 2) {
 						currentSmallBlind *= 2;
 					} else {
-						currentSmallBlind = maxBlind;
+						currentSmallBlind = static_cast<int>(maxBlind);
 					}
 				} else {
 					if(myGameData.afterManualBlindsMode == AFTERMB_RAISE_ABOUT) {
 						if (currentSmallBlind <= maxBlind - myGameData.afterMBAlwaysRaiseValue) {
 							currentSmallBlind += myGameData.afterMBAlwaysRaiseValue;
 						} else {
-							currentSmallBlind = maxBlind;
+							currentSmallBlind = static_cast<int>(maxBlind);
 						}
 					}
 				}
 			}
 		}
-		currentSmallBlind = min(currentSmallBlind, maxBlind);
+		currentSmallBlind = static_cast<int>(std::min(static_cast<long long>(currentSmallBlind), maxBlind));
 	}
 }
