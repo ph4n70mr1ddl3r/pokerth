@@ -1086,6 +1086,9 @@ ServerLobbyThread::HandleNetPacketInit(boost::shared_ptr<SessionData> session, c
         if (initMessage.has_clientuserdata()) {
             session->AuthSetPassword(initMessage.clientuserdata());
         }
+        if (initMessage.has_avatarhash() && initMessage.avatarhash().size() == MD5_DATA_SIZE) {
+            memcpy(avatarMD5.GetData(), initMessage.avatarhash().data(), MD5_DATA_SIZE);
+        }
     } else {
         SessionError(session, ERR_NET_INVALID_PASSWORD);
         return;
@@ -2208,15 +2211,15 @@ void
 ServerLobbyThread::InternalRemoveGame(boost::shared_ptr<ServerGame> game)
 {
 	{
+		boost::mutex::scoped_lock lock(m_gameMapMutex);
+		m_gameMap.erase(game->GetId());
+	}
+	{
 		boost::mutex::scoped_lock lock(m_statMutex);
 		if (m_statData.numberOfGamesOpen) {
 			--m_statData.numberOfGamesOpen;
 			m_statDataChanged = true;
 		}
-	}
-	{
-		boost::mutex::scoped_lock lock(m_gameMapMutex);
-		m_gameMap.erase(game->GetId());
 	}
 	game->ResetComputerPlayerList();
 	game->RemoveAllSessions();

@@ -942,6 +942,7 @@ ServerGame::RemovePlayerData(boost::shared_ptr<PlayerData> player, int reason)
 	if (player->IsGameAdmin()) {
 		// Find new admin for the game
 		PlayerDataList playerList(GetSessionManager().GetPlayerDataList());
+		playerList.remove_if([&player](const boost::shared_ptr<PlayerData> &p) { return p->GetUniqueId() == player->GetUniqueId(); });
 		if (!playerList.empty()) {
 			boost::shared_ptr<PlayerData> newAdmin = playerList.front();
 			SetAdminPlayerId(newAdmin->GetUniqueId());
