@@ -46,7 +46,7 @@ void MyCashLabel::setText ( const QString &t, bool trans)
 {
 	QColor transColor;
 #if QT_VERSION >= 0x060600
-	transColor.fromString("#"+myW->getMyGameTableStyle()->getPlayerCashTextColor());
+	transColor = QColor::fromString("#"+myW->getMyGameTableStyle()->getPlayerCashTextColor());
 #else
 	transColor.setNamedColor("#"+myW->getMyGameTableStyle()->getPlayerCashTextColor());
 #endif

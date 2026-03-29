@@ -64,11 +64,15 @@ void
 AsioSendBuffer::HandleWrite(boost::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code &error)
 {
 	if (!error) {
-		// Successfully sent the data.
 		boost::mutex::scoped_lock lock(dataMutex);
 		curWriteBufUsed = 0;
-		// Send more data, if available.
 		AsyncSendNextPacket(socket);
+	} else {
+		LOG_ERROR("Async TCP write failed: " << error.message());
+		boost::mutex::scoped_lock lock(dataMutex);
+		curWriteBufUsed = 0;
+		boost::system::error_code ec;
+		socket->close(ec);
 	}
 }
 
@@ -79,8 +83,13 @@ AsioSendBuffer::HandleWriteSsl(boost::shared_ptr<boost::asio::ssl::stream<boost:
     if (!error) {
         boost::mutex::scoped_lock lock(dataMutex);
         curWriteBufUsed = 0;
-        // Weiter senden (ruft die passende SSL-Send-Funktion)
         AsyncSendNextPacketSsl(sslStream);
+    } else {
+        LOG_ERROR("Async SSL write failed: " << error.message());
+        boost::mutex::scoped_lock lock(dataMutex);
+        curWriteBufUsed = 0;
+        boost::system::error_code ec;
+        sslStream->lowest_layer().close(ec);
     }
 }
 

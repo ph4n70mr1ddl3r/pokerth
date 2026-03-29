@@ -754,7 +754,9 @@ void settingsDialogImpl::isAccepted()
 
 
 	//write buffer to disc
-	myConfig->writeBuffer();
+	if(settingsCorrect) {
+		myConfig->writeBuffer();
+	}
 
 	if(languageIsChanged) {
 		MyMessageBox::information(this, tr("Language Changed"),
@@ -762,7 +764,6 @@ void settingsDialogImpl::isAccepted()
 								  QMessageBox::Ok);
 	}
 
-	//Wenn alles richtig eingegeben wurde --> Dialog schließen
 	if(settingsCorrect) {
 		this->accept();
 	}

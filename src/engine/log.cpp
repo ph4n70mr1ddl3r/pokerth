@@ -62,7 +62,8 @@ Log::init()
             DIR *logDir;
             logDir = opendir((myConfig->readConfigString("LogDir")).c_str());
             bool dirExists = logDir != nullptr;
-            closedir(logDir);
+            if (logDir)
+                closedir(logDir);
 
             // check if logging path exist
             if(myConfig->readConfigString("LogDir") != "" && dirExists) {

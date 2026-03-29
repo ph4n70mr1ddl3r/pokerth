@@ -47,6 +47,11 @@ MyActionButton::~MyActionButton() noexcept
 void MyActionButton::paintEvent(QPaintEvent * event)
 {
 
+	if (!myStyle) {
+		QPushButton::paintEvent(event);
+		return;
+	}
+
 	QPushButton::paintEvent(event);
 
 	QPainter painter(this);

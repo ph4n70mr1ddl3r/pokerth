@@ -171,23 +171,21 @@ void internetGameLoginDialogImpl::okButtonCheck()
 bool internetGameLoginDialogImpl::eventFilter(QObject *obj, QEvent *event)
 {
 #ifdef ANDROID
-	QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+	if (event->type() == QEvent::KeyPress) {
+		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
 
-	//androi changes for return key behavior (hopefully useless from necessitas beta2)
-	if (event->type() == QEvent::KeyPress && keyEvent->key() == Qt::Key_Return) {
-		if(lineEdit_username->hasFocus()) {
-			lineEdit_password->setFocus();
+		if (keyEvent->key() == Qt::Key_Return) {
+			if(lineEdit_username->hasFocus()) {
+				lineEdit_password->setFocus();
+			}
+			if(lineEdit_password->hasFocus()) {
+				QTimer::singleShot(1000, this, SLOT(clickLoginButton()));
+			}
+			event->ignore();
+			return false;
 		}
-		if(lineEdit_password->hasFocus()) {
-			QTimer::singleShot(1000, this, SLOT(clickLoginButton()));
-		}
-		event->ignore();
-		return false;
-	} else {
-		// pass the event on to the parent class
-		return QDialog::eventFilter(obj, event);
 	}
 #else
-	return QDialog::eventFilter(obj, event);
 #endif
+	return QDialog::eventFilter(obj, event);
 }

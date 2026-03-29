@@ -85,12 +85,11 @@ SenderHelper::Send(boost::shared_ptr<SessionData> session, const NetPacketList &
 void
 SenderHelper::SetCloseAfterSend(boost::shared_ptr<SessionData> session)
 {
+	if (!session)
+		return;
 	SendBuffer &tmpBuffer = session->GetSendBuffer();
-	// Add packet to specific queue.
 	boost::mutex::scoped_lock lock(tmpBuffer.dataMutex);
-	// Mark that the socket should be closed after the send operation.
 	tmpBuffer.SetCloseAfterSend();
-	// Activate async send, if needed.
 	tmpBuffer.AsyncSendNextPacket(session);
 }
 

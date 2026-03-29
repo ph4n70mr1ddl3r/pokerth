@@ -282,7 +282,7 @@ ServerGame::TimerVoteKick(const boost::system::error_code &ec)
 				abortPetition = true;
 			}
 			if (abortPetition) {
-				boost::shared_ptr<NetPacket> packet(new NetPacket);
+				auto packet = boost::make_shared<NetPacket>();
 				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_EndKickPetitionMessage);
 				EndKickPetitionMessage *netEndPetition = packet->GetMsg()->mutable_endkickpetitionmessage();
 				netEndPetition->set_gameid(GetId());
@@ -583,7 +583,7 @@ ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned 
 
 				lock.unlock();
 
-				boost::shared_ptr<NetPacket> packet(new NetPacket);
+				auto packet = boost::make_shared<NetPacket>();
 				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_StartKickPetitionMessage);
 				StartKickPetitionMessage *netStartPetition = packet->GetMsg()->mutable_startkickpetitionmessage();
 				netStartPetition->set_gameid(GetId());
@@ -607,7 +607,7 @@ ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned 
 void
 ServerGame::InternalDenyAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned playerIdWho, DenyKickPlayerReason reason)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AskKickDeniedMessage);
 	AskKickDeniedMessage *netKickDenied = packet->GetMsg()->mutable_askkickdeniedmessage();
 	netKickDenied->set_gameid(GetId());
@@ -637,7 +637,7 @@ ServerGame::InternalVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned pet
 				int numVotesNeeded = m_voteKickData->numVotesToKick;
 				lock.unlock();
 				// Send update notification.
-				boost::shared_ptr<NetPacket> packet(new NetPacket);
+				auto packet = boost::make_shared<NetPacket>();
 				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_KickPetitionUpdateMessage);
 				KickPetitionUpdateMessage *netKickUpdate = packet->GetMsg()->mutable_kickpetitionupdatemessage();
 				netKickUpdate->set_gameid(GetId());
@@ -657,7 +657,7 @@ ServerGame::InternalVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned pet
 void
 ServerGame::InternalDenyVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned petitionId, DenyVoteReason reason)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_VoteKickReplyMessage);
 	VoteKickReplyMessage *netVoteReply = packet->GetMsg()->mutable_votekickreplymessage();
 	netVoteReply->set_gameid(GetId());
@@ -885,7 +885,8 @@ ServerGame::RemoveComputerPlayer(unsigned playerId)
 			++i;
 		}
 	}
-	GetLobbyThread().RemoveComputerPlayer(tmpPlayer);
+	if (tmpPlayer)
+		GetLobbyThread().RemoveComputerPlayer(tmpPlayer);
 	return tmpPlayer;
 }
 
@@ -948,7 +949,7 @@ ServerGame::RemovePlayerData(boost::shared_ptr<PlayerData> player, int reason)
 			// Notify game state on admin change
 			GetState().NotifyGameAdminChanged(shared_from_this());
 			// Send "Game Admin Changed" to clients.
-			boost::shared_ptr<NetPacket> adminChanged(new NetPacket);
+			auto adminChanged = boost::make_shared<NetPacket>();
 			adminChanged->GetMsg()->set_messagetype(PokerTHMessage::Type_GameAdminChangedMessage);
 			GameAdminChangedMessage *netGameAdmin = adminChanged->GetMsg()->mutable_gameadminchangedmessage();
 			netGameAdmin->set_gameid(GetId());
@@ -962,7 +963,7 @@ ServerGame::RemovePlayerData(boost::shared_ptr<PlayerData> player, int reason)
 	player->SetGameAdmin(false);
 
 	// Send "Player Left" to clients.
-	boost::shared_ptr<NetPacket> thisPlayerLeft(new NetPacket);
+	auto thisPlayerLeft = boost::make_shared<NetPacket>();
 	GamePlayerLeftMessage::GamePlayerLeftReason netReason = GamePlayerLeftMessage::leftError;
 	switch (reason) {
 	case NTF_NET_REMOVED_ON_REQUEST :

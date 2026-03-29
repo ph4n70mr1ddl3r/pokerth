@@ -135,12 +135,14 @@ SessionData::SetState(SessionData::State state)
 boost::shared_ptr<boost::asio::ip::tcp::socket>
 SessionData::GetAsioSocket()
 {
+	boost::mutex::scoped_lock lock(m_dataMutex);
 	return m_socket;
 }
 
 boost::shared_ptr<WebSocketData>
 SessionData::GetWebData()
 {
+	boost::mutex::scoped_lock lock(m_dataMutex);
 	return m_webData;
 }
 
@@ -262,9 +264,14 @@ void
 SessionData::TimerActivityWarning(const boost::system::error_code &ec)
 {
 	if (!ec) {
-		m_callback.SessionTimeoutWarning(shared_from_this(), m_activityWarningRemainingSec);
+		unsigned warningSec = 0;
+		{
+			boost::mutex::scoped_lock lock(m_dataMutex);
+			warningSec = m_activityWarningRemainingSec;
+		}
+		m_callback.SessionTimeoutWarning(shared_from_this(), warningSec);
 
-		m_activityTimeoutTimer.expires_after(seconds(m_activityWarningRemainingSec));
+		m_activityTimeoutTimer.expires_after(seconds(warningSec));
 		m_activityTimeoutTimer.async_wait(
 			boost::bind(
 				&SessionData::TimerSessionTimeout, shared_from_this(), boost::asio::placeholders::error));

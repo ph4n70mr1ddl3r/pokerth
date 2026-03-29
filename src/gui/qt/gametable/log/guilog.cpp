@@ -1085,7 +1085,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				sql = "SELECT * FROM Hand WHERE UniqueGameID=";
 				sql+= std::string(uniqueGameID);
 				sql+= " AND HandID=";
-				sql+= std::string(results.result_Hand_ID[hand_ctr]);
+				sql+= results.result_Hand_ID[hand_ctr] ? results.result_Hand_ID[hand_ctr] : "0";
 				if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand,&nRow_Hand,&nCol_Hand,&errmsg) != SQLITE_OK) {
 					cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
 					cleanUp(results, mySqliteLogDb);

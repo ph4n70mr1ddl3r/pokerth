@@ -51,7 +51,7 @@ void MyNameLabel::setText ( const QString &t, bool trans, bool computerplayer)
 	QString text;
 	QColor transColor;
 #if QT_VERSION >= 0x060600
-	transColor.fromString("#"+myW->getMyGameTableStyle()->getPlayerNickTextColor());
+	transColor = QColor::fromString("#"+myW->getMyGameTableStyle()->getPlayerNickTextColor());
 #else
 	transColor.setNamedColor("#"+myW->getMyGameTableStyle()->getPlayerNickTextColor());
 #endif
