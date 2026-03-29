@@ -659,7 +659,10 @@ ClientThread::InitGame()
 
 		MapPlayerDataList();
 		m_startData.numberOfPlayers = static_cast<int>(GetPlayerDataList().size());
-		m_game.reset(new Game(&m_gui, factory, GetPlayerDataList(), GetGameData(), GetStartData(), m_curGameNum++, m_clientLog.get()));
+		{
+			boost::mutex::scoped_lock lock(m_gameMutex);
+			m_game.reset(new Game(&m_gui, factory, GetPlayerDataList(), GetGameData(), GetStartData(), m_curGameNum++, m_clientLog.get()));
+		}
 		// Initialize Minimum GUI speed.
 		int minimumGuiSpeed = 1;
 		if(GetGameData().delayBetweenHandsSec < 11) {
@@ -791,11 +794,11 @@ ClientThread::SetPlayerInfo(unsigned id, const PlayerInfo &info)
 			}
 		}
 	}
-	if (GetGame()) {
-		boost::shared_ptr<PlayerInterface> clientPlayer(GetGame()->getPlayerByUniqueId(id));
+	auto game = GetGame();
+	if (game) {
+		boost::shared_ptr<PlayerInterface> clientPlayer(game->getPlayerByUniqueId(id));
 		if (clientPlayer)
 			clientPlayer->setMyName(info.playerName);
-		// Skip avatar here, the game is already running.
 	}
 
 	{
@@ -839,7 +842,8 @@ ClientThread::SetNewGameAdmin(unsigned id)
 	if (playerData.get()) {
 		playerData->SetGameAdmin(true);
 		GetCallback().SignalNetClientNewGameAdmin(id, playerData->GetName());
-		if(m_game) {
+		auto game = GetGame();
+		if(game) {
 			m_clientLog->logPlayerAction(playerData->GetName(),LOG_ACTION_ADMIN);
 		}
 	}
@@ -1218,6 +1222,7 @@ ClientThread::SetGuiPlayerId(unsigned guiPlayerId)
 boost::shared_ptr<Game>
 ClientThread::GetGame()
 {
+	boost::mutex::scoped_lock lock(m_gameMutex);
 	return m_game;
 }
 
@@ -1295,16 +1300,16 @@ ClientThread::RemovePlayerData(unsigned playerId, int removeReason)
 	}
 
 	if (tmpData.get()) {
-		// Remove player from gui.
-		if (GetGame()) {
-			boost::shared_ptr<PlayerInterface> tmpPlayer(GetGame()->getPlayerByUniqueId(tmpData->GetUniqueId()));
+		auto game = GetGame();
+		if (game) {
+			boost::shared_ptr<PlayerInterface> tmpPlayer(game->getPlayerByUniqueId(tmpData->GetUniqueId()));
 			if (tmpPlayer) {
 				tmpPlayer->setMyStayOnTableStatus(false);
 			}
 		}
 		GetCallback().SignalNetClientPlayerLeft(tmpData->GetUniqueId(), tmpData->GetName(), removeReason);
 
-		if(m_game) {
+		if(game) {
 			if(removeReason == NTF_NET_REMOVED_KICKED) {
 				m_clientLog->logPlayerAction(tmpData->GetName(),LOG_ACTION_KICKED);
 			} else {

@@ -204,7 +204,7 @@ NetPacket::NetErrorToGameError(ErrorMessage::ErrorReason netErrorReason)
 ErrorMessage::ErrorReason
 NetPacket::GameErrorToNetError(int gameErrorReason)
 {
-	ErrorMessage::ErrorReason retVal;
+	ErrorMessage::ErrorReason retVal = ErrorMessage::custReserved;
 	switch(gameErrorReason) {
 	case ERR_NET_VERSION_NOT_SUPPORTED :
 		retVal = ErrorMessage::initVersionNotSupported;

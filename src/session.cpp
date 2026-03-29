@@ -268,11 +268,9 @@ void Session::terminateNetworkClient()
 	if (!myNetClient)
 		return; // already terminated
 	myNetClient->SignalTermination();
-	// Give the threads some time to terminate.
-	if (myNetClient->Join(NET_CLIENT_TERMINATE_TIMEOUT_MSEC))
-		myNetClient.reset();
-
-	// If termination fails, leave a memory leak to prevent a crash.
+	if (!myNetClient->Join(NET_CLIENT_TERMINATE_TIMEOUT_MSEC))
+		myNetClient->Join(THREAD_WAIT_INFINITE);
+	myNetClient.reset();
 	myGameType = GAME_TYPE_NONE;
 }
 
@@ -358,10 +356,9 @@ void Session::terminateNetworkServer()
 	if (!myNetServer)
 		return; // already terminated
 	myNetServer->SignalTerminationAll();
-	// Give the thread some time to terminate.
-	if (myNetServer->JoinAll(true))
-		myNetServer.reset();
-	// If termination fails, leave a memory leak to prevent a crash.
+	if (!myNetServer->JoinAll(true))
+		myNetServer->JoinAll(true);
+	myNetServer.reset();
 #endif
 }
 

@@ -35,6 +35,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <unordered_map>
 
 #ifndef Q_MOC_RUN
 #include <boost/thread.hpp>
@@ -91,6 +92,7 @@ private:
 
 	std::vector<ConfigInfo> configList;
 	std::vector<ConfigInfo> configBufferList;
+	std::unordered_map<std::string, size_t> configIndexMap;
 
 	std::string logDir;
 	std::string dataDir;

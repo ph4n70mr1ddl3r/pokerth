@@ -31,6 +31,7 @@
 
 #include "thread.h"
 #include <engine/log.h>
+#include <core/pokerthexception.h>
 #include <boost/chrono/chrono.hpp>
 #include <chrono>
 #include <thread>
@@ -127,6 +128,9 @@ Thread::MainWrapper()
 {
 	try {
 		this->Main();
+	} catch (const PokerTHException &e) {
+		LOG_ERROR("PokerTH exception in thread: " << e.what()
+			<< " error=" << e.GetErrorId() << " osError=" << e.GetOsErrorCode());
 	} catch (const std::exception& e) {
 		LOG_ERROR("Exception in thread: " << e.what());
 	} catch (...) {

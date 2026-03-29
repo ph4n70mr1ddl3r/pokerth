@@ -314,6 +314,10 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 	// fill tempList firstTime
 	configBufferList = configList;
 
+	for (size_t i = 0; i < configList.size(); i++) {
+		configIndexMap[configList[i].name] = i;
+	}
+
 	// 	cout << configTempList[3].name << " " << configTempList[10].defaultValue << endl;
 
 	if (!noWriteAccess)
@@ -746,16 +750,10 @@ string ConfigFile::readConfigString(string varName) const
 {
 	boost::recursive_mutex::scoped_lock lock(m_configMutex);
 
-	size_t i;
 	string tempString("");
-
-	for (i = 0; i < configBufferList.size(); i++)
-	{
-
-		if (configBufferList[i].name == varName)
-		{
-			tempString = configBufferList[i].defaultValue;
-		}
+	auto it = configIndexMap.find(varName);
+	if (it != configIndexMap.end()) {
+		tempString = configBufferList[it->second].defaultValue;
 	}
 	return tempString;
 }
@@ -764,17 +762,12 @@ int ConfigFile::readConfigInt(string varName) const
 {
 	boost::recursive_mutex::scoped_lock lock(m_configMutex);
 
-	size_t i;
 	string tempString("");
 	int tempInt = 0;
 
-	for (i = 0; i < configBufferList.size(); i++)
-	{
-
-		if (configBufferList[i].name == varName)
-		{
-			tempString = configBufferList[i].defaultValue;
-		}
+	auto it = configIndexMap.find(varName);
+	if (it != configIndexMap.end()) {
+		tempString = configBufferList[it->second].defaultValue;
 	}
 
 	istringstream isst;
@@ -788,25 +781,20 @@ list<int> ConfigFile::readConfigIntList(string varName) const
 {
 	boost::recursive_mutex::scoped_lock lock(m_configMutex);
 
-	size_t i;
 	list<string> tempStringList;
 	list<int> tempIntList;
 
-	for (i = 0; i < configBufferList.size(); i++)
-	{
-
-		if (configBufferList[i].name == varName)
-		{
-			tempStringList = configBufferList[i].defaultListValue;
-		}
+	auto it = configIndexMap.find(varName);
+	if (it != configIndexMap.end()) {
+		tempStringList = configBufferList[it->second].defaultListValue;
 	}
 
 	istringstream isst;
 	int tempInt = 0;
-	for (auto it = tempStringList.begin(); it != tempStringList.end(); ++it)
+	for (auto it2 = tempStringList.begin(); it2 != tempStringList.end(); ++it2)
 	{
 
-		isst.str(*it);
+		isst.str(*it2);
 		isst >> tempInt;
 		tempIntList.push_back(tempInt);
 		isst.str("");
@@ -820,16 +808,11 @@ list<string> ConfigFile::readConfigStringList(string varName) const
 {
 	boost::recursive_mutex::scoped_lock lock(m_configMutex);
 
-	size_t i;
 	list<string> tempStringList;
 
-	for (i = 0; i < configBufferList.size(); i++)
-	{
-
-		if (configBufferList[i].name == varName)
-		{
-			tempStringList = configBufferList[i].defaultListValue;
-		}
+	auto it = configIndexMap.find(varName);
+	if (it != configIndexMap.end()) {
+		tempStringList = configBufferList[it->second].defaultListValue;
 	}
 
 	return tempStringList;
@@ -839,17 +822,12 @@ void ConfigFile::writeConfigInt(string varName, int varCont)
 {
 	boost::recursive_mutex::scoped_lock lock(m_configMutex);
 
-	size_t i;
 	ostringstream intToString;
 
-	for (i = 0; i < configBufferList.size(); i++)
-	{
-
-		if (configBufferList[i].name == varName)
-		{
-			intToString << varCont;
-			configBufferList[i].defaultValue = intToString.str();
-		}
+	auto it = configIndexMap.find(varName);
+	if (it != configIndexMap.end()) {
+		intToString << varCont;
+		configBufferList[it->second].defaultValue = intToString.str();
 	}
 }
 
@@ -857,26 +835,21 @@ void ConfigFile::writeConfigIntList(string varName, list<int> varCont)
 {
 	boost::recursive_mutex::scoped_lock lock(m_configMutex);
 
-	size_t i;
 	ostringstream intToString;
 	list<string> stringList;
 
-	for (i = 0; i < configBufferList.size(); i++)
-	{
-
-		if (configBufferList[i].name == varName)
+	auto it = configIndexMap.find(varName);
+	if (it != configIndexMap.end()) {
+		for (auto varIt = varCont.begin(); varIt != varCont.end(); ++varIt)
 		{
-			for (auto it = varCont.begin(); it != varCont.end(); ++it)
-			{
 
-				intToString << (*it);
-				stringList.push_back(intToString.str());
-				intToString.str("");
-				intToString.clear();
-			}
-
-			configBufferList[i].defaultListValue = stringList;
+			intToString << (*varIt);
+			stringList.push_back(intToString.str());
+			intToString.str("");
+			intToString.clear();
 		}
+
+		configBufferList[it->second].defaultListValue = stringList;
 	}
 }
 
@@ -884,13 +857,9 @@ void ConfigFile::writeConfigString(string varName, string varCont)
 {
 	boost::recursive_mutex::scoped_lock lock(m_configMutex);
 
-	size_t i;
-	for (i = 0; i < configBufferList.size(); i++)
-	{
-		if (configBufferList[i].name == varName)
-		{
-			configBufferList[i].defaultValue = varCont;
-		}
+	auto it = configIndexMap.find(varName);
+	if (it != configIndexMap.end()) {
+		configBufferList[it->second].defaultValue = varCont;
 	}
 }
 
@@ -898,14 +867,9 @@ void ConfigFile::writeConfigStringList(string varName, list<string> varCont)
 {
 	boost::recursive_mutex::scoped_lock lock(m_configMutex);
 
-	size_t i;
-	for (i = 0; i < configBufferList.size(); i++)
-	{
-
-		if (configBufferList[i].name == varName)
-		{
-			configBufferList[i].defaultListValue = varCont;
-		}
+	auto it = configIndexMap.find(varName);
+	if (it != configIndexMap.end()) {
+		configBufferList[it->second].defaultListValue = varCont;
 	}
 }
 

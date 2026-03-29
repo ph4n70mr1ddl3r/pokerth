@@ -324,6 +324,7 @@ private:
 	mutable boost::mutex m_gameInfoMapMutex;
 
 	boost::shared_ptr<Game> m_game;
+	mutable boost::mutex m_gameMutex;
 	boost::shared_ptr<QtToolsInterface> myQtToolsInterface;
 
 	PlayerInfoMap m_playerInfoMap;
