@@ -3104,7 +3104,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 			// Flush
 			else {
 				//                   		cout << "Flush";
-				return 80000;
+				return 60000;
 			}
 		}
 	}
@@ -3722,7 +3722,9 @@ void LocalPlayer::calcMyOdds()
 		// paranoia
 		if(players < 2) players = 2;
 
-		if(handCode != 80000) {
+		if(handCode >= 60000) {
+			myOdds = 100;
+		} else {
 			for (unsigned val = 0; val < NUM_FLOP_VALUES; val++) {
 				if(handCode == FlopValues[val].hand) {
 					myOdds = 100.0*FlopValues[val].data[players - 2];
@@ -3734,12 +3736,7 @@ void LocalPlayer::calcMyOdds()
 				logger << "ERROR myOdds is -1: ";
 				for(i=0; i<5; i++) logger << tempArray[i] << " ";
 				LOG_ERROR(__FILE__ << " (" << __LINE__ << "): " << logger.str());
-				// 					cout << "\t" << handCode << "\t" << myID << endl;
-			} else {
-				// 			cout << myHoleCardsValue << endl;
 			}
-		} else {
-			myOdds = 100;
 		}
 
 	}

@@ -714,6 +714,7 @@ std::string CardsValue::determineHandName(int myCardsValueInt, PlayerList active
 	bool equal = false;
 //	boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 	PlayerListConstIterator it_c;
+	std::list<int>::iterator it;
 //	PlayerList activePlayerList = currentGame->getActivePlayerList();
 
 	// collect cardsValueInt of all players who will show their cards
@@ -725,7 +726,7 @@ std::string CardsValue::determineHandName(int myCardsValueInt, PlayerList active
 	}
 
 	// erase own cardsValueInt
-	for(auto it = shownCardsValueInt.begin(); it != shownCardsValueInt.end(); ++it) {
+	for(it = shownCardsValueInt.begin(); it != shownCardsValueInt.end(); ++it) {
 		if((*it) == myCardsValueInt) {
 			shownCardsValueInt.erase(it);
 			break;
