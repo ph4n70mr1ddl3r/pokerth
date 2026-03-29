@@ -36,7 +36,7 @@
 #include <core/loghelper.h>
 #include <core/crypthelper.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <boost/algorithm/string/predicate.hpp>
 #include <core/openssl_wrapper.h>
 
@@ -57,7 +57,7 @@
 
 
 using namespace std;
-using namespace boost::filesystem;
+namespace fs = std::filesystem;
 
 struct AvatarFileState {
 	std::ifstream		inputStream;
@@ -142,7 +142,7 @@ AvatarManager::OpenAvatarFileForChunkRead(const std::string &fileName, unsigned 
 	boost::shared_ptr<AvatarFileState> retVal;
 	try {
 		outFileType = GetAvatarFileType(fileName);
-		boost::shared_ptr<AvatarFileState> fileState(new AvatarFileState);
+		auto fileState = boost::make_shared<AvatarFileState>();
 		fileState->inputStream.open(fileName.c_str(), ios_base::in | ios_base::binary);
 		if (!fileState->inputStream.fail()) {
 			// Find out file size.
@@ -197,7 +197,7 @@ AvatarManager::AvatarFileToNetPackets(const string &fileName, unsigned requestId
 	AvatarFileType fileType;
 	boost::shared_ptr<AvatarFileState> tmpState = OpenAvatarFileForChunkRead(fileName, fileSize, fileType);
 	if (tmpState.get() && fileSize && fileType != AVATAR_FILE_TYPE_UNKNOWN) {
-		boost::shared_ptr<NetPacket> avatarHeader(new NetPacket);
+		auto avatarHeader = boost::make_shared<NetPacket>();
 		avatarHeader->GetMsg()->set_messagetype(PokerTHMessage::Type_AvatarHeaderMessage);
 		AvatarHeaderMessage *netHeader = avatarHeader->GetMsg()->mutable_avatarheadermessage();
 		netHeader->set_requestid(requestId);
@@ -213,7 +213,7 @@ AvatarManager::AvatarFileToNetPackets(const string &fileName, unsigned requestId
 			if (numBytes) {
 				totalBytesRead += numBytes;
 
-				boost::shared_ptr<NetPacket> avatarFile(new NetPacket);
+				auto avatarFile = boost::make_shared<NetPacket>();
 				avatarFile->GetMsg()->set_messagetype(PokerTHMessage::Type_AvatarDataMessage);
 				AvatarDataMessage *netFile = avatarFile->GetMsg()->mutable_avatardatamessage();
 				netFile->set_requestid(requestId);
@@ -225,7 +225,7 @@ AvatarManager::AvatarFileToNetPackets(const string &fileName, unsigned requestId
 		if (fileSize != totalBytesRead)
 			retVal = ERR_NET_WRONG_AVATAR_SIZE;
 		else {
-			boost::shared_ptr<NetPacket> avatarEnd(new NetPacket);
+			auto avatarEnd = boost::make_shared<NetPacket>();
 			avatarEnd->GetMsg()->set_messagetype(PokerTHMessage::Type_AvatarEndMessage);
 			AvatarEndMessage *netEnd = avatarEnd->GetMsg()->mutable_avatarendmessage();
 			netEnd->set_requestid(requestId);

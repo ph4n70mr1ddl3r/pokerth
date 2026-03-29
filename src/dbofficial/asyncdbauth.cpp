@@ -61,7 +61,7 @@ AsyncDBAuth::HandleResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManager*/,
 			mysqlpp::String last_login(result[0][4]);
 			mysqlpp::String last_games(result[0][5]);
 			mysqlpp::String last_ip(result[0][6]);
-			boost::shared_ptr<DBPlayerData> tmpData(new DBPlayerData);
+			auto tmpData = boost::make_shared<DBPlayerData>();
 			tmpData->id = result[0][0];
 			secret.to_string(tmpData->secret);
 			if (!country.is_null())

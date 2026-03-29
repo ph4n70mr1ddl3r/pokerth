@@ -32,7 +32,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 include(FindBoost)
 include(FindProtobuf)
  
-find_package(Boost REQUIRED COMPONENTS iostreams random thread filesystem program_options)
+find_package(Boost REQUIRED COMPONENTS iostreams random thread program_options)
 find_package(OpenSSL REQUIRED)
 find_package(CURL REQUIRED)
 
@@ -166,7 +166,7 @@ target_link_libraries(pokerth_lib PUBLIC CURL::libcurl)
 target_link_libraries(pokerth_lib PUBLIC pokerth_protocol)
 target_link_libraries(pokerth_lib PRIVATE Qt6::Xml Qt6::Sql)
 target_compile_options(pokerth_lib PUBLIC -fexceptions -frtti -Wno-stringop-overflow)
-target_compile_definitions(pokerth_lib PUBLIC ENABLE_IPV6 HAVE_OPENSSL BOOST_FILESYSTEM_DEPRECATED)
+target_compile_definitions(pokerth_lib PUBLIC ENABLE_IPV6 HAVE_OPENSSL)
 
 
 # POKERTH.dbofficial

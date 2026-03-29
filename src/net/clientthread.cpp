@@ -48,7 +48,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <QDebug>
 #include <sstream>
@@ -585,9 +585,9 @@ ClientThread::Main()
 
 	} catch (const PokerTHException &e) {
 		// Delete the cached server list, as it may be outdated.
-		path tmpServerListPath(GetCacheServerListFileName());
-		if (exists(tmpServerListPath)) {
-			remove(tmpServerListPath);
+		std::filesystem::path tmpServerListPath(GetCacheServerListFileName());
+		if (std::filesystem::exists(tmpServerListPath)) {
+			std::filesystem::remove(tmpServerListPath);
 		}
 		GetCallback().SignalNetClientError(e.GetErrorId(), e.GetOsErrorCode());
 	}
@@ -729,7 +729,7 @@ ClientThread::RequestPlayerInfo(unsigned id, bool requestAvatar)
 void
 ClientThread::RequestPlayerInfo(const list<unsigned> &idList, bool requestAvatar)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayerInfoRequestMessage);
 	PlayerInfoRequestMessage *netPlayerInfo = packet->GetMsg()->mutable_playerinforequestmessage();
 	{
@@ -873,7 +873,7 @@ ClientThread::RetrieveAvatarIfNeeded(unsigned id, const PlayerInfo &info)
 		m_avatarDownloader->QueueDownload(
 			id, avatarServerAddress + serverFileName, GetContext().GetCacheDir() + TEMP_AVATAR_FILENAME);
 	} else {
-		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		auto packet = boost::make_shared<NetPacket>();
 		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AvatarRequestMessage);
 		AvatarRequestMessage *netAvatar = packet->GetMsg()->mutable_avatarrequestmessage();
 		netAvatar->set_requestid(id);
@@ -975,7 +975,7 @@ ClientThread::TimerCheckAvatarDownloads(const boost::system::error_code& ec)
 	if (!ec) {
 		if (m_avatarDownloader && m_avatarDownloader->HasDownloadResult()) {
 			unsigned playerId = 0;
-			boost::shared_ptr<AvatarFile> tmpAvatar(new AvatarFile);
+			auto tmpAvatar = boost::make_shared<AvatarFile>();
 			m_avatarDownloader->GetDownloadResult(playerId, tmpAvatar->fileData);
 			tmpAvatar->reportedSize = tmpAvatar->fileData.size();
 			PassAvatarFileToManager(playerId, tmpAvatar);
@@ -993,7 +993,7 @@ ClientThread::UnsubscribeLobbyMsg()
 {
 	if (GetContext().GetSubscribeLobbyMsg()) {
 		// Send unsubscribe request.
-		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		auto packet = boost::make_shared<NetPacket>();
 		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_SubscriptionRequestMessage);
 		SubscriptionRequestMessage *netRequest = packet->GetMsg()->mutable_subscriptionrequestmessage();
 		netRequest->set_subscriptionaction(SubscriptionRequestMessage::unsubscribeGameList);
@@ -1009,7 +1009,7 @@ ClientThread::ResubscribeLobbyMsg()
 		// Clear game info map as it is outdated.
 		ClearGameInfoMap();
 		// Send resubscribe request.
-		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		auto packet = boost::make_shared<NetPacket>();
 		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_SubscriptionRequestMessage);
 		SubscriptionRequestMessage *netRequest = packet->GetMsg()->mutable_subscriptionrequestmessage();
 		netRequest->set_subscriptionaction(SubscriptionRequestMessage::resubscribeGameList);
@@ -1085,12 +1085,11 @@ ClientThread::CreateContextSession()
 {
     ClientContext &context = GetContext();
 
-    boost::shared_ptr<boost::asio::ip::tcp::resolver> resolver(new boost::asio::ip::tcp::resolver(*m_ioService));
+    auto resolver = boost::make_shared<boost::asio::ip::tcp::resolver>(*m_ioService);
     context.SetResolver(resolver);
 
     if (context.GetTls()) {
-        boost::shared_ptr<boost::asio::ssl::context> sslCtx(
-            new boost::asio::ssl::context(boost::asio::ssl::context::sslv23_client));
+        auto sslCtx = boost::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::sslv23_client);
         
         if (context.GetTlsVerifyPeer()) {
             sslCtx->set_verify_mode(boost::asio::ssl::verify_peer);
@@ -1107,11 +1106,11 @@ ClientThread::CreateContextSession()
 
         SSL_set_info_callback(sslStream->native_handle(), &ClientThread::SslInfoCallback);
 
-        boost::shared_ptr<SessionData> session(new SessionData(sslStream, SESSION_ID_GENERIC, *this, *m_ioService, 0));
+        auto session = boost::make_shared<SessionData>(sslStream, SESSION_ID_GENERIC, *this, *m_ioService, 0);
         context.SetSessionData(session);
     } else {
-        boost::shared_ptr<boost::asio::ip::tcp::socket> sock(new boost::asio::ip::tcp::socket(*m_ioService));
-        boost::shared_ptr<SessionData> session(new SessionData(sock, SESSION_ID_GENERIC, *this, *m_ioService));
+        auto sock = boost::make_shared<boost::asio::ip::tcp::socket>(*m_ioService);
+        auto session = boost::make_shared<SessionData>(sock, SESSION_ID_GENERIC, *this, *m_ioService);
         context.SetSessionData(session);
     }
 }
@@ -1347,7 +1346,7 @@ ClientThread::MapPlayerDataList()
 		int numPlayers = GetStartData().numberOfPlayers;
 
 		while (i != end) {
-			boost::shared_ptr<PlayerData> tmpData(new PlayerData(*(*i)));
+			auto tmpData = boost::make_shared<PlayerData>(*(*i));
 			int numberDiff = numPlayers - m_origGuiPlayerNum;
 			tmpData->SetNumber((tmpData->GetNumber() + numberDiff) % numPlayers);
 			mappedList.push_back(tmpData);

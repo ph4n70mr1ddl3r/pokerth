@@ -38,7 +38,7 @@
 #include <net/socket_startup.h>
 #include <core/loghelper.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <boost/bind/bind.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
@@ -47,7 +47,7 @@
 #define SERVER_CHECK_IRC_BOT_INTERVAL_SEC			60
 
 using namespace std;
-using namespace boost::filesystem;
+namespace fs = std::filesystem;
 
 #ifdef BOOST_ASIO_HAS_STD_CHRONO
 using namespace std::chrono;
@@ -314,7 +314,7 @@ ServerAdminBot::Reconnect()
 	if (m_ircAdminThread) {
 		m_ircAdminThread->SignalTermination();
 		if (m_ircAdminThread->Join(NET_ADMIN_IRC_TERMINATE_TIMEOUT_MSEC)) {
-			boost::shared_ptr<IrcThread> tmpIrcThread(new IrcThread(*m_ircAdminThread));
+			auto tmpIrcThread = boost::make_shared<IrcThread>(*m_ircAdminThread);
 			tmpIrcThread->Run();
 			m_ircAdminThread = tmpIrcThread;
 		}

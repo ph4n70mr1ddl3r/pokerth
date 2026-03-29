@@ -129,12 +129,12 @@ ServerAcceptWebHelper::validate(websocketpp::connection_hdl hdl)
 void
 ServerAcceptWebHelper::on_open(websocketpp::connection_hdl hdl)
 {
-	boost::shared_ptr<WebSocketData> webData(new WebSocketData);
+	auto webData = boost::make_shared<WebSocketData>();
 	webData->webSocketServer = m_webSocketServer;
 	webData->webSocketTlsServer = m_webSocketTlsServer;
 	webData->webHandle = hdl;
 	webData->isTls = m_tls;
-	boost::shared_ptr<SessionData> sessionData(new SessionData(webData, m_lobbyThread->GetNextSessionId(), m_lobbyThread->GetSessionDataCallback(), *m_ioService, 0));
+	auto sessionData = boost::make_shared<SessionData>(webData, m_lobbyThread->GetNextSessionId(), m_lobbyThread->GetSessionDataCallback(), *m_ioService, 0);
 	{
 		boost::mutex::scoped_lock lock(m_sessionMapMutex);
 		m_sessionMap.insert(make_pair(hdl, sessionData));

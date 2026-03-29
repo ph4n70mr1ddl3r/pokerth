@@ -32,7 +32,7 @@
 #include <core/crypthelper.h>
 
 #include <core/openssl_wrapper.h>
-#include <cstring>
+#include <filesystem>
 #include <cstdio>
 #include <memory>
 #include <functional>
@@ -190,9 +190,9 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 		LOG_ERROR("MD5Sum: Absolute paths not allowed: " << fileName);
 		return false;
 	}
-	boost::system::error_code ec;
-	boost::filesystem::path p(fileName);
-	if (boost::filesystem::is_symlink(p, ec) && !ec) {
+	std::error_code ec;
+	std::filesystem::path p(fileName);
+	if (std::filesystem::is_symlink(p, ec) && !ec) {
 		LOG_ERROR("MD5Sum: Symbolic links not allowed: " << fileName);
 		return false;
 	}

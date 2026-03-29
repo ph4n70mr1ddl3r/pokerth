@@ -132,7 +132,7 @@ ServerLobbyBot::Reconnect(const boost::system::error_code& ec)
 		if (m_ircLobbyThread) {
 			m_ircLobbyThread->SignalTermination();
 			if (m_ircLobbyThread->Join(NET_ADMIN_IRC_TERMINATE_TIMEOUT_MSEC)) {
-				boost::shared_ptr<IrcThread> tmpIrcThread(new IrcThread(*m_ircLobbyThread));
+				auto tmpIrcThread = boost::make_shared<IrcThread>(*m_ircLobbyThread);
 				tmpIrcThread->Run();
 				m_ircLobbyThread = tmpIrcThread;
 			}

@@ -33,13 +33,13 @@
 #include <net/uploadhelper.h>
 #include <net/uploadcallback.h>
 #include <net/netexception.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <core/loghelper.h>
 
 #define UPLOAD_DELAY_MSEC					100
 
 using namespace std;
-using namespace boost::filesystem;
+namespace fs = std::filesystem;
 
 
 UploaderThread::UploaderThread(UploadCallback *callback)

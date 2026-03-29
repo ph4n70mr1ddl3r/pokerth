@@ -42,12 +42,12 @@
 #include <fstream>
 #include <atomic>
 #include <mutex>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <boost/date_time.hpp>
 
 
 using namespace std;
-using namespace boost::filesystem;
+namespace fs = std::filesystem;
 using namespace boost::posix_time;
 
 #define SERVER_MSG_LOG_FILE_NAME				"server_messages.log"
@@ -59,7 +59,7 @@ static atomic<int> g_logLevel{1};
 void
 loghelper_init(const string &logDir, int logLevel)
 {
-	path tmpLogFile(logDir);
+	fs::path tmpLogFile(logDir);
 	tmpLogFile /= SERVER_MSG_LOG_FILE_NAME;
 
 	lock_guard<mutex> lock(g_logFileMutex);

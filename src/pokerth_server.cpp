@@ -38,7 +38,7 @@
 #include <core/loghelper.h>
 #include <core/thread.h>
 #include <boost/program_options.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <iostream>
 #include <fstream>
@@ -66,7 +66,7 @@
 
 using namespace std;
 namespace po = boost::program_options;
-using namespace boost::filesystem;
+namespace fs = std::filesystem;
 
 std::atomic<int> g_pokerthTerminate{0};
 

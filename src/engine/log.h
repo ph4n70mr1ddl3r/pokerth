@@ -24,7 +24,7 @@
 
 #include <string>
 #include <array>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <QSqlDatabase>
 #include <QString>
@@ -72,7 +72,7 @@ private:
     QSqlDatabase mySqliteLogDb;
     QString myConnectionName;
 
-    boost::filesystem::path mySqliteLogFileName;
+    std::filesystem::path mySqliteLogFileName;
     ConfigFile *myConfig;
     int uniqueGameID;
     int currentHandID;

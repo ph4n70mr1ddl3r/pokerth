@@ -32,7 +32,7 @@
 #include <net/downloaderthread.h>
 #include <net/downloadhelper.h>
 #include <net/netexception.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <core/loghelper.h>
 
 #include <fstream>
@@ -41,7 +41,7 @@
 #define DOWNLOAD_DELAY_MSEC					20
 
 using namespace std;
-using namespace boost::filesystem;
+namespace fs = std::filesystem;
 
 
 DownloaderThread::DownloaderThread()

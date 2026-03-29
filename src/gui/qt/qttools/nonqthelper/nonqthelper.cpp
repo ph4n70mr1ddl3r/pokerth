@@ -32,7 +32,7 @@
 #include "nonqthelper.h"
 
 #include <core/convhelper.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 NonQtHelper::NonQtHelper()
 {
@@ -64,7 +64,7 @@ NonQtHelper::getDefaultLanguage()
 std::string
 NonQtHelper::getDataPathStdString(const char *argv0)
 {
-	boost::filesystem::path startPath(argv0);
+	std::filesystem::path startPath(argv0);
 	startPath = startPath.remove_filename();
 	startPath /= "data";
 	return stringToUtf8(startPath.string());

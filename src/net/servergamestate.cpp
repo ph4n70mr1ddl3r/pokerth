@@ -98,7 +98,7 @@ static void SendPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInterfa
 	if (!player.get())
 		throw ServerException(__FILE__, __LINE__, ERR_NET_NO_CURRENT_PLAYER, 0);
 
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayersActionDoneMessage);
 	PlayersActionDoneMessage *netActionDone = packet->GetMsg()->mutable_playersactiondonemessage();
 
@@ -123,7 +123,7 @@ static void SendNewRoundCards(ServerGame &server, Game &curGame, int state)
 	} break;
 	case GAME_STATE_FLOP: {
 		// deal flop cards
-		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		auto packet = boost::make_shared<NetPacket>();
 		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_DealFlopCardsMessage);
 		DealFlopCardsMessage *netDealFlop = packet->GetMsg()->mutable_dealflopcardsmessage();
 		netDealFlop->set_gameid(server.GetId());
@@ -135,7 +135,7 @@ static void SendNewRoundCards(ServerGame &server, Game &curGame, int state)
 	break;
 	case GAME_STATE_TURN: {
 		// deal turn card
-		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		auto packet = boost::make_shared<NetPacket>();
 		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_DealTurnCardMessage);
 		DealTurnCardMessage *netDealTurn = packet->GetMsg()->mutable_dealturncardmessage();
 		netDealTurn->set_gameid(server.GetId());
@@ -145,7 +145,7 @@ static void SendNewRoundCards(ServerGame &server, Game &curGame, int state)
 	break;
 	case GAME_STATE_RIVER: {
 		// deal river card
-		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		auto packet = boost::make_shared<NetPacket>();
 		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_DealRiverCardMessage);
 		DealRiverCardMessage *netDealRiver = packet->GetMsg()->mutable_dealrivercardmessage();
 		netDealRiver->set_gameid(server.GetId());
@@ -289,7 +289,7 @@ AbstractServerGameStateReceiving::ProcessPacket(boost::shared_ptr<ServerGame> se
 				// If we did not find the player, then the game did not start yet. Allow chat for now.
 				// Otherwise, check whether the player is muted.
 				if (!tmpPlayer || !tmpPlayer->isMuted()) {
-					boost::shared_ptr<NetPacket> packet(new NetPacket);
+					auto packet = boost::make_shared<NetPacket>();
 					packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatMessage);
 					ChatMessage *netChat = packet->GetMsg()->mutable_chatmessage();
 					netChat->set_gameid(server->GetId());
@@ -312,7 +312,7 @@ AbstractServerGameStateReceiving::ProcessPacket(boost::shared_ptr<ServerGame> se
 			}
 		// Reject chat otherwise.
 		if (!chatSent) {
-			boost::shared_ptr<NetPacket> packet(new NetPacket);
+			auto packet = boost::make_shared<NetPacket>();
 			packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatRejectMessage);
 			ChatRejectMessage *netReject = packet->GetMsg()->mutable_chatrejectmessage();
 			netReject->set_chattext(netChatRequest.chattext());
@@ -356,7 +356,7 @@ AbstractServerGameStateReceiving::ProcessPacket(boost::shared_ptr<ServerGame> se
 					myDBid != 0 ? &myDBid : nullptr
 				);
 			} else {
-				boost::shared_ptr<NetPacket> packet(new NetPacket);
+				auto packet = boost::make_shared<NetPacket>();
 				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ReportAvatarAckMessage);
 				ReportAvatarAckMessage *netReportAck = packet->GetMsg()->mutable_reportavatarackmessage();
 				netReportAck->set_reportedplayerid(netReport.reportedplayerid());
@@ -364,7 +364,7 @@ AbstractServerGameStateReceiving::ProcessPacket(boost::shared_ptr<ServerGame> se
 				server->GetLobbyThread().GetSender().Send(session, packet);
 			}
 		} else {
-			boost::shared_ptr<NetPacket> packet(new NetPacket);
+			auto packet = boost::make_shared<NetPacket>();
 			packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ReportAvatarAckMessage);
 			ReportAvatarAckMessage *netReportAck = packet->GetMsg()->mutable_reportavatarackmessage();
 			netReportAck->set_reportedplayerid(netReport.reportedplayerid());
@@ -385,7 +385,7 @@ AbstractServerGameStateReceiving::ProcessPacket(boost::shared_ptr<ServerGame> se
 boost::shared_ptr<NetPacket>
 AbstractServerGameStateReceiving::CreateNetPacketPlayerJoined(unsigned gameId, const PlayerData &playerData)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_GamePlayerJoinedMessage);
 	GamePlayerJoinedMessage *netGamePlayer = packet->GetMsg()->mutable_gameplayerjoinedmessage();
 	netGamePlayer->set_gameid(gameId);
@@ -397,7 +397,7 @@ AbstractServerGameStateReceiving::CreateNetPacketPlayerJoined(unsigned gameId, c
 boost::shared_ptr<NetPacket>
 AbstractServerGameStateReceiving::CreateNetPacketJoinGameAck(const ServerGame &server, const PlayerData &playerData)
 {
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_JoinGameAckMessage);
 	JoinGameAckMessage *netJoinReply = packet->GetMsg()->mutable_joingameackmessage();
 	netJoinReply->set_gameid(server.GetId());
@@ -414,7 +414,7 @@ AbstractServerGameStateReceiving::CreateNetPacketHandStart(const ServerGame &ser
 {
 	const Game &curGame = server.GetGame();
 
-	boost::shared_ptr<NetPacket> notifyCards(new NetPacket);
+	auto notifyCards = boost::make_shared<NetPacket>();
 	notifyCards->GetMsg()->set_messagetype(PokerTHMessage::Type_HandStartMessage);
 	HandStartMessage *netHandStart = notifyCards->GetMsg()->mutable_handstartmessage();
 	netHandStart->set_gameid(server.GetId());
@@ -592,7 +592,7 @@ ServerGameStateInit::TimerAdminWarning(const boost::system::error_code &ec, boos
 		boost::shared_ptr<SessionData> session = server->GetSessionManager().GetSessionByUniquePlayerId(server->GetAdminPlayerId());
 		if (session) {
 			// Send him a warning.
-			boost::shared_ptr<NetPacket> packet(new NetPacket);
+			auto packet = boost::make_shared<NetPacket>();
 			packet->GetMsg()->set_messagetype(PokerTHMessage::Type_TimeoutWarningMessage);
 			TimeoutWarningMessage *netWarning = packet->GetMsg()->mutable_timeoutwarningmessage();
 			netWarning->set_timeoutreason(TimeoutWarningMessage::timeoutInactiveGame);
@@ -626,8 +626,7 @@ ServerGameStateInit::SendStartEvent(ServerGame &server, bool fillWithComputerPla
 	if (fillWithComputerPlayers) {
 		int remainingSlots = server.GetGameData().maxNumberOfPlayers - server.GetCurNumberOfPlayers();
 		for (int i = 1; i <= remainingSlots; i++) {
-			boost::shared_ptr<PlayerData> tmpPlayerData(
-				new PlayerData(server.GetLobbyThread().GetNextUniquePlayerId(), 0, PLAYER_TYPE_COMPUTER, PLAYER_RIGHTS_NORMAL, false));
+			auto tmpPlayerData = boost::make_shared<PlayerData>(server.GetLobbyThread().GetNextUniquePlayerId(), 0, PLAYER_TYPE_COMPUTER, PLAYER_RIGHTS_NORMAL, false);
 
 			ostringstream name;
 			name << SERVER_COMPUTER_PLAYER_NAME << i;
@@ -641,7 +640,7 @@ ServerGameStateInit::SendStartEvent(ServerGame &server, bool fillWithComputerPla
 			server.GetLobbyThread().NotifyPlayerJoinedGame(server.GetId(), tmpPlayerData->GetUniqueId());
 		}
 	}
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_StartEventMessage);
 	StartEventMessage *netStartEvent = packet->GetMsg()->mutable_starteventmessage();
 	netStartEvent->set_starteventtype(StartEventMessage::startEvent);
@@ -676,7 +675,7 @@ ServerGameStateInit::InternalProcessPacket(boost::shared_ptr<ServerGame> server,
 
 		// Only invite players which are not already within the group.
 		if (netInvite.gameid() == server->GetId() && !server->IsPlayerConnected(netInvite.playerid())) {
-			boost::shared_ptr<NetPacket> packet(new NetPacket);
+			auto packet = boost::make_shared<NetPacket>();
 			packet->GetMsg()->set_messagetype(PokerTHMessage::Type_InviteNotifyMessage);
 			InviteNotifyMessage *netInvNotif = packet->GetMsg()->mutable_invitenotifymessage();
 			netInvNotif->set_gameid(netInvite.gameid());
@@ -690,7 +689,7 @@ ServerGameStateInit::InternalProcessPacket(boost::shared_ptr<ServerGame> server,
 				server->AddPlayerInvitation(netInvite.playerid());
 			} else {
 				// Player is not in lobby - send reject message.
-				boost::shared_ptr<NetPacket> p2(new NetPacket);
+				auto p2 = boost::make_shared<NetPacket>();
 				p2->GetMsg()->set_messagetype(PokerTHMessage::Type_RejectInvNotifyMessage);
 				RejectInvNotifyMessage *netRejNotif = p2->GetMsg()->mutable_rejectinvnotifymessage();
 				netRejNotif->set_gameid(netInvite.gameid());
@@ -790,7 +789,7 @@ ServerGameStateStartGame::DoStart(boost::shared_ptr<ServerGame> server)
 				server->MoveSessionToLobby(tmpSession, NTF_NET_REMOVED_START_FAILED);
 		}
 	} else {
-		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		auto packet = boost::make_shared<NetPacket>();
 		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_GameStartInitialMessage);
 		GameStartInitialMessage *netGameStart = packet->GetMsg()->mutable_gamestartinitialmessage();
 		netGameStart->set_gameid(server->GetId());
@@ -833,7 +832,7 @@ AbstractServerGameStateRunning::HandleNewPlayer(boost::shared_ptr<ServerGame> se
 			server->AddRejoinPlayer(session->GetPlayerData()->GetUniqueId());
 
 			// Send start event right away.
-			boost::shared_ptr<NetPacket> packet(new NetPacket);
+			auto packet = boost::make_shared<NetPacket>();
 			packet->GetMsg()->set_messagetype(PokerTHMessage::Type_StartEventMessage);
 			StartEventMessage *netStartEvent = packet->GetMsg()->mutable_starteventmessage();
 			netStartEvent->set_starteventtype(StartEventMessage::rejoinEvent);
@@ -934,7 +933,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 				&& !curGame.getCurrentHand()->getCardsShown()
 				&& nonFoldPlayers.size() > 1) {
 			// Send cards of all active players to all players (all in).
-			boost::shared_ptr<NetPacket> allIn(new NetPacket);
+			auto allIn = boost::make_shared<NetPacket>();
 			allIn->GetMsg()->set_messagetype(PokerTHMessage::Type_AllInShowCardsMessage);
 			AllInShowCardsMessage *netAllInShow = allIn->GetMsg()->mutable_allinshowcardsmessage();
 			netAllInShow->set_gameid(server->GetId());
@@ -979,7 +978,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 			if (!curPlayer->getMyActiveStatus())
 				throw ServerException(__FILE__, __LINE__, ERR_NET_PLAYER_NOT_ACTIVE, 0);
 
-			boost::shared_ptr<NetPacket> notification(new NetPacket);
+			auto notification = boost::make_shared<NetPacket>();
 			notification->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayersTurnMessage);
 			PlayersTurnMessage *netPlayersTurn = notification->GetMsg()->mutable_playersturnmessage();
 			netPlayersTurn->set_gameid(server->GetId());
@@ -1019,7 +1018,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 			if (nonFoldPlayers.size() == 1) {
 				// End of Hand, but keep cards hidden.
 				boost::shared_ptr<PlayerInterface> player = nonFoldPlayers.front();
-				boost::shared_ptr<NetPacket> endHand(new NetPacket);
+				auto endHand = boost::make_shared<NetPacket>();
 				endHand->GetMsg()->set_messagetype(PokerTHMessage::Type_EndOfHandHideCardsMessage);
 				EndOfHandHideCardsMessage *netEndHand = endHand->GetMsg()->mutable_endofhandhidecardsmessage();
 				netEndHand->set_gameid(server->GetId());
@@ -1030,7 +1029,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 			} else {
 				// End of Hand - show cards.
 				const PlayerIdList showList(curGame.getCurrentHand()->getBoard()->getPlayerNeedToShowCards());
-				boost::shared_ptr<NetPacket> endHand(new NetPacket);
+				auto endHand = boost::make_shared<NetPacket>();
 				endHand->GetMsg()->set_messagetype(PokerTHMessage::Type_EndOfHandShowCardsMessage);
 				EndOfHandShowCardsMessage *netEndHand = endHand->GetMsg()->mutable_endofhandshowcardsmessage();
 				netEndHand->set_gameid(server->GetId());
@@ -1125,7 +1124,7 @@ void
 ServerGameStateHand::TimerNextGame(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server, unsigned winnerPlayerId)
 {
 	if (!ec && &server->GetState() == this) {
-		boost::shared_ptr<NetPacket> endGame(new NetPacket);
+		auto endGame = boost::make_shared<NetPacket>();
 		endGame->GetMsg()->set_messagetype(PokerTHMessage::Type_EndOfGameMessage);
 		EndOfGameMessage *netEndGame = endGame->GetMsg()->mutable_endofgamemessage();
 		netEndGame->set_gameid(server->GetId());
@@ -1245,7 +1244,7 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 	while (i != end) {
 		boost::shared_ptr<PlayerInterface> tmpPlayer = *i;
 		if (tmpPlayer->getMyButton() == BUTTON_SMALL_BLIND) {
-			boost::shared_ptr<NetPacket> notifySmallBlind(new NetPacket);
+			auto notifySmallBlind = boost::make_shared<NetPacket>();
 			notifySmallBlind->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayersActionDoneMessage);
 			PlayersActionDoneMessage *netSmallBlind = notifySmallBlind->GetMsg()->mutable_playersactiondonemessage();
 			netSmallBlind->set_gameid(server->GetId());
@@ -1267,7 +1266,7 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 	while (i != end) {
 		boost::shared_ptr<PlayerInterface> tmpPlayer = *i;
 		if (tmpPlayer->getMyButton() == BUTTON_BIG_BLIND) {
-			boost::shared_ptr<NetPacket> notifyBigBlind(new NetPacket);
+			auto notifyBigBlind = boost::make_shared<NetPacket>();
 			notifyBigBlind->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayersActionDoneMessage);
 			PlayersActionDoneMessage *netBigBlind = notifyBigBlind->GetMsg()->mutable_playersactiondonemessage();
 			netBigBlind->set_gameid(server->GetId());
@@ -1304,7 +1303,7 @@ ServerGameStateHand::CheckPlayerTimeouts(boost::shared_ptr<ServerGame> server)
 					tmpPlayer->setIsSessionActive(false);
 					boost::shared_ptr<SessionData> session = server->GetSessionManager().GetSessionByUniquePlayerId(tmpPlayer->getMyUniqueID());
 					if (session) {
-						boost::shared_ptr<NetPacket> packet(new NetPacket);
+						auto packet = boost::make_shared<NetPacket>();
 						packet->GetMsg()->set_messagetype(PokerTHMessage::Type_TimeoutWarningMessage);
 						TimeoutWarningMessage *netWarning = packet->GetMsg()->mutable_timeoutwarningmessage();
 						netWarning->set_timeoutreason(TimeoutWarningMessage::timeoutKickAfterAutofold);
@@ -1360,7 +1359,7 @@ ServerGameStateHand::PerformRejoin(boost::shared_ptr<ServerGame> server, boost::
 	boost::shared_ptr<PlayerInterface> rejoinPlayer = curGame.getPlayerByName(session->GetPlayerData()->GetName());
 	if (rejoinPlayer) {
 		// Notify other clients about id change.
-		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		auto packet = boost::make_shared<NetPacket>();
 		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayerIdChangedMessage);
 		PlayerIdChangedMessage *netIdChanged = packet->GetMsg()->mutable_playeridchangedmessage();
 		netIdChanged->set_oldplayerid(rejoinPlayer->getMyUniqueID());
@@ -1387,7 +1386,7 @@ ServerGameStateHand::SendGameData(boost::shared_ptr<ServerGame> server, boost::s
 {
 	Game &curGame = server->GetGame();
 	// Send game start notification to rejoining client.
-	boost::shared_ptr<NetPacket> packet(new NetPacket);
+	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_GameStartRejoinMessage);
 	GameStartRejoinMessage *netGameStart = packet->GetMsg()->mutable_gamestartrejoinmessage();
 	netGameStart->set_gameid(server->GetId());
@@ -1504,7 +1503,7 @@ ServerGameStateWaitPlayerAction::InternalProcessPacket(boost::shared_ptr<ServerG
 			server->SetState(ServerGameStateHand::Instance());
 		} else {
 			// Send reject message.
-			boost::shared_ptr<NetPacket> reject(new NetPacket);
+			auto reject = boost::make_shared<NetPacket>();
 			reject->GetMsg()->set_messagetype(PokerTHMessage::Type_YourActionRejectedMessage);
 			YourActionRejectedMessage *netActionRejected = reject->GetMsg()->mutable_youractionrejectedmessage();
 			netActionRejected->set_gameid(server->GetId());
@@ -1590,7 +1589,7 @@ ServerGameStateWaitNextHand::InternalProcessPacket(boost::shared_ptr<ServerGame>
 
 	if (packet->GetMsg()->messagetype() == PokerTHMessage::Type_ShowMyCardsRequestMessage) {
 		Game &curGame = server->GetGame();
-		boost::shared_ptr<NetPacket> show(new NetPacket);
+		auto show = boost::make_shared<NetPacket>();
 		show->GetMsg()->set_messagetype(PokerTHMessage::Type_AfterHandShowCardsMessage);
 
 		AfterHandShowCardsMessage *netShowCards = show->GetMsg()->mutable_afterhandshowcardsmessage();

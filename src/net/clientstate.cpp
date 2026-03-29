@@ -55,7 +55,7 @@
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/zlib.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <iostream>
 #include <fstream>
@@ -63,7 +63,7 @@
 #include <array>
 
 using namespace std;
-using namespace boost::filesystem;
+namespace fs = std::filesystem;
 
 #ifdef BOOST_ASIO_HAS_STD_CHRONO
 using namespace std::chrono;
@@ -198,16 +198,13 @@ ClientStateStartServerListDownload::~ClientStateStartServerListDownload() noexce
 void
 ClientStateStartServerListDownload::Enter(boost::shared_ptr<ClientThread> client)
 {
-	path tmpServerListPath(client->GetCacheServerListFileName());
+	fs::path tmpServerListPath(client->GetCacheServerListFileName());
 	if (tmpServerListPath.empty())
 		throw ClientException(__FILE__, __LINE__, ERR_SOCK_INVALID_SERVERLIST_URL, 0);
 
-	if (exists(tmpServerListPath)) {
-		// Download the current server list once a day.
-		// If the previous file is older than one day, delete it.
-		// Also delete the file if it is empty.
-		if (file_size(tmpServerListPath) == 0 || (last_write_time(tmpServerListPath) + CLIENT_SERVER_LIST_REFRESH_INTERVAL_SEC < time(nullptr))) {
-			remove(tmpServerListPath);
+	if (fs::exists(tmpServerListPath)) {
+		if (fs::file_size(tmpServerListPath) == 0 || (fs::last_write_time(tmpServerListPath) + CLIENT_SERVER_LIST_REFRESH_INTERVAL_SEC < time(nullptr))) {
+			fs::remove(tmpServerListPath);
 		}
 	}
 
@@ -216,7 +213,7 @@ ClientStateStartServerListDownload::Enter(boost::shared_ptr<ClientThread> client
 		client->SetState(ClientStateReadingServerList::Instance());
 	} else {
 		// Download the server list.
-		boost::shared_ptr<DownloadHelper> downloader(new DownloadHelper);
+		auto downloader = boost::make_shared<DownloadHelper>();
 		downloader->Init(client->GetContext().GetServerListUrl(), tmpServerListPath.string());
 		ClientStateDownloadingServerList::Instance().SetDownloadHelper(downloader);
 		client->SetState(ClientStateDownloadingServerList::Instance());
@@ -1021,7 +1018,7 @@ ClientStateWaitEnterLogin::TimerLoop(const boost::system::error_code& ec, boost:
         ClientThread::LoginData loginData;
         if (client->GetLoginData(loginData)) {
             ClientContext &context = client->GetContext();
-            boost::shared_ptr<NetPacket> init(new NetPacket);
+            auto init = boost::make_shared<NetPacket>();
             init->GetMsg()->set_messagetype(PokerTHMessage::Type_InitMessage);
             InitMessage *netInit = init->GetMsg()->mutable_initmessage();
             netInit->mutable_requestedversion()->set_majorversion(NET_VERSION_MAJOR);
@@ -1091,7 +1088,7 @@ ClientStateWaitAuthChallenge::InternalHandlePacket(boost::shared_ptr<ClientThrea
 			throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_PASSWORD, 0);
 		string outUserData(tmpSession->AuthGetNextOutMsg());
 
-		boost::shared_ptr<NetPacket> packet(new NetPacket);
+		auto packet = boost::make_shared<NetPacket>();
 		packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AuthClientResponseMessage);
 		AuthClientResponseMessage *outAuth = packet->GetMsg()->mutable_authclientresponsemessage();
 		outAuth->set_clientresponse(outUserData);
@@ -1391,7 +1388,7 @@ ClientStateSynchronizeStart::TimerLoop(const boost::system::error_code& ec, boos
 	if (!ec && &client->GetState() == this) {
 		if (client->IsSynchronized()) {
 			// Acknowledge start.
-			boost::shared_ptr<NetPacket> startAck(new NetPacket);
+			auto startAck = boost::make_shared<NetPacket>();
 			startAck->GetMsg()->set_messagetype(PokerTHMessage::Type_StartEventAckMessage);
 			StartEventAckMessage *netStartAck = startAck->GetMsg()->mutable_starteventackmessage();
 			netStartAck->set_gameid(client->GetGameId());
