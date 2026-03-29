@@ -243,7 +243,7 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 			// reevaluate the player sets
 			for(j=0; j<playerSets.size(); j++) {
 				if(playerSets[j]>0) {
-					playerSets[j] -= potLevel[0];
+					playerSets[j] -= std::min(playerSets[j], potLevel[0]);
 				}
 			}
 

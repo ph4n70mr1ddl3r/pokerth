@@ -87,6 +87,7 @@ void CleanerServer::newCon()
 			tcpSocket->deleteLater();
 			tcpSocket = nullptr;
 		}
+		m_authenticated = false;
 		tcpSocket = tcpServer->nextPendingConnection();
 		if (!tcpSocket) {
 			blockConnection = false;
@@ -130,6 +131,7 @@ void CleanerServer::onRead()
 				if (packetSize == 0 || packetSize > MAX_CLEANER_PACKET_SIZE) {
 					m_recvBufUsed = 0;
 					qDebug() << "Invalid packet size: " << packetSize;
+					error = true;
 				} else if (m_recvBufUsed >= packetSize + CLEANER_NET_HEADER_SIZE) {
 					try {
 						boost::shared_ptr<ChatCleanerMessage> recvMsg(ChatCleanerMessage::default_instance().New());
@@ -181,6 +183,7 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 			bool secretMatch = (result == 0) && (expectedBytes.size() == receivedBytes.size());
 			if (secretMatch) {
 				error = false;
+				m_authenticated = true;
 
 				boost::shared_ptr<ChatCleanerMessage> tmpAck(ChatCleanerMessage::default_instance().New());
 				tmpAck->set_messagetype(ChatCleanerMessage::Type_CleanerInitAckMessage);
@@ -192,6 +195,10 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 		} else
 			qDebug() << "Invalid client version: " << netInit.requestedversion();
 	} else if (msg.messagetype() == ChatCleanerMessage::Type_CleanerChatRequestMessage) {
+		if (!m_authenticated) {
+			qDebug() << "Chat request received before authentication";
+			return true;
+		}
 		error = false;
 		const CleanerChatRequestMessage &netRequest = msg.cleanerchatrequestmessage();
 		unsigned playerId = netRequest.playerid();
@@ -244,6 +251,7 @@ void CleanerServer::socketStateChanged(QAbstractSocket::SocketState state)
 			tcpSocket->deleteLater();
 			tcpSocket = nullptr;
 		}
+		m_authenticated = false;
 		blockConnection = false;
 		tcpServer->resumeAccepting();
 	}

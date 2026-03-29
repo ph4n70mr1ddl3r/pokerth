@@ -31,6 +31,8 @@
 
 #include <dbofficial/asyncdbupdatescore.h>
 #include <dbofficial/dbidmanager.h>
+#include <core/loghelper.h>
+#include <stdexcept>
 
 
 using namespace std;
@@ -50,8 +52,13 @@ AsyncDBUpdateScore::Init(DBIdManager& idManager)
 {
 	std::list<std::string> params;
 	GetParams(params);
+	DB_id gameDBId = idManager.GetGameDBId(GetId());
+	if (gameDBId == DB_ID_INVALID) {
+		LOG_ERROR("AsyncDBUpdateScore::Init: Game DB ID not found for game " << GetId());
+		throw std::runtime_error("AsyncDBUpdateScore: Game DB ID not found");
+	}
 	ostringstream paramStream;
-	paramStream << idManager.GetGameDBId(GetId());
+	paramStream << gameDBId;
 	// Add game id as first parameter (param for stored procedure).
 	params.push_front(paramStream.str());
 	SetParams(params);

@@ -68,6 +68,7 @@ private:
 
 	std::unique_ptr<CleanerConfig> config;
 	bool blockConnection;
+	bool m_authenticated = false;
 	QString clientSecret;
 	QString serverSecret;
 

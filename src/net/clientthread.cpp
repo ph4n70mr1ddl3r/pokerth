@@ -172,7 +172,11 @@ ClientThread::SendPlayerAction()
 	if (!game) {
 		return;
 	}
-	boost::shared_ptr<PlayerInterface> myPlayer = game->getSeatsList()->front();
+	auto seatsList = game->getSeatsList();
+	if (!seatsList || seatsList->empty()) {
+		return;
+	}
+	boost::shared_ptr<PlayerInterface> myPlayer = seatsList->front();
 	if (!myPlayer) {
 		return;
 	}
@@ -918,6 +922,12 @@ ClientThread::StoreInTempAvatarFile(unsigned playerId, const vector<unsigned cha
 	AvatarFileMap::iterator pos = m_tempAvatarMap.find(playerId);
 	if (pos == m_tempAvatarMap.end())
 		throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_REQUEST_ID, 0);
+	if (pos->second->fileData.size() + data.size() > pos->second->reportedSize ||
+		pos->second->fileData.size() + data.size() > MAX_AVATAR_FILE_SIZE) {
+		LOG_ERROR("Avatar data exceeds reported size or max limit, discarding");
+		m_tempAvatarMap.erase(pos);
+		return;
+	}
 	std::copy(data.begin(), data.end(), back_inserter(pos->second->fileData));
 }
 

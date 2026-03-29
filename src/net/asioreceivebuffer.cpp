@@ -118,7 +118,7 @@ AsioReceiveBuffer::ScanPackets(boost::shared_ptr<SessionData> session)
 			uint32_t nativeVal;
 			memcpy(&nativeVal, &recvBuf[0], sizeof(uint32_t));
 			size_t packetSize = ntohl(nativeVal);
-			if (packetSize > MAX_PACKET_SIZE) {
+			if (packetSize == 0 || packetSize > MAX_PACKET_SIZE) {
 				LOG_ERROR(session->GetClientAddr() << "Session " << session->GetId() 
 				          << " - Invalid packet size: " << packetSize << " (max: " << MAX_PACKET_SIZE << ")");
 				session->Close();

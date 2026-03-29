@@ -32,6 +32,8 @@
 #include <boost/bind/bind.hpp>
 #include <dbofficial/asyncdbgameplace.h>
 #include <dbofficial/dbidmanager.h>
+#include <core/loghelper.h>
+#include <stdexcept>
 
 
 using namespace std;
@@ -54,7 +56,7 @@ AsyncDBGamePlace::Init(DBIdManager& idManager)
 	DB_id gameDBId = idManager.GetGameDBId(GetId());
 	if (gameDBId == DB_ID_INVALID) {
 		LOG_ERROR("AsyncDBGamePlace::Init: Game DB ID not found for game " << GetId());
-		return;
+		throw std::runtime_error("AsyncDBGamePlace: Game DB ID not found");
 	}
 	ostringstream paramStream;
 	paramStream << gameDBId;

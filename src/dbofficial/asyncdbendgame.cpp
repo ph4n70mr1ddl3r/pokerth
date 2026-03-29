@@ -32,6 +32,7 @@
 #include <dbofficial/asyncdbendgame.h>
 #include <dbofficial/dbidmanager.h>
 #include <core/loghelper.h>
+#include <stdexcept>
 
 
 using namespace std;
@@ -54,7 +55,7 @@ AsyncDBEndGame::Init(DBIdManager& idManager)
 	DB_id gameDBId = idManager.GetGameDBId(GetId());
 	if (gameDBId == DB_ID_INVALID) {
 		LOG_ERROR("AsyncDBEndGame::Init: Game DB ID not found for game " << GetId());
-		return;
+		throw std::runtime_error("AsyncDBEndGame: Game DB ID not found");
 	}
 	ostringstream paramStream;
 	paramStream << gameDBId;

@@ -33,7 +33,9 @@
 #include <net/websocketdata.h>
 #include <net/netpacket.h>
 #include <net/sessiondata.h>
+#include <core/loghelper.h>
 #include <memory>
+#include <limits>
 
 using namespace std;
 
@@ -80,7 +82,12 @@ WebSendBuffer::AsyncSendNextPacket(boost::shared_ptr<SessionData> session)
 void
 WebSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> session, boost::shared_ptr<NetPacket> packet)
 {
-	uint32_t packetSize = packet->GetMsg()->ByteSizeLong();
+	size_t rawSize = packet->GetMsg()->ByteSizeLong();
+	if (rawSize > MAX_SEND_BUF_SIZE || rawSize > std::numeric_limits<uint32_t>::max()) {
+		LOG_ERROR("WebSendBuffer: Packet too large: " << rawSize);
+		return;
+	}
+	uint32_t packetSize = static_cast<uint32_t>(rawSize);
 	auto buf = std::make_unique<google::protobuf::uint8[]>(packetSize);
 	packet->GetMsg()->SerializeWithCachedSizesToArray(buf.get());
 
