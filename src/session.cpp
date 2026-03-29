@@ -165,7 +165,7 @@ GuiInterface *Session::getGui()
 	return myGui;
 }
 
-Session::GameType Session::getGameType()
+Session::GameType Session::getGameType() const
 {
 	return myGameType;
 }

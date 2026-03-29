@@ -84,6 +84,7 @@ ServerDBThread::ServerDBThread(ServerDBCallback &cb, boost::shared_ptr<boost::as
 
 ServerDBThread::~ServerDBThread() noexcept
 {
+	Stop();
 }
 
 void
@@ -295,9 +296,10 @@ ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, const std
 {
 	LOG_MSG("ServerDBThread::SetPlayerLastGames() entered.");
 
-	if (!IsValidIpAddress(playerIp)) {
+	std::string safePlayerIp = playerIp;
+	if (!IsValidIpAddress(safePlayerIp)) {
 		LOG_ERROR("Invalid IP address format rejected: " << playerIp);
-		playerIp = "0.0.0.0";
+		safePlayerIp = "0.0.0.0";
 	}
 
 	std::ostringstream oss;
@@ -306,7 +308,7 @@ ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, const std
 	list<string> params;
 	ostringstream paramStream;
 	params.push_back(last_gamesFieldValue);
-	params.push_back(playerIp);
+	params.push_back(safePlayerIp);
 	paramStream << playerId;
 	params.push_back(paramStream.str());
 	boost::shared_ptr<AsyncDBQuery> asyncQuery(
@@ -325,22 +327,19 @@ ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, const std
 void
 ServerDBThread::EndGame(unsigned requestId)
 {
+	boost::mutex::scoped_lock lock(m_asyncQueueMutex);
+
 	// Set the end time of the game.
 	{
 		list<string> params;
- 	params.push_back(mysqlpp::DateTime(time(nullptr)));
+		params.push_back(mysqlpp::DateTime(time(nullptr)));
 		boost::shared_ptr<AsyncDBQuery> asyncQuery(
 			new AsyncDBEndGame(
 				requestId,
 				QUERY_END_GAME_PREPARE,
 				params));
 
-		{
-			boost::mutex::scoped_lock lock(m_asyncQueueMutex);
-			m_asyncQueue.push(asyncQuery);
-		}
-		
-		m_semaphore.post();
+		m_asyncQueue.push(asyncQuery);
 	}
 	// Update the player scores.
 	{
@@ -351,13 +350,12 @@ ServerDBThread::EndGame(unsigned requestId)
 				QUERY_UPDATE_SCORE_PREPARE,
 				params));
 
-		{
-			boost::mutex::scoped_lock lock(m_asyncQueueMutex);
-			m_asyncQueue.push(asyncQuery);
-		}
-		
-		m_semaphore.post();
+		m_asyncQueue.push(asyncQuery);
 	}
+
+	lock.unlock();
+	m_semaphore.post();
+	m_semaphore.post();
 }
 
 void
@@ -675,6 +673,7 @@ ServerDBThread::HandleNextQuery()
 						string tmpError = paramQuery.error();
 						m_connData->conn.disconnect();
 						boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::QueryError, &m_callback, tmpError));
+						nextQuery->HandleError(*m_ioService, m_callback);
 						break;
 					}
 				}

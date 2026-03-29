@@ -81,12 +81,14 @@ public:
 	void writeConfigInt(std::string varName, int varCont);
 	void writeConfigIntList(std::string varName, std::list<int> varCont);
 	void deleteConfigFile();
-	std::string configFileName;
+	[[nodiscard]] const std::string& getConfigFileName() const { return configFileName; }
 
 protected:
 	void checkAndCorrectPlayerNames();
 
 private:
+
+	std::string configFileName;
 
 	mutable boost::recursive_mutex m_configMutex;
 

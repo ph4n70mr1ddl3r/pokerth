@@ -193,6 +193,7 @@ QStringList MessageFilter::check(unsigned gameId, unsigned playerId, QString nic
 
 void MessageFilter::refreshConfig()
 {
+	QMutexLocker locker(&m_dataMutex);
 
 	//	global settings
 	warnLevelToKick = config->readConfigInt("WarnLevelToKick");

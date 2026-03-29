@@ -177,12 +177,14 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 						if(it == seatsList->end()) {
 							throw LocalException(__FILE__, __LINE__, ERR_SEAT_NOT_FOUND);
 						}
-						(*it)->setMyCash( (*it)->getMyCash() + ((potLevel[1])/winnerCount));
+						(*it)->setMyCash( (*it)->getMyCash() + static_cast<int>((potLevel[1])/winnerCount));
 
 						// filling winners vector
 						winners.push_back((*it)->getMyUniqueID());
-						(*it)->setLastMoneyWon( (*it)->getLastMoneyWon() + (potLevel[1])/winnerCount );
+						(*it)->setLastMoneyWon( (*it)->getLastMoneyWon() + static_cast<int>((potLevel[1])/winnerCount) );
 					}
+
+				}
 
 				}
 				// pot level sum not divisible by winnerCount
@@ -225,7 +227,7 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 							(*it)->setMyCash( (*it)->getMyCash() + static_cast<int>((potLevel[1])/winnerCount));
 							// filling winners vector
 							winners.push_back((*it)->getMyUniqueID());
-							(*it)->setLastMoneyWon( (*it)->getLastMoneyWon() + (potLevel[1])/winnerCount );
+							(*it)->setLastMoneyWon( (*it)->getLastMoneyWon() + static_cast<int>((potLevel[1])/winnerCount) );
 						}
 					}
 				}
