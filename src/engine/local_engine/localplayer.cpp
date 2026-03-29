@@ -4195,7 +4195,7 @@ void LocalPlayer::preflopEngine3()
 								myAction = PLAYER_ACTION_CALL;
 							}
 
-						} else raise = (potential - 4 ) * 2 * currentHand->getCurrentBeRo()->getHighestSet();
+						} else { raise = std::max(0, (potential - 4) * 2 * currentHand->getCurrentBeRo()->getHighestSet()); }
 					}
 				}
 			}
@@ -4240,7 +4240,7 @@ void LocalPlayer::preflopEngine3()
 								mySet = currentHand->getCurrentBeRo()->getHighestSet();
 								myAction = PLAYER_ACTION_CALL;
 							}
-						} else raise = (potential - 3 ) * currentHand->getCurrentBeRo()->getHighestSet();
+						} else { raise = std::max(0, (potential - 3) * currentHand->getCurrentBeRo()->getHighestSet()); }
 					}
 				}
 			}
@@ -4394,7 +4394,7 @@ void LocalPlayer::flopEngine3()
 				else {
 					if(bluff <=15 ) mySet = 4 * currentHand->getSmallBlind();
 					// je höher das Potential, desto höher der Einsatz (zur Basis SmallBlind)
-					else mySet = (potential-1) * 2 * currentHand->getSmallBlind();
+					else { mySet = std::max(0, (potential-1) * 2 * currentHand->getSmallBlind()); }
 				}
 
 				// All In
@@ -4423,7 +4423,7 @@ void LocalPlayer::flopEngine3()
 				// bluff - raise
 				if(bluff <=5) raise = ((bluff+1)/2) * currentHand->getCurrentBeRo()->getHighestSet();
 				// Betrag, der ber dem aktuell HighestSet gesetzt werden soll
-				else raise = ((potential - 2 ) / 2) * currentHand->getCurrentBeRo()->getHighestSet();
+				else raise = std::max(0, ((potential - 2) / 2) * currentHand->getCurrentBeRo()->getHighestSet());
 
 				// All In
 				if(currentHand->getCurrentBeRo()->getHighestSet() + raise >= myCash + mySet) {
@@ -4566,7 +4566,7 @@ void LocalPlayer::turnEngine3()
 				else {
 					if(bluff <=10 ) mySet = ((bluff+2)/3) * currentHand->getSmallBlind();
 					// je hÃ¯Â¿Åer das Potential, desto hÃ¯Â¿Åher der Einsatz (zur Basis SmallBlind)
-					else mySet = (potential-1) * 3 * currentHand->getSmallBlind();
+					else { mySet = std::max(0, (potential-1) * 3 * currentHand->getSmallBlind()); }
 				}
 
 				// All In
@@ -4595,7 +4595,7 @@ void LocalPlayer::turnEngine3()
 				// bluff - raise
 				if(bluff <= 4) raise = ((bluff+1)/2) * currentHand->getCurrentBeRo()->getHighestSet();
 				// Betrag, der ber dem aktuell HighestSet gesetzt werden soll
-				else raise = ( potential - 3 ) * currentHand->getCurrentBeRo()->getHighestSet();
+				else raise = std::max(0, (potential - 3) * currentHand->getCurrentBeRo()->getHighestSet());
 
 				// All In
 				if(currentHand->getCurrentBeRo()->getHighestSet() + raise >= myCash + mySet) {
@@ -4732,7 +4732,7 @@ void LocalPlayer::riverEngine3()
 				else {
 					if(bluff <= 15 ) mySet = ((bluff-1)/5) * 2 * currentHand->getSmallBlind();
 					// je hÃ¯Â¿Åer das Potential, desto hÃ¯Â¿Åher der Einsatz (zur Basis SmallBlind)
-					else mySet = (potential-1) * 4 * currentHand->getSmallBlind();
+					else { mySet = std::max(0, (potential-1) * 4 * currentHand->getSmallBlind()); }
 				}
 
 				// All In
@@ -4761,7 +4761,7 @@ void LocalPlayer::riverEngine3()
 				// bluff - raise
 				if(bluff <= 2 ) raise = bluff * currentHand->getCurrentBeRo()->getHighestSet();
 				// Betrag, der ber dem aktuell HighestSet gesetzt werden soll
-				else raise = ( potential - 3 ) * currentHand->getCurrentBeRo()->getHighestSet();
+				else raise = std::max(0, (potential - 3) * currentHand->getCurrentBeRo()->getHighestSet());
 
 				// All In
 				if(currentHand->getCurrentBeRo()->getHighestSet() + raise >= myCash + mySet) {

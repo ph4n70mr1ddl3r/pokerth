@@ -1457,7 +1457,10 @@ ServerGameStateWaitPlayerAction::InternalProcessPacket(boost::shared_ptr<ServerG
 	if (packet->GetMsg()->messagetype() == PokerTHMessage::Type_MyActionRequestMessage) {
 		MyActionRequestMessage *netMyAction = packet->GetMsg()->mutable_myactionrequestmessage();
 
-		// TODO consider game id.
+		if (netMyAction->gameid() != server->GetId()) {
+			LOG_ERROR("Action request with wrong game ID: " << netMyAction->gameid() << " expected: " << server->GetId());
+			return;
+		}
 		Game &curGame = server->GetGame();
 		boost::shared_ptr<PlayerInterface> tmpPlayer = curGame.getPlayerByUniqueId(session->GetPlayerData()->GetUniqueId());
 		if (!tmpPlayer)
