@@ -31,6 +31,7 @@
 
 #include "thread.h"
 #include <engine/log.h>
+#include <core/loghelper.h>
 #include <core/pokerthexception.h>
 #include <boost/chrono/chrono.hpp>
 #include <chrono>
@@ -102,7 +103,7 @@ Thread::Join(unsigned msecTimeout)
 		tmpIsTerminated = true;
 	} else {
 		// Wait for the termination of the application code.
-		tmpIsTerminated = m_isTerminatedSemaphore.try_wait_for(boost::chrono::milliseconds(msecTimeout));
+		tmpIsTerminated = m_isTerminatedSemaphore.timed_wait(boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(msecTimeout));
 	}
 
 	if (tmpIsTerminated) {

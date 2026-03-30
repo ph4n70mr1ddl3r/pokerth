@@ -31,8 +31,3 @@
 
 #include "playerinterface.h"
 
-PlayerInterface::~PlayerInterface() noexcept
-{
-}
-
-

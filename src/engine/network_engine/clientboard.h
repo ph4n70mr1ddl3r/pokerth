@@ -51,7 +51,7 @@ public:
 	void setPlayerLists(PlayerList, PlayerList, PlayerList) override;
 
 	void setMyCards(const std::array<int, 5> &theValue) override;
-	void getMyCards(std::array<int, 5> &theValue) override;
+	void getMyCards(std::array<int, 5> &theValue) const override;
 
 	int getPot() const override;
 	void setPot(int theValue) override;

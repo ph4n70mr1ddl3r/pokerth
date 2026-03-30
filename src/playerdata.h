@@ -140,7 +140,7 @@ private:
 	bool							m_isGameAdmin;
 	boost::shared_ptr<AvatarFile>	m_netAvatarFile;
 
-	std::vector<long> 				m_last_games;
+	mutable std::vector<long> 				m_last_games;
 
 	mutable boost::mutex			m_dataMutex;
 };

@@ -58,12 +58,13 @@ WebReceiveBuffer::HandleMessage(boost::shared_ptr<SessionData> session, const st
 	boost::shared_ptr<NetPacket> tmpPacket;
 	try {
 		tmpPacket = NetPacket::Create(msg.c_str(), msg.size());
-		if (!validator.IsValidPacket(*tmpPacket)) {
+		if (tmpPacket && !validator.IsValidPacket(*tmpPacket)) {
 			LOG_ERROR("Session " << session->GetId() << " - Invalid packet: " << tmpPacket->GetMsg()->messagetype());
 			tmpPacket.reset();
 		}
 	} catch (const exception &e) {
 		LOG_ERROR("Session " << session->GetId() << " - " << e.what());
+		tmpPacket.reset();
 	}
 	if (tmpPacket) {
 		session->HandlePacket(tmpPacket);

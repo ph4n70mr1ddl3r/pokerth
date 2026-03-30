@@ -38,6 +38,7 @@
 #include <net/netpacket.h>
 #include <net/netexception.h>
 #include <net/socket_msg.h>
+#include <core/loghelper.h>
 #include <cstring>
 #include <utility>
 #include <limits>
@@ -139,7 +140,7 @@ AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::strea
                 *sslStream,
                 boost::asio::buffer(curWriteBuf.data(), curWriteBufUsed),
                 boost::bind(&AsioSendBuffer::HandleWriteSsl,
-                            shared_from_this(),
+                            boost::static_pointer_cast<AsioSendBuffer>(shared_from_this()),
                             sslStream,
                             boost::asio::placeholders::error));
         } else if (closeAfterSend) {
@@ -203,7 +204,7 @@ void
 AsioSendBuffer::AppendToSendBufWithoutCheck(const char *data, size_t size)
 {
     if (sendBuf.size() < sendBufUsed + size)
-        throw NetException(__FILE__, __LINE__, ERR_SOCK_BUF_INVALID_SIZE, 0);
+        throw NetException(__FILE__, __LINE__, ERR_NET_BUF_INVALID_SIZE, 0);
     std::memcpy(sendBuf.data() + sendBufUsed, data, size);
     sendBufUsed += size;
 }

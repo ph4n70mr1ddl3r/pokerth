@@ -30,6 +30,7 @@
  *****************************************************************************/
 
 #include <net/websendbuffer.h>
+#include <net/asiosendbuffer.h>
 #include <net/websocketdata.h>
 #include <net/netpacket.h>
 #include <net/sessiondata.h>

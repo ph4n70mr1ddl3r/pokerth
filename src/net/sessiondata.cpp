@@ -37,6 +37,7 @@
 #include <net/socket_msg.h>
 #include <net/websocketdata.h>
 #include <core/crypthelper.h>
+#include <core/loghelper.h>
 #include <boost/asio/ssl.hpp>
 #include <QDebug>
 

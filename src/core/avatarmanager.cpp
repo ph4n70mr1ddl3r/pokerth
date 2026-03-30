@@ -83,8 +83,8 @@ AvatarManager::Init(const string &dataDir, const string &cacheDir)
 {
 	bool retVal = true;
 	bool tmpRet = false;
-	path tmpCachePath(cacheDir);
-	path tmpDataPath(dataDir);
+	fs::path tmpCachePath(cacheDir);
+	fs::path tmpDataPath(dataDir);
 	{
 		boost::mutex::scoped_lock lock(m_cacheDirMutex);
 		m_cacheDir = tmpCachePath.string();
@@ -112,7 +112,7 @@ bool
 AvatarManager::AddSingleAvatar(const std::string &fileName)
 {
 	bool retVal = false;
-	path filePath(fileName);
+	fs::path filePath(fileName);
 	string tmpFileName(filePath.string());
 
 	if (!fileName.empty() && !tmpFileName.empty()) {
@@ -241,7 +241,7 @@ AvatarManager::GetAvatarFileType(const string &fileName)
 {
 	AvatarFileType fileType;
 
-	path filePath(fileName);
+	fs::path filePath(fileName);
 	string ext(filePath.extension().string());
 	if (boost::algorithm::iequals(ext, ".png"))
 		fileType = AVATAR_FILE_TYPE_PNG;
@@ -279,7 +279,7 @@ bool
 AvatarManager::GetHashForAvatar(const std::string &fileName, MD5Buf &md5buf) const
 {
 	bool found = false;
-	if (exists(fileName)) {
+	if (fs::exists(fileName)) {
 		// Scan default avatars first.
 		{
 			boost::mutex::scoped_lock lock(m_avatarsMutex);
@@ -365,16 +365,16 @@ AvatarManager::StoreAvatarInCache(const MD5Buf &md5buf, AvatarFileType avatarFil
 		string ext(GetAvatarFileExtension(avatarFileType));
 		if (!ext.empty() && !cacheDir.empty()) {
 			if (IsValidAvatarFileType(avatarFileType, data, size)) {
-				path tmpPath(cacheDir);
-				tmpPath /= (md5buf.ToString() + ext);
-				string fileName(tmpPath.string());
-				boost::system::error_code ec;
-				path canonicalCacheDir = canonical(path(cacheDir), ec);
+			fs::path tmpPath(cacheDir);
+			tmpPath /= (md5buf.ToString() + ext);
+			string fileName(tmpPath.string());
+			boost::system::error_code ec;
+			fs::path canonicalCacheDir = fs::canonical(fs::path(cacheDir), ec);
 				if (ec) {
 					LOG_ERROR("Failed to resolve cache directory: " << ec.message());
 					return retVal;
 				}
-				path canonicalFilePath = canonical(tmpPath.parent_path(), ec) / tmpPath.filename();
+				fs::path canonicalFilePath = fs::canonical(tmpPath.parent_path(), ec) / tmpPath.filename();
 				if (ec) {
 					LOG_ERROR("Failed to resolve avatar file path: " << ec.message());
 					return retVal;
@@ -393,7 +393,7 @@ AvatarManager::StoreAvatarInCache(const MD5Buf &md5buf, AvatarFileType avatarFil
 						LOG_ERROR("Failed to write avatar data to file: " << fileName);
 						o.close();
 						boost::system::error_code ec;
-						boost::filesystem::remove(fileName, ec);
+						fs::remove(fileName, ec);
 						return retVal;
 					}
 					o.close();
@@ -455,7 +455,7 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 		cacheDir = m_cacheDir;
 	}
 	try {
-		path cachePath(cacheDir);
+		fs::path cachePath(cacheDir);
 		cacheDir = cachePath.string();
 		// Never delete anything if we do not have a special cache dir set.
 		if (!cacheDir.empty()) {
@@ -470,14 +470,17 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 				AvatarMap::const_iterator end = m_cachedAvatars.end();
 				while (i != end) {
 					bool keepFile = false;
-					path filePath(i->second);
+					fs::path filePath(i->second);
 					string fileString(filePath.string());
 					// Only consider files which are definitely in the cache dir.
 					if (fileString.size() > cacheDir.size() && fileString.compare(0, cacheDir.size(), cacheDir) == 0 && fileString[cacheDir.size()] == '/') {
 						// Only consider files with MD5 as file name.
 						MD5Buf tmpBuf;
-						if (exists(filePath) && tmpBuf.FromString(filePath.stem().string())) {
-							timeMap.insert(TimeAvatarMap::value_type(last_write_time(filePath), i->first));
+						if (fs::exists(filePath) && tmpBuf.FromString(filePath.stem().string())) {
+							auto ftime = fs::last_write_time(filePath);
+							auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+								ftime - fs::file_time_type::clock::now() + std::chrono::system_clock::now());
+							timeMap.insert(TimeAvatarMap::value_type(std::chrono::system_clock::to_time_t(sctp), i->first));
 							keepFile = true;
 						}
 					}
@@ -509,8 +512,8 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 					TimeAvatarMap::iterator i = timeMap.begin();
 					AvatarMap::iterator pos = m_cachedAvatars.find(i->second);
 					if (pos != m_cachedAvatars.end()) {
-						path tmpPath(pos->second);
-						remove(tmpPath);
+						fs::path tmpPath(pos->second);
+						fs::remove(tmpPath);
 						m_cachedAvatars.erase(pos);
 					}
 					timeMap.erase(i);
@@ -525,8 +528,8 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 					break;
 				AvatarMap::iterator pos = m_cachedAvatars.find(i->second);
 				if (pos != m_cachedAvatars.end()) {
-					path tmpPath(pos->second);
-					remove(tmpPath);
+					fs::path tmpPath(pos->second);
+					fs::remove(tmpPath);
 					m_cachedAvatars.erase(pos);
 				}
 				timeMap.erase(i);
@@ -541,16 +544,16 @@ bool
 AvatarManager::InternalReadDirectory(const std::string &dir, AvatarMap &avatars)
 {
 	bool retVal = true;
-	path tmpPath(dir);
+	fs::path tmpPath(dir);
 
-	if (exists(tmpPath) && is_directory(tmpPath)) {
+	if (fs::exists(tmpPath) && fs::is_directory(tmpPath)) {
 		try {
 			// This method is not thread safe. Only call after locking the map.
-			directory_iterator i(tmpPath);
-			directory_iterator end;
+			fs::directory_iterator i(tmpPath);
+			fs::directory_iterator end;
 
 			while (i != end) {
-				if (is_regular_file(i->status())) {
+				if (fs::is_regular_file(i->status())) {
 					string md5sum(i->path().stem().string());
 					MD5Buf md5buf;
 					string fileName(i->path().string());

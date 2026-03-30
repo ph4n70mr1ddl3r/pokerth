@@ -40,6 +40,7 @@
 #include <net/downloadhelper.h>
 #include <core/avatarmanager.h>
 #include <core/crypthelper.h>
+#include <core/loghelper.h>
 #include <qttoolsinterface.h>
 
 #include <game.h>
@@ -203,9 +204,18 @@ ClientStateStartServerListDownload::Enter(boost::shared_ptr<ClientThread> client
 		throw ClientException(__FILE__, __LINE__, ERR_SOCK_INVALID_SERVERLIST_URL, 0);
 
 	if (fs::exists(tmpServerListPath)) {
-		if (fs::file_size(tmpServerListPath) == 0 || (fs::last_write_time(tmpServerListPath) + CLIENT_SERVER_LIST_REFRESH_INTERVAL_SEC < time(nullptr))) {
-			fs::remove(tmpServerListPath);
+		bool removeFile = false;
+		if (fs::file_size(tmpServerListPath) == 0) {
+			removeFile = true;
+		} else {
+			auto lastWrite = fs::last_write_time(tmpServerListPath);
+			auto now = fs::file_time_type::clock::now();
+			auto age = duration_cast<seconds>(now - lastWrite);
+			if (age.count() >= CLIENT_SERVER_LIST_REFRESH_INTERVAL_SEC)
+				removeFile = true;
 		}
+		if (removeFile)
+			fs::remove(tmpServerListPath);
 	}
 
 	if (exists(tmpServerListPath)) {
@@ -261,15 +271,15 @@ ClientStateDownloadingServerList::Exit(boost::shared_ptr<ClientThread> client)
 void
 ClientStateDownloadingServerList::SetDownloadHelper(boost::shared_ptr<DownloadHelper> helper)
 {
-	myDownloadHelper = helper;
+		m_downloadHelper = helper;
 }
 
 void
 ClientStateDownloadingServerList::TimerLoop(const boost::system::error_code& ec, boost::shared_ptr<ClientThread> client)
 {
 	if (!ec && &client->GetState() == this) {
-		if (myDownloadHelper->Process()) {
-			myDownloadHelper.reset();
+		if (m_downloadHelper->Process()) {
+			m_downloadHelper.reset();
 			client->SetState(ClientStateReadingServerList::Instance());
 		} else {
 			client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
@@ -301,9 +311,9 @@ void
 ClientStateReadingServerList::Enter(boost::shared_ptr<ClientThread> client)
 {
 	ClientContext &context = client->GetContext();
-	path zippedServerListPath(context.GetCacheDir());
+	fs::path zippedServerListPath(context.GetCacheDir());
 	zippedServerListPath /= context.GetServerListUrl().substr(context.GetServerListUrl().find_last_of('/') + 1);
-	path xmlServerListPath;
+	fs::path xmlServerListPath;
 	if (zippedServerListPath.extension().string() == ".z") {
 		xmlServerListPath = zippedServerListPath;
 		xmlServerListPath.replace_extension("");
@@ -473,7 +483,7 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
         boost::bind(
             &ClientStateStartConnect::TimerTimeout, this, boost::asio::placeholders::error, client));
 
-    boost::asio::ip::tcp::endpoint endpoint = myRemoteEndpointIterator->endpoint();
+    boost::asio::ip::tcp::endpoint endpoint = m_remoteEndpointIterator->endpoint();
 
     if (client->GetContext().GetSessionData()->IsSsl()) {
         client->GetContext().GetSessionData()->GetSslStream()->lowest_layer().async_connect(
@@ -481,7 +491,7 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
             boost::bind(&ClientStateStartConnect::HandleConnect,
                         this,
                         boost::asio::placeholders::error,
-                        ++myRemoteEndpointIterator,
+                        ++m_remoteEndpointIterator,
                         client));
     } else {
         client->GetContext().GetSessionData()->GetAsioSocket()->async_connect(
@@ -489,7 +499,7 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
             boost::bind(&ClientStateStartConnect::HandleConnect,
                         this,
                         boost::asio::placeholders::error,
-                        ++myRemoteEndpointIterator,
+                        ++m_remoteEndpointIterator,
                         client));
     }
 }
@@ -503,8 +513,8 @@ ClientStateStartConnect::Exit(boost::shared_ptr<ClientThread> client)
 void
 ClientStateStartConnect::SetRemoteEndpoint(boost::asio::ip::tcp::resolver::results_type endpointIterator)
 {
-	myRemoteEndpointIterator = endpointIterator.begin();
-	myRemoteEndpoint = endpointIterator;
+	m_remoteEndpointIterator = endpointIterator.begin();
+	m_remoteEndpoint = endpointIterator;
 }
 
 void
@@ -524,7 +534,7 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
                 client->GetCallback().SignalNetClientConnect(MSG_SOCK_CONNECT_DONE);
                 client->SetState(ClientStateStartSession::Instance());
             }
-        } else if (endpoint_iterator != myRemoteEndpoint.end()) {
+        } else if (endpoint_iterator != m_remoteEndpoint.end()) {
             // Try next resolve entry.
             ClientContext &context = client->GetContext();
             boost::system::error_code closeEc;
@@ -537,7 +547,7 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
                     boost::bind(&ClientStateStartConnect::HandleConnect,
                                 this,
                                 boost::asio::placeholders::error,
-                                ++myRemoteEndpointIterator,
+                                ++m_remoteEndpointIterator,
                                 client));
             } else {
                 context.GetSessionData()->GetAsioSocket()->close(closeEc);
@@ -546,7 +556,7 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
                     boost::bind(&ClientStateStartConnect::HandleConnect,
                                 this,
                                 boost::asio::placeholders::error,
-                                ++myRemoteEndpointIterator,
+                                ++m_remoteEndpointIterator,
                                 client));
             }
         } else {
@@ -824,7 +834,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		const AvatarDataMessage &netAvatarData = tmpPacket->GetMsg()->avatardatamessage();
 		size_t dataSize = netAvatarData.avatarblock().size();
 		if (dataSize > MAX_AVATAR_FILE_SIZE) {
-			throw ClientException(__FILE__, __LINE__, ERR_NET_WRONG_AVATAR_SIZE);
+			throw ClientException(__FILE__, __LINE__, ERR_NET_WRONG_AVATAR_SIZE, 0);
 		}
 		vector<unsigned char> fileData(dataSize);
 		if (dataSize > 0) {
@@ -1649,7 +1659,7 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		tmpCards[1] = static_cast<int>(r.resultcard2());
 		tmpPlayer->setMyCards(tmpCards);
 		for (int num = 0; num < 5; num++) {
-			bestHandPos[num] = r.besthandposition(num);
+			bestHandPos[num] = (num < r.besthandposition_size()) ? r.besthandposition(num) : 0;
 		}
 		if (r.cardsvalue()) {
 			tmpPlayer->setMyCardsValueInt(r.cardsvalue());
@@ -1764,9 +1774,9 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 
 		//log blinds sets after setting bigblind-button
 		if (isBigBlind) {
-			PlayerInterface* smallBlindPlayer = curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getSmallBlindPositionId());
-			PlayerInterface* bigBlindPlayer = curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getBigBlindPositionId());
-			PlayerInterface* dealerPlayer = curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getDealerPosition());
+			auto smallBlindPlayer = curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getSmallBlindPositionId());
+			auto bigBlindPlayer = curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getBigBlindPositionId());
+			auto dealerPlayer = curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getDealerPosition());
 			if (smallBlindPlayer && bigBlindPlayer && dealerPlayer) {
 				client->GetGui().logNewBlindsSetsMsg(
 					smallBlindPlayer->getMySet(),
@@ -1992,7 +2002,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 			tmpCards[1] = static_cast<int>(r.resultcard2());
 			tmpPlayer->setMyCards(tmpCards);
 			for (int num = 0; num < 5; num++) {
-				bestHandPos[num] = r.besthandposition(num);
+				bestHandPos[num] = (num < r.besthandposition_size()) ? r.besthandposition(num) : 0;
 			}
 			if (r.has_cardsvalue()) {
 				tmpPlayer->setMyCardsValueInt(r.cardsvalue());
@@ -2051,7 +2061,7 @@ ClientStateRunHand::ResetPlayerSets(Game &curGame)
     PlayerListIterator i = curGame.getActivePlayerList()->begin();
     PlayerListIterator end = curGame.getActivePlayerList()->end();
     while (i != end) {
-        (*i)->setMySet(0);
+        (*i)->setMySetNull();
         ++i;
     }
 }

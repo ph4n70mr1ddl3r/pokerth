@@ -32,6 +32,8 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
+#include <string>
+
 class Tools
 {
 public:

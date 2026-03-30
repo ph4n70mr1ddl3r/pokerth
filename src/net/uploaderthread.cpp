@@ -85,7 +85,7 @@ UploaderThread::Main()
 					}
 				}
 				if (!data.filename.empty() && data.filesize > 0) {
-					path filepath(data.filename);
+					fs::path filepath(data.filename);
 					string url(data.address);
 					if (data.httpPost.empty()) {
 						url += filepath.filename().string();

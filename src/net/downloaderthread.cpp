@@ -95,7 +95,7 @@ DownloaderThread::Main()
 			if (!myDownloadInProgress) {
 				// Previous download was finished.
 				if (myCurDownloadData) {
-					path filepath(myCurDownloadData->filename);
+					fs::path filepath(myCurDownloadData->filename);
 					std::ifstream instream(filepath.string().c_str(), ios_base::in | ios_base::binary);
 					// Find out file size.
 					// Not fully portable, but works on win/linux/mac.
@@ -131,7 +131,7 @@ DownloaderThread::Main()
 					}
 				}
 				if (myCurDownloadData && !myCurDownloadData->filename.empty()) {
-					path filepath(myCurDownloadData->filename);
+					fs::path filepath(myCurDownloadData->filename);
 					myDownloadHelper->Init(myCurDownloadData->address, filepath.string());
 					myDownloadInProgress = true;
 				}

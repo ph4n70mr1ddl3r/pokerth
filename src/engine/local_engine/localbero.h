@@ -140,11 +140,11 @@ protected:
 
 	void setFirstRun(bool theValue)
 	{
-		firstRun = theValue;
+		firstRound = theValue;
 	}
 	bool getFirstRun() const
 	{
-		return firstRun;
+		return firstRound;
 	}
 
 	void setFirstRound(bool theValue)

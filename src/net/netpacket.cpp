@@ -34,8 +34,9 @@
 #include <core/loghelper.h>
 
 #include <memory>
-
 #include <string>
+
+using namespace std;
 
 NetPacket::NetPacket()
 	: m_msg(PokerTHMessage::default_instance().New())

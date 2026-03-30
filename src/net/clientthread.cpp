@@ -65,6 +65,13 @@
 #define CLIENT_SEND_LOOP_MSEC	50
 
 using boost::asio::ip::tcp;
+using namespace std;
+namespace fs = std::filesystem;
+#ifdef BOOST_ASIO_HAS_STD_CHRONO
+using namespace std::chrono;
+#else
+using namespace boost::chrono;
+#endif
 
 ClientThread::ClientThread(GuiInterface &gui, AvatarManager &avatarManager, Log *myLog)
 	: m_ioService(new boost::asio::io_context), m_clientLog(myLog), m_curState(nullptr), m_gui(gui),
@@ -677,7 +684,7 @@ ClientThread::InitGame()
 		GetCallback().SignalNetClientGameStart(m_game);
 	} catch (const std::exception& e) {
 		LOG_ERROR("Failed to initialize game: " << e.what());
-		throw ClientException(__FILE__, __LINE__, ERR_GAME_INIT_FAILED, 0);
+		throw ClientException(__FILE__, __LINE__, ERR_SOCK_CREATION_FAILED, 0);
 	}
 }
 
@@ -1048,7 +1055,7 @@ string
 ClientThread::GetCacheServerListFileName()
 {
 	string fileName;
-	path tmpServerListPath(GetContext().GetCacheDir());
+	fs::path tmpServerListPath(GetContext().GetCacheDir());
 	string serverListUrl(GetContext().GetServerListUrl());
 	// Retrieve the file name from the URL.
 	size_t pos = serverListUrl.find_last_of('/');
@@ -1672,13 +1679,13 @@ ClientThread::IsSynchronized() const
 void
 ClientThread::ReadSessionGuidFromFile()
 {
-	string guidFileName(GetContext().GetCacheDir() + TEMP_GUID_FILENAME);
-	std::ifstream guidStream(guidFileName.c_str(), ios::in | ios::binary);
+	std::string guidFileName(GetContext().GetCacheDir() + TEMP_GUID_FILENAME);
+	std::ifstream guidStream(guidFileName.c_str(), std::ios_base::in | std::ios_base::binary);
 	if (guidStream.good()) {
 		std::vector<char> tmpGuid(CLIENT_GUID_SIZE);
 		guidStream.read(&tmpGuid[0], CLIENT_GUID_SIZE);
 		if (guidStream.good() || guidStream.gcount() == CLIENT_GUID_SIZE) {
-			GetContext().SetSessionGuid(string(tmpGuid.begin(), tmpGuid.end()));
+			GetContext().SetSessionGuid(std::string(tmpGuid.begin(), tmpGuid.end()));
 		}
 	}
 }
@@ -1686,8 +1693,8 @@ ClientThread::ReadSessionGuidFromFile()
 void
 ClientThread::WriteSessionGuidToFile() const
 {
-	string guidFileName(GetContext().GetCacheDir() + TEMP_GUID_FILENAME);
-	std::ofstream guidStream(guidFileName.c_str(), ios::out | ios::trunc | ios::binary);
+	std::string guidFileName(GetContext().GetCacheDir() + TEMP_GUID_FILENAME);
+	std::ofstream guidStream(guidFileName.c_str(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
 	if (guidStream.good()) {
 		guidStream.write(GetContext().GetSessionGuid().c_str(), GetContext().GetSessionGuid().size());
 	}

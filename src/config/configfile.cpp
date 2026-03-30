@@ -325,7 +325,6 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 		configFileName += "config.xml";
 
 		QDomDocument xmlDoc;
-		xmlDoc.setResolveExternals(false);
 
 		QString qPath = QString::fromLocal8Bit(configFileName.c_str());
 		QFile file(qPath);
@@ -398,7 +397,6 @@ void ConfigFile::fillBuffer()
     boost::recursive_mutex::scoped_lock lock(m_configMutex);
 
     QDomDocument xmlDoc;
-    xmlDoc.setResolveExternals(false);
     QFile file(QString::fromStdString(configFileName));
     if (file.open(QIODevice::ReadOnly) && xmlDoc.setContent(&file))
 	{
@@ -592,7 +590,6 @@ void ConfigFile::updateConfig(ConfigState myConfigState)
 
 		// load the old one
 		QDomDocument oldDoc;
-		oldDoc.setResolveExternals(false);
 		QFile file(QString::fromStdString(configFileName));
 		if (file.open(QIODevice::ReadOnly) && oldDoc.setContent(&file))
 		{

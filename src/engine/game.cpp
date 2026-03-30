@@ -79,7 +79,7 @@ Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
 	// create board
 	currentBoard = myFactory->createBoard();
 	if (!currentBoard)
-		throw LocalException(__FILE__, __LINE__, ERR_BOARD_NOT_FOUND);
+		throw LocalException(__FILE__, __LINE__, ERR_HAND_NOT_FOUND);
 
 	// create player lists
 	seatsList = boost::make_shared<std::list<boost::shared_ptr<PlayerInterface>>>();
@@ -130,7 +130,7 @@ Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
 	currentBoard->setPlayerLists(seatsList, activePlayerList, runningPlayerList);
 
 	// log game data
-	PlayerInterface* dealerPlayer = getPlayerByUniqueId(dealerPosition);
+	auto dealerPlayer = getPlayerByUniqueId(dealerPosition);
 	if(myLog) myLog->logNewGameMsg(myGameID, startCash, startSmallBlind, dealerPlayer ? dealerPlayer->getMyID()+1 : 0, seatsList);
 
 	//start timer

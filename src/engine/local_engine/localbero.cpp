@@ -38,7 +38,7 @@
 using namespace std;
 
 LocalBeRo::LocalBeRo(HandInterface* hi, unsigned dP, int sB, GameState gS)
-	: BeRoInterface(), myHand(hi), myBeRoID(gS), dealerPosition(dP), smallBlindPosition(0), smallBlindPositionId(0), bigBlindPositionId(0), smallBlind(sB), highestSet(0), minimumRaise(2*sB), fullBetRule(false), firstRun(true), firstRunGui(true), firstRound(true), firstHeadsUpRound(true), currentPlayersTurnId(0), firstRoundLastPlayersTurnId(0), logBoardCardsDone(false)
+	: BeRoInterface(), myHand(hi), myBeRoID(gS), dealerPosition(dP), smallBlindPosition(0), smallBlindPositionId(0), bigBlindPositionId(0), smallBlind(sB), highestSet(0), minimumRaise(2*sB), fullBetRule(false), firstRound(true), firstRunGui(true), firstHeadsUpRound(true), currentPlayersTurnId(0), firstRoundLastPlayersTurnId(0), logBoardCardsDone(false)
 {
 	currentPlayersTurnIt = myHand->getRunningPlayerList()->begin();
 	lastPlayersTurnIt = myHand->getRunningPlayerList()->begin();
@@ -101,9 +101,9 @@ void LocalBeRo::run()
 		myHand->getGuiInterface()->dealBeRoCards(myBeRoID);
 	} else {
 
-		if(firstRun) {
+		if(firstRound) {
 
-			firstRun = false;
+			firstRound = false;
 
 			if(!(myHand->getAllInCondition())) {
 
@@ -147,7 +147,7 @@ void LocalBeRo::run()
 		//log the turned cards
 		if(!logBoardCardsDone) {
 
-			int tempBoardCardsArray[5];
+			std::array<int, 5> tempBoardCardsArray;
 
 			myHand->getBoard()->getMyCards(tempBoardCardsArray);
 

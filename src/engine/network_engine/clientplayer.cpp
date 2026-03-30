@@ -589,6 +589,7 @@ ClientPlayer::isMuted() const
 bool ClientPlayer::checkIfINeedToShowCards()
 {
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
+	if (!currentHand) return false;
 	std::list<unsigned> playerNeedToShowCardsList = currentHand->getBoard()->getPlayerNeedToShowCards();
 	for(auto it = playerNeedToShowCardsList.begin(); it != playerNeedToShowCardsList.end(); ++it) {
 		if(*it == myUniqueID) return true;

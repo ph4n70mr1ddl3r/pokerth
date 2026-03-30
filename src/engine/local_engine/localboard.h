@@ -55,7 +55,7 @@ public:
 	{
 		myCards = theValue;
 	}
-	void getMyCards(std::array<int, 5> &theValue) override
+	void getMyCards(std::array<int, 5> &theValue) const override
 	{
 		theValue = myCards;
 	}

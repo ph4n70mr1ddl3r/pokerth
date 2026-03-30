@@ -265,7 +265,9 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 	if(pot!=0) {
 		LOG_ERROR(__FILE__ << " (" << __LINE__ << "): distributePot-ERROR: Pot = " << pot);
 		if (!winners.empty()) {
-			auto it = getSeatIt(winners.front());
+			unsigned winnerId = winners.front();
+			auto it = std::find_if(seatsList->begin(), seatsList->end(),
+				[winnerId](const boost::shared_ptr<PlayerInterface>& p) { return p && p->getMyUniqueID() == winnerId; });
 			if (it != seatsList->end()) {
 				(*it)->setMyCash((*it)->getMyCash() + pot);
 				(*it)->setLastMoneyWon((*it)->getLastMoneyWon() + pot);

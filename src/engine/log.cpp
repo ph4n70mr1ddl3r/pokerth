@@ -548,7 +548,7 @@ Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerI
 			if( mySqliteLogDb.isValid() && mySqliteLogDb.isOpen() ) {
                 // sqlite-db (Qt) is open
 
-				int myCards[2];
+				std::array<int, 2> myCards;
 				player->getMyCards(myCards);
 				sql += "UPDATE Hand SET ";
 				if(currentRound==GAME_STATE_POST_RIVER && player->getMyCardsValueInt()>0) {

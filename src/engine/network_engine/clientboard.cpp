@@ -64,7 +64,7 @@ ClientBoard::setMyCards(const std::array<int, 5> &theValue)
 }
 
 void
-ClientBoard::getMyCards(std::array<int, 5> &theValue)
+ClientBoard::getMyCards(std::array<int, 5> &theValue) const
 {
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
 	theValue = myCards;

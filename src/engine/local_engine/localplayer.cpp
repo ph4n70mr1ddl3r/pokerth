@@ -3675,7 +3675,7 @@ void LocalPlayer::calcMyOdds()
 
 	case 0: {
 
-		handCode = CardsValue::holeCardsToIntCode(myCards);
+		handCode = CardsValue::holeCardsToIntCode(myCards.data());
 
 		// übergang solange preflopValue und flopValue noch nicht bereinigt
 		int players = currentHand->getActivePlayerList()->size();
@@ -3699,7 +3699,7 @@ void LocalPlayer::calcMyOdds()
 	case 1: {
 
 		int tempArray[5];
-		int boardCards[5];
+		std::array<int, 5> boardCards;
 
 		int i = 0;
 
@@ -3744,7 +3744,7 @@ void LocalPlayer::calcMyOdds()
 		// Prozent ausrechnen
 
 		int i = 0, j = 0, k = 0;
-		int tempBoardCardsArray[5];
+		std::array<int, 5> tempBoardCardsArray;
 		int tempMyCardsArray[7];
 		int tempOpponentCardsArray[7];
 		currentHand->getBoard()->getMyCards(tempBoardCardsArray);
@@ -3804,7 +3804,7 @@ void LocalPlayer::calcMyOdds()
 		// Prozent ausrechnen
 
 		int i = 0, j = 0;
-		int tempBoardCardsArray[5];
+		std::array<int, 5> tempBoardCardsArray;
 		int tempMyCardsArray[7];
 		int tempOpponentCardsArray[7];
 		currentHand->getBoard()->getMyCards(tempBoardCardsArray);
@@ -4295,7 +4295,7 @@ void LocalPlayer::flopEngine3()
 	// Prozent ausrechnen
 
 	int i, j, k ,l;
-	int tempBoardCardsArray[5];
+	std::array<int, 5> tempBoardCardsArray;
 	int tempMyCardsArray[7];
 	int tempOpponentCardsArray[7];
 	currentHand->getBoard()->getMyCards(tempBoardCardsArray);
@@ -4470,7 +4470,7 @@ void LocalPlayer::turnEngine3()
 	// Prozent ausrechnen
 
 	int i, j, k;
-	int tempBoardCardsArray[5];
+	std::array<int, 5> tempBoardCardsArray;
 	int tempMyCardsArray[7];
 	int tempOpponentCardsArray[7];
 	currentHand->getBoard()->getMyCards(tempBoardCardsArray);
@@ -4640,7 +4640,7 @@ void LocalPlayer::riverEngine3()
 	// Prozent ausrechnen
 
 	int i = 0, j = 0;
-	int tempBoardCardsArray[5];
+	std::array<int, 5> tempBoardCardsArray;
 	int tempMyCardsArray[7];
 	int tempOpponentCardsArray[7];
 	currentHand->getBoard()->getMyCards(tempBoardCardsArray);

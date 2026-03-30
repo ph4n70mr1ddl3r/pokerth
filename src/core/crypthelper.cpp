@@ -30,6 +30,7 @@
  *****************************************************************************/
 
 #include <core/crypthelper.h>
+#include <core/loghelper.h>
 
 #include <core/openssl_wrapper.h>
 #include <filesystem>
