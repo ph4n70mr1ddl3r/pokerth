@@ -70,13 +70,9 @@ loghelper_init(const string &logDir, int logLevel)
 void
 internal_log_err(const string &msg)
 {
-	string logFile;
-	{
-		lock_guard<mutex> lock(g_logFileMutex);
-		logFile = g_logFile;
-	}
-	if (!logFile.empty()) {
-		std::ofstream o(logFile.c_str(), ios_base::out | ios_base::app);
+	lock_guard<mutex> lock(g_logFileMutex);
+	if (!g_logFile.empty()) {
+		std::ofstream o(g_logFile, ios_base::out | ios_base::app);
 		if (!o.fail()) {
 			o << second_clock::local_time() << " ERR: " << msg;
 			o.flush();
@@ -88,13 +84,9 @@ void
 internal_log_msg(const std::string &msg)
 {
 	if (g_logLevel.load()) {
-		string logFile;
-		{
-			lock_guard<mutex> lock(g_logFileMutex);
-			logFile = g_logFile;
-		}
-		if (!logFile.empty()) {
-			std::ofstream o(logFile.c_str(), ios_base::out | ios_base::app);
+		lock_guard<mutex> lock(g_logFileMutex);
+		if (!g_logFile.empty()) {
+			std::ofstream o(g_logFile, ios_base::out | ios_base::app);
 			if (!o.fail())
 				o << second_clock::local_time() << " MSG: " << msg;
 		}
@@ -105,13 +97,9 @@ void
 internal_log_level(const std::string &msg, int logLevel)
 {
 	if (g_logLevel.load() >= logLevel) {
-		string logFile;
-		{
-			lock_guard<mutex> lock(g_logFileMutex);
-			logFile = g_logFile;
-		}
-		if (!logFile.empty()) {
-			std::ofstream o(logFile.c_str(), ios_base::out | ios_base::app);
+		lock_guard<mutex> lock(g_logFileMutex);
+		if (!g_logFile.empty()) {
+			std::ofstream o(g_logFile, ios_base::out | ios_base::app);
 			if (!o.fail())
 				o << second_clock::local_time() << " OUT: " << msg;
 		}

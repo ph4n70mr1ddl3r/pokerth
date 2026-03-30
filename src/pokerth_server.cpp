@@ -197,7 +197,7 @@ main(int argc, char *argv[])
 	myServerGuiInterface.reset();
 	myConfig.reset();
 
-	LOG_MSG("Terminating PokerTH dedicated server." << endl);
+	LOG_MSG("Terminating PokerTH dedicated server.");
 	socket_cleanup();
 	return 0;
 }

@@ -62,9 +62,6 @@ AsyncDBUpdateScore::Init(DBIdManager& idManager)
 	// Add game id as first parameter (param for stored procedure).
 	params.push_front(paramStream.str());
 	SetParams(params);
-	// Ensure that "update score" is only called once for a game.
-	// This game id cannot be used any more, without re-init.
-	idManager.RemoveGameId(GetId());
 }
 
 void
@@ -75,8 +72,9 @@ AsyncDBUpdateScore::HandleResult(mysqlpp::Query &query, DBIdManager& idManager, 
 }
 
 void
-AsyncDBUpdateScore::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManager*/, boost::asio::io_context &/*service*/, ServerDBCallback &/*cb*/)
+AsyncDBUpdateScore::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& idManager, boost::asio::io_context &/*service*/, ServerDBCallback &/*cb*/)
 {
+	idManager.RemoveGameId(GetId());
 }
 
 void

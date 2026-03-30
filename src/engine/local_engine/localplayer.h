@@ -127,6 +127,7 @@ public:
 	void setMySet(int theValue) override
 	{
 		if (theValue > myCash) theValue = myCash;
+		if (theValue < 0) theValue = 0;
 		myLastRelativeSet = theValue;
 		mySet += theValue;
 		myCash -= theValue;

@@ -185,8 +185,6 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 					}
 
 				}
-
-				}
 				// pot level sum not divisible by winnerCount
 				// --> distribution after smallBlind
 				else {

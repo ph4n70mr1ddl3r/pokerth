@@ -168,24 +168,26 @@ ServerDBThread::AsyncCheckAvatarBlacklist(unsigned requestId, const std::string 
 void
 ServerDBThread::PlayerPostLogin(DB_id playerId, const std::string &avatarHash, const std::string &avatarType)
 {
-	list<string> params;
-	params.push_back(mysqlpp::DateTime(time(nullptr)));
-	params.push_back(avatarHash);
-	params.push_back(avatarType);
-	ostringstream paramStream;
-	paramStream << playerId;
-	params.push_back(paramStream.str());
-	boost::shared_ptr<AsyncDBQuery> asyncQuery(
-		new AsyncDBLogin(
-			playerId,
-			QUERY_LOGIN_PREPARE,
-			params));
+	if (IsConnected()) {
+		list<string> params;
+		params.push_back(mysqlpp::DateTime(time(nullptr)));
+		params.push_back(avatarHash);
+		params.push_back(avatarType);
+		ostringstream paramStream;
+		paramStream << playerId;
+		params.push_back(paramStream.str());
+		boost::shared_ptr<AsyncDBQuery> asyncQuery(
+			new AsyncDBLogin(
+				playerId,
+				QUERY_LOGIN_PREPARE,
+				params));
 
-	{
-		boost::mutex::scoped_lock lock(m_asyncQueueMutex);
-		m_asyncQueue.push(asyncQuery);
+		{
+			boost::mutex::scoped_lock lock(m_asyncQueueMutex);
+			m_asyncQueue.push(asyncQuery);
+		}
+		m_semaphore.post();
 	}
-	m_semaphore.post();
 }
 
 void
@@ -296,6 +298,11 @@ ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, const std
 {
 	LOG_MSG("ServerDBThread::SetPlayerLastGames() entered.");
 
+	if (!IsConnected()) {
+		LOG_ERROR("SetPlayerLastGames: Database not connected, skipping update for player " << playerId);
+		return;
+	}
+
 	std::string safePlayerIp = playerIp;
 	if (!IsValidIpAddress(safePlayerIp)) {
 		LOG_ERROR("Invalid IP address format rejected: " << playerIp);
@@ -303,8 +310,11 @@ ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, const std
 	}
 
 	std::ostringstream oss;
-    std::copy(last_games.begin(), last_games.end(), std::ostream_iterator<long>(oss, ","));
-    std::string last_gamesFieldValue( oss.str() );
+	for (size_t idx = 0; idx < last_games.size(); ++idx) {
+		if (idx > 0) oss << ",";
+		oss << last_games[idx];
+	}
+	std::string last_gamesFieldValue(oss.str());
 	list<string> params;
 	ostringstream paramStream;
 	params.push_back(last_gamesFieldValue);
@@ -672,6 +682,7 @@ ServerDBThread::HandleNextQuery()
 					if (!paramQuery.exec()) {
 						string tmpError = paramQuery.error();
 						m_connData->conn.disconnect();
+						SetConnected(false);
 						boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::QueryError, &m_callback, tmpError));
 						nextQuery->HandleError(*m_ioService, m_callback);
 						break;
@@ -692,10 +703,15 @@ ServerDBThread::HandleNextQuery()
 			} catch (const mysqlpp::Exception &e) {
 				string errorMsg = string("Query execution failed: ") + e.what();
 				LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
+				if (!m_connData->conn.connected()) {
+					SetConnected(false);
+				}
 				nextQuery->HandleError(*m_ioService, m_callback);
 			} catch (const std::exception &e) {
 				string errorMsg = string("Exception during query handling: ") + e.what();
 				LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
+				m_connData->conn.disconnect();
+				SetConnected(false);
 				nextQuery->HandleError(*m_ioService, m_callback);
 			}
 		} while (nextQuery->Next()); // Consider composite queries.
