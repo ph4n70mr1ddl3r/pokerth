@@ -95,16 +95,17 @@ using namespace boost::chrono;
 
 static void SendPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInterface> player)
 {
-	if (!player.get())
+	if (!player)
 		throw ServerException(__FILE__, __LINE__, ERR_NET_NO_CURRENT_PLAYER, 0);
 
+	Game &curGame = server.GetGame();
 	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayersActionDoneMessage);
-	PlayersActionDoneMessage *netActionDone = packet->GetMsg()->mutable_playersactiondonemessage();
+	 PlayersActionDoneMessage *netActionDone = packet->GetMsg()->mutable_playersactiondonemessage();
 
 	netActionDone->set_gameid(server.GetId());
 	netActionDone->set_gamestate(static_cast<NetGameState>(server.GetCurRound()));
-	netActionDone->set_highestset(server.GetGame().getCurrentHand()->getCurrentBeRo()->getHighestSet());
+	netActionDone->set_highestset(curGame.getCurrentHand()->getCurrentBeRo()->getHighestSet());
 	netActionDone->set_minimumraise(server.GetGame().getCurrentHand()->getCurrentBeRo()->getMinimumRaise());
 	netActionDone->set_playeraction(static_cast<NetPlayerAction>(player->getMyAction()));
 	netActionDone->set_playerid(player->getMyUniqueID());
@@ -1215,16 +1216,20 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 						<< curGame.getCurrentHandID() << " "
 						<< cards[0] << " "
 						<< cards[1];
-				if (CryptHelper::AES128Encrypt(reinterpret_cast<const unsigned char*>(tmpPassword.c_str()),
+                if (CryptHelper::AES128Encrypt(reinterpret_cast<const unsigned char*>(tmpPassword.c_str()),
 											   static_cast<unsigned>(tmpPassword.size()),
 											   cardDataStream.str(),
 											   tmpCipher)
 						&& !tmpCipher.empty()) {
-					netHandStart->set_encryptedcards(reinterpret_cast<const char*>(tmpCipher.data()), tmpCipher.size());
-				} else {
-					server->RemovePlayer(tmpPlayer->getMyUniqueID(), ERR_SOCK_INVALID_STATE);
-					errorFlag = true;
-				}
+                    netHandStart->set_encryptedcards(reinterpret_cast<const char*>(tmpCipher.data()), tmpCipher.size());
+                } else {
+                    server->RemovePlayer(tmpPlayer->getMyUniqueID(), ERR_SOCK_INVALID_STATE);
+                    errorFlag = true;
+                }
+            }
+            std::fill(tmpPassword.begin(), tmpPassword.end(), '\0');
+            tmpPassword.shrink_to_fit();
+            }
 			}
 
 			if (!errorFlag) {

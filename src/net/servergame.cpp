@@ -401,10 +401,14 @@ ServerGame::InitRankingMap(const PlayerDataList &playerDataList)
 void
 ServerGame::UpdateRankingMap()
 {
-	boost::mutex::scoped_lock lock(m_gameMutex);
-	if (!m_game)
-		return;
-	list<boost::shared_ptr<PlayerInterface> > activePlayers = *m_game->getActivePlayerList();
+	list<boost::shared_ptr<PlayerInterface> > activePlayers;
+	{
+		boost::mutex::scoped_lock lock(m_gameMutex);
+		if (!m_game)
+			return;
+		activePlayers = *m_game->getActivePlayerList();
+	}
+
 	int currentRank = static_cast<int>(activePlayers.size());
 	list<boost::shared_ptr<PlayerInterface> > tmpRemovedPlayers;
 	PlayerListIterator active_i = activePlayers.begin();
@@ -419,6 +423,7 @@ ServerGame::UpdateRankingMap()
 		active_i = next_active_i;
 	}
 
+	boost::mutex::scoped_lock lock(m_rankingMapMutex);
 	if (!tmpRemovedPlayers.empty()) {
 		tmpRemovedPlayers.sort(LessThanPlayerHandStartMoney);
 		PlayerListConstIterator removed_i = tmpRemovedPlayers.begin();
@@ -438,7 +443,6 @@ ServerGame::UpdateRankingMap()
 			removed_i = next_removed_i;
 		}
 	}
-	// Last player is winner.
 	if (activePlayers.size() == 1) {
 		SetPlayerPlace((*(activePlayers.begin()))->getMyUniqueID(), 1);
 	}
@@ -631,11 +635,11 @@ ServerGame::InternalVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned pet
 					m_voteKickData->numVotesInFavourOfKicking++;
 				else
 					m_voteKickData->numVotesAgainstKicking++;
-				unsigned petitionId = m_voteKickData->petitionId;
-				int numVotesAgainst = m_voteKickData->numVotesAgainstKicking;
-				int numVotesInFavour = m_voteKickData->numVotesInFavourOfKicking;
-				int numVotesNeeded = m_voteKickData->numVotesToKick;
-				lock.unlock();
+            unsigned currentPetitionId = m_voteKickData->petitionId;
+                int numVotesAgainst = m_voteKickData->numVotesAgainstKicking;
+                int numVotesInFavour = m_voteKickData->numVotesInFavourOfKicking;
+                int numVotesNeeded = m_voteKickData->numVotesToKick;
+                lock.unlock();
 				// Send update notification.
 				auto packet = boost::make_shared<NetPacket>();
 				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_KickPetitionUpdateMessage);
