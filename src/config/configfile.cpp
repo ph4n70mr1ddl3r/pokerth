@@ -340,7 +340,6 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 
 			// Check if config revision and AppDataDir is ok. Otherwise --> update()
 			int tempRevision = 0;
-			string tempAppDataPath("");
 
 			QDomElement confRevision = xmlDoc.documentElement().firstChildElement("Configuration").firstChildElement("ConfigRevision");
 			if (!confRevision.isNull())
@@ -432,7 +431,7 @@ void ConfigFile::fillBuffer()
 			}
 			else
 			{
-				LOG_ERROR("Could not find the root element in the config file!");
+				LOG_ERROR("Could not find config element: " << configList[i].name);
 			}
 
 			// cout << configBufferList[i].name << " " << configBufferList[i].defaultValue << endl;

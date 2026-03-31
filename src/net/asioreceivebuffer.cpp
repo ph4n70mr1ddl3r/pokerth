@@ -121,12 +121,14 @@ AsioReceiveBuffer::ScanPackets(boost::shared_ptr<SessionData> session)
 			if (packetSize == 0 || packetSize > MAX_PACKET_SIZE) {
 				LOG_ERROR(session->GetClientAddr() << "Session " << session->GetId() 
 				          << " - Invalid packet size: " << packetSize << " (max: " << MAX_PACKET_SIZE << ")");
+				recvBufUsed = 0;
 				session->Close();
 				return;
 			}
 			if (packetSize > SIZE_MAX - NET_HEADER_SIZE) {
 				LOG_ERROR(session->GetClientAddr() << "Session " << session->GetId() 
 				          << " - Packet size overflow");
+				recvBufUsed = 0;
 				session->Close();
 				return;
 			}

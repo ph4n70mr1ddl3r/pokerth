@@ -55,6 +55,8 @@ void LocalBeRoPostRiver::postRiverRun()
 	PlayerListConstIterator it_c;
 	PlayerListIterator it;
 
+	highestCardsValue = 0;
+
 	// who is the winner
 	for(it_c=getMyHand()->getActivePlayerList()->begin(); it_c!=getMyHand()->getActivePlayerList()->end(); ++it_c) {
 

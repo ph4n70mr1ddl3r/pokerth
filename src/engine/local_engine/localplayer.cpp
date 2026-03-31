@@ -970,6 +970,7 @@ void LocalPlayer::setHand(HandInterface* br)
 
 void LocalPlayer::action()
 {
+	if (!currentHand) return;
 
 	// 	int myOldCash = myCash;
 	// 	int oldHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
@@ -4832,6 +4833,7 @@ bool LocalPlayer::isMuted() const
 
 bool LocalPlayer::checkIfINeedToShowCards()
 {
+	if (!currentHand) return false;
 	std::list<unsigned> playerNeedToShowCardsList = currentHand->getBoard()->getPlayerNeedToShowCards();
 	for(auto it = playerNeedToShowCardsList.begin(); it != playerNeedToShowCardsList.end(); ++it) {
 		if(*it == myUniqueID) return true;

@@ -35,6 +35,7 @@
 
 #include <net/sendbuffer.h>
 #include <cstdlib>
+#include <atomic>
 
 class WebSendBuffer : public SendBuffer
 {
@@ -49,7 +50,7 @@ public:
 	virtual void HandleWrite(boost::shared_ptr<boost::asio::ip::tcp::socket> socket, const boost::system::error_code &error) override;
 
 private:
-	bool closeAfterSend;
+	std::atomic<bool> closeAfterSend{false};
 };
 
 #endif

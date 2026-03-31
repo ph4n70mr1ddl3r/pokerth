@@ -209,12 +209,41 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 #ifdef HAVE_OPENSSL
 	#if OPENSSL_VERSION_NUMBER >= 0x30000000L
 		EVP_MD_CTX *context = EVP_MD_CTX_new();
-		unsigned int md5_digest_len = EVP_MD_size(EVP_md5());
-		EVP_DigestInit_ex(context, EVP_md5(), nullptr);
-		while ((numBytes = fread(readBuf.get(), 1, ReadBufSize, file)) > 0) {
-			EVP_DigestUpdate(context, readBuf.get(), numBytes);
+		if (!context) {
+			LOG_ERROR("MD5Sum: Failed to create EVP context");
+			return false;
 		}
-		EVP_DigestFinal_ex(context, buf.GetData(), &md5_digest_len);
+		unsigned int md5_digest_len = EVP_MD_size(EVP_md5());
+		if (!EVP_DigestInit_ex(context, EVP_md5(), nullptr)) {
+			EVP_MD_CTX_free(context);
+			return false;
+		}
+		bool digestOk = true;
+		while ((numBytes = fread(readBuf.get(), 1, ReadBufSize, file)) > 0) {
+			if (!EVP_DigestUpdate(context, readBuf.get(), numBytes)) {
+				digestOk = false;
+				break;
+			}
+		}
+		if (digestOk && !EVP_DigestFinal_ex(context, buf.GetData(), &md5_digest_len)) {
+			digestOk = false;
+		}
+		EVP_MD_CTX_free(context);
+		if (!digestOk) return false;
+			return false;
+		}
+		while ((numBytes = fread(readBuf.get(), 1, ReadBufSize, file)) > 0) {
+			if (!EVP_DigestUpdate(context, readBuf.get(), numBytes)) {
+				LOG_ERROR("MD5Sum: EVP_DigestUpdate failed");
+				EVP_MD_CTX_free(context);
+				return false;
+			}
+		}
+		if (!EVP_DigestFinal_ex(context, buf.GetData(), &md5_digest_len)) {
+			LOG_ERROR("MD5Sum: EVP_DigestFinal_ex failed");
+			EVP_MD_CTX_free(context);
+			return false;
+		}
 		EVP_MD_CTX_free(context);
 	#else
 		MD5_CTX context;

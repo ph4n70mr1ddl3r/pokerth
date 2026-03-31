@@ -158,7 +158,9 @@ void CleanerServer::onRead()
 
 	if (error) {
 		qDebug() << "Error handling packets from client.";
+		blockConnection = false;
 		tcpSocket->close();
+		tcpSocket.reset();
 	}
 
 

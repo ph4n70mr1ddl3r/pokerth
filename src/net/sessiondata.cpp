@@ -82,9 +82,9 @@ SessionData::SessionData(boost::shared_ptr<boost::asio::ssl::stream<boost::asio:
 SessionData::~SessionData() noexcept
 {
 	try {
-		InternalClearAuthSession();
 		{
 			boost::mutex::scoped_lock lock(m_dataMutex);
+			InternalClearAuthSession();
 			if (!m_password.empty()) {
 				CryptHelper::SecureClearMemory(&m_password[0], m_password.size());
 				m_password.clear();
@@ -196,6 +196,7 @@ SessionData::AuthStep(int stepNum, const std::string &inData)
 string
 SessionData::AuthGetUser() const
 {
+	boost::mutex::scoped_lock lock(m_dataMutex);
 	return std::string();
 }
 
@@ -338,24 +339,26 @@ SessionData::SetClientAddr(const std::string &addr)
 void
 SessionData::CloseSocketHandle()
 {
-    if (m_socket) {
-        boost::system::error_code ec;
-        m_socket->close(ec);
-        if (ec) {
-            LOG_ERROR("Error closing socket: " << ec.message());
-        }
-    } else if (m_sslStream) {
-        boost::system::error_code ec;
-        m_sslStream->lowest_layer().close(ec);
-        if (ec) {
-            LOG_ERROR("Error closing SSL stream: " << ec.message());
-        }
-    }
+	boost::mutex::scoped_lock lock(m_dataMutex);
+	if (m_socket) {
+		boost::system::error_code ec;
+		m_socket->close(ec);
+		if (ec) {
+			LOG_ERROR("Error closing socket: " << ec.message());
+		}
+	} else if (m_sslStream) {
+		boost::system::error_code ec;
+		m_sslStream->lowest_layer().close(ec);
+		if (ec) {
+			LOG_ERROR("Error closing SSL stream: " << ec.message());
+		}
+	}
 }
 
 void
 SessionData::CloseWebSocketHandle()
 {
+	boost::mutex::scoped_lock lock(m_dataMutex);
 	if (m_webData) {
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L) // c++11 
 		std::error_code std_ec;
@@ -371,14 +374,11 @@ void
 SessionData::ResetActivityTimer()
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);
-	unsigned timeoutSec = m_activityTimeoutSec;
-	unsigned warningSec = m_activityWarningRemainingSec;
-	lock.unlock();
-	if (warningSec >= timeoutSec) {
+	if (m_activityWarningRemainingSec >= m_activityTimeoutSec) {
 		LOG_ERROR("ResetActivityTimer: warningSec >= timeoutSec");
 		return;
 	}
-	m_activityTimeoutTimer.expires_after(seconds(timeoutSec - warningSec));
+	m_activityTimeoutTimer.expires_after(seconds(m_activityTimeoutSec - m_activityWarningRemainingSec));
 	m_activityTimeoutTimer.async_wait(
 		boost::bind(
 			&SessionData::TimerActivityWarning, shared_from_this(), boost::asio::placeholders::error));

@@ -45,6 +45,7 @@
 #include <dbofficial/compositeasyncdbquery.h>
 #include <dbofficial/db_table_defs.h>
 #include <core/loghelper.h>
+#include <core/crypthelper.h>
 #include <ctime>
 #include <sstream>
 #include <memory>
@@ -116,6 +117,16 @@ ServerDBThread::Stop()
 {
 	SignalTermination();
 	this->Join(THREAD_WAIT_INFINITE);
+	if (m_connData) {
+		if (!m_connData->pwd.empty()) {
+			CryptHelper::SecureClearMemory(&m_connData->pwd[0], m_connData->pwd.size());
+			m_connData->pwd.clear();
+		}
+		if (!m_connData->encryptionKey.empty()) {
+			CryptHelper::SecureClearMemory(&m_connData->encryptionKey[0], m_connData->encryptionKey.size());
+			m_connData->encryptionKey.clear();
+		}
+	}
 }
 
 void

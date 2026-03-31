@@ -152,7 +152,19 @@ AvatarManager::OpenAvatarFileForChunkRead(const std::string &fileName, unsigned 
 			fileState->inputStream.seekg(0, ios_base::end);
 			std::streampos endPos = fileState->inputStream.tellg();
 			fileState->inputStream.seekg(0, ios_base::beg);
+			if (startPos == std::streampos(-1) || endPos == std::streampos(-1)) {
+				LOG_ERROR("Failed to determine avatar file size");
+				return retVal;
+			}
 			std::streamoff posDiff(endPos - startPos);
+			if (posDiff < 0) {
+				LOG_ERROR("Negative avatar file size");
+				return retVal;
+			}
+			if (startPos == std::streampos(-1) || endPos == std::streampos(-1) || posDiff < 0) {
+				LOG_ERROR("Invalid file size calculation for avatar: " << fileName);
+				return retVal;
+			}
 			outFileSize = static_cast<unsigned>(posDiff);
 			if (outFileSize >= MIN_AVATAR_FILE_SIZE && outFileSize <= MAX_AVATAR_FILE_SIZE) {
 				// Validate type of file by verifying image header.
@@ -524,7 +536,7 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 			time_t curTime = time(nullptr);
 			while (!timeMap.empty() && !m_cachedAvatars.empty()) {
 				TimeAvatarMap::iterator i = timeMap.begin();
-				if (curTime - i->first < static_cast<int>(MAX_AVATAR_CACHE_AGE))
+				if (curTime <= i->first || static_cast<time_t>(curTime - i->first) < static_cast<time_t>(MAX_AVATAR_CACHE_AGE))
 					break;
 				AvatarMap::iterator pos = m_cachedAvatars.find(i->second);
 				if (pos != m_cachedAvatars.end()) {

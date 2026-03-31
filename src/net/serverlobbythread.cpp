@@ -449,6 +449,9 @@ ServerLobbyThread::CloseSession(boost::shared_ptr<SessionData> session)
 void
 ServerLobbyThread::SendGameList(boost::shared_ptr<SessionData> s)
 {
+	if (!s || !s->GetPlayerData()) {
+		return;
+	}
 	GetSender().Send(s, CreateNetPacketPlayerListNew(s->GetPlayerData()->GetUniqueId()));
 	{
 		boost::mutex::scoped_lock lock(m_gameMapMutex);

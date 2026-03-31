@@ -31,6 +31,7 @@
 
 #include <net/netpacketvalidator.h>
 #include <net/netpacket.h>
+#include <game_defs.h>
 
 using namespace std;
 
@@ -333,7 +334,7 @@ NetPacketValidator::ValidateGameListNewMessage(const NetPacket &packet)
 	if (packet.GetMsg()->has_gamelistnewmessage()) {
 		const GameListNewMessage &msg = packet.GetMsg()->gamelistnewmessage();
 		if (msg.gameid() != 0
-				&& VALIDATE_LIST_SIZE(msg.playerids(), 0, 2)
+				&& VALIDATE_LIST_SIZE(msg.playerids(), 0, MAX_NUMBER_OF_PLAYERS)
 				&& msg.adminplayerid() != 0
 				&& ValidateGameInfo(msg.gameinfo())) {
 
@@ -666,7 +667,7 @@ NetPacketValidator::ValidateGameStartInitialMessage(const NetPacket &packet)
 		const GameStartInitialMessage &msg = packet.GetMsg()->gamestartinitialmessage();
 		if (msg.gameid() != 0
 				&& msg.startdealerplayerid() != 0
-				&& VALIDATE_LIST_SIZE(msg.playerseats(), 2, 2)) {
+				&& VALIDATE_LIST_SIZE(msg.playerseats(), 2, MAX_NUMBER_OF_PLAYERS)) {
 
 			retVal = true;
 		}
@@ -683,7 +684,7 @@ NetPacketValidator::ValidateGameStartRejoinMessage(const NetPacket &packet)
 		if (msg.gameid() != 0
 				&& msg.startdealerplayerid() != 0
 				&& msg.handnum() != 0
-				&& VALIDATE_LIST_SIZE(msg.rejoinplayerdata(), 2, 2)) {
+				&& VALIDATE_LIST_SIZE(msg.rejoinplayerdata(), 2, MAX_NUMBER_OF_PLAYERS)) {
 
 			retVal = true;
 		}
@@ -699,7 +700,7 @@ NetPacketValidator::ValidateHandStartMessage(const NetPacket &packet)
 		const HandStartMessage &msg = packet.GetMsg()->handstartmessage();
 		if (msg.gameid() != 0
 				&& VALIDATE_UINT_RANGE(msg.smallblind(), 1, 100000000)
-				&& VALIDATE_LIST_SIZE(msg.seatstates(), 2, 2)) {
+				&& VALIDATE_LIST_SIZE(msg.seatstates(), 2, MAX_NUMBER_OF_PLAYERS)) {
 
 			retVal = true;
 		}
@@ -816,7 +817,7 @@ NetPacketValidator::ValidateAllInShowCardsMessage(const NetPacket &packet)
 	if (packet.GetMsg()->has_allinshowcardsmessage()) {
 		const AllInShowCardsMessage &msg = packet.GetMsg()->allinshowcardsmessage();
 		if (msg.gameid() != 0
-				&& VALIDATE_LIST_SIZE(msg.playersallin(), 1, 2)) {
+				&& VALIDATE_LIST_SIZE(msg.playersallin(), 1, MAX_NUMBER_OF_PLAYERS)) {
 
 			retVal = true;
 		}
@@ -831,7 +832,7 @@ NetPacketValidator::ValidateEndOfHandShowCardsMessage(const NetPacket &packet)
 	if (packet.GetMsg()->has_endofhandshowcardsmessage()) {
 		const EndOfHandShowCardsMessage &msg = packet.GetMsg()->endofhandshowcardsmessage();
 		if (msg.gameid() != 0
-				&& VALIDATE_LIST_SIZE(msg.playerresults(), 1, 2)) {
+				&& VALIDATE_LIST_SIZE(msg.playerresults(), 1, MAX_NUMBER_OF_PLAYERS)) {
 
 			retVal = true;
 		}
@@ -1220,7 +1221,7 @@ NetPacketValidator::ValidateGameInfo(const NetGameInfo &gameInfo)
 {
 	bool retVal = false;
 	if (VALIDATE_STRING_SIZE(gameInfo.gamename(), 1, 64)
-			&& VALIDATE_UINT_RANGE(gameInfo.maxnumplayers(), 2, 2)
+			&& VALIDATE_UINT_RANGE(gameInfo.maxnumplayers(), 2, MAX_NUMBER_OF_PLAYERS)
 			&& (!gameInfo.has_raiseeveryhands() || VALIDATE_UINT_RANGE(gameInfo.raiseeveryhands(), 1, 1000))
 			&& (!gameInfo.has_raiseeveryminutes() || VALIDATE_UINT_RANGE(gameInfo.raiseeveryminutes(), 1, 1000))
 			&& (!gameInfo.has_endraisesmallblindvalue() || VALIDATE_UINT_UPPER(gameInfo.endraisesmallblindvalue(), 1000000))
