@@ -497,8 +497,8 @@ ServerGame::StoreLastGames(const PlayerDataList &playerDataList)
 	while (i != end) {
 		boost::shared_ptr<PlayerData> tmpPlayer(*i);
 		// tmpPlayer->GetUniqueId()
-		tmpPlayer->AddPlayerLastGame(static_cast<long>(time(nullptr)));
-		std::vector<long> last_games = tmpPlayer->GetPlayerLastGames();
+		tmpPlayer->AddPlayerLastGame(static_cast<long long>(time(nullptr)));
+		std::vector<long long> last_games = tmpPlayer->GetPlayerLastGames();
 		if(!last_games.empty()) {
 			LOG_VERBOSE("TimeStamp stored: " << last_games.back());
 			LOG_VERBOSE("Ready for storing vector for player " << tmpPlayer->GetDBId() << " - lastGameTs " << last_games.back());

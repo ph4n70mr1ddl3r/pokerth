@@ -73,9 +73,12 @@ void QtAudioPlayer::playSound(std::string audioName, int /*playerID*/)
     if (effect && effect->isLoaded()) {
         effect->play();
     } else if (effect) {
-        // try to play anyway once loaded
-        connect(effect.data(), &QSoundEffect::loadedChanged, this, [effect]() {
-            if (effect->isLoaded()) effect->play();
+        disconnect(effect.data(), &QSoundEffect::loadedChanged, this, nullptr);
+        connect(effect.data(), &QSoundEffect::loadedChanged, this, [effect, this]() {
+            if (effect->isLoaded()) {
+                effect->play();
+                disconnect(effect.data(), &QSoundEffect::loadedChanged, this, nullptr);
+            }
         });
     }
 }

@@ -142,7 +142,10 @@ AsioReceiveBuffer::ScanPackets(boost::shared_ptr<SessionData> session)
 						}
 					}
 				} catch (const exception &e) {
-					recvBufUsed = 0;
+					recvBufUsed -= (packetSize + NET_HEADER_SIZE);
+					if (recvBufUsed) {
+						memmove(recvBuf, recvBuf + packetSize + NET_HEADER_SIZE, recvBufUsed);
+					}
 					LOG_ERROR(session->GetClientAddr() << "Session " << session->GetId() << " - " << e.what());
 				}
 			}

@@ -148,7 +148,10 @@ void CleanerServer::onRead()
 							error = true;
 						}
 					} catch (const exception &e) {
-						m_recvBufUsed = 0;
+						m_recvBufUsed -= (packetSize + CLEANER_NET_HEADER_SIZE);
+						if (m_recvBufUsed) {
+							memmove(m_recvBuf, m_recvBuf + packetSize + CLEANER_NET_HEADER_SIZE, m_recvBufUsed);
+						}
 						qDebug() << "Exception while decoding packet: " << e.what();
 					}
 				}
@@ -168,7 +171,7 @@ void CleanerServer::onRead()
 
 bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 {
-	bool error = true;
+	bool error = false;
 	if (msg.messagetype() == ChatCleanerMessage::Type_CleanerInitMessage) {
 		const CleanerInitMessage &netInit = msg.cleanerinitmessage();
 		if (netInit.requestedversion() == CLEANER_PROTOCOL_VERSION) {

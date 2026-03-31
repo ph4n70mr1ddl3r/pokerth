@@ -264,6 +264,7 @@ unsigned
 ServerBanManager::GetNextBanId()
 {
 	unsigned startId = m_curBanId;
+	unsigned iterations = 0;
 	do {
 		m_curBanId++;
 		if (m_curBanId == 0)
@@ -272,7 +273,8 @@ ServerBanManager::GetNextBanId()
 			&& m_banIPAddressMap.find(m_curBanId) == m_banIPAddressMap.end()) {
 			return m_curBanId;
 		}
-	} while (m_curBanId != startId);
+		++iterations;
+	} while (iterations < std::numeric_limits<unsigned>::max());
 	throw ServerException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
 }
 

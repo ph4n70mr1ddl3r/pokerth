@@ -47,7 +47,7 @@ using namespace std;
 
 
 gameLobbyDialogImpl::gameLobbyDialogImpl(startWindowImpl *parent, ConfigFile *c)
-	: QDialog(parent), myW(nullptr), myStartWindow(parent), myConfig(c), currentGameName(""), myPlayerId(0), isGameAdministrator(false), inGame(false), blinkingButtonAnimationState(true), myChat(nullptr), keyUpCounter(0), infoMsgToShowId(0), currentInvitationGameId(0), inviteDialogIsCurrentlyShown(false), autoStartTimerCounter(0), lastNickListFilterState(0)
+	: QDialog(parent), myW(nullptr), myStartWindow(parent), myConfig(c), currentGameName(""), myPlayerId(0), isGameAdministrator(false), inGame(false), blinkingButtonAnimationState(true), myChat(nullptr), myCreateInternetGameDialog(nullptr), keyUpCounter(0), infoMsgToShowId(0), currentInvitationGameId(0), inviteDialogIsCurrentlyShown(false), autoStartTimerCounter(0), lastNickListFilterState(0)
 {
 
 #ifdef __APPLE__
@@ -1017,6 +1017,10 @@ void gameLobbyDialogImpl::addConnectedPlayer(unsigned playerId, QString playerNa
 
 void gameLobbyDialogImpl::updatePlayer(unsigned playerId, QString newPlayerName)
 {
+	if (!mySession) {
+		LOG_ERROR("gameLobbyDialogImpl::updatePlayer - mySession is null");
+		return;
+	}
 
 	//rename player in connected players list
 	QTreeWidgetItemIterator it(treeWidget_connectedPlayers);
@@ -1090,6 +1094,10 @@ void gameLobbyDialogImpl::playerLeftLobby(unsigned playerId)
 
 void gameLobbyDialogImpl::playerJoinedLobby(unsigned playerId)
 {
+	if (!mySession) {
+		LOG_ERROR("gameLobbyDialogImpl::playerJoinedLobby - mySession is null");
+		return;
+	}
 	PlayerInfo playerInfo(mySession->getClientPlayerInfo(playerId));
 	QString countryString = QString::fromUtf8(playerInfo.countryCode.c_str()).toLower();
 

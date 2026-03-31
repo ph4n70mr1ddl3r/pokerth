@@ -420,7 +420,7 @@ ServerLobbyThread::CloseSession(boost::shared_ptr<SessionData> session)
 		m_sessionManager.RemoveSession(session->GetId());
 		m_gameSessionManager.RemoveSession(session->GetId());
 
-		if (session->GetPlayerData()) {
+		if (session->GetPlayerData() && !tmpGame) {
 			NotifyPlayerLeftLobby(session->GetPlayerData()->GetUniqueId());
 		}
 		// Update stats (if needed).
@@ -944,12 +944,15 @@ ServerLobbyThread::DispatchPacket(boost::shared_ptr<SessionData> session, boost:
 	if (session) {
 		boost::shared_ptr<ServerGame> game = session->GetGame();
 		if (game) {
-			try {
-				game->HandlePacket(session, packet);
-			} catch (const PokerTHException &e) {
-				LOG_ERROR("Game " << game->GetId() << " - Read handler exception: " << e.what());
-				game->RemoveAllSessions();
-			}
+		try {
+			game->HandlePacket(session, packet);
+		} catch (const PokerTHException &e) {
+			LOG_ERROR("Game " << game->GetId() << " - Read handler exception: " << e.what());
+			game->RemoveAllSessions();
+		} catch (const std::exception &e) {
+			LOG_ERROR("Game " << game->GetId() << " - Read handler std::exception: " << e.what());
+			game->RemoveAllSessions();
+		}
 		} else {
 			try {
 				HandlePacket(session, packet);
@@ -2450,20 +2453,31 @@ ServerLobbyThread::TimerSaveStatisticsFile(const boost::system::error_code &ec)
 {
 	if (!ec) {
 		LOG_VERBOSE("Saving statistics.");
-		boost::mutex::scoped_lock lock(m_statMutex);
-		if (m_statDataChanged) {
-			ofstream o(m_statisticsFileName.c_str(), ios_base::out | ios_base::trunc);
+		ServerStats statCopy;
+		std::string statFileName;
+		bool dataChanged = false;
+		{
+			boost::mutex::scoped_lock lock(m_statMutex);
+			statCopy = m_statData;
+			statFileName = m_statisticsFileName;
+			dataChanged = m_statDataChanged;
+		}
+		if (dataChanged) {
+			ofstream o(statFileName.c_str(), ios_base::out | ios_base::trunc);
 			if (!o.fail()) {
-				o << SERVER_STATISTICS_STR_TOTAL_PLAYERS " " << m_statData.totalPlayersEverLoggedIn << endl;
-				o << SERVER_STATISTICS_STR_TOTAL_GAMES " " << m_statData.totalGamesEverCreated << endl;
-				o << SERVER_STATISTICS_STR_MAX_PLAYERS " " << m_statData.maxPlayersLoggedIn << endl;
-				o << SERVER_STATISTICS_STR_MAX_GAMES " " << m_statData.maxGamesOpen << endl;
-				o << SERVER_STATISTICS_STR_CUR_PLAYERS " " << m_statData.numberOfPlayersOnServer << endl;
-				o << SERVER_STATISTICS_STR_CUR_GAMES " " << m_statData.numberOfGamesOpen << endl;
+				o << SERVER_STATISTICS_STR_TOTAL_PLAYERS " " << statCopy.totalPlayersEverLoggedIn << endl;
+				o << SERVER_STATISTICS_STR_TOTAL_GAMES " " << statCopy.totalGamesEverCreated << endl;
+				o << SERVER_STATISTICS_STR_MAX_PLAYERS " " << statCopy.maxPlayersLoggedIn << endl;
+				o << SERVER_STATISTICS_STR_MAX_GAMES " " << statCopy.maxGamesOpen << endl;
+				o << SERVER_STATISTICS_STR_CUR_PLAYERS " " << statCopy.numberOfPlayersOnServer << endl;
+				o << SERVER_STATISTICS_STR_CUR_GAMES " " << statCopy.numberOfGamesOpen << endl;
 				o.flush();
-				m_statDataChanged = false;
+				{
+					boost::mutex::scoped_lock lock(m_statMutex);
+					m_statDataChanged = false;
+				}
 			} else {
-				LOG_ERROR("Failed to open statistics file: " << m_statisticsFileName);
+				LOG_ERROR("Failed to open statistics file: " << statFileName);
 			}
 		}
 		// Restart timer

@@ -122,6 +122,10 @@ ChatCleanerManager::HandleResolve(const boost::system::error_code& ec,
 {
 	if (!ec) {
 		boost::asio::ip::basic_resolver_iterator endpoint_iterator = endpoint_range.begin();
+		if (endpoint_iterator == endpoint_range.end()) {
+			LOG_ERROR("Chat cleaner DNS resolution returned empty results.");
+			return;
+		}
 		boost::asio::ip::tcp::endpoint endpoint = endpoint_iterator->endpoint();
 		m_socket->async_connect(
 			endpoint,
@@ -209,10 +213,15 @@ ChatCleanerManager::HandleRead(const boost::system::error_code &ec, size_t bytes
 							if (m_recvBufUsed) {
 								memmove(m_recvBuf, m_recvBuf + packetSize + CLEANER_NET_HEADER_SIZE, m_recvBufUsed);
 							}
+							error = HandleMessage(*recvMsg);
+							valid = true;
+						} else {
+							m_recvBufUsed -= (packetSize + CLEANER_NET_HEADER_SIZE);
+							if (m_recvBufUsed) {
+								memmove(m_recvBuf, m_recvBuf + packetSize + CLEANER_NET_HEADER_SIZE, m_recvBufUsed);
+							}
+							LOG_ERROR("Failed to parse chat cleaner protobuf message");
 						}
-						// Handle the packet.
-						error = HandleMessage(*recvMsg);
-						valid = true;
 					} catch (const exception &e) {
 						// Reset buffer on error.
 						m_recvBufUsed = 0;

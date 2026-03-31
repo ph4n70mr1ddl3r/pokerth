@@ -250,7 +250,7 @@ PlayerData::operator<(const PlayerData &other) const
 }
 
 void
-PlayerData::SetPlayerLastGames(std::vector<long> last_games)
+PlayerData::SetPlayerLastGames(std::vector<long long> last_games)
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);
 	m_last_games.clear();
@@ -258,7 +258,7 @@ PlayerData::SetPlayerLastGames(std::vector<long> last_games)
 }
 
 void
-PlayerData::AddPlayerLastGame(long lastGame)
+PlayerData::AddPlayerLastGame(long long lastGame)
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);
 
@@ -269,7 +269,7 @@ PlayerData::AddPlayerLastGame(long lastGame)
 	}
 }
 
-std::vector<long>
+std::vector<long long>
 PlayerData::GetPlayerLastGames() const
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);

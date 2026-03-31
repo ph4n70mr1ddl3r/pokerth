@@ -3038,7 +3038,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 	int temp = 0;
 	int temp1 = 0;
 	int temp2 = 0;
-	int temp2Array[2] = {0, 0};
+	int temp2Array[4] = {0, 0, 0, 0};
 	int tempValue = -1;
 	bool breakLoop = false;
 
@@ -4285,6 +4285,7 @@ void LocalPlayer::preflopEngine3()
 			}
 		}
 	}
+	myCash = std::max(0, myCash);
 }
 
 void LocalPlayer::flopEngine3()
@@ -4460,7 +4461,9 @@ void LocalPlayer::flopEngine3()
 	}
 
 
+	myCash = std::max(0, myCash);
 }
+
 
 void LocalPlayer::turnEngine3()
 {
@@ -4629,6 +4632,7 @@ void LocalPlayer::turnEngine3()
 			}
 		}
 	}
+	myCash = std::max(0, myCash);
 
 }
 
@@ -4795,7 +4799,7 @@ void LocalPlayer::riverEngine3()
 			}
 		}
 	}
-
+	myCash = std::max(0, myCash);
 }
 
 void LocalPlayer::setIsSessionActive(bool active)

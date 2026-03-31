@@ -136,7 +136,9 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 	for(int r=0;r<nRow;++r) {
 		for(int c=0;c<nCol;++c) {
 			const QString &v = rows[r][c];
-			if(v.isNull()) result[idx++] = nullptr;
+			if(v.isNull()) {
+				result[idx++] = strdup("");
+			}
 			else {
 				char* dup = strdup(v.toStdString().c_str());
 				if (!dup) {
@@ -160,9 +162,17 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 extern "C" void sqlite3_free_table(char **result)
 {
 	if(!result) return;
-	// find number of entries by walking until null
 	for(char **p = result; *p != nullptr; ++p) {
 		free(*p);
+	}
+	free(result);
+}
+
+extern "C" void sqlite3_free_table_n(char **result, int totalEntries)
+{
+	if(!result) return;
+	for(int i = 0; i < totalEntries; ++i) {
+		free(result[i]);
 	}
 	free(result);
 }

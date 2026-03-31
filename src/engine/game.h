@@ -166,7 +166,7 @@ private:
 	int currentHandID = 0;
 	unsigned dealerPosition = 0;
 	int lastHandBlindsRaised = 0;
-	int lastTimeBlindsRaised = 0;
+	long long lastTimeBlindsRaised = 0;
 	const GameData myGameData;
 	std::list<int> blindsList;
 

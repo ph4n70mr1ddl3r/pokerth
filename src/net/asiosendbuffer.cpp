@@ -107,12 +107,10 @@ AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<SessionData> session)
 void
 AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<boost::asio::ip::tcp::socket> socket)
 {
-    boost::mutex::scoped_lock lock(dataMutex);
     if (!curWriteBufUsed) {
         sendBuf.swap(curWriteBuf);
         std::swap(curWriteBufUsed, sendBufUsed);
         if (curWriteBufUsed) {
-            lock.unlock();
             boost::asio::async_write(
 				*socket,
 				boost::asio::buffer(curWriteBuf.data(), curWriteBufUsed),
@@ -121,7 +119,6 @@ AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<boost::asio::ip::tcp::sock
 							socket,
 							boost::asio::placeholders::error));
         } else if (closeAfterSend) {
-            lock.unlock();
             socket->close();
         }
     }
@@ -130,12 +127,10 @@ AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<boost::asio::ip::tcp::sock
 void
 AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::stream<boost::asio::basic_stream_socket<boost::asio::ip::tcp, boost::asio::any_io_executor>>> sslStream)
 {
-    boost::mutex::scoped_lock lock(dataMutex);
     if (!curWriteBufUsed) {
         sendBuf.swap(curWriteBuf);
         std::swap(curWriteBufUsed, sendBufUsed);
         if (curWriteBufUsed) {
-            lock.unlock();
             boost::asio::async_write(
                 *sslStream,
                 boost::asio::buffer(curWriteBuf.data(), curWriteBufUsed),
@@ -144,7 +139,6 @@ AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::strea
                             sslStream,
                             boost::asio::placeholders::error));
         } else if (closeAfterSend) {
-            lock.unlock();
             sslStream->lowest_layer().close();
         }
     }

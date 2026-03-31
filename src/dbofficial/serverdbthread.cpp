@@ -306,7 +306,7 @@ namespace {
 }
 
 void
-ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, const std::vector<long> &last_games, const std::string &playerIp)
+ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, const std::vector<long long> &last_games, const std::string &playerIp)
 {
 	LOG_MSG("ServerDBThread::SetPlayerLastGames() entered.");
 
