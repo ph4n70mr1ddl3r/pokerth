@@ -240,7 +240,7 @@ void GuiWrapper::changeVoteOnKickButtonsState(bool showHide)
 }
 void GuiWrapper::refreshVotesMonitor(int currentVotes, int numVotesNeededToKick)
 {
-	myW->refreshVotesMonitor(currentVotes, numVotesNeededToKick);
+	myW->signalRefreshVotesMonitor(currentVotes, numVotesNeededToKick);
 }
 void GuiWrapper::endVoteOnKick()
 {

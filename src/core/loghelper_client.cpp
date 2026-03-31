@@ -36,12 +36,14 @@
 #include <core/loghelper.h>
 #include <iostream>
 #include <atomic>
+#include <mutex>
 
 
 using namespace std;
 
 
 static atomic<int> g_logLevel{1};
+static mutex g_logMutex;
 
 void
 loghelper_init(const std::string & /*logDir*/, int logLevel)
@@ -52,20 +54,25 @@ loghelper_init(const std::string & /*logDir*/, int logLevel)
 void
 internal_log_err(const string &msg)
 {
+	lock_guard<mutex> lock(g_logMutex);
 	cerr << msg;
 }
 
 void
 internal_log_msg(const std::string &msg)
 {
-	if (g_logLevel.load())
+	if (g_logLevel.load()) {
+		lock_guard<mutex> lock(g_logMutex);
 		cout << msg;
+	}
 }
 
 void
 internal_log_level(const std::string &msg, int logLevel)
 {
-	if (g_logLevel.load() >= logLevel)
+	if (g_logLevel.load() >= logLevel) {
+		lock_guard<mutex> lock(g_logMutex);
 		cout << msg;
+	}
 }
 

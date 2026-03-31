@@ -273,10 +273,13 @@ SessionData::TimerActivityWarning(const boost::system::error_code &ec)
 		}
 		m_callback.SessionTimeoutWarning(shared_from_this(), warningSec);
 
-		m_activityTimeoutTimer.expires_after(seconds(warningSec));
-		m_activityTimeoutTimer.async_wait(
-			boost::bind(
-				&SessionData::TimerSessionTimeout, shared_from_this(), boost::asio::placeholders::error));
+		{
+			boost::mutex::scoped_lock lock(m_dataMutex);
+			m_activityTimeoutTimer.expires_after(seconds(warningSec));
+			m_activityTimeoutTimer.async_wait(
+				boost::bind(
+					&SessionData::TimerSessionTimeout, shared_from_this(), boost::asio::placeholders::error));
+		}
 	}
 }
 

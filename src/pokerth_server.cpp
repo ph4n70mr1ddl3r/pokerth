@@ -160,7 +160,7 @@ main(int argc, char *argv[])
 
 	// Store pid in file.
 	if (pidFile.empty()) {
-		path tmpPidPath(myConfig->readConfigString("LogDir"));
+		fs::path tmpPidPath(myConfig->readConfigString("LogDir"));
 		tmpPidPath /= "pokerth.pid";
 		pidFile = tmpPidPath.string();
 	}

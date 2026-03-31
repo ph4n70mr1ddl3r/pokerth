@@ -55,6 +55,10 @@ WebReceiveBuffer::HandleRead(boost::shared_ptr<SessionData> /*session*/, const b
 void
 WebReceiveBuffer::HandleMessage(boost::shared_ptr<SessionData> session, const string &msg)
 {
+	if (msg.size() > MAX_PACKET_SIZE) {
+		LOG_ERROR("Session " << session->GetId() << " - WebSocket message too large: " << msg.size());
+		return;
+	}
 	boost::shared_ptr<NetPacket> tmpPacket;
 	try {
 		tmpPacket = NetPacket::Create(msg.c_str(), msg.size());

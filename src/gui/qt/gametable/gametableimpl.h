@@ -170,6 +170,7 @@ signals:
 	void signalFlipHolecardsAllIn();
 	void signalNextRoundCleanGui();
 	void signalStartVoteOnKick(unsigned playerId, unsigned voteStarterPlayerId, int timeoutSec, int numVotesNeededToKick);
+	void signalRefreshVotesMonitor(int currentVotes, int numVotesNeededToKick);
 	void signalChangeVoteOnKickButtonsState(bool showHide);
 	void signalEndVoteOnKick();
 	void signalNetClientPlayerLeft(unsigned playerId);

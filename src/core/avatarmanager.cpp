@@ -96,9 +96,10 @@ AvatarManager::Init(const string &dataDir, const string &cacheDir)
 		tmpRet = InternalReadDirectory((tmpDataPath / "gfx/avatars/default/misc/").string(), m_avatars);
 		retVal = retVal && tmpRet;
 	}
-	if (cacheDir.empty() || tmpCachePath.empty())
+	if (cacheDir.empty() || tmpCachePath.empty()) {
 		LOG_ERROR("Cache directory was not set!");
-	else {
+		retVal = false;
+	} else {
 		boost::mutex::scoped_lock lock(m_cachedAvatarsMutex);
 		tmpRet = InternalReadDirectory(tmpCachePath.string(), m_cachedAvatars);
 		retVal = retVal && tmpRet;
@@ -159,10 +160,6 @@ AvatarManager::OpenAvatarFileForChunkRead(const std::string &fileName, unsigned 
 			std::streamoff posDiff(endPos - startPos);
 			if (posDiff < 0) {
 				LOG_ERROR("Negative avatar file size");
-				return retVal;
-			}
-			if (startPos == std::streampos(-1) || endPos == std::streampos(-1) || posDiff < 0) {
-				LOG_ERROR("Invalid file size calculation for avatar: " << fileName);
 				return retVal;
 			}
 			outFileSize = static_cast<unsigned>(posDiff);

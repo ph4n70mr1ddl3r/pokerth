@@ -458,20 +458,15 @@ Log::transformPlayerActionLog(PlayerAction action)
     switch(action) {
     case PLAYER_ACTION_FOLD:
         return LOG_ACTION_FOLD;
-        break;
     case PLAYER_ACTION_CHECK:
         return LOG_ACTION_CHECK;
-        break;
     case PLAYER_ACTION_CALL:
         return LOG_ACTION_CALL;
-        break;
     case PLAYER_ACTION_BET:
     case PLAYER_ACTION_RAISE:
         return LOG_ACTION_BET;
-        break;
     case PLAYER_ACTION_ALLIN:
         return LOG_ACTION_ALL_IN;
-        break;
     default:
         return LOG_ACTION_NONE;
     }
@@ -552,7 +547,10 @@ Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerI
 				player->getMyCards(myCards);
 				sql += "UPDATE Hand SET ";
 				if(currentRound==GAME_STATE_POST_RIVER && player->getMyCardsValueInt()>0) {
-					sql += "Seat_" + std::to_string(player->getMyID()+1) + "_Hand_text=\"" + CardsValue::determineHandName(player->getMyCardsValueInt(),activePlayerList) + "\"";
+					std::string handName = CardsValue::determineHandName(player->getMyCardsValueInt(),activePlayerList);
+					handName.erase(std::remove(handName.begin(), handName.end(), '"'), handName.end());
+					handName.erase(std::remove(handName.begin(), handName.end(), '\''), handName.end());
+					sql += "Seat_" + std::to_string(player->getMyID()+1) + "_Hand_text=\"" + handName + "\"";
 					sql += ",Seat_" + std::to_string(player->getMyID()+1) + "_Hand_int=" + std::to_string(player->getMyCardsValueInt());
 				}
 				if(currentRound==GAME_STATE_POST_RIVER && player->getMyCardsValueInt()>0 && !player->getLogHoleCardsDone()) {

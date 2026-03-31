@@ -162,7 +162,10 @@ AsioSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> /*session*/, 
 	uint32_t netSize = htonl(packetSize);
 	std::memcpy(buf.data(), &netSize, sizeof(netSize));
 	packet->GetMsg()->SerializeWithCachedSizesToArray(&buf[NET_HEADER_SIZE]);
-	EncodeToBuf(buf.data(), packetSize + NET_HEADER_SIZE);
+	if (EncodeToBuf(buf.data(), packetSize + NET_HEADER_SIZE) != 0) {
+		LOG_ERROR("Failed to encode packet - send buffer full");
+		return;
+	}
 }
 
 int

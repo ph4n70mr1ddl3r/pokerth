@@ -1354,23 +1354,24 @@ void gameLobbyDialogImpl::keyPressEvent ( QKeyEvent * event )
 
 bool gameLobbyDialogImpl::eventFilter(QObject *obj, QEvent *event)
 {
-	QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-	QFocusEvent *focusEvent = static_cast<QFocusEvent*>(event);
-
-	if (obj == lineEdit_ChatInput && lineEdit_ChatInput->text() != "" && event->type() == QEvent::KeyPress && keyEvent->key() == Qt::Key_Tab) {
-		myChat->nickAutoCompletition();
-		return true;
-	} else if (obj == lineEdit_searchForPlayers && focusEvent->gotFocus() && lineEdit_searchForPlayers->text() == tr("search for player ...")) {
-		lineEdit_searchForPlayers->clear();
-		return QDialog::eventFilter(obj, event);
-	} else if (event->type() == QEvent::KeyPress && keyEvent->key() == Qt::Key_Back) {
-		event->ignore();
-		this->reject();
-		return false;
-	} else {
-		// pass the event on to the parent class
-		return QDialog::eventFilter(obj, event);
+	if (event->type() == QEvent::KeyPress) {
+		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+		if (obj == lineEdit_ChatInput && lineEdit_ChatInput->text() != "" && keyEvent->key() == Qt::Key_Tab) {
+			myChat->nickAutoCompletition();
+			return true;
+		} else if (keyEvent->key() == Qt::Key_Back) {
+			event->ignore();
+			this->reject();
+			return false;
+		}
+	} else if (event->type() == QEvent::FocusIn) {
+		QFocusEvent *focusEvent = static_cast<QFocusEvent*>(event);
+		if (obj == lineEdit_searchForPlayers && focusEvent->gotFocus() && lineEdit_searchForPlayers->text() == tr("search for player ...")) {
+			lineEdit_searchForPlayers->clear();
+			return QDialog::eventFilter(obj, event);
+		}
 	}
+	return QDialog::eventFilter(obj, event);
 }
 
 bool gameLobbyDialogImpl::event ( QEvent * event )

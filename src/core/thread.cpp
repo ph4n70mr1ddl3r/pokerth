@@ -63,7 +63,9 @@ Thread::~Thread() noexcept
 {
 	if (IsRunning()) {
 		SignalTermination();
-		m_isTerminatedSemaphore.wait();
+		if (!m_isTerminatedSemaphore.timed_wait(boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(5000))) {
+			LOG_ERROR("Thread did not terminate within timeout in destructor");
+		}
 		boost::mutex::scoped_lock lock(m_threadObjMutex);
 		if (m_threadObj) {
 			m_threadObj->join();

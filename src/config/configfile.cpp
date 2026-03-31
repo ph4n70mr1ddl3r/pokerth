@@ -32,6 +32,7 @@
 #include "configfile.h"
 #include <qttoolsinterface.h>
 #include <core/loghelper.h>
+#include <game_defs.h>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDebug>
@@ -452,7 +453,7 @@ void ConfigFile::checkAndCorrectPlayerNames()
 	// Verify that the player names are uniquely set.
 	set<string> playerNames;
 	playerNames.insert(readConfigString("MyName"));
-	for (int i = 1; i < 2; i++)
+	for (int i = 1; i < MAX_NUMBER_OF_PLAYERS; i++)
 	{
 		ostringstream opponentVar;
 		opponentVar << "Opponent" << i << "Name";
@@ -463,7 +464,7 @@ void ConfigFile::checkAndCorrectPlayerNames()
 		// The set contains less than 2 players or an empty player name.
 		// Reset to default player names.
 		writeConfigString("MyName", "Human Player");
-		for (int i = 1; i < 2; i++)
+		for (int i = 1; i < MAX_NUMBER_OF_PLAYERS; i++)
 		{
 			ostringstream opponentVar;
 			ostringstream opponentName;

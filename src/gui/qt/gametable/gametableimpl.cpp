@@ -466,6 +466,7 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	connect(this, SIGNAL(signalFlipHolecardsAllIn()), this, SLOT(flipHolecardsAllIn()));
 	connect(this, SIGNAL(signalNextRoundCleanGui()), this, SLOT(nextRoundCleanGui()));
 	connect(this, SIGNAL(signalStartVoteOnKick(unsigned, unsigned, int, int)), this, SLOT(startVoteOnKick(unsigned, unsigned, int, int)));
+	connect(this, SIGNAL(signalRefreshVotesMonitor(int, int)), this, SLOT(refreshVotesMonitor(int, int)));
 	connect(this, SIGNAL(signalChangeVoteOnKickButtonsState(bool)), this, SLOT(changeVoteOnKickButtonsState(bool)));
 	connect(this, SIGNAL(signalEndVoteOnKick()), this, SLOT(endVoteOnKick()));
 	connect(this, SIGNAL(signalNetClientPlayerLeft(unsigned)), this, SLOT(netClientPlayerLeft(unsigned)));
@@ -936,7 +937,7 @@ void gameTableImpl::refreshAction(int playerID, int playerAction)
 			actionLabelArray[playerID]->setPixmap(QPixmap::fromImage(QImage(myGameTableStyle->getActionPic(playerAction))));
 
 			//play sounds if exist
-			if(myConfig->readConfigInt("PlayGameActions"))
+			if(myConfig->readConfigInt("PlayGameActions") && playerAction >= 0 && playerAction < actionArray.size())
 				mySoundEventHandler->playSound(actionArray[playerAction].toStdString(), playerID);
 		}
 

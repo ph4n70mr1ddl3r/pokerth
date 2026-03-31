@@ -230,21 +230,6 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 		}
 		EVP_MD_CTX_free(context);
 		if (!digestOk) return false;
-			return false;
-		}
-		while ((numBytes = fread(readBuf.get(), 1, ReadBufSize, file)) > 0) {
-			if (!EVP_DigestUpdate(context, readBuf.get(), numBytes)) {
-				LOG_ERROR("MD5Sum: EVP_DigestUpdate failed");
-				EVP_MD_CTX_free(context);
-				return false;
-			}
-		}
-		if (!EVP_DigestFinal_ex(context, buf.GetData(), &md5_digest_len)) {
-			LOG_ERROR("MD5Sum: EVP_DigestFinal_ex failed");
-			EVP_MD_CTX_free(context);
-			return false;
-		}
-		EVP_MD_CTX_free(context);
 	#else
 		MD5_CTX context;
 		MD5_Init(&context);
@@ -289,8 +274,8 @@ CryptHelper::HMACSha1(const unsigned char *keyData, unsigned keySize, const unsi
 	bool retVal = false;
 #ifdef HAVE_OPENSSL
 	unsigned hashLen = 0;
-	HMAC(EVP_sha1(), keyData, keySize, plainData, plainSize, buf.GetData(), &hashLen);
-	retVal = hashLen == static_cast<unsigned>(buf.GetDataSize());
+	unsigned char *result = HMAC(EVP_sha1(), keyData, keySize, plainData, plainSize, buf.GetData(), &hashLen);
+	retVal = result != nullptr && hashLen == static_cast<unsigned>(buf.GetDataSize());
 #else
 	retVal = false;
 	gcry_md_hd_t hd;
@@ -478,7 +463,7 @@ CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const
 		if (!outPlain.empty()) {
 			size_t pos = outPlain.find_first_of('\0');
 			if (pos != string::npos)
-				outPlain = outPlain.substr(0, pos);
+				outPlain.resize(pos);
 		}
 	}
 	return retVal;

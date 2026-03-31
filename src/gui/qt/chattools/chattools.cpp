@@ -81,6 +81,8 @@ void ChatTools::receiveMessage(QString playerName, QString message, bool pm)
 
 	if(myTextBrowser) {
 
+		playerName = playerName.replace("<","&lt;");
+		playerName = playerName.replace(">","&gt;");
 		message = message.replace("<","&lt;");
 		message = message.replace(">","&gt;");
 		//doing the links

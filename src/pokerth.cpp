@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 	// single instance check using QLockFile
     QString lockPath = QDir::temp().absoluteFilePath("pokerth_qml-client.lock");
     QLockFile lockFile(lockPath);
-    lockFile.setStaleLockTime(0);
+    lockFile.setStaleLockTime(30000);
     if (!lockFile.tryLock()) {
         return 0;
     }
@@ -173,7 +173,7 @@ int main( int argc, char **argv )
 	// single instance check using QLockFile
     QString lockPath = QDir::temp().absoluteFilePath("pokerth_client.lock");
     QLockFile lockFile(lockPath);
-    lockFile.setStaleLockTime(0);
+    lockFile.setStaleLockTime(30000);
     if (!lockFile.tryLock()) {
         return 0;
     }
