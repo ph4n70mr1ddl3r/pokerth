@@ -66,7 +66,8 @@ protobuf_generate_cpp(PROTOBUF_GEN_SRC PROTOBUF_GEN_HDRS
 # Füge die generierten Dateien zur Quellenliste hinzu
 list(APPEND POKERTH_LIB_SRC ${PROTOBUF_GEN_SRC})
 
-find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS Core Sql Xml WebSockets Qml Quick QuickControls2 Widgets Svg Network LinguistTools Multimedia REQUIRED)
+find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS Core Sql Xml WebSockets Widgets Svg Network)
+find_package(Qt6 ${QT_MIN_VERSION} COMPONENTS Qml Quick QuickControls2 LinguistTools Multimedia)
 
 # POKERTH.lib
 

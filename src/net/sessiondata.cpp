@@ -363,12 +363,20 @@ SessionData::CloseWebSocketHandle()
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);
 	if (m_webData) {
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L) // c++11 
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)
 		std::error_code std_ec;
-		m_webData->webSocketServer->close(m_webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", std_ec);
+		if (m_webData->isTls && m_webData->webSocketTlsServer) {
+			m_webData->webSocketTlsServer->close(m_webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", std_ec);
+		} else if (m_webData->webSocketServer) {
+			m_webData->webSocketServer->close(m_webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", std_ec);
+		}
 #else
 		boost::system::error_code ec;
-		m_webData->webSocketServer->close(m_webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", ec);
+		if (m_webData->isTls && m_webData->webSocketTlsServer) {
+			m_webData->webSocketTlsServer->close(m_webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", ec);
+		} else if (m_webData->webSocketServer) {
+			m_webData->webSocketServer->close(m_webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", ec);
+		}
 #endif
 	}
 }

@@ -30,6 +30,7 @@
  *****************************************************************************/
 
 #include "qtaudioplayer.h"
+#include <algorithm>
 
 QtAudioPlayer::QtAudioPlayer(ConfigFile *config)
     : myConfig(config), audioEnabled(false)
@@ -62,8 +63,7 @@ void QtAudioPlayer::playSound(std::string audioName, int /*playerID*/)
         effect->setSource(QUrl::fromLocalFile(myAppDataPath + "sounds/default/" + key + ".wav"));
         effect->setLoopCount(1);
         // Volume 0.0 - 1.0, map your config (0-10 or 0-100) accordingly:
-        float vol = myConfig->readConfigInt("SoundVolume") / 100.0f;
-        if (vol > 1.0f) vol = vol/10.0f; // safety if original uses 0-10
+        float vol = std::clamp(myConfig->readConfigInt("SoundVolume") / 100.0f, 0.0f, 1.0f);
         effect->setVolume(vol);
         effects.insert(key, effect);
         // optional: wait until loaded by checking effect->isLoaded()

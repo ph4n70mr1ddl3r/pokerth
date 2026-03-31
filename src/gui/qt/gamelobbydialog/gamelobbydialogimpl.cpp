@@ -1476,7 +1476,9 @@ void gameLobbyDialogImpl::writeDialogSettings(int saveMode)
 void gameLobbyDialogImpl::readDialogSettings()
 {
 	comboBox_gameListFilter->setCurrentIndex(myConfig->readConfigInt("DlgGameLobbyGameListFilterIndex"));
-	treeView_GameList->sortByColumn(myConfig->readConfigInt("DlgGameLobbyGameListSortingSection"), (Qt::SortOrder)myConfig->readConfigInt("DlgGameLobbyGameListSortingOrder") );
+	int sortOrderInt = myConfig->readConfigInt("DlgGameLobbyGameListSortingOrder");
+	Qt::SortOrder sortOrder = (sortOrderInt == Qt::DescendingOrder) ? Qt::DescendingOrder : Qt::AscendingOrder;
+	treeView_GameList->sortByColumn(myConfig->readConfigInt("DlgGameLobbyGameListSortingSection"), sortOrder);
 	comboBox_nickListFilter->setCurrentIndex(myConfig->readConfigInt("DlgGameLobbyNickListSortFilterIndex"));
 }
 
@@ -1779,7 +1781,8 @@ void gameLobbyDialogImpl::removePlayerFromIgnoreList()
 void gameLobbyDialogImpl::searchForPlayerRegExpChanged()
 {
 	QRegularExpression regExp(lineEdit_searchForPlayers->text());
-	myNickListSortFilterProxyModel->setFilterRole(regExp.captureCount());
+	myNickListSortFilterProxyModel->setFilterRole(Qt::DisplayRole);
+	myNickListSortFilterProxyModel->setFilterRegularExpression(regExp);
 }
 
 void gameLobbyDialogImpl::showAutoStartTimer()

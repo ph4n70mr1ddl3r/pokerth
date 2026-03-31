@@ -30,6 +30,7 @@
  *****************************************************************************/
 
 #include <net/servermanagerfactory.h>
+#include <boost/make_shared.hpp>
 
 boost::shared_ptr<ServerManager>
 ServerManagerFactory::CreateServerManager(ConfigFile &config, GuiInterface &gui, ServerMode mode, AvatarManager &avatarManager)

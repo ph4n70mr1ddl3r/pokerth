@@ -41,6 +41,7 @@
 #include <core/avatarmanager.h>
 #include <net/servermanagerfactory.h>
 #include <net/netexception.h>
+#include <net/socket_msg.h>
 
 #include <boost/asio.hpp>
 
@@ -170,7 +171,7 @@ Session::GameType Session::getGameType() const
 	return myGameType;
 }
 
-boost::shared_ptr<AvatarManager> Session::getAvatarManager()
+boost::shared_ptr<AvatarManager> Session::getAvatarManager() const
 {
 	return myAvatarManager;
 }

@@ -31,6 +31,7 @@
 
 #include <db/serverdbfactorygeneric.h>
 #include <db/serverdbgeneric.h>
+#include <boost/make_shared.hpp>
 
 
 ServerDBFactoryGeneric::ServerDBFactoryGeneric()

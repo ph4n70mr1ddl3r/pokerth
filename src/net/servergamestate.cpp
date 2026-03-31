@@ -116,7 +116,7 @@ static void SendPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInterfa
 
 static void SendNewRoundCards(ServerGame &server, Game &curGame, int state)
 {
-	int cards[5]{};
+	std::array<int, 5> cards{};
 	curGame.getCurrentHand()->getBoard()->getMyCards(cards);
 	switch(state) {
 	case GAME_STATE_PREFLOP: {
@@ -214,8 +214,8 @@ static void
 SetPlayerResult(PlayerResult &playerResult, boost::shared_ptr<PlayerInterface> tmpPlayer, GameState roundBeforePostRiver)
 {
 	playerResult.set_playerid(tmpPlayer->getMyUniqueID());
-	int tmpCards[2]{};
-	int bestHandPos[5]{};
+	std::array<int, 2> tmpCards{};
+	std::array<int, 5> bestHandPos{};
 	tmpPlayer->getMyCards(tmpCards);
 	playerResult.set_resultcard1(tmpCards[0]);
 	playerResult.set_resultcard2(tmpCards[1]);
@@ -945,8 +945,8 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 			while (i != end) {
 				AllInShowCardsMessage::PlayerAllIn *playerAllIn = netAllInShow->add_playersallin();
 				playerAllIn->set_playerid((*i)->getMyUniqueID());
-				int tmpCards[2]{};
-				(*i)->getMyCards(tmpCards);
+				std::array<int, 2> tmpCards{};
+			(*i)->getMyCards(tmpCards);
 				playerAllIn->set_allincard1(tmpCards[0]);
 				playerAllIn->set_allincard2(tmpCards[1]);
 				++i;
@@ -1196,7 +1196,7 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 		boost::shared_ptr<PlayerInterface> tmpPlayer = *i;
 		boost::shared_ptr<SessionData> tmpSession = server->GetSessionManager().GetSessionByUniquePlayerId(tmpPlayer->getMyUniqueID());
 		if (tmpSession) {
-			int cards[2]{};
+			std::array<int, 2> cards{};
 			bool errorFlag = false;
 			tmpPlayer->getMyCards(cards);
 
@@ -1229,8 +1229,6 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
             }
             std::fill(tmpPassword.begin(), tmpPassword.end(), '\0');
             tmpPassword.shrink_to_fit();
-            }
-			}
 
 			if (!errorFlag) {
 				server->GetLobbyThread().GetSender().Send(tmpSession, notifyCards);

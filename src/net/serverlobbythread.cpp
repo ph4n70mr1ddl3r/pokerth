@@ -256,6 +256,7 @@ ServerLobbyThread::ServerLobbyThread(GuiInterface &gui, ServerMode mode, ConfigF
 	  m_mode(mode), m_serverConfig(serverConfig), m_curGameId(0), m_curUniquePlayerId(0), m_curSessionId(INVALID_SESSION + 1),
 	  m_statDataChanged(false), m_removeGameTimer(*ioService),
 	  m_saveStatisticsTimer(*ioService), m_loginLockTimer(*ioService),
+	  m_cleanupRateMapsTimer(*ioService),
 	  m_startTime(boost::posix_time::second_clock::local_time())
 {
 	m_internalServerCallback = boost::make_shared<InternalServerCallback>(*this);
@@ -288,7 +289,7 @@ ServerLobbyThread::Init(const string &logDir)
 			m_serverConfig.readConfigString("DBServerEncryptionKey"));
 	} catch (const std::exception& e) {
 		LOG_ERROR("Failed to initialize database connection: " << e.what());
-		throw ServerException(__FILE__, __LINE__, ERR_DB_INIT_FAILED, 0);
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
 	}
 	m_database->AsyncQueryAdminPlayers(0);
 
@@ -753,7 +754,7 @@ ChatCleanerManager &
 ServerLobbyThread::GetChatCleaner()
 {
 	if (!m_chatCleanerManager) {
-		throw PokerTHException(__FILE__, __LINE__, ERR_NET_INVALID_SOCKET, 0, "ChatCleanerManager not initialized");
+		throw PokerTHException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
 	}
 	return *m_chatCleanerManager;
 }
@@ -781,18 +782,12 @@ SenderHelper &
 ServerLobbyThread::GetSender()
 {
 	if (!m_sender) {
-		throw PokerTHException(__FILE__, __LINE__, ERR_NET_INVALID_SOCKET, 0, "SenderHelper not initialized");
+		throw PokerTHException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
+	}
+	if (!m_ioService) {
+		throw PokerTHException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
 	}
 	return *m_sender;
-}
-
-boost::asio::io_context &
-ServerLobbyThread::GetIOService()
-{
-	if (!m_ioService) {
-		throw PokerTHException(__FILE__, __LINE__, ERR_NET_INVALID_SOCKET, 0, "IOService not initialized");
-	}
-	return *m_ioService;
 }
 
 boost::shared_ptr<ServerDBInterface>
@@ -960,10 +955,10 @@ ServerLobbyThread::DispatchPacket(boost::shared_ptr<SessionData> session, boost:
 				HandlePacket(session, packet);
 			} catch (const PokerTHException &e) {
 				LOG_ERROR("Session " << session->GetId() << " - Lobby packet handler exception: " << e.what());
-				SessionError(session, ERR_NET_INVALID_PACKET);
-			} catch (const std::exception &e) {
-				LOG_ERROR("Session " << session->GetId() << " - Lobby packet handler std::exception: " << e.what());
-				SessionError(session, ERR_NET_INVALID_PACKET);
+			SessionError(session, ERR_SOCK_INVALID_PACKET);
+		} catch (const std::exception &e) {
+			LOG_ERROR("Session " << session->GetId() << " - Lobby packet handler std::exception: " << e.what());
+			SessionError(session, ERR_SOCK_INVALID_PACKET);
 			}
 		}
 	}
@@ -1187,8 +1182,8 @@ ServerLobbyThread::HandleNetPacketAvatarHeader(boost::shared_ptr<SessionData> se
 		if (avatarHeader.avatarsize() >= MIN_AVATAR_FILE_SIZE && avatarHeader.avatarsize() <= MAX_AVATAR_FILE_SIZE) {
 			int rawType = avatarHeader.avatartype();
 			if (rawType < AVATAR_FILE_TYPE_UNKNOWN || rawType > AVATAR_FILE_TYPE_GIF) {
-				LOG_WARN("Session " << session->GetId() << " - Invalid avatar type: " << rawType);
-				SessionError(session, ERR_NET_INVALID_AVATAR_SIZE);
+				LOG_ERROR("Session " << session->GetId() << " - Invalid avatar type: " << rawType);
+				SessionError(session, ERR_NET_INVALID_AVATAR_FILE);
 				return;
 			}
 			auto tmpAvatarFile = boost::make_shared<AvatarFile>();
@@ -1231,7 +1226,7 @@ ServerLobbyThread::HandleNetPacketAvatarFile(boost::shared_ptr<SessionData> sess
 		
 		if (!tmpAvatar) {
 			LOG_ERROR("Session " << session->GetId() << " - Avatar upload rejected: no avatar file allocated");
-			SessionError(session, ERR_NET_INVALID_AVATAR_SIZE);
+			SessionError(session, ERR_NET_INVALID_AVATAR_FILE);
 			return;
 		}
 		if (avatarBlock.empty()) {
@@ -1545,7 +1540,7 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 					[cutoff](const boost::posix_time::ptime& t) { return t < cutoff; }),
 				entry.messageTimes.end());
 			if (entry.messageTimes.size() >= MAX_CHAT_RATE_MESSAGES) {
-				LOG_WARN("Chat rate limited for player " << playerId);
+				LOG_ERROR("Chat rate limited for player " << playerId);
 				auto packet = boost::make_shared<NetPacket>();
 				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatRejectMessage);
 				ChatRejectMessage *netReject = packet->GetMsg()->mutable_chatrejectmessage();
@@ -2003,7 +1998,7 @@ ServerLobbyThread::UserInvalid(unsigned playerId)
 				}
 			}
 			if (m_failedLoginMap.size() > MAX_FAILED_LOGIN_MAP_HARD_LIMIT) {
-				LOG_WARN("Failed login map at hard limit, evicting oldest entries");
+				LOG_ERROR("Failed login map at hard limit, evicting oldest entries");
 				while (m_failedLoginMap.size() > MAX_FAILED_LOGIN_MAP_SIZE) {
 					auto oldest = std::min_element(
 						m_failedLoginMap.begin(), m_failedLoginMap.end(),
@@ -2389,18 +2384,6 @@ ServerLobbyThread::SendPlayerList(boost::shared_ptr<SessionData> s)
 }
 
 void
-ServerLobbyThread::SendGameList(boost::shared_ptr<SessionData> s)
-{
-	boost::mutex::scoped_lock lock(m_gameMapMutex);
-	GameMap::const_iterator game_i = m_gameMap.begin();
-	GameMap::const_iterator game_end = m_gameMap.end();
-	while (game_i != game_end) {
-		GetSender().Send(s, CreateNetPacketGameListNew(*game_i->second));
-		++game_i;
-	}
-}
-
-void
 ServerLobbyThread::UpdateStatisticsNumberOfPlayers()
 {
 	ServerStats stats;
@@ -2604,4 +2587,56 @@ ServerLobbyThread::GetRejoinGameIdForPlayer(const std::string &playerName, const
 		}
 	}
 	return retGameId;
+}
+
+boost::asio::io_context &
+ServerLobbyThread::GetIOService()
+{
+	return *m_ioService;
+}
+
+void
+ServerLobbyThread::ResubscribeLobbyMsg(boost::shared_ptr<SessionData> session)
+{
+	InternalResubscribeMsg(session);
+}
+
+void
+ServerLobbyThread::TimerCleanupRateMaps(const boost::system::error_code &ec)
+{
+	if (!ec) {
+		{
+			boost::mutex::scoped_lock lock(m_chatRateMapMutex);
+			boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
+			boost::posix_time::ptime chatCutoff = now - boost::posix_time::minutes(10);
+			auto cit = m_chatRateMap.begin();
+			while (cit != m_chatRateMap.end()) {
+				cit->second.messageTimes.erase(
+					std::remove_if(cit->second.messageTimes.begin(), cit->second.messageTimes.end(),
+						[chatCutoff](const boost::posix_time::ptime& t) { return t < chatCutoff; }),
+					cit->second.messageTimes.end());
+				if (cit->second.messageTimes.empty()) {
+					cit = m_chatRateMap.erase(cit);
+				} else {
+					++cit;
+				}
+			}
+		}
+		{
+			boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
+			boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
+			boost::posix_time::ptime loginCutoff = now - boost::posix_time::minutes(30);
+			auto fit = m_failedLoginMap.begin();
+			while (fit != m_failedLoginMap.end()) {
+				if (fit->second.firstFailTime < loginCutoff) {
+					fit = m_failedLoginMap.erase(fit);
+				} else {
+					++fit;
+				}
+			}
+		}
+		m_cleanupRateMapsTimer.expires_after(std::chrono::minutes(5));
+		m_cleanupRateMapsTimer.async_wait(
+			boost::bind(&ServerLobbyThread::TimerCleanupRateMaps, shared_from_this(), boost::asio::placeholders::error));
+	}
 }

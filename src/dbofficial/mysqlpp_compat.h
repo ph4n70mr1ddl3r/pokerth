@@ -46,8 +46,14 @@
 #include <sstream>
 #include <mutex>
 #include <atomic>
+#include <stdexcept>
 
 namespace mysqlpp {
+
+class Exception : public std::runtime_error {
+public:
+    using std::runtime_error::runtime_error;
+};
 
 // Dummy option used in original code. We accept it but ignore specifics.
 class SetCharsetNameOption {

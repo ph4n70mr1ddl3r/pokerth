@@ -192,7 +192,11 @@ void LogFileDialog::saveLogFileAs()
 						   tr("PokerTH SQL log (*.pdb)"));
 
 		if(!fileName.isEmpty()) {
-			QFile::copy(selectedItem->data(0, Qt::UserRole).toString(), fileName);
+			if(!QFile::copy(selectedItem->data(0, Qt::UserRole).toString(), fileName)) {
+				MyMessageBox::warning(this, tr("Save log file"),
+					tr("Could not save the log file. Please check if the file already exists."),
+					QMessageBox::Close);
+			}
 		}
 	}
 }

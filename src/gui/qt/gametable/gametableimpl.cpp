@@ -3012,8 +3012,9 @@ void gameTableImpl::networkGameModification()
 void gameTableImpl::mouseOverFlipCards(bool front)
 {
 
-	if(myStartWindow->getSession()->getCurrentGame()) {
-		if(myConfig->readConfigInt("AntiPeekMode") && myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getSeatsList()->front()->getMyActiveStatus()/* && myStartWindow->getSession()->getCurrentGame()->getSeatsList()->front()->getMyAction() != PLAYER_ACTION_FOLD*/) {
+	if(myStartWindow && myStartWindow->getSession() && myStartWindow->getSession()->getCurrentGame()) {
+		boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+		if(currentHand && !currentHand->getSeatsList()->empty() && myConfig->readConfigInt("AntiPeekMode") && currentHand->getSeatsList()->front()->getMyActiveStatus()) {
 			holeCardsArray[0][0]->signalFastFlipCards(front);
 			holeCardsArray[0][1]->signalFastFlipCards(front);
 		}
@@ -3023,7 +3024,13 @@ void gameTableImpl::mouseOverFlipCards(bool front)
 void gameTableImpl::updateMyButtonsState(int mode)
 {
 
+	if (!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame()) {
+		return;
+	}
 	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	if (!currentHand) {
+		return;
+	}
 
 	if(currentHand->getPreviousPlayerID() == 0) {
 		myButtonsCheckable(false);
@@ -3212,7 +3219,7 @@ void gameTableImpl::triggerVoteOnKick(int id)
 	}
 	PlayerList seatList = myStartWindow->getSession()->getCurrentGame()->getSeatsList();
 	int playerCount = static_cast<int>(seatList->size());
-	if (id < playerCount) {
+	if (id >= 0 && id < playerCount) {
 		PlayerListIterator pos = seatList->begin();
 		std::advance(pos, id);
 		myStartWindow->getSession()->startVoteKickPlayer((*pos)->getMyUniqueID());

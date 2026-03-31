@@ -42,6 +42,7 @@
 #include <localenginefactory.h>
 #include <tools.h>
 #include <configfile.h>
+#include <third_party/boost/timers.hpp>
 
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
@@ -179,8 +180,8 @@ ServerGame::HandlePacket(boost::shared_ptr<SessionData> session, boost::shared_p
 GameState
 ServerGame::GetCurRound() const
 {
-	Game &game = GetGame();
-	HandInterface *hand = game.getCurrentHand();
+	const Game &game = GetGame();
+	auto hand = game.getCurrentHand();
 	if (!hand) {
 		return GAME_STATE_PREFLOP;
 	}
@@ -225,7 +226,7 @@ ServerGame::TimerVoteKick(const boost::system::error_code &ec)
 		int numVotesInFavourOfKicking = 0;
 		int numVotesAgainstKicking = 0;
 		PlayerIdList votedPlayerIds;
-		boost::timer::cpu_timer voteTimer;
+		boost::timers::portable::microsec_timer voteTimer;
 		int timeLimitSec = 0;
 		bool hasActivePetition = false;
 		
@@ -1104,7 +1105,7 @@ ServerDBInterface &
 ServerGame::GetDatabase()
 {
 	if (!m_database) {
-		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INIT_FAILED, 0);
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
 	}
 	return *m_database;
 }
@@ -1113,7 +1114,7 @@ ServerLobbyThread &
 ServerGame::GetLobbyThread()
 {
 	if (!m_lobbyThread) {
-		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INIT_FAILED, 0);
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
 	}
 	return *m_lobbyThread;
 }
@@ -1129,7 +1130,7 @@ ServerGame::GetState()
 {
 	boost::mutex::scoped_lock lock(m_curStateMutex);
 	if (!m_curState) {
-		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INIT_FAILED, 0);
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
 	}
 	return *m_curState;
 }
@@ -1211,9 +1212,18 @@ ServerGame::CheckSettings(const GameData &data, const string &password, ServerMo
 {
 	bool retVal = true;
 	if (mode != SERVER_MODE_LAN) {
-		if (data.playerActionTimeoutSec < 5) {
+		if (data.playerActionTimeoutSec < 5 || data.playerActionTimeoutSec > 60) {
 			retVal = false;
 		}
+	}
+	if (data.maxNumberOfPlayers < 2 || data.maxNumberOfPlayers > MAX_NUMBER_OF_PLAYERS) {
+		retVal = false;
+	}
+	if (data.firstSmallBlind < 1) {
+		retVal = false;
+	}
+	if (data.startMoney < 1) {
+		retVal = false;
 	}
 	if (data.gameType == GAME_TYPE_RANKING) {
 		if ((data.startMoney != RANKING_GAME_START_CASH)

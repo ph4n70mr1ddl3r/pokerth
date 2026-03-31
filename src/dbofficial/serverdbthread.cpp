@@ -31,6 +31,7 @@
 
 #include <dbofficial/serverdbthread.h>
 #include <dbofficial/asyncdbauth.h>
+#include <dbofficial/mysqlpp_compat.h>
 #include <dbofficial/asyncdblogin.h>
 #include <dbofficial/asyncdbavatarblacklist.h>
 #include <dbofficial/asyncdbcreategame.h>

@@ -48,7 +48,8 @@ SoundEvents::SoundEvents(ConfigFile *c): myConfig(c), lastSBValue(0), lastSBLeve
 
 SoundEvents::~SoundEvents() noexcept
 {
-    myPlayer->deleteLater();
+    myPlayer->closeAudio();
+    delete myPlayer;
 }
 
 void SoundEvents::reInitSoundEngine()

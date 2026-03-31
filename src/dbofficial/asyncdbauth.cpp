@@ -30,6 +30,7 @@
  *****************************************************************************/
 
 #include <boost/bind/bind.hpp>
+#include <boost/make_shared.hpp>
 #include <dbofficial/asyncdbauth.h>
 
 

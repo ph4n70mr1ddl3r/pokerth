@@ -586,7 +586,6 @@ void settingsDialogImpl::isAccepted()
 	myConfig->writeConfigInt("ServerPort", spinBox_serverPort->value());
 	myConfig->writeConfigInt("ServerUseIpv6", checkBox_useIpv6->isChecked());
 	myConfig->writeConfigInt("ServerUseSctp", checkBox_useSctp->isChecked());
-    myConfig->writeConfigInt("InternetServerUseTls", checkBox_InternetServerUseTls->isChecked());
 
 	//Internet Game Settings
 	if(groupBox_automaticServerConfig->isChecked()) {

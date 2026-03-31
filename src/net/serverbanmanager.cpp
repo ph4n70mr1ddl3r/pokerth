@@ -30,6 +30,8 @@
  *****************************************************************************/
 
 #include <net/serverbanmanager.h>
+#include <net/serverexception.h>
+#include <net/socket_msg.h>
 #include <algorithm>
 
 using namespace std;
