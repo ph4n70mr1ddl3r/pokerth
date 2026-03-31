@@ -77,9 +77,9 @@ ClientThread::ClientThread(GuiInterface &gui, AvatarManager &avatarManager, Log 
 	: m_ioService(new boost::asio::io_context), m_clientLog(myLog), m_curState(nullptr), m_gui(gui),
 	  m_avatarManager(avatarManager), m_stateTimer(*m_ioService), m_avatarTimer(*m_ioService)
 {
-	m_context.reset(new ClientContext);
+	m_context = boost::make_shared<ClientContext>();
 	myQtToolsInterface.reset(CreateQtToolsWrapper());
-	m_senderHelper.reset(new SenderHelper(m_ioService));
+	m_senderHelper = boost::make_shared<SenderHelper>(m_ioService);
 }
 
 ClientThread::~ClientThread() noexcept
@@ -188,7 +188,11 @@ ClientThread::SendPlayerAction()
 		return;
 	}
 	netMyAction->set_handnum(game->getCurrentHandID());
-	netMyAction->set_gamestate(static_cast<NetGameState>(game->getCurrentHand()->getCurrentRound()));
+	auto currentHand = game->getCurrentHand();
+	if (!currentHand) {
+		return;
+	}
+	netMyAction->set_gamestate(static_cast<NetGameState>(currentHand->getCurrentRound()));
 	netMyAction->set_myaction(static_cast<NetPlayerAction>(myPlayer->getMyAction()));
 	// Only send last bet if not fold/checked.
 	if (myPlayer->getMyAction() != PLAYER_ACTION_FOLD && myPlayer->getMyAction() != PLAYER_ACTION_CHECK)

@@ -96,7 +96,7 @@ public:
 	[[nodiscard]] MD5Buf GetAvatarMD5() const;
 	void SetAvatarMD5(const MD5Buf &avatarMD5);
 	[[nodiscard]] boost::shared_ptr<AvatarFile> GetNetAvatarFile() const;
-	void SetNetAvatarFile(boost::shared_ptr<AvatarFile> AvatarFile);
+	void SetNetAvatarFile(boost::shared_ptr<AvatarFile> avatarFile);
 	[[nodiscard]] PlayerType GetType() const;
 	void SetType(PlayerType type);
 	[[nodiscard]] PlayerRights GetRights() const;
@@ -145,9 +145,9 @@ private:
 	mutable boost::mutex			m_dataMutex;
 };
 
-typedef std::list<std::pair<unsigned, unsigned> > RemovePlayerList;
-typedef std::list<boost::shared_ptr<PlayerData> > PlayerDataList;
-typedef std::map<unsigned, boost::shared_ptr<PlayerData> > PlayerDataMap;
+using RemovePlayerList = std::list<std::pair<unsigned, unsigned>>;
+using PlayerDataList = std::list<boost::shared_ptr<PlayerData>>;
+using PlayerDataMap = std::map<unsigned, boost::shared_ptr<PlayerData>>;
 
 #endif
 

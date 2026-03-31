@@ -55,8 +55,8 @@ SessionData::SessionData(boost::shared_ptr<boost::asio::ip::tcp::socket> sock, S
 	  m_activityTimeoutSec(0), m_activityWarningRemainingSec(0), m_initTimeoutTimer(ioService), m_globalTimeoutTimer(ioService),
 	  m_activityTimeoutTimer(ioService), m_callback(cb), m_authSession(nullptr), m_curAuthStep(0)
 {
-	m_receiveBuffer.reset(new AsioReceiveBuffer);
-	m_sendBuffer.reset(new AsioSendBuffer);
+	m_receiveBuffer = boost::make_shared<AsioReceiveBuffer>();
+	m_sendBuffer = boost::make_shared<AsioSendBuffer>();
 }
 
 SessionData::SessionData(boost::shared_ptr<WebSocketData> webData, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int /*filler*/)
@@ -64,8 +64,8 @@ SessionData::SessionData(boost::shared_ptr<WebSocketData> webData, SessionId id,
 	  m_activityTimeoutSec(0), m_activityWarningRemainingSec(0), m_initTimeoutTimer(ioService), m_globalTimeoutTimer(ioService),
 	  m_activityTimeoutTimer(ioService), m_callback(cb), m_authSession(nullptr), m_curAuthStep(0)
 {
-	m_receiveBuffer.reset(new WebReceiveBuffer);
-	m_sendBuffer.reset(new WebSendBuffer);
+	m_receiveBuffer = boost::make_shared<WebReceiveBuffer>();
+	m_sendBuffer = boost::make_shared<WebSendBuffer>();
 }
 
 SessionData::SessionData(boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sslStream, SessionId id, SessionDataCallback &cb, boost::asio::io_context &ioService, int /*filler*/)
@@ -75,8 +75,8 @@ SessionData::SessionData(boost::shared_ptr<boost::asio::ssl::stream<boost::asio:
       m_initTimeoutTimer(ioService), m_globalTimeoutTimer(ioService), m_activityTimeoutTimer(ioService),
       m_callback(cb), m_authSession(nullptr), m_curAuthStep(0)
 {
-    m_receiveBuffer.reset(new AsioReceiveBuffer);
-    m_sendBuffer.reset(new AsioSendBuffer);
+    m_receiveBuffer = boost::make_shared<AsioReceiveBuffer>();
+    m_sendBuffer = boost::make_shared<AsioSendBuffer>();
 }
 
 SessionData::~SessionData() noexcept

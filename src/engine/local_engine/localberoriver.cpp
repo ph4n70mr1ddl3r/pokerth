@@ -33,8 +33,6 @@
 #include <handinterface.h>
 #include <game_defs.h>
 
-#include <iostream>
-
 using namespace std;
 
 LocalBeRoRiver::LocalBeRoRiver(HandInterface* hi, unsigned dP, int sB) : LocalBeRo(hi, dP, sB, GAME_STATE_RIVER)

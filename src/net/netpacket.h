@@ -89,7 +89,7 @@ private:
 	std::unique_ptr<PokerTHMessage> m_msg;
 };
 
-typedef std::list<boost::shared_ptr<NetPacket> > NetPacketList;
+using NetPacketList = std::list<boost::shared_ptr<NetPacket>>;
 
 #endif
 

@@ -32,7 +32,6 @@
 #ifndef LOCALBEROPREFLOP_H
 #define LOCALBEROPREFLOP_H
 
-#include <iostream>
 #include <localbero.h>
 
 class HandInterface;
@@ -44,7 +43,7 @@ public:
 	LocalBeRoPreflop(HandInterface*, unsigned, int);
 	~LocalBeRoPreflop() noexcept;
 
-	void run();
+	void run() override;
 
 private:
 // 	PlayerListIterator bigBlindPositionIt; // iterator for activePlayerList

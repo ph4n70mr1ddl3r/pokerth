@@ -859,7 +859,7 @@ static const RoundData FlopValues[] = {
 #define NUM_FLOP_VALUES (sizeof(FlopValues)/sizeof(RoundData))
 
 LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType type, std::string name, std::string avatar, int sC, bool aS, bool sotS, int mB)
-	: PlayerInterface(), myConfig(c), currentHand(0), myID(id), myUniqueID(uniqueId), myType(type), myName(name), myAvatar(avatar),
+	: PlayerInterface(), myConfig(c), currentHand(nullptr), myID(id), myUniqueID(uniqueId), myType(type), myName(name), myAvatar(avatar),
 	  myDude(0), myDude4(0), myCardsValueInt(0), myOdds(-1.0), logHoleCardsDone(false), myCash(sC), mySet(0), myLastRelativeSet(0), myAction(PLAYER_ACTION_NONE),
 	  myButton(mB), myActiveStatus(aS), myStayOnTableStatus(sotS), myTurn(false), myCardsFlip(false), myRoundStartCash(0), myLastMoneyWon(0),
 	  mySBluff(0), mySBluffStatus(false), myActionTimeoutCounter(0), myIsSessionActive(false), myIsKicked(false), myIsMuted(false)
@@ -949,9 +949,6 @@ LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType ty
 	}
 	myDude4 = (myDude4/count)-interval;
 
-	if(DEBUG_MODE) {
-
-	}
 	////////////////////////////
 
 }

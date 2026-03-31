@@ -68,7 +68,7 @@ AvatarManager::AvatarManager(bool useExternalServer, const std::string &external
 	: m_useExternalServer(useExternalServer), m_externalServerAddress(externalServerAddress),
 	  m_externalServerUser(externalServerUser), m_externalServerPassword(externalServerPassword)
 {
-	m_uploader.reset(new UploaderThread());
+	m_uploader = boost::make_shared<UploaderThread>();
 }
 
 AvatarManager::~AvatarManager() noexcept

@@ -135,9 +135,9 @@ public:
 	[[nodiscard]] bool IsSsl() const;
 	[[nodiscard]] boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> GetSslStream();
 
-protected:
-	SessionData(const SessionData &other);
-	SessionData &operator=(const SessionData &other);
+public:
+	SessionData(const SessionData &) = delete;
+	SessionData &operator=(const SessionData &) = delete;
 	void InternalClearAuthSession();
 	void TimerInitTimeout(const boost::system::error_code &ec);
 	void TimerSessionTimeout(const boost::system::error_code &ec);

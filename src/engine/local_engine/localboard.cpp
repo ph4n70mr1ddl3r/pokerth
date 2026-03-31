@@ -36,6 +36,7 @@
 #include <core/loghelper.h>
 #include "localexception.h"
 #include "engine_msg.h"
+#include <algorithm>
 
 LocalBoard::LocalBoard() : BoardInterface(), pot(0), sets(0), allInCondition(false), lastActionPlayerID(0)
 {
@@ -100,7 +101,7 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 
 	// sort player sets asc
 	std::vector<unsigned> playerSetsSort = playerSets;
-	sort(playerSetsSort.begin(), playerSetsSort.end());
+	std::sort(playerSetsSort.begin(), playerSetsSort.end());
 
 	// potLevel[0] = amount, potLevel[1] = sum, potLevel[2..n] = winner
 	std::vector<unsigned> potLevel;
@@ -247,7 +248,7 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 
 			// sort player sets asc
 			playerSetsSort = playerSets;
-			sort(playerSetsSort.begin(), playerSetsSort.end());
+			std::sort(playerSetsSort.begin(), playerSetsSort.end());
 
 			// clear potLevel
 			potLevel.clear();

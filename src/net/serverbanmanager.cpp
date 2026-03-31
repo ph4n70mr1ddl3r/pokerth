@@ -242,7 +242,7 @@ ServerBanManager::InternalRegisterTimedBan(unsigned timerId, unsigned durationHo
 {
 	boost::shared_ptr<boost::asio::steady_timer> tmpTimer;
 	if (durationHours) {
-		tmpTimer.reset(new boost::asio::steady_timer(*m_ioService));
+		tmpTimer = boost::make_shared<boost::asio::steady_timer>(*m_ioService);
 		tmpTimer->expires_after(hours(durationHours));
 		tmpTimer->async_wait(
 			boost::bind(
@@ -261,10 +261,16 @@ ServerBanManager::TimerRemoveBan(const boost::system::error_code &ec, unsigned b
 unsigned
 ServerBanManager::GetNextBanId()
 {
-	m_curBanId++;
-	if (m_curBanId == 0)
+	unsigned startId = m_curBanId;
+	do {
 		m_curBanId++;
-
-	return m_curBanId;
+		if (m_curBanId == 0)
+			m_curBanId = 1;
+		if (m_banPlayerNameMap.find(m_curBanId) == m_banPlayerNameMap.end()
+			&& m_banIPAddressMap.find(m_curBanId) == m_banIPAddressMap.end()) {
+			return m_curBanId;
+		}
+	} while (m_curBanId != startId);
+	throw ServerException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
 }
 

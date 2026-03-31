@@ -32,7 +32,6 @@
 #ifndef LOCALBOARD_H
 #define LOCALBOARD_H
 
-#include <iostream>
 #include <vector>
 #include <array>
 #include <boost/shared_ptr.hpp>

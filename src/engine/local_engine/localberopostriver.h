@@ -32,7 +32,6 @@
 #ifndef LOCALBEROPOSTRIVER_H
 #define LOCALBEROPOSTRIVER_H
 
-#include <iostream>
 #include <localbero.h>
 
 class HandInterface;
@@ -41,7 +40,7 @@ class HandInterface;
 class LocalBeRoPostRiver : public LocalBeRo
 {
 public:
-	LocalBeRoPostRiver(HandInterface*, int, int);
+	LocalBeRoPostRiver(HandInterface*, unsigned, int);
 	~LocalBeRoPostRiver() noexcept;
 
 	void setHighestCardsValue(int theValue)
@@ -53,7 +52,7 @@ public:
 		return highestCardsValue;
 	}
 
-	void run();
+	void run() override;
 
 	void postRiverRun();
 

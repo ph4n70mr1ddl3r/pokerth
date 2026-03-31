@@ -38,13 +38,12 @@
 #include <QDebug>
 #include <QFile>
 
-#define MODUS 0700
-
 #ifdef _WIN32
 #include <windows.h>
 #include <direct.h>
 #endif
 
+#include <filesystem>
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
@@ -148,10 +147,10 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 		cacheDir = configFileName;
 		cacheDir += "cache/";
 		// create directories on first start of app
-		mkdir(configFileName.c_str(), MODUS);
-		mkdir(logDir.c_str(), MODUS);
-		mkdir(dataDir.c_str(), MODUS);
-		mkdir(cacheDir.c_str(), MODUS);
+		std::filesystem::create_directories(configFileName);
+		std::filesystem::create_directories(logDir);
+		std::filesystem::create_directories(dataDir);
+		std::filesystem::create_directories(cacheDir);
 	}
 #endif
 

@@ -25,6 +25,7 @@
 #include <string>
 #include <array>
 #include <filesystem>
+#include <mutex>
 
 #include <QSqlDatabase>
 #include <QString>
@@ -60,7 +61,7 @@ public:
         currentRound = theValue;
     }
 
-    std::string getMySqliteLogFileName()
+    [[nodiscard]] std::string getMySqliteLogFileName() const
     {
         return mySqliteLogFileName.string();
     }
@@ -69,6 +70,7 @@ private:
 
     void exec_transaction();
 
+    mutable std::mutex m_logMutex;
     QSqlDatabase mySqliteLogDb;
     QString myConnectionName;
 

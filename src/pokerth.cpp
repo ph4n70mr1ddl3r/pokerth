@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     QIcon::setThemeName("pokerth");
 
     boost::shared_ptr<ConfigFile> myConfig;
-    myConfig.reset(new ConfigFile(argv[0], false));
+    myConfig = boost::make_shared<ConfigFile>(argv[0], false);
 
     // make QSettings use the default PokerTH config.xml :
 	const QSettings::Format XmlFormat = QSettings::registerFormat("xml", &SettingsXmlHandler::readXmlFile, &SettingsXmlHandler::writeXmlFile);
@@ -180,8 +180,8 @@ int main( int argc, char **argv )
 #endif
 
 	//create defaultconfig
-	unique_ptr<ConfigFile> myConfig(new ConfigFile(argv[0], false));
-	unique_ptr<Log> myLog(new Log(myConfig.get()));
+	auto myConfig = std::make_unique<ConfigFile>(argv[0], false);
+	auto myLog = std::make_unique<Log>(myConfig.get());
 
 	// set PlastiqueStyle even for mac-version to prevent artefacts on styled widgets
 

@@ -258,10 +258,10 @@ ServerLobbyThread::ServerLobbyThread(GuiInterface &gui, ServerMode mode, ConfigF
 	  m_saveStatisticsTimer(*ioService), m_loginLockTimer(*ioService),
 	  m_startTime(boost::posix_time::second_clock::local_time())
 {
-	m_internalServerCallback.reset(new InternalServerCallback(*this));
-	m_sender.reset(new SenderHelper(m_ioService));
-	m_banManager.reset(new ServerBanManager(m_ioService));
-	m_chatCleanerManager.reset(new ChatCleanerManager(*m_internalServerCallback, m_ioService));
+	m_internalServerCallback = boost::make_shared<InternalServerCallback>(*this);
+	m_sender = boost::make_shared<SenderHelper>(m_ioService);
+	m_banManager = boost::make_shared<ServerBanManager>(m_ioService);
+	m_chatCleanerManager = boost::make_shared<ChatCleanerManager>(*m_internalServerCallback, m_ioService);
 	DBFactory dbFactory;
 	m_database = dbFactory.CreateServerDBObject(*m_internalServerCallback, m_ioService);
 }
@@ -510,7 +510,6 @@ ServerLobbyThread::NotifyPlayerLeftGame(unsigned gameId, unsigned playerId)
 void
 ServerLobbyThread::NotifyGameAdminChanged(unsigned gameId, unsigned newAdminPlayerId)
 {
-	// Send notification to players in lobby.
 	// Send notification to players in lobby.
 	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_GameListAdminChangedMessage);
@@ -1442,8 +1441,7 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 		LOG_ERROR("not allowed due to ranklimit");
 		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_IP_BLOCKED);
 	} else {
-		boost::shared_ptr<ServerGame> game(
-			new ServerGame(
+		auto game = boost::make_shared<ServerGame>(
 				shared_from_this(),
 				gameId,
 				gameName,
@@ -1452,7 +1450,7 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 				session->GetPlayerData()->GetUniqueId(),
 				session->GetPlayerData()->GetDBId(),
 				GetGui(),
-				m_serverConfig));
+				m_serverConfig);
 		game->Init();
 
 		// Add game to list of games.

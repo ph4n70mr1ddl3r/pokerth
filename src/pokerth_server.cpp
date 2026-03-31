@@ -190,7 +190,7 @@ main(int argc, char *argv[])
 	myServerGuiInterface->getSession()->terminateNetworkServer();
 
 	if (!pidFile.empty()) {
-		remove(pidFile.c_str());
+		fs::remove(pidFile);
 	}
 
 	session.reset();

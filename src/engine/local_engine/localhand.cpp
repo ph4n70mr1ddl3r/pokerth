@@ -54,7 +54,7 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 	for(it=seatsList->begin(); it!=seatsList->end(); ++it) {
 		(*it)->setHand(this);
 		// set myFlipCards 0
-		(*it)->setMyCardsFlip(0, 0);
+		(*it)->setMyCardsFlip(false, 0);
 	}
 
 	// generate cards and assign to board and player
@@ -105,7 +105,7 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 		if((*it)->getMyID() != 0) {
 			Tools::GetRand(1, 100, 1, &sBluff);
 			(*it)->setSBluff(sBluff);
-			(*it)->setSBluffStatus(0);
+			(*it)->setSBluffStatus(false);
 		}
 	}
 

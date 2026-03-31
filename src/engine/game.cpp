@@ -62,8 +62,6 @@ Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
 		dealerPosition = 4;
 	}
 
-	int i = 0;
-
 	// determine dealer position
 	PlayerDataList::const_iterator player_i = playerDataList.begin();
 	PlayerDataList::const_iterator player_end = playerDataList.end();
@@ -89,7 +87,7 @@ Game::Game(GuiInterface* gui, boost::shared_ptr<EngineFactory> factory,
 	// create player
 	player_i = playerDataList.begin();
 	player_end = playerDataList.end();
-	for(i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
+	for(int i=0; i<MAX_NUMBER_OF_PLAYERS; i++) {
 
 		string myName;
 		string myAvatarFile;
@@ -294,9 +292,10 @@ void Game::raiseBlinds()
 			lastHandBlindsRaised = currentHandID;
 		}
 	} else {
-		if (lastTimeBlindsRaised + myGameData.raiseSmallBlindEveryMinutesValue <= blindsTimer.elapsed().total_seconds()/60) {
+		long long elapsedMinutes = blindsTimer.elapsed().total_seconds() / 60;
+		if (lastTimeBlindsRaised + myGameData.raiseSmallBlindEveryMinutesValue <= elapsedMinutes) {
 			raiseBlinds = true;
-			lastTimeBlindsRaised = blindsTimer.elapsed().total_seconds()/60;
+			lastTimeBlindsRaised = elapsedMinutes;
 		}
 	}
 	if (raiseBlinds) {

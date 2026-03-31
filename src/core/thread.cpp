@@ -81,7 +81,7 @@ Thread::Run()
 
 	// Create the boost thread object.
 	if (!m_threadObj) {
-		m_threadObj.reset(new boost::thread(ThreadStarter(*this)));
+		m_threadObj = boost::make_shared<boost::thread>(ThreadStarter(*this));
 	}
 }
 

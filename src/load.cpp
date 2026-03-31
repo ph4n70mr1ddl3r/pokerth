@@ -437,6 +437,7 @@ main(int argc, char *argv[])
 				size_t bytes_readable = session->socket.available();
 				while (bytes_readable > 0) {
 					msg = receiveMessage(session);
+					if (!msg) break;
 					if (msg->present == PokerTHMessage_PR_endOfGameMessage) {
 						cout << "One game was ended." << endl;
 						terminated = true;

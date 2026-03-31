@@ -80,7 +80,7 @@ struct DBConnectionData {
 ServerDBThread::ServerDBThread(ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService)
 	: m_ioService(ioService), m_semaphore(0), m_callback(cb), m_isConnected(false), m_permanentError(false), m_previouslyConnected(false)
 {
-	m_connData.reset(new DBConnectionData);
+	m_connData = boost::make_shared<DBConnectionData>();
 }
 
 ServerDBThread::~ServerDBThread() noexcept

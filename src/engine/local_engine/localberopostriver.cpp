@@ -37,13 +37,11 @@
 
 using namespace std;
 
-LocalBeRoPostRiver::LocalBeRoPostRiver(HandInterface* hi, int dP, int sB) : LocalBeRo(hi, dP, sB, GAME_STATE_POST_RIVER), highestCardsValue(0)
+LocalBeRoPostRiver::LocalBeRoPostRiver(HandInterface* hi, unsigned dP, int sB) : LocalBeRo(hi, dP, sB, GAME_STATE_POST_RIVER), highestCardsValue(0)
 {
 }
 
-LocalBeRoPostRiver::~LocalBeRoPostRiver() noexcept
-{
-}
+LocalBeRoPostRiver::~LocalBeRoPostRiver() noexcept = default;
 
 void LocalBeRoPostRiver::run()
 {

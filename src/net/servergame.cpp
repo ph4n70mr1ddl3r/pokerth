@@ -135,6 +135,7 @@ ServerGame::RemovePlayer(unsigned playerId, unsigned errorCode)
 void
 ServerGame::MutePlayer(unsigned playerId, bool mute)
 {
+	boost::mutex::scoped_lock lock(m_gameMutex);
 	if (m_game) {
 		boost::shared_ptr<PlayerInterface> tmpPlayer(m_game->getPlayerByUniqueId(playerId));
 		if (tmpPlayer) {
@@ -146,6 +147,7 @@ ServerGame::MutePlayer(unsigned playerId, bool mute)
 void
 ServerGame::MarkPlayerAsInactive(unsigned playerId)
 {
+	boost::mutex::scoped_lock lock(m_gameMutex);
 	if (m_game) {
 		boost::shared_ptr<PlayerInterface> tmpPlayer(m_game->getPlayerByUniqueId(playerId));
 		if (tmpPlayer) {
@@ -157,11 +159,10 @@ ServerGame::MarkPlayerAsInactive(unsigned playerId)
 void
 ServerGame::MarkPlayerAsKicked(unsigned playerId)
 {
-	// Mark the player as kicked in the engine.
+	boost::mutex::scoped_lock lock(m_gameMutex);
 	if (m_game) {
 		boost::shared_ptr<PlayerInterface> tmpPlayer(m_game->getPlayerByUniqueId(playerId));
 		if (tmpPlayer) {
-			// Player was kicked, so he is not allowed to rejoin.
 			tmpPlayer->setIsKicked(true);
 			tmpPlayer->setMyGuid("");
 		}
@@ -321,7 +322,7 @@ ServerGame::InternalStartGame()
 		if (GetGameData().gameType == GAME_TYPE_RANKING)
 			m_database = GetLobbyThread().GetDatabase();
 		else
-			m_database.reset(new ServerDBNoAction);
+			m_database = boost::make_shared<ServerDBNoAction>();
 
 		vector<boost::shared_ptr<PlayerData> > tmpData(playerData.begin(), playerData.end());
 		std::random_device rd;
@@ -336,7 +337,7 @@ ServerGame::InternalStartGame()
 		AssignPlayerNumbers(playerData);
 
 		// Create EngineFactory
-		boost::shared_ptr<EngineFactory> factory(new LocalEngineFactory(&m_playerConfig)); // LocalEngine erstellen
+		auto factory = boost::make_shared<LocalEngineFactory>(&m_playerConfig);
 
 		// Set start data.
 		StartData startData;
@@ -569,7 +570,7 @@ ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned 
 			if (IsValidPlayer(playerIdWho)) {
 			boost::mutex::scoped_lock lock(m_voteKickDataMutex);
 			if (!m_voteKickData) {
-				m_voteKickData.reset(new VoteKickData);
+				m_voteKickData = boost::make_shared<VoteKickData>();
 				m_voteKickData->petitionId = m_curPetitionId++;
 				m_voteKickData->kickPlayerId = playerIdWho;
 				m_voteKickData->numVotesToKick = static_cast<int>(ceil(numPlayers * 2.0 / 3.0));
@@ -746,6 +747,7 @@ ServerGame::IsClientAddressConnected(const std::string &clientAddress) const
 boost::shared_ptr<PlayerInterface>
 ServerGame::GetPlayerInterfaceFromGame(const std::string &playerName)
 {
+	boost::mutex::scoped_lock lock(m_gameMutex);
 	boost::shared_ptr<PlayerInterface> tmpPlayer;
 	if (m_game) {
 		tmpPlayer = m_game->getPlayerByName(playerName);
@@ -756,6 +758,7 @@ ServerGame::GetPlayerInterfaceFromGame(const std::string &playerName)
 boost::shared_ptr<PlayerInterface>
 ServerGame::GetPlayerInterfaceFromGame(unsigned playerId)
 {
+	boost::mutex::scoped_lock lock(m_gameMutex);
 	boost::shared_ptr<PlayerInterface> tmpPlayer;
 	if (m_game) {
 		tmpPlayer = m_game->getPlayerByUniqueId(playerId);
