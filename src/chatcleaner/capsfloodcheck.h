@@ -32,6 +32,7 @@
 #define CAPSFLOODCHECK_H
 
 #include <QtCore>
+#include <QMutex>
 
 class CapsFloodCheck: public QObject
 {
@@ -41,11 +42,13 @@ public:
 
 	void setCapsNumberToTrigger(int n)
 	{
+		QMutexLocker locker(&m_mutex);
 		capsNumberToTrigger = n;
 	}
 	bool run(QString);
 
 private:
+	mutable QMutex m_mutex;
 
 	int capsNumberToTrigger;
 };

@@ -361,7 +361,7 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 				for (auto it = tempList.begin(); it != tempList.end(); ++it)
 				{
 
-					QDomElement tmpSubElement = xmlDoc.createElement(QString::fromStdString(configBufferList[i].defaultValue));
+				QDomElement tmpSubElement = xmlDoc.createElement(QString::fromStdString(configList[i].name));
 					tmpElement.appendChild(tmpSubElement);
 					tmpSubElement.setAttribute("value", QString::fromStdString(*it));
 				}
@@ -456,7 +456,7 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 						for (auto it = tempList.begin(); it != tempList.end(); ++it)
 						{
 
-							QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(configList[i].defaultValue));
+							QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(configList[i].name));
 							tmpElement.appendChild(tmpSubElement);
 							tmpSubElement.setAttribute("value", QString::fromStdString(*it));
 						}

@@ -88,7 +88,7 @@ internal_log_msg(const std::string &msg)
 		if (!g_logFile.empty()) {
 			std::ofstream o(g_logFile, ios_base::out | ios_base::app);
 			if (!o.fail())
-				o << second_clock::local_time() << " MSG: " << msg;
+				o << second_clock::local_time() << " MSG: " << msg << std::flush;
 		}
 	}
 }
@@ -101,7 +101,7 @@ internal_log_level(const std::string &msg, int logLevel)
 		if (!g_logFile.empty()) {
 			std::ofstream o(g_logFile, ios_base::out | ios_base::app);
 			if (!o.fail())
-				o << second_clock::local_time() << " OUT: " << msg;
+				o << second_clock::local_time() << " OUT: " << msg << std::flush;
 		}
 	}
 }

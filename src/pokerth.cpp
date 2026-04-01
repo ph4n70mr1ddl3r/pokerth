@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 
     // make QSettings use the default PokerTH config.xml :
 	const QSettings::Format XmlFormat = QSettings::registerFormat("xml", &SettingsXmlHandler::readXmlFile, &SettingsXmlHandler::writeXmlFile);
-    QFileInfo fi(QString::fromStdString(myConfig->configFileName));
+    QFileInfo fi(QString::fromStdString(myConfig->getConfigFileName()));
     QSettings::setPath(XmlFormat, QSettings::UserScope, fi.absolutePath().remove("/.pokerth"));
     QSettings settings(XmlFormat, QSettings::UserScope, ".pokerth", "config");
 

@@ -40,7 +40,7 @@ PlayerData::PlayerData(unsigned uniqueId, int number, PlayerType type, PlayerRig
 
 PlayerData::PlayerData(const PlayerData &other)
 	: m_uniqueId(other.GetUniqueId()), m_dbId(other.GetDBId()), m_number(other.GetNumber()), m_startCash(other.GetStartCash()),
-	  m_guid(other.GetGuid()), m_oldGuid(other.GetOldGuid()), m_name(other.GetName()), m_password(), m_country(other.GetCountry()),
+	  m_guid(other.GetGuid()), m_oldGuid(other.GetOldGuid()), m_name(other.GetName()), m_country(other.GetCountry()),
 	  m_avatarFile(other.GetAvatarFile()), m_avatarMD5(other.GetAvatarMD5()), m_type(other.GetType()), m_rights(other.GetRights()),
 	  m_isGameAdmin(other.IsGameAdmin()), m_last_games(other.GetPlayerLastGames()), m_netAvatarFile(), m_dataMutex()
 {

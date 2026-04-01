@@ -148,9 +148,13 @@ void CleanerServer::onRead()
 							error = true;
 						}
 					} catch (const exception &e) {
-						m_recvBufUsed -= (packetSize + CLEANER_NET_HEADER_SIZE);
-						if (m_recvBufUsed) {
-							memmove(m_recvBuf, m_recvBuf + packetSize + CLEANER_NET_HEADER_SIZE, m_recvBufUsed);
+						if (m_recvBufUsed >= packetSize + CLEANER_NET_HEADER_SIZE) {
+							m_recvBufUsed -= (packetSize + CLEANER_NET_HEADER_SIZE);
+							if (m_recvBufUsed) {
+								memmove(m_recvBuf, m_recvBuf + packetSize + CLEANER_NET_HEADER_SIZE, m_recvBufUsed);
+							}
+						} else {
+							m_recvBufUsed = 0;
 						}
 						qDebug() << "Exception while decoding packet: " << e.what();
 					}
@@ -162,8 +166,12 @@ void CleanerServer::onRead()
 	if (error) {
 		qDebug() << "Error handling packets from client.";
 		blockConnection = false;
-		tcpSocket->close();
-		tcpSocket.reset();
+		if (tcpSocket) {
+			tcpSocket->disconnect(this);
+			tcpSocket->close();
+			tcpSocket->deleteLater();
+			tcpSocket = nullptr;
+		}
 	}
 
 

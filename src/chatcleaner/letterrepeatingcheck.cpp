@@ -39,6 +39,7 @@ LetterRepeatingCheck::LetterRepeatingCheck()
 
 bool LetterRepeatingCheck::run(QString msg)
 {
+	QMutexLocker locker(&m_mutex);
 	if (letterNumberToTrigger < 2) {
 		return false;
 	}

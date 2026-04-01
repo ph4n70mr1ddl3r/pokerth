@@ -319,7 +319,7 @@ main(int argc, char *argv[])
 		}
 
 		for (int g = 0; g < numGames; g++) {
-			NetSession *session = sessionArray[g * 10];
+			NetSession *session = sessionArray[g * 10].get();
 			// Send create game
 			cout << "Player " << session->name << " creating game " << g+1 << endl;
 			msg = static_cast<PokerTHMessage_t*>(calloc(1, sizeof(PokerTHMessage_t)));

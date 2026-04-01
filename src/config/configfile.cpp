@@ -687,7 +687,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState, int oldRevision)
 				for (auto it2 = tempList.begin(); it2 != tempList.end(); ++it2)
 								{
 
-									QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(tempString1));
+									QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(configList[i].defaultValue));
 									tmpElement.appendChild(tmpSubElement);
 									tmpSubElement.setAttribute("value", QString::fromStdString(*it2));
 								}

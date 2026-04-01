@@ -39,6 +39,7 @@ CapsFloodCheck::CapsFloodCheck()
 
 bool CapsFloodCheck::run(QString msg)
 {
+	QMutexLocker locker(&m_mutex);
 	if (capsNumberToTrigger < 1) {
 		return false;
 	}

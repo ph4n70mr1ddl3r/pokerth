@@ -467,80 +467,80 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 		cacheDir = cachePath.string();
 		// Never delete anything if we do not have a special cache dir set.
 		if (!cacheDir.empty()) {
-			boost::mutex::scoped_lock lock(m_cachedAvatarsMutex);
-
-			// First pass: Remove files which no longer exist.
-			// Count files and record age.
 			AvatarList removeList;
-			TimeAvatarMap timeMap;
+			std::vector<std::string> filesToRemove;
+
 			{
-				AvatarMap::const_iterator i = m_cachedAvatars.begin();
-				AvatarMap::const_iterator end = m_cachedAvatars.end();
-				while (i != end) {
-					bool keepFile = false;
-					fs::path filePath(i->second);
-					string fileString(filePath.string());
-					// Only consider files which are definitely in the cache dir.
-					if (fileString.size() > cacheDir.size() && fileString.compare(0, cacheDir.size(), cacheDir) == 0 && fileString[cacheDir.size()] == '/') {
-						// Only consider files with MD5 as file name.
-						MD5Buf tmpBuf;
-						if (fs::exists(filePath) && tmpBuf.FromString(filePath.stem().string())) {
-							auto ftime = fs::last_write_time(filePath);
-							auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
-								ftime - fs::file_time_type::clock::now() + std::chrono::system_clock::now());
-							timeMap.insert(TimeAvatarMap::value_type(std::chrono::system_clock::to_time_t(sctp), i->first));
-							keepFile = true;
+				boost::mutex::scoped_lock lock(m_cachedAvatarsMutex);
+
+				// First pass: Remove files which no longer exist.
+				// Count files and record age.
+				TimeAvatarMap timeMap;
+				{
+					AvatarMap::const_iterator i = m_cachedAvatars.begin();
+					AvatarMap::const_iterator end = m_cachedAvatars.end();
+					while (i != end) {
+						bool keepFile = false;
+						fs::path filePath(i->second);
+						string fileString(filePath.string());
+						// Only consider files which are definitely in the cache dir.
+						if (fileString.size() > cacheDir.size() && fileString.compare(0, cacheDir.size(), cacheDir) == 0 && fileString[cacheDir.size()] == '/') {
+							// Only consider files with MD5 as file name.
+							MD5Buf tmpBuf;
+							if (fs::exists(filePath) && tmpBuf.FromString(filePath.stem().string())) {
+								auto ftime = fs::last_write_time(filePath);
+								auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+									ftime - fs::file_time_type::clock::now() + std::chrono::system_clock::now());
+								timeMap.insert(TimeAvatarMap::value_type(std::chrono::system_clock::to_time_t(sctp), i->first));
+								keepFile = true;
+							}
 						}
+						if (!keepFile)
+							removeList.push_back(i->first);
+
+						++i;
 					}
-					if (!keepFile)
-						removeList.push_back(i->first);
-
-					++i;
 				}
-			}
 
-			{
-				AvatarList::const_iterator i = removeList.begin();
-				AvatarList::const_iterator end = removeList.end();
-				while (i != end) {
-					m_cachedAvatars.erase(*i);
-					++i;
+				{
+					AvatarList::const_iterator i = removeList.begin();
+					AvatarList::const_iterator end = removeList.end();
+					while (i != end) {
+						m_cachedAvatars.erase(*i);
+						++i;
+					}
+					removeList.clear();
 				}
-				removeList.clear();
-			}
 
-			// Remove and physically delete files in one of the
-			// following cases:
-			// 1. More than MAX_NUMBER_OF_FILES files are present
-			//    - delete until only MAX_NUMBER_OF_FILES/2 are left.
-			// 2. Files are older than 30 days.
+				// Collect files to remove based on count and age.
+				if (m_cachedAvatars.size() > MAX_NUMBER_OF_FILES) {
+					while (!timeMap.empty() && m_cachedAvatars.size() > MAX_NUMBER_OF_FILES / 2) {
+						TimeAvatarMap::iterator i = timeMap.begin();
+						AvatarMap::iterator pos = m_cachedAvatars.find(i->second);
+						if (pos != m_cachedAvatars.end()) {
+							filesToRemove.push_back(pos->second);
+							m_cachedAvatars.erase(pos);
+						}
+						timeMap.erase(i);
+					}
+				}
 
-			if (m_cachedAvatars.size() > MAX_NUMBER_OF_FILES) {
-				while (!timeMap.empty() && m_cachedAvatars.size() > MAX_NUMBER_OF_FILES / 2) {
+				time_t curTime = time(nullptr);
+				while (!timeMap.empty() && !m_cachedAvatars.empty()) {
 					TimeAvatarMap::iterator i = timeMap.begin();
+					if (curTime <= i->first || static_cast<time_t>(curTime - i->first) < static_cast<time_t>(MAX_AVATAR_CACHE_AGE))
+						break;
 					AvatarMap::iterator pos = m_cachedAvatars.find(i->second);
 					if (pos != m_cachedAvatars.end()) {
-						fs::path tmpPath(pos->second);
-						fs::remove(tmpPath);
+						filesToRemove.push_back(pos->second);
 						m_cachedAvatars.erase(pos);
 					}
 					timeMap.erase(i);
 				}
 			}
 
-			// Get reference time.
-			time_t curTime = time(nullptr);
-			while (!timeMap.empty() && !m_cachedAvatars.empty()) {
-				TimeAvatarMap::iterator i = timeMap.begin();
-				if (curTime <= i->first || static_cast<time_t>(curTime - i->first) < static_cast<time_t>(MAX_AVATAR_CACHE_AGE))
-					break;
-				AvatarMap::iterator pos = m_cachedAvatars.find(i->second);
-				if (pos != m_cachedAvatars.end()) {
-					fs::path tmpPath(pos->second);
-					fs::remove(tmpPath);
-					m_cachedAvatars.erase(pos);
-				}
-				timeMap.erase(i);
+			for (const auto &file : filesToRemove) {
+				fs::remove(fs::path(file));
 			}
 		}
 	} catch (const std::exception& e) {

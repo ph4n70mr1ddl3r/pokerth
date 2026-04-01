@@ -131,7 +131,6 @@ private:
 	std::string						m_guid;
 	std::string						m_oldGuid;
 	std::string						m_name;
-	std::string						m_password;
 	std::string						m_country;
 	std::string						m_avatarFile;
 	MD5Buf							m_avatarMD5;

@@ -32,6 +32,7 @@
 #define LETTERREPEATINGCHECK_H
 
 #include <QtCore>
+#include <QMutex>
 
 class LetterRepeatingCheck: public QObject
 {
@@ -41,11 +42,13 @@ public:
 
 	void setLetterNumberToTrigger(int n)
 	{
+		QMutexLocker locker(&m_mutex);
 		letterNumberToTrigger = n;
 	}
 	bool run(QString);
 
 private:
+	mutable QMutex m_mutex;
 
 	int letterNumberToTrigger;
 };
