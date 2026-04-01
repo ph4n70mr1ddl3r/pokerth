@@ -244,7 +244,9 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 		while ((numBytes = fread(readBuf.get(), 1, ReadBufSize, file)) > 0) {
 			gcry_md_write(hash, readBuf.get(), numBytes);
 		}
-		memcpy(buf.GetData(), gcry_md_read(hash, GCRY_MD_MD5), MD5_DATA_SIZE);
+		unsigned char *digest = gcry_md_read(hash, GCRY_MD_MD5);
+		if (digest)
+			memcpy(buf.GetData(), digest, MD5_DATA_SIZE);
 		gcry_md_close(hash);
 #endif // HAVE_OPENSSL
 
@@ -306,7 +308,10 @@ CryptHelper::BytesToKey(const unsigned char *keyData, unsigned keySize, unsigned
 	CryptHelper::SHA1Hash(keyData, keySize, tmpBuf1);
 	CryptHelper::SHA1Hash(tmpBuf1.GetData(), tmpBuf1.GetDataSize(), keyBuf1);
 	// Second 20 bytes (we only need a total of 32 bytes, but anyway).
-	unsigned tmpKeySize = keySize + keyBuf1.GetDataSize();
+	unsigned keyBufSize = static_cast<unsigned>(keyBuf1.GetDataSize());
+	if (keySize > UINT_MAX - keyBufSize)
+		return;
+	unsigned tmpKeySize = keySize + keyBufSize;
 	auto tmpKeyData = std::make_unique<unsigned char[]>(tmpKeySize);
 	memcpy(tmpKeyData.get(), keyBuf1.GetData(), keyBuf1.GetDataSize());
 	memcpy(tmpKeyData.get() + keyBuf1.GetDataSize(), keyData, keySize);

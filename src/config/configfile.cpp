@@ -264,14 +264,14 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 	configList.push_back(ConfigInfo("AdminIRCChannel", CONFIG_TYPE_STRING, "#test"));
 	configList.push_back(ConfigInfo("AdminIRCChannelPassword", CONFIG_TYPE_STRING, ""));
 	configList.push_back(ConfigInfo("AdminIRCServerUseIpv6", CONFIG_TYPE_INT, "0"));
-	configList.push_back(ConfigInfo("AdminIRCServerNick", CONFIG_TYPE_INT, "PokerTH_Admin"));
+	configList.push_back(ConfigInfo("AdminIRCServerNick", CONFIG_TYPE_STRING, "PokerTH_Admin"));
 	configList.push_back(ConfigInfo("UseLobbyIRC", CONFIG_TYPE_INT, "0"));
 	configList.push_back(ConfigInfo("LobbyIRCServerAddress", CONFIG_TYPE_STRING, "chat.freenode.net"));
 	configList.push_back(ConfigInfo("LobbyIRCServerPort", CONFIG_TYPE_INT, "6667"));
 	configList.push_back(ConfigInfo("LobbyIRCChannel", CONFIG_TYPE_STRING, "#pokerth-lobby"));
 	configList.push_back(ConfigInfo("LobbyIRCChannelPassword", CONFIG_TYPE_STRING, ""));
 	configList.push_back(ConfigInfo("LobbyIRCServerUseIpv6", CONFIG_TYPE_INT, "0"));
-	configList.push_back(ConfigInfo("LobbyIRCServerNick", CONFIG_TYPE_INT, "PokerTH_Lobby"));
+	configList.push_back(ConfigInfo("LobbyIRCServerNick", CONFIG_TYPE_STRING, "PokerTH_Lobby"));
 	configList.push_back(ConfigInfo("UseChatCleaner", CONFIG_TYPE_INT, "0"));
 	configList.push_back(ConfigInfo("ChatCleanerHostAddress", CONFIG_TYPE_STRING, "localhost"));
 	configList.push_back(ConfigInfo("ChatCleanerPort", CONFIG_TYPE_INT, "4327"));
@@ -332,7 +332,7 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 		{
 			file.close();
 			myConfigState = NONEXISTING;
-			updateConfig(myConfigState);
+			updateConfig(myConfigState, 0);
 		}
 		else
 		{
@@ -366,7 +366,6 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 					if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 					{
 						qDebug("Failed to open file for writing.");
-						file.close();
 					}
 					else
 					{
@@ -379,7 +378,7 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 			if (tempRevision < configRev)
 			{
 				myConfigState = OLD;
-				updateConfig(myConfigState);
+			updateConfig(myConfigState, tempRevision);
 			}
 		}
 
@@ -531,7 +530,7 @@ void ConfigFile::writeBuffer() const
 	}
 }
 
-void ConfigFile::updateConfig(ConfigState myConfigState)
+void ConfigFile::updateConfig(ConfigState myConfigState, int oldRevision)
 {
 
 	boost::recursive_mutex::scoped_lock lock(m_configMutex);
@@ -625,7 +624,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState)
 			///////// VERSION HACK SECTION ///////////////////////
 			// this is the right place for special version depending config hacks:
 			// 0.9.1 - log interval needs to be set to 1 instead of 0
-			if (configRev >= 95 && configRev <= 98)
+			if (oldRevision >= 95 && oldRevision <= 98)
 			{ // this means 0.9.1 or 0.9.2 or 1.0
 				QDomElement confElement2 = newDoc.createElement("LogInterval");
 				config.appendChild(confElement2);
@@ -633,7 +632,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState)
 				noUpdateElemtsList.push_back("LogInterval");
 			}
 
-			if (configRev == 98)
+			if (oldRevision == 98)
 			{ // this means 1.0
 				QDomElement confElement3 = newDoc.createElement("CurrentCardDeckStyle");
 				config.appendChild(confElement3);
@@ -786,10 +785,9 @@ list<int> ConfigFile::readConfigIntList(string varName) const
 	}
 
 	istringstream isst;
-	int tempInt = 0;
 	for (auto it2 = tempStringList.begin(); it2 != tempStringList.end(); ++it2)
 	{
-
+		int tempInt = 0;
 		isst.str(*it2);
 		isst >> tempInt;
 		tempIntList.push_back(tempInt);

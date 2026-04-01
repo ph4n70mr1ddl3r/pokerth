@@ -1016,6 +1016,7 @@ ServerGame::MoveSessionToLobby(boost::shared_ptr<SessionData> session, int reaso
 void
 ServerGame::RemoveDisconnectedPlayers()
 {
+	boost::mutex::scoped_lock gameLock(m_gameMutex);
 	// This should only be called between hands.
 	if (m_game) {
 		PlayerList tmpList(m_game->getSeatsList());

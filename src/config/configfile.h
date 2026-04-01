@@ -69,7 +69,7 @@ public:
 	void checkAndCorrectBuffer();
 	void writeBuffer() const;
 
-	void updateConfig(ConfigState);
+	void updateConfig(ConfigState, int oldRevision);
 	ConfigState getConfigState() const;
 
 	std::string readConfigString(std::string varName) const;

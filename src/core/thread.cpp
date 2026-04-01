@@ -66,11 +66,14 @@ Thread::~Thread() noexcept
 		if (!m_isTerminatedSemaphore.timed_wait(boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(5000))) {
 			LOG_ERROR("Thread did not terminate within timeout in destructor");
 		}
-		boost::mutex::scoped_lock lock(m_threadObjMutex);
-		if (m_threadObj) {
-			m_threadObj->join();
+		boost::shared_ptr<boost::thread> threadToJoin;
+		{
+			boost::mutex::scoped_lock lock(m_threadObjMutex);
+			threadToJoin = m_threadObj;
 			m_threadObj.reset();
 		}
+		if (threadToJoin)
+			threadToJoin->join();
 	}
 }
 
@@ -109,12 +112,14 @@ Thread::Join(unsigned msecTimeout)
 	}
 
 	if (tmpIsTerminated) {
-		boost::mutex::scoped_lock lock(m_threadObjMutex);
-		// Wait for "real" termination of the thread.
-		if (m_threadObj) {
-			m_threadObj->join();
+		boost::shared_ptr<boost::thread> threadToJoin;
+		{
+			boost::mutex::scoped_lock lock(m_threadObjMutex);
+			threadToJoin = m_threadObj;
 			m_threadObj.reset();
 		}
+		if (threadToJoin)
+			threadToJoin->join();
 	}
 
 	return tmpIsTerminated;

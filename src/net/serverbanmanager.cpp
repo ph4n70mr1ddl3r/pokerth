@@ -132,8 +132,14 @@ ServerBanManager::GetBanList(list<string> &list) const
 		else
 			banText << (*i_nick).first << ": (nickStr) - " << (*i_nick).second.nameStr;
 
-		if ((*i_nick).second.timer)
-			banText << " duration: " << duration_cast<hours>((*i_nick).second.timer->expiry() - steady_clock::now()).count() << "h";
+		if ((*i_nick).second.timer) {
+			auto expiry = (*i_nick).second.timer->expiry();
+			auto now = steady_clock::now();
+			if (expiry > now)
+				banText << " duration: " << duration_cast<hours>(expiry - now).count() << "h";
+			else
+				banText << " (expired)";
+		}
 		list.push_back(banText.str());
 		++i_nick;
 	}
@@ -142,8 +148,14 @@ ServerBanManager::GetBanList(list<string> &list) const
 	while (i_ip != end_ip) {
 		ostringstream banText;
 		banText << (*i_ip).first << ": (IP) - " << (*i_ip).second.ipAddress;
-		if ((*i_ip).second.timer)
-			banText << " duration: " << duration_cast<hours>((*i_ip).second.timer->expiry() - steady_clock::now()).count() << "h";
+		if ((*i_ip).second.timer) {
+			auto expiry = (*i_ip).second.timer->expiry();
+			auto now = steady_clock::now();
+			if (expiry > now)
+				banText << " duration: " << duration_cast<hours>(expiry - now).count() << "h";
+			else
+				banText << " (expired)";
+		}
 		list.push_back(banText.str());
 		++i_ip;
 	}

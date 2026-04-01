@@ -74,8 +74,7 @@ AvatarManager::AvatarManager(bool useExternalServer, const std::string &external
 AvatarManager::~AvatarManager() noexcept
 {
 	m_uploader->SignalTermination();
-	if (!m_uploader->Join(UPLOADER_THREAD_TERMINATE_TIMEOUT))
-		m_uploader->Join(THREAD_WAIT_INFINITE);
+	m_uploader->Join(THREAD_WAIT_INFINITE);
 }
 
 bool
