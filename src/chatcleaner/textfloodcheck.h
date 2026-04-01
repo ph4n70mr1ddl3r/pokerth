@@ -63,8 +63,8 @@ private:
 	std::unique_ptr<QTimer> cleanTimer;
 	boost::timers::portable::second_timer timer;
 	struct TextFloodInfos {
-		int floodLevel;
-		long timeStamp;
+		int floodLevel = 0;
+		long timeStamp = 0;
 	};
 	QMap<unsigned, TextFloodInfos> msgTimesList;
 

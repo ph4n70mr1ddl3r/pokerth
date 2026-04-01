@@ -105,12 +105,16 @@ void ChatTools::receiveMessage(QString playerName, QString message, bool pm)
 				tempMsg = QString("<span style=\"font-weight:bold;\">"+message+"</span>");
 				break;
 			case INGAME_CHAT: {
+			if (myStyle) {
 				message = message.replace("<a href","<a style=\"color:#"+myStyle->getChatLogTextColor()+"; text-decoration: underline;\" href");
 				tempMsg = QString("<span style=\"color:#"+myStyle->getChatTextNickNotifyColor()+";\">"+message+"</span>");
-			}
-			break;
-			default:
+			} else {
 				tempMsg = message;
+			}
+		}
+		break;
+		default:
+			tempMsg = message;
 			}
 		} else if(playerName == myNick) {
 			switch (myChatType) {
@@ -121,8 +125,12 @@ void ChatTools::receiveMessage(QString playerName, QString message, bool pm)
 				tempMsg = QString("<span style=\"font-weight:normal;\">"+message+"</span>");
 				break;
 			case INGAME_CHAT: {
-				message = message.replace("<a href","<a style=\"color:#"+myStyle->getChatTextNickNotifyColor()+"; text-decoration: underline;\" href");
-				tempMsg = QString("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+message+"</span>");
+				if (myStyle) {
+					message = message.replace("<a href","<a style=\"color:#"+myStyle->getChatTextNickNotifyColor()+"; text-decoration: underline;\" href");
+					tempMsg = QString("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+message+"</span>");
+				} else {
+					tempMsg = message;
+				}
 			}
 			break;
 			default:
@@ -137,8 +145,12 @@ void ChatTools::receiveMessage(QString playerName, QString message, bool pm)
 				tempMsg = QString("<span style=\"font-weight:normal;\">"+message+"</span>");
 				break;
 			case INGAME_CHAT: {
-				message = message.replace("<a href","<a style=\"color:#"+myStyle->getChatTextNickNotifyColor()+"; text-decoration: underline;\" href");
-				tempMsg = QString("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+message+"</span>");
+				if (myStyle) {
+					message = message.replace("<a href","<a style=\"color:#"+myStyle->getChatTextNickNotifyColor()+"; text-decoration: underline;\" href");
+					tempMsg = QString("<span style=\"color:#"+myStyle->getChatLogTextColor()+";\">"+message+"</span>");
+				} else {
+					tempMsg = message;
+				}
 			}
 			break;
 			default:

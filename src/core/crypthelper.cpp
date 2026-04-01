@@ -329,12 +329,16 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 {
 	bool retVal = false;
 	unsigned plainSize = static_cast<unsigned>(plainStr.size());
-	if (keySize >= AES_BLOCK_SIZE && plainSize) {
+	if (keySize >= AES_BLOCK_SIZE && plainSize && plainSize <= UINT_MAX - 15) {
 		unsigned char key[AES_BLOCK_SIZE];
 		unsigned char iv[AES_BLOCK_SIZE];
 		BytesToKey(keyData, keySize, key, iv);
-		// Add padding to plain data.
 		unsigned paddedPlainSize = ADD_PADDING(plainSize);
+		if (paddedPlainSize == 0) {
+			SecureClearMemory(key, sizeof(key));
+			SecureClearMemory(iv, sizeof(iv));
+			return retVal;
+		}
 		std::vector<unsigned char> paddedPlainStr(paddedPlainSize, 0);
 		memcpy(paddedPlainStr.data(), plainStr.c_str(), plainSize);
 		// Perform the encryption.
@@ -392,7 +396,8 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 		} else
 			outCipher.clear();
 
-		gcry_cipher_close(hd);
+		if (!err)
+			gcry_cipher_close(hd);
 #endif
 		SecureClearMemory(key, sizeof(key));
 		SecureClearMemory(iv, sizeof(iv));
@@ -458,9 +463,10 @@ CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const
 			else
 				outPlain.clear();
 		} else
-			outPlain.clear();
+			outCipher.clear();
 
-		gcry_cipher_close(hd);
+		if (!err)
+			gcry_cipher_close(hd);
 #endif
 		SecureClearMemory(key, sizeof(key));
 		SecureClearMemory(iv, sizeof(iv));

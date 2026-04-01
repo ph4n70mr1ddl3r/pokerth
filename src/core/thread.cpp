@@ -80,11 +80,13 @@ Thread::~Thread() noexcept
 void
 Thread::Run()
 {
-	boost::mutex::scoped_lock threadLock(m_threadObjMutex);
-
-	// Create the boost thread object.
-	if (!m_threadObj) {
-		m_threadObj = boost::make_shared<boost::thread>(ThreadStarter(*this));
+	boost::shared_ptr<boost::thread> newThread;
+	{
+		boost::mutex::scoped_lock threadLock(m_threadObjMutex);
+		if (!m_threadObj) {
+			newThread = boost::make_shared<boost::thread>(ThreadStarter(*this));
+			m_threadObj = newThread;
+		}
 	}
 }
 

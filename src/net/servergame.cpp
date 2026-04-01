@@ -180,8 +180,8 @@ ServerGame::HandlePacket(boost::shared_ptr<SessionData> session, boost::shared_p
 GameState
 ServerGame::GetCurRound() const
 {
-	const Game &game = GetGame();
-	auto hand = game.getCurrentHand();
+	auto game = GetGame();
+	auto hand = game->getCurrentHand();
 	if (!hand) {
 		return GAME_STATE_PREFLOP;
 	}
@@ -439,6 +439,7 @@ ServerGame::UpdateRankingMap()
 			++currentRankCounter;
 			if (next_removed_i != removed_end && (*removed_i)->getMyRoundStartCash() < (*next_removed_i)->getMyRoundStartCash()) {
 				currentRank -= currentRankCounter;
+				if (currentRank < 1) currentRank = 1;
 				currentRankCounter = 0;
 			}
 
@@ -1136,6 +1137,13 @@ ServerGame::GetState()
 	return *m_curState;
 }
 
+bool
+ServerGame::IsCurrentState(const ServerGameState *state) const
+{
+	boost::mutex::scoped_lock lock(m_curStateMutex);
+	return m_curState == state;
+}
+
 void
 ServerGame::SetState(ServerGameState &newState)
 {
@@ -1158,22 +1166,13 @@ ServerGame::GetStateTimer2()
 	return m_stateTimer2;
 }
 
-Game &
-ServerGame::GetGame()
-{
-	boost::mutex::scoped_lock lock(m_gameMutex);
-	if (!m_game.get())
-		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
-	return *m_game;
-}
-
-const Game &
+boost::shared_ptr<Game>
 ServerGame::GetGame() const
 {
 	boost::mutex::scoped_lock lock(m_gameMutex);
-	if (!m_game.get())
+	if (!m_game)
 		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
-	return *m_game;
+	return m_game;
 }
 
 const GameData &

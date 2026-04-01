@@ -36,12 +36,15 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <climits>
 
 constexpr int MD5_DATA_SIZE = 16;
 constexpr int SHA1_DATA_SIZE = 20;
 
 constexpr int AES_BLOCK_SIZE = 16;
-#define ADD_PADDING(x) ((((x) + 15) >> 4) << 4)
+constexpr unsigned ADD_PADDING(unsigned x) {
+	return x <= UINT_MAX - 15 ? ((((x) + 15) >> 4) << 4) : 0;
+}
 
 class HashBuf
 {

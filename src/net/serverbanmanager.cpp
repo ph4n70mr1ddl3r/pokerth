@@ -272,21 +272,21 @@ ServerBanManager::TimerRemoveBan(const boost::system::error_code &ec, unsigned b
 		UnBan(banId);
 }
 
-unsigned
+	unsigned
 ServerBanManager::GetNextBanId()
 {
 	unsigned startId = m_curBanId;
-	unsigned iterations = 0;
 	do {
 		m_curBanId++;
 		if (m_curBanId == 0)
 			m_curBanId = 1;
+		if (m_curBanId == startId)
+			break;
 		if (m_banPlayerNameMap.find(m_curBanId) == m_banPlayerNameMap.end()
 			&& m_banIPAddressMap.find(m_curBanId) == m_banIPAddressMap.end()) {
 			return m_curBanId;
 		}
-		++iterations;
-	} while (iterations < std::numeric_limits<unsigned>::max());
+	} while (true);
 	throw ServerException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
 }
 

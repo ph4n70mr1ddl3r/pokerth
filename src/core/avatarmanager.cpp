@@ -104,7 +104,9 @@ AvatarManager::Init(const string &dataDir, const string &cacheDir)
 		retVal = retVal && tmpRet;
 	}
 
-	m_uploader->Run();
+	if (retVal) {
+		m_uploader->Run();
+	}
 	return retVal;
 }
 

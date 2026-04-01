@@ -261,7 +261,7 @@ private:
 	SessionManager m_sessionManager;
 	SessionManager m_gameSessionManager;
 
-	Gsasl *m_authContext;
+	Gsasl *m_authContext = nullptr;
 
 	TimerClientAddressMap m_timerClientAddressMap;
 	mutable boost::mutex m_timerClientAddressMapMutex;

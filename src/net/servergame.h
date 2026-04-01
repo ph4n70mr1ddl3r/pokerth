@@ -117,8 +117,7 @@ public:
 	[[nodiscard]] bool IsNameReported() const;
 
 	// should be protected, but is needed in function.
-	[[nodiscard]] const Game &GetGame() const;
-	[[nodiscard]] Game &GetGame();
+	[[nodiscard]] boost::shared_ptr<Game> GetGame() const;
 
 	void KickPlayer(unsigned playerId);
 
@@ -177,6 +176,7 @@ protected:
 
 	[[nodiscard]] ServerGameState &GetState();
 	void SetState(ServerGameState &newState);
+	[[nodiscard]] bool IsCurrentState(const ServerGameState *state) const;
 
 	[[nodiscard]] boost::asio::steady_timer &GetStateTimer1();
 	[[nodiscard]] boost::asio::steady_timer &GetStateTimer2();

@@ -481,6 +481,8 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 gameTableImpl::~gameTableImpl() noexcept
 {
 	delete mySoundEventHandler;
+	delete myGameTableStyle;
+	delete myCardDeckStyle;
 }
 
 void gameTableImpl::callSettingsDialog()
@@ -2137,7 +2139,7 @@ void gameTableImpl::nextPlayerAnimation()
 		if((*it_c)->getMyID() == currentHand->getPreviousPlayerID()) break;
 	}
 
-	if(currentHand->getPreviousPlayerID() != -1) {
+	if(currentHand->getPreviousPlayerID() != -1 && it_c != seatsList->end()) {
 		refreshAction(currentHand->getPreviousPlayerID(), (*it_c)->getMyAction());
 	}
 	refreshCash();

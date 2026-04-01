@@ -1483,7 +1483,7 @@ ServerLobbyThread::HandleNetPacketJoinGame(boost::shared_ptr<SessionData> sessio
 		} else if (tmpData.gameType == GAME_TYPE_INVITE_ONLY
 				   && !game->IsPlayerInvited(session->GetPlayerData()->GetUniqueId())) {
 			SendJoinGameFailed(session, joinGame.gameid(), NTF_NET_JOIN_NOT_INVITED);
-		} else if (!game->CheckPassword(password)) {
+		} else if (game->IsPasswordProtected() && !game->CheckPassword(password)) {
 			SendJoinGameFailed(session, joinGame.gameid(), NTF_NET_JOIN_INVALID_PASSWORD);
 		} else if (tmpData.gameType == GAME_TYPE_RANKING && !session->GetPlayerData()->IsPlayerAllowedToJoinCreateLimitRank(m_serverConfig.readConfigString("ServerLimitRankNum"), m_serverConfig.readConfigString("ServerLimitRankPeriod"))) {
 			SendJoinGameFailed(session, joinGame.gameid(), NTF_NET_JOIN_IP_BLOCKED);

@@ -290,7 +290,7 @@ private:
 	boost::shared_ptr<boost::asio::io_context> m_ioService;
 	boost::shared_ptr<Log> m_clientLog;
 
-	Gsasl *m_authContext;
+	Gsasl *m_authContext = nullptr;
 
 	NetPacketList m_outPacketList;
 	mutable boost::mutex m_outPacketListMutex;

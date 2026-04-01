@@ -98,15 +98,18 @@ static void SendPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInterfa
 	if (!player)
 		throw ServerException(__FILE__, __LINE__, ERR_NET_NO_CURRENT_PLAYER, 0);
 
-	Game &curGame = server.GetGame();
+	boost::shared_ptr<Game> curGame = server.GetGame();
+	auto hand = curGame->getCurrentHand();
+	if (!hand)
+		return;
 	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayersActionDoneMessage);
 	 PlayersActionDoneMessage *netActionDone = packet->GetMsg()->mutable_playersactiondonemessage();
 
 	netActionDone->set_gameid(server.GetId());
 	netActionDone->set_gamestate(static_cast<NetGameState>(server.GetCurRound()));
-	netActionDone->set_highestset(curGame.getCurrentHand()->getCurrentBeRo()->getHighestSet());
-	netActionDone->set_minimumraise(server.GetGame().getCurrentHand()->getCurrentBeRo()->getMinimumRaise());
+	netActionDone->set_highestset(hand->getCurrentBeRo()->getHighestSet());
+	netActionDone->set_minimumraise(hand->getCurrentBeRo()->getMinimumRaise());
 	netActionDone->set_playeraction(static_cast<NetPlayerAction>(player->getMyAction()));
 	netActionDone->set_playerid(player->getMyUniqueID());
 	netActionDone->set_playermoney(player->getMyCash());
@@ -162,7 +165,7 @@ static void SendNewRoundCards(ServerGame &server, Game &curGame, int state)
 
 static void PerformPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInterface> player, PlayerAction action, int bet)
 {
-	Game &curGame = server.GetGame();
+	boost::shared_ptr<Game> curGame = server.GetGame();
 	if (!player.get())
 		throw ServerException(__FILE__, __LINE__, ERR_NET_NO_CURRENT_PLAYER, 0);
 	player->setMyAction(action);
@@ -174,25 +177,25 @@ static void PerformPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInte
 		// update minimumRaise and lastActionPlayer
 		switch(action) {
 		case PLAYER_ACTION_BET: {
-			curGame.getCurrentHand()->getCurrentBeRo()->setMinimumRaise(bet);
-			curGame.getCurrentHand()->setLastActionPlayerID(player->getMyUniqueID());
+			curGame->getCurrentHand()->getCurrentBeRo()->setMinimumRaise(bet);
+			curGame->getCurrentHand()->setLastActionPlayerID(player->getMyUniqueID());
 		}
 		break;
 		case PLAYER_ACTION_RAISE: {
-			int newRaise = player->getMySet() - curGame.getCurrentHand()->getCurrentBeRo()->getHighestSet();
+			int newRaise = player->getMySet() - curGame->getCurrentHand()->getCurrentBeRo()->getHighestSet();
 			if (newRaise > 0) {
-				curGame.getCurrentHand()->getCurrentBeRo()->setMinimumRaise(newRaise);
+				curGame->getCurrentHand()->getCurrentBeRo()->setMinimumRaise(newRaise);
 			}
-			curGame.getCurrentHand()->setLastActionPlayerID(player->getMyUniqueID());
+			curGame->getCurrentHand()->setLastActionPlayerID(player->getMyUniqueID());
 		}
 		break;
 		case PLAYER_ACTION_ALLIN: {
-			int allInRaise = player->getMySet() - curGame.getCurrentHand()->getCurrentBeRo()->getHighestSet();
-			if(allInRaise > curGame.getCurrentHand()->getCurrentBeRo()->getMinimumRaise()) {
-				curGame.getCurrentHand()->getCurrentBeRo()->setMinimumRaise(allInRaise);
+			int allInRaise = player->getMySet() - curGame->getCurrentHand()->getCurrentBeRo()->getHighestSet();
+			if(allInRaise > curGame->getCurrentHand()->getCurrentBeRo()->getMinimumRaise()) {
+				curGame->getCurrentHand()->getCurrentBeRo()->setMinimumRaise(allInRaise);
 			}
 			if(allInRaise > 0) {
-				curGame.getCurrentHand()->setLastActionPlayerID(player->getMyUniqueID());
+				curGame->getCurrentHand()->setLastActionPlayerID(player->getMyUniqueID());
 			}
 		}
 		break;
@@ -201,10 +204,10 @@ static void PerformPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInte
 		}
 
 		// update highestSet
-		if (player->getMySet() > curGame.getCurrentHand()->getCurrentBeRo()->getHighestSet())
-			curGame.getCurrentHand()->getCurrentBeRo()->setHighestSet(player->getMySet());
+		if (player->getMySet() > curGame->getCurrentHand()->getCurrentBeRo()->getHighestSet())
+			curGame->getCurrentHand()->getCurrentBeRo()->setHighestSet(player->getMySet());
 		// Update total sets.
-		curGame.getCurrentHand()->getBoard()->collectSets();
+		curGame->getCurrentHand()->getBoard()->collectSets();
 	}
 
 	SendPlayerAction(server, player);
@@ -413,7 +416,7 @@ AbstractServerGameStateReceiving::CreateNetPacketJoinGameAck(const ServerGame &s
 boost::shared_ptr<NetPacket>
 AbstractServerGameStateReceiving::CreateNetPacketHandStart(const ServerGame &server)
 {
-	const Game &curGame = server.GetGame();
+	const Game &curGame = *server.GetGame();
 
 	auto notifyCards = boost::make_shared<NetPacket>();
 	notifyCards->GetMsg()->set_messagetype(PokerTHMessage::Type_HandStartMessage);
@@ -580,7 +583,7 @@ ServerGameStateInit::UnregisterAutoStartTimer(boost::shared_ptr<ServerGame> serv
 void
 ServerGameStateInit::TimerAutoStart(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server)
 {
-	if (!ec && &server->GetState() == this) {
+	if (!ec && server->IsCurrentState(this)) {
 		SendStartEvent(*server, false);
 	}
 }
@@ -588,7 +591,7 @@ ServerGameStateInit::TimerAutoStart(const boost::system::error_code &ec, boost::
 void
 ServerGameStateInit::TimerAdminWarning(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server)
 {
-	if (!ec && &server->GetState() == this) {
+	if (!ec && server->IsCurrentState(this)) {
 		// Find game admin.
 		boost::shared_ptr<SessionData> session = server->GetSessionManager().GetSessionByUniquePlayerId(server->GetAdminPlayerId());
 		if (session) {
@@ -611,7 +614,7 @@ ServerGameStateInit::TimerAdminWarning(const boost::system::error_code &ec, boos
 void
 ServerGameStateInit::TimerAdminTimeout(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server)
 {
-	if (!ec && &server->GetState() == this) {
+	if (!ec && server->IsCurrentState(this)) {
 		// Find game admin.
 		boost::shared_ptr<SessionData> session = server->GetSessionManager().GetSessionByUniquePlayerId(server->GetAdminPlayerId());
 		if (session) {
@@ -769,7 +772,7 @@ ServerGameStateStartGame::InternalProcessPacket(boost::shared_ptr<ServerGame> se
 void
 ServerGameStateStartGame::TimerTimeout(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server)
 {
-	if (!ec && &server->GetState() == this) {
+	if (!ec && server->IsCurrentState(this)) {
 		// On timeout: start anyway.
 		server->GetSessionManager().ResetAllReadyFlags();
 		// TODO report successful start! -> new callback?!
@@ -899,7 +902,7 @@ ServerGameStateHand::InternalProcessPacket(boost::shared_ptr<ServerGame> server,
 void
 ServerGameStateHand::TimerLoop(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server)
 {
-	if (!ec && &server->GetState() == this) {
+	if (!ec && server->IsCurrentState(this)) {
 		try {
 			EngineLoop(server);
 		} catch (const PokerTHException &e) {
@@ -912,7 +915,7 @@ ServerGameStateHand::TimerLoop(const boost::system::error_code &ec, boost::share
 void
 ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 {
-	Game &curGame = server->GetGame();
+	Game &curGame = *server->GetGame();
 
 	// Main game loop.
 	int curRound = curGame.getCurrentHand()->getCurrentRound();
@@ -1082,9 +1085,9 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 void
 ServerGameStateHand::TimerShowCards(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server)
 {
-	if (!ec && &server->GetState() == this) {
-		Game &curGame = server->GetGame();
-		SendNewRoundCards(*server, curGame, curGame.getCurrentHand()->getCurrentRound());
+	if (!ec && server->IsCurrentState(this)) {
+		boost::shared_ptr<Game> curGame = server->GetGame();
+		SendNewRoundCards(*server, *curGame, curGame->getCurrentHand()->getCurrentRound());
 
 		server->GetStateTimer1().expires_after(seconds(GetDealCardsDelaySec(*server)));
 		server->GetStateTimer1().async_wait(
@@ -1096,9 +1099,10 @@ ServerGameStateHand::TimerShowCards(const boost::system::error_code &ec, boost::
 void
 ServerGameStateHand::TimerComputerAction(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server)
 {
-	if (!ec && &server->GetState() == this) {
+	if (!ec && server->IsCurrentState(this)) {
 		try {
-			boost::shared_ptr<PlayerInterface> curPlayer = server->GetGame().getCurrentPlayer();
+			boost::shared_ptr<Game> tmpGame = server->GetGame();
+			boost::shared_ptr<PlayerInterface> curPlayer = tmpGame->getCurrentPlayer();
 			if (!curPlayer)
 				throw ServerException(__FILE__, __LINE__, ERR_NET_NO_CURRENT_PLAYER, 0);
 
@@ -1115,7 +1119,7 @@ ServerGameStateHand::TimerComputerAction(const boost::system::error_code &ec, bo
 void
 ServerGameStateHand::TimerNextHand(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server)
 {
-	if (!ec && &server->GetState() == this) {
+	if (!ec && server->IsCurrentState(this)) {
 		StartNewHand(server);
 		TimerLoop(ec, server);
 	}
@@ -1143,7 +1147,7 @@ ServerGameStateHand::TimerNextGame(const boost::system::error_code &ec, boost::s
 int
 ServerGameStateHand::GetDealCardsDelaySec(ServerGame &server)
 {
-	Game &curGame = server.GetGame();
+	Game &curGame = *server.GetGame();
 	int allInDelay = curGame.getCurrentHand()->getAllInCondition() ? SERVER_DEAL_ADD_ALL_IN_DELAY_SEC : 0;
 	int delay = 0;
 
@@ -1166,7 +1170,7 @@ ServerGameStateHand::GetDealCardsDelaySec(ServerGame &server)
 void
 ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 {
-	Game &curGame = server->GetGame();
+	Game &curGame = *server->GetGame();
 
 	// Reactivate players which were previously inactive.
 	ReactivatePlayers(server);
@@ -1228,7 +1232,7 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
                 }
             }
             std::fill(tmpPassword.begin(), tmpPassword.end(), '\0');
-            tmpPassword.shrink_to_fit();
+            std::string().swap(tmpPassword);
 
 			if (!errorFlag) {
 				server->GetLobbyThread().GetSender().Send(tmpSession, notifyCards);
@@ -1256,8 +1260,8 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 			netSmallBlind->set_playeraction(static_cast<NetPlayerAction>(tmpPlayer->getMyAction()));
 			netSmallBlind->set_totalplayerbet(tmpPlayer->getMySet());
 			netSmallBlind->set_playermoney(tmpPlayer->getMyCash());
-			netSmallBlind->set_highestset(server->GetGame().getCurrentHand()->getCurrentBeRo()->getHighestSet());
-			netSmallBlind->set_minimumraise(server->GetGame().getCurrentHand()->getCurrentBeRo()->getMinimumRaise());
+			netSmallBlind->set_highestset(curGame.getCurrentHand()->getCurrentBeRo()->getHighestSet());
+			netSmallBlind->set_minimumraise(curGame.getCurrentHand()->getCurrentBeRo()->getMinimumRaise());
 			server->SendToAllPlayers(notifySmallBlind, SessionData::Game);
 			break;
 		}
@@ -1278,8 +1282,8 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 			netBigBlind->set_playeraction(static_cast<NetPlayerAction>(tmpPlayer->getMyAction()));
 			netBigBlind->set_totalplayerbet(tmpPlayer->getMySet());
 			netBigBlind->set_playermoney(tmpPlayer->getMyCash());
-			netBigBlind->set_highestset(server->GetGame().getCurrentHand()->getCurrentBeRo()->getHighestSet());
-			netBigBlind->set_minimumraise(server->GetGame().getCurrentHand()->getCurrentBeRo()->getMinimumRaise());
+			netBigBlind->set_highestset(curGame.getCurrentHand()->getCurrentBeRo()->getHighestSet());
+			netBigBlind->set_minimumraise(curGame.getCurrentHand()->getCurrentBeRo()->getMinimumRaise());
 			server->SendToAllPlayers(notifyBigBlind, SessionData::Game);
 			break;
 		}
@@ -1293,9 +1297,10 @@ ServerGameStateHand::CheckPlayerTimeouts(boost::shared_ptr<ServerGame> server)
 	// Check timeout.
 	int actionTimeout = server->GetGameData().playerActionTimeoutSec;
 	if (actionTimeout) {
+		boost::shared_ptr<Game> curGame = server->GetGame();
 		// Consider all active players.
-		PlayerListIterator i = server->GetGame().getActivePlayerList()->begin();
-		PlayerListIterator end = server->GetGame().getActivePlayerList()->end();
+		PlayerListIterator i = curGame->getActivePlayerList()->begin();
+		PlayerListIterator end = curGame->getActivePlayerList()->end();
 
 		// Check timeouts of players.
 		while (i != end) {
@@ -1329,8 +1334,9 @@ ServerGameStateHand::ReactivatePlayers(boost::shared_ptr<ServerGame> server)
 	PlayerIdList reactivateIdList(server->GetAndResetReactivatePlayers());
 	PlayerIdList::iterator i = reactivateIdList.begin();
 	PlayerIdList::iterator end = reactivateIdList.end();
+	boost::shared_ptr<Game> curGame = server->GetGame();
 	while (i != end) {
-		boost::shared_ptr<PlayerInterface> tmpPlayer(server->GetGame().getPlayerByUniqueId(*i));
+		boost::shared_ptr<PlayerInterface> tmpPlayer(curGame->getPlayerByUniqueId(*i));
 		if (tmpPlayer) {
 			tmpPlayer->markRemoteAction();
 			tmpPlayer->setIsSessionActive(true);
@@ -1357,7 +1363,7 @@ ServerGameStateHand::InitRejoiningPlayers(boost::shared_ptr<ServerGame> server)
 void
 ServerGameStateHand::PerformRejoin(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session)
 {
-	Game &curGame = server->GetGame();
+	Game &curGame = *server->GetGame();
 	// Set new player id.
 	boost::shared_ptr<PlayerInterface> rejoinPlayer = curGame.getPlayerByName(session->GetPlayerData()->GetName());
 	if (rejoinPlayer) {
@@ -1387,7 +1393,7 @@ ServerGameStateHand::PerformRejoin(boost::shared_ptr<ServerGame> server, boost::
 void
 ServerGameStateHand::SendGameData(boost::shared_ptr<ServerGame> server, boost::shared_ptr<SessionData> session)
 {
-	Game &curGame = server->GetGame();
+	Game &curGame = *server->GetGame();
 	// Send game start notification to rejoining client.
 	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_GameStartRejoinMessage);
@@ -1464,7 +1470,7 @@ ServerGameStateWaitPlayerAction::InternalProcessPacket(boost::shared_ptr<ServerG
 			LOG_ERROR("Action request with wrong game ID: " << netMyAction->gameid() << " expected: " << server->GetId());
 			return;
 		}
-		Game &curGame = server->GetGame();
+		Game &curGame = *server->GetGame();
 		boost::shared_ptr<PlayerInterface> tmpPlayer = curGame.getPlayerByUniqueId(session->GetPlayerData()->GetUniqueId());
 		if (!tmpPlayer)
 			throw ServerException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
@@ -1475,7 +1481,7 @@ ServerGameStateWaitPlayerAction::InternalProcessPacket(boost::shared_ptr<ServerG
 			code = ACTION_CODE_INVALID_STATE;
 
 		// Check whether this is the correct player.
-		boost::shared_ptr<PlayerInterface> curPlayer = server->GetGame().getCurrentPlayer();
+		boost::shared_ptr<PlayerInterface> curPlayer = curGame.getCurrentPlayer();
 		if (code == ACTION_CODE_VALID
 				&& (curPlayer->getMyUniqueID() != tmpPlayer->getMyUniqueID())) {
 			code = ACTION_CODE_NOT_YOUR_TURN;
@@ -1525,16 +1531,16 @@ ServerGameStateWaitPlayerAction::InternalProcessPacket(boost::shared_ptr<ServerG
 void
 ServerGameStateWaitPlayerAction::TimerTimeout(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server)
 {
-	if (!ec && &server->GetState() == this) {
+	if (!ec && server->IsCurrentState(this)) {
 		try {
-			Game &curGame = server->GetGame();
+			boost::shared_ptr<Game> curGame = server->GetGame();
 			// Retrieve current player.
-			boost::shared_ptr<PlayerInterface> curPlayer = curGame.getCurrentPlayer();
+			boost::shared_ptr<PlayerInterface> curPlayer = curGame->getCurrentPlayer();
 			if (!curPlayer)
 				throw ServerException(__FILE__, __LINE__, ERR_NET_NO_CURRENT_PLAYER, 0);
 
 			// Player did not act fast enough. Act for him.
-			if (curGame.getCurrentHand()->getCurrentBeRo()->getHighestSet() == curPlayer->getMySet())
+			if (curGame->getCurrentHand()->getCurrentBeRo()->getHighestSet() == curPlayer->getMySet())
 				PerformPlayerAction(*server, curPlayer, PLAYER_ACTION_CHECK, 0);
 			else
 				PerformPlayerAction(*server, curPlayer, PLAYER_ACTION_FOLD, 0);
@@ -1594,7 +1600,7 @@ ServerGameStateWaitNextHand::InternalProcessPacket(boost::shared_ptr<ServerGame>
 	AbstractServerGameStateRunning::InternalProcessPacket(server, session, packet);
 
 	if (packet->GetMsg()->messagetype() == PokerTHMessage::Type_ShowMyCardsRequestMessage) {
-		Game &curGame = server->GetGame();
+		Game &curGame = *server->GetGame();
 		auto show = boost::make_shared<NetPacket>();
 		show->GetMsg()->set_messagetype(PokerTHMessage::Type_AfterHandShowCardsMessage);
 
@@ -1610,7 +1616,7 @@ ServerGameStateWaitNextHand::InternalProcessPacket(boost::shared_ptr<ServerGame>
 void
 ServerGameStateWaitNextHand::TimerTimeout(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server)
 {
-	if (!ec && &server->GetState() == this) {
+	if (!ec && server->IsCurrentState(this)) {
 		ServerGameStateHand::StartNewHand(server);
 		server->SetState(ServerGameStateHand::Instance());
 	}
