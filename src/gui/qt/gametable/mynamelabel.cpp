@@ -47,6 +47,8 @@ MyNameLabel::~MyNameLabel() noexcept
 
 void MyNameLabel::setText ( const QString &t, bool trans, bool computerplayer)
 {
+	if (!myW)
+		return;
 
 	QString text;
 	QColor transColor;

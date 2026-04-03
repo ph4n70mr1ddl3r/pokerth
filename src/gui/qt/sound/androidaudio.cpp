@@ -60,9 +60,8 @@ void AndroidAudio::closeAudio()
 	if(audioEnabled) {
 		destroyEngine();
 
-		for (int32_t i = 0; i < mSoundCount; ++i) {
-			qDeleteAll(mSounds);
-		}
+		qDeleteAll(mSounds);
+		mSounds.clear();
 		audioEnabled = false;
 	}
 }
@@ -126,6 +125,10 @@ void AndroidAudio::destroyEngine()
 void AndroidAudio::registerSound(const QString& path, const QString& name)
 {
 //    qDebug() << "registerSound:" << path << name;
+	if (mSounds.contains(name)) {
+		delete mSounds[name];
+		mSounds.remove(name);
+	}
 	AndroidSoundEffect *lSound = new AndroidSoundEffect(path, this);
 //    qDebug() << "registerSound:created";
 	mSounds[name] = lSound;

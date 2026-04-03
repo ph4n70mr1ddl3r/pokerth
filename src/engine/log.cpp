@@ -52,9 +52,18 @@ Log::~Log() noexcept
 void
 Log::init()
 {
+	std::lock_guard<std::mutex> lock(m_logMutex);
 
-    // SQLITE_LOG wird weiterhin als Konfig-Flag benutzt
-    if(SQLITE_LOG) {
+	if (mySqliteLogDb.isValid() && mySqliteLogDb.isOpen()) {
+		mySqliteLogDb.close();
+	}
+	if (!myConnectionName.isEmpty()) {
+		QSqlDatabase::removeDatabase(myConnectionName);
+		myConnectionName.clear();
+	}
+
+	// SQLITE_LOG wird weiterhin als Konfig-Flag benutzt
+	if(SQLITE_LOG) {
 
         // logging activated
         if(myConfig->readConfigInt("LogOnOff")) {
@@ -174,6 +183,7 @@ Log::init()
 void
 Log::logNewGameMsg(int gameID, int startCash, int startSmallBlind, unsigned dealerPosition, PlayerList seatsList)
 {
+	std::lock_guard<std::mutex> lock(m_logMutex);
 	uniqueGameID++;
 
 	if(SQLITE_LOG) {
@@ -222,6 +232,7 @@ Log::logNewGameMsg(int gameID, int startCash, int startSmallBlind, unsigned deal
 void
 Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned smallBlindPosition, int bigBlind, unsigned bigBlindPosition, PlayerList seatsList)
 {
+	std::lock_guard<std::mutex> lock(m_logMutex);
 
 	currentRound = GAME_STATE_PREFLOP;
 	currentHandID = handID;
@@ -317,6 +328,7 @@ Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned
 void
 Log::logPlayerAction(string playerName, PlayerActionLog action, int amount)
 {
+	std::lock_guard<std::mutex> lock(m_logMutex);
 
     if(SQLITE_LOG) {
 
@@ -350,6 +362,7 @@ Log::logPlayerAction(string playerName, PlayerActionLog action, int amount)
 void
 Log::logPlayerAction(int seat, PlayerActionLog action, int amount)
 {
+	std::lock_guard<std::mutex> lock(m_logMutex);
 
     if(SQLITE_LOG) {
 
@@ -475,6 +488,8 @@ Log::transformPlayerActionLog(PlayerAction action)
 void
 Log::logBoardCards(std::array<int, 5> boardCards)
 {
+	std::lock_guard<std::mutex> lock(m_logMutex);
+
     if(SQLITE_LOG) {
 
         if(myConfig->readConfigInt("LogOnOff")) {
@@ -534,6 +549,7 @@ Log::logHoleCardsHandName(PlayerList activePlayerList)
 void
 Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerInterface> player, bool forceExecLog)
 {
+	std::lock_guard<std::mutex> lock(m_logMutex);
 
 	if(SQLITE_LOG) {
 
@@ -550,6 +566,7 @@ Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerI
 					std::string handName = CardsValue::determineHandName(player->getMyCardsValueInt(),activePlayerList);
 					handName.erase(std::remove(handName.begin(), handName.end(), '"'), handName.end());
 					handName.erase(std::remove(handName.begin(), handName.end(), '\''), handName.end());
+					handName.erase(std::remove(handName.begin(), handName.end(), ';'), handName.end());
 					sql += "Seat_" + std::to_string(player->getMyID()+1) + "_Hand_text=\"" + handName + "\"";
 					sql += ",Seat_" + std::to_string(player->getMyID()+1) + "_Hand_int=" + std::to_string(player->getMyCardsValueInt());
 				}
@@ -647,6 +664,7 @@ Log::logPlayerSitsOut(PlayerList activePlayerList)
 void
 Log::logAfterHand()
 {
+	std::lock_guard<std::mutex> lock(m_logMutex);
 	if(myConfig->readConfigInt("LogInterval") == 1) {
 		exec_transaction();
 	}
@@ -655,6 +673,7 @@ Log::logAfterHand()
 void
 Log::logAfterGame()
 {
+	std::lock_guard<std::mutex> lock(m_logMutex);
 	if(myConfig->readConfigInt("LogInterval") == 2) {
 		exec_transaction();
 	}

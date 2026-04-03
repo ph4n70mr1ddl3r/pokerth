@@ -239,9 +239,13 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 		MD5_Final(buf.GetData(), &context);
 	#endif // OPENSSL_VERSION_NUMBER >= 0x30000000L
 #else
-		gcry_md_hd_t hash;
-		gcry_md_open(&hash, GCRY_MD_MD5, 0);
-		while ((numBytes = fread(readBuf.get(), 1, ReadBufSize, file)) > 0) {
+	gcry_md_hd_t hash;
+	gcry_error_t hashErr = gcry_md_open(&hash, GCRY_MD_MD5, 0);
+	if (hashErr) {
+		LOG_ERROR("MD5Sum: gcry_md_open failed");
+		return false;
+	}
+	while ((numBytes = fread(readBuf.get(), 1, ReadBufSize, file)) > 0) {
 			gcry_md_write(hash, readBuf.get(), numBytes);
 		}
 		unsigned char *digest = gcry_md_read(hash, GCRY_MD_MD5);

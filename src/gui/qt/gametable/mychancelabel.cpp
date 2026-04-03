@@ -96,6 +96,9 @@ void MyChanceLabel::refreshChance(vector< vector<int> > chance, bool fold)
 void MyChanceLabel::paintEvent(QPaintEvent * /*event*/)
 {
 
+	if (!myStyle)
+		return;
+
 	QPainter painter(this);
 
 

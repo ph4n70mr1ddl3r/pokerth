@@ -46,7 +46,7 @@ MyAvatarLabel::MyAvatarLabel(QGroupBox* parent)
 	: QLabel(parent), voteRunning(false), transparent(false), myUniqueId(0), myPingState(1), myAvgPing(-1), myMinPing(-1), myMaxPing(-1)
 {
 
-	myContextMenu = new QMenu;
+	myContextMenu = new QMenu(this);
 	action_EditTip = new QAction(QIcon(":/gfx/user_properties.png"), tr("Add/Edit/Remove tooltip"), myContextMenu);
 	myContextMenu->addAction(action_EditTip);
 	action_VoteForKick = new QAction(QIcon(":/gfx/list_remove_user.png"), tr("Start vote to kick this player"), myContextMenu);

@@ -49,9 +49,9 @@ MyCardsPixmapLabel::MyCardsPixmapLabel(QGroupBox* parent)
 
 	isFlipside = false;
 
-	fadeOutTimer = new QTimer;
+	fadeOutTimer = new QTimer(this);
 	connect(fadeOutTimer, SIGNAL(timeout()), this, SLOT(nextFadeOutFrame()));
-	flipCardsTimer = new QTimer;
+	flipCardsTimer = new QTimer(this);
 	connect(flipCardsTimer, SIGNAL(timeout()), this, SLOT(nextFlipCardsFrame()));
 
 	connect(this, SIGNAL(signalFastFlipCards(bool)), this, SLOT(fastFlipCards(bool)));

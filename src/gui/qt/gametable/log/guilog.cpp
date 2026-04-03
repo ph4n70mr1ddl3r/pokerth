@@ -908,6 +908,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 		sql = "SELECT * FROM Session";
 		if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Session,&nRow_Session,&nCol_Session,&errmsg) != SQLITE_OK) {
 			cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+			sqlite3_free(errmsg);
 			cleanUp(results, mySqliteLogDb);
 			return 1;
 		}
@@ -990,6 +991,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 		}
 		if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Game,&nRow_Game,&nCol_Game,&errmsg) != SQLITE_OK) {
 			cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+			sqlite3_free(errmsg);
 			cleanUp(results, mySqliteLogDb);
 			return 1;
 		}
@@ -1043,6 +1045,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			sql += " ORDER BY Seat;";
 			if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Player,&nRow_Player,&nCol_Player,&errmsg) != SQLITE_OK) {
 				cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+				sqlite3_free(errmsg);
 				cleanUp(results, mySqliteLogDb);
 				return 1;
 			}
@@ -1060,6 +1063,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			sql+= std::to_string(uniqueGameID);
 			if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand_ID,&nRow_Hand_ID,&nCol_Hand,&errmsg) != SQLITE_OK) {
 				cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+				sqlite3_free(errmsg);
 				cleanUp(results, mySqliteLogDb);
 				return 1;
 			}
@@ -1098,6 +1102,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				sql+= results.result_Hand_ID[hand_ctr] ? results.result_Hand_ID[hand_ctr] : "0";
 				if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand,&nRow_Hand,&nCol_Hand,&errmsg) != SQLITE_OK) {
 					cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+					sqlite3_free(errmsg);
 					cleanUp(results, mySqliteLogDb);
 					return 1;
 				}
@@ -1214,6 +1219,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
 						cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
@@ -1261,6 +1267,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
 						cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
@@ -1285,6 +1292,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
 						cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
@@ -1309,6 +1317,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
 						cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
@@ -1438,6 +1447,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
 						cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
@@ -1693,6 +1703,7 @@ QList<int> guiLog::getGameList(QString fileStringPdb)
 	string sql = "SELECT * FROM Game";
 	if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Game,&nRow_Game,&nCol_Game,&errmsg) != SQLITE_OK) {
 		cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+		sqlite3_free(errmsg);
 	} else {
 		for(game_ctr=1; game_ctr<=nRow_Game; game_ctr++) {
 			for(i=0; i<nCol_Game; i++) {
@@ -1715,13 +1726,17 @@ QList<int> guiLog::getGameList(QString fileStringPdb)
 
 void guiLog::cleanUp(result_struct &results, sqlite3 *mySqliteLogDb)
 {
-
 	sqlite3_free_table(results.result_Session);
 	sqlite3_free_table(results.result_Game);
 	sqlite3_free_table(results.result_Hand);
 	sqlite3_free_table(results.result_Hand_ID);
 	sqlite3_free_table(results.result_Action);
 	sqlite3_close(mySqliteLogDb);
+	results.result_Session = nullptr;
+	results.result_Game = nullptr;
+	results.result_Hand = nullptr;
+	results.result_Hand_ID = nullptr;
+	results.result_Action = nullptr;
 }
 
 int guiLog::convertCardStringToInt(string val, string col)

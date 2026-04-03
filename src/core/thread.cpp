@@ -103,6 +103,15 @@ Thread::Join(unsigned msecTimeout)
 	if (!IsRunning())
 		return true;
 
+	boost::shared_ptr<boost::thread> threadToJoin;
+	{
+		boost::mutex::scoped_lock lock(m_threadObjMutex);
+		if (!m_threadObj)
+			return true;
+		threadToJoin = m_threadObj;
+		m_threadObj.reset();
+	}
+
 	bool tmpIsTerminated;
 	if (msecTimeout == THREAD_WAIT_INFINITE) {
 		// Wait infinitely.
@@ -113,16 +122,8 @@ Thread::Join(unsigned msecTimeout)
 		tmpIsTerminated = m_isTerminatedSemaphore.timed_wait(boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(msecTimeout));
 	}
 
-	if (tmpIsTerminated) {
-		boost::shared_ptr<boost::thread> threadToJoin;
-		{
-			boost::mutex::scoped_lock lock(m_threadObjMutex);
-			threadToJoin = m_threadObj;
-			m_threadObj.reset();
-		}
-		if (threadToJoin)
-			threadToJoin->join();
-	}
+	if (threadToJoin)
+		threadToJoin->join();
 
 	return tmpIsTerminated;
 }

@@ -83,7 +83,7 @@ void connectToServerDialogImpl::refresh(int actionID)
 	}
 
 	if (!skip) {
-		progressBar->setValue(actionID*(100/MSG_SOCK_LIMIT_CONNECT));
+		progressBar->setValue(actionID * 100 / MSG_SOCK_LIMIT_CONNECT);
 
 		if (actionID == MSG_SOCK_LIMIT_CONNECT)
 			QTimer::singleShot(1000, this, SLOT(accept()));
