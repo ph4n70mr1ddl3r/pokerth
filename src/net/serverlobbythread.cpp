@@ -1406,7 +1406,6 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 	boost::replace_all(gameName, "\t", " ");
 	boost::replace_all(gameName, "\v", " ");
 	boost::replace_all(gameName, "\f", " ");
-	unsigned gameId = GetNextGameId();
 
 	bool validGameName = !gameName.empty() && gameName.size() <= 64;
 	if (validGameName) {
@@ -1424,21 +1423,22 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 	}
 
 	if (!validGameName) {
-		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_GAME_BAD_NAME);
+		SendJoinGameFailed(session, 0, NTF_NET_JOIN_GAME_BAD_NAME);
 	} else if (IsGameNameInUse(gameName)) {
-		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_GAME_NAME_IN_USE);
+		SendJoinGameFailed(session, 0, NTF_NET_JOIN_GAME_NAME_IN_USE);
 	} else if (GetBanManager().IsBadGameName(gameName)) {
-		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_GAME_BAD_NAME);
+		SendJoinGameFailed(session, 0, NTF_NET_JOIN_GAME_BAD_NAME);
 	} else if (!ServerGame::CheckSettings(tmpData, password, GetServerMode())) {
-		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_INVALID_SETTINGS);
+		SendJoinGameFailed(session, 0, NTF_NET_JOIN_INVALID_SETTINGS);
 	} else if (!session->GetPlayerData()) {
 		LOG_ERROR("Session " << session->GetId() << " has no player data");
-		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_INVALID_SETTINGS);
+		SendJoinGameFailed(session, 0, NTF_NET_JOIN_INVALID_SETTINGS);
 	} else if (!session->GetPlayerData()->IsPlayerAllowedToJoinCreateLimitRank(m_serverConfig.readConfigString("ServerLimitRankNum"), m_serverConfig.readConfigString("ServerLimitRankPeriod"))
 			&& tmpData.gameType == GAME_TYPE_RANKING ) {
 		LOG_ERROR("not allowed due to ranklimit");
-		SendJoinGameFailed(session, gameId, NTF_NET_JOIN_IP_BLOCKED);
+		SendJoinGameFailed(session, 0, NTF_NET_JOIN_IP_BLOCKED);
 	} else {
+		unsigned gameId = GetNextGameId();
 		auto game = boost::make_shared<ServerGame>(
 				shared_from_this(),
 				gameId,
@@ -1527,6 +1527,9 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 	if (session->GetPlayerData()) {
 		const string &chatMsg(chatRequest.chattext());
 		if (chatMsg.empty()) {
+			return;
+		}
+		if (chatMsg.size() >= MAX_CHAT_TEXT_SIZE) {
 			return;
 		}
 		constexpr size_t MAX_CHAT_RATE_MESSAGES = 10;

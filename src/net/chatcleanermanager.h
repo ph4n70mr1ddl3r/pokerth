@@ -37,6 +37,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/thread.hpp>
 #include <string>
+#include <atomic>
 #include <net/chatcleanercallback.h>
 
 #define CLEANER_NET_HEADER_SIZE		4
@@ -76,7 +77,7 @@ private:
 	boost::shared_ptr<boost::asio::ip::tcp::socket> m_socket;
 	boost::shared_ptr<AsioSendBuffer> m_sendManager;
 
-	bool m_connected;
+	std::atomic<bool> m_connected;
 	unsigned m_curRequestId;
 	mutable boost::mutex m_requestIdMutex;
 	std::string m_serverAddr;

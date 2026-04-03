@@ -98,7 +98,7 @@ ChatCleanerManager::HandleLobbyChatText(unsigned playerId, const std::string &na
 void
 ChatCleanerManager::HandleGameChatText(unsigned gameId, unsigned playerId, const std::string &name, const std::string &text)
 {
-	if (m_connected) {
+	if (m_connected.load()) {
 		boost::shared_ptr<ChatCleanerMessage> tmpChat(ChatCleanerMessage::default_instance().New());
 		tmpChat->set_messagetype(ChatCleanerMessage::Type_CleanerChatRequestMessage);
 		CleanerChatRequestMessage *netRequest = tmpChat->mutable_cleanerchatrequestmessage();
@@ -242,14 +242,14 @@ ChatCleanerManager::HandleRead(const boost::system::error_code &ec, size_t bytes
 		} else {
 			boost::system::error_code ec;
 			m_socket->close(ec);
-			m_connected = false;
+			m_connected.store(false);
 		}
 	} else if (ec != boost::asio::error::operation_aborted) {
 		LOG_ERROR("Error receiving data from chat cleaner.");
-		bool wasConnected = m_connected;
+		bool wasConnected = m_connected.load();
 		boost::system::error_code ec;
 		m_socket->close(ec);
-		m_connected = false;
+		m_connected.store(false);
 		if (wasConnected)
 			ReInit(); // Try to reconnect once if disconnected.
 	}
@@ -263,12 +263,12 @@ ChatCleanerManager::HandleMessage(ChatCleanerMessage &msg)
 		const CleanerInitAckMessage &netAck = msg.cleanerinitackmessage();
 		if (netAck.serverversion() == CLEANER_PROTOCOL_VERSION) {
 			if (Tools::ConstantTimeStringCompare(m_serverSecret, netAck.serversecret())) {
-				m_connected = true;
+				m_connected.store(true);
 				error = false;
 				LOG_MSG("Successfully connected to chat cleaner.");
 			}
 		}
-		if (!m_connected)
+		if (!m_connected.load())
 			LOG_ERROR("Chat cleaner handshake failed.");
 	} else if (msg.messagetype() == ChatCleanerMessage::Type_CleanerChatReplyMessage) {
 		const CleanerChatReplyMessage &netReply = msg.cleanerchatreplymessage();

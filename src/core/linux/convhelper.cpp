@@ -54,6 +54,10 @@ ConvHelper::NativeToUtf8(const std::string &inStr)
 {
 	string retStr(inStr);
 	size_t insize = inStr.length();
+	if (insize > SIZE_MAX / 6) {
+		LOG_ERROR("Input string too large for conversion");
+		return retStr;
+	}
 #ifdef HAVE_ICONV_CONST
 	const char *inbuf = inStr.data();
 #else

@@ -449,8 +449,8 @@ private:
 	SoundEvents *mySoundEventHandler;
 	QString myAppDataPath;
 
-	int distributePotAnimCounter;
-	int playingMode;
+	int distributePotAnimCounter = 0;
+	int playingMode = 0;
 
 	QString font2String;
 	QString font1String;
@@ -488,10 +488,10 @@ private:
 
 	QSemaphore guiUpdateSemaphore;
 
-	int keyUpDownChatCounter;
-	int myLastPreActionBetValue;
+	int keyUpDownChatCounter = 0;
+	int myLastPreActionBetValue = 0;
 
-	int voteOnKickTimeoutSecs;
+	int voteOnKickTimeoutSecs = 0;
 	unsigned playerAboutToBeKickedId;
 
 	GameTableStyleReader *myGameTableStyle;

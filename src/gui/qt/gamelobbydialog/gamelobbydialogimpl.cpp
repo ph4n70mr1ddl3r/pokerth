@@ -193,7 +193,7 @@ gameLobbyDialogImpl::gameLobbyDialogImpl(startWindowImpl *parent, ConfigFile *c)
 
 	myChat = new ChatTools(lineEdit_ChatInput, myConfig, INET_LOBBY_CHAT, textBrowser_ChatDisplay, myNickListModel, this);
 
-	nickListContextMenu = new QMenu();
+	nickListContextMenu = new QMenu(this);
 	nickListInviteAction = new QAction(QIcon(":/gfx/list_add_user.png"), tr("Invite player"), nickListContextMenu);
 	nickListContextMenu->addAction(nickListInviteAction);
 	nickListIgnorePlayerAction = new QAction(QIcon(":/gfx/im-ban-user.png"), tr("Ignore player"), nickListContextMenu);
@@ -209,11 +209,11 @@ gameLobbyDialogImpl::gameLobbyDialogImpl(startWindowImpl *parent, ConfigFile *c)
 	nickListAdminTotalKickBan = new QAction(tr("Total kickban"), nickListAdminSubMenu);
 	nickListAdminSubMenu->addAction(nickListAdminTotalKickBan);
 
-	connectedPlayersListPlayerInfoSubMenu = new QMenu();
+	connectedPlayersListPlayerInfoSubMenu = new QMenu(this);
 	connectedPlayersListOpenPlayerStats = new QAction(QIcon(":/gfx/view-statistics.png"), tr("Show player stats"), connectedPlayersListPlayerInfoSubMenu);
 	connectedPlayersListPlayerInfoSubMenu->addAction(connectedPlayersListOpenPlayerStats);
 
-	gameListContextMenu = new QMenu();
+	gameListContextMenu = new QMenu(this);
 	gameListReportBadGameNameAction = new QAction(QIcon(":/gfx/emblem-important.png"), tr("Report inappropriate game name"), gameListContextMenu);
 	gameListContextMenu->addAction(gameListReportBadGameNameAction);
 	gameListAdminSubMenu = gameListContextMenu->addMenu(tr("Admin action ..."));

@@ -259,6 +259,8 @@ bool
 CryptHelper::SHA1Hash(const unsigned char *data, unsigned dataSize, SHA1Buf &buf)
 {
 	bool retVal = false;
+	if (!data && dataSize)
+		return retVal;
 #ifdef HAVE_OPENSSL
 	retVal = SHA1(data, dataSize, buf.GetData()) != nullptr;
 #else
@@ -274,6 +276,8 @@ bool
 CryptHelper::HMACSha1(const unsigned char *keyData, unsigned keySize, const unsigned char *plainData, unsigned plainSize, SHA1Buf &buf)
 {
 	bool retVal = false;
+	if ((!keyData && keySize) || (!plainData && plainSize))
+		return retVal;
 #ifdef HAVE_OPENSSL
 	unsigned hashLen = 0;
 	unsigned char *result = HMAC(EVP_sha1(), keyData, keySize, plainData, plainSize, buf.GetData(), &hashLen);
@@ -393,11 +397,9 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 				retVal = true;
 			else
 				outCipher.clear();
+			gcry_cipher_close(hd);
 		} else
 			outCipher.clear();
-
-		if (!err)
-			gcry_cipher_close(hd);
 #endif
 		SecureClearMemory(key, sizeof(key));
 		SecureClearMemory(iv, sizeof(iv));
@@ -462,11 +464,9 @@ CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const
 				retVal = true;
 			else
 				outPlain.clear();
-		} else
-			outCipher.clear();
-
-		if (!err)
 			gcry_cipher_close(hd);
+		} else
+			outPlain.clear();
 #endif
 		SecureClearMemory(key, sizeof(key));
 		SecureClearMemory(iv, sizeof(iv));
@@ -489,7 +489,6 @@ CryptHelper::SecureClearMemory(void *ptr, size_t len)
 	OPENSSL_cleanse(ptr, len);
 #else
 	memset_explicit(ptr, 0, len);
-	gcry_fast_random_poll();
 #endif
 }
 

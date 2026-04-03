@@ -249,7 +249,7 @@ AvatarManager::AvatarFileToNetPackets(const string &fileName, unsigned requestId
 AvatarFileType
 AvatarManager::GetAvatarFileType(const string &fileName)
 {
-	AvatarFileType fileType;
+	AvatarFileType fileType = AVATAR_FILE_TYPE_UNKNOWN;
 
 	fs::path filePath(fileName);
 	string ext(filePath.extension().string());

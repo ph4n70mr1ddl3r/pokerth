@@ -62,6 +62,8 @@ WebSendBuffer::AsyncSendNextPacket(boost::shared_ptr<SessionData> session)
 {
 	if (closeAfterSend) {
 		boost::shared_ptr<WebSocketData> webData = session->GetWebData();
+		if (!webData)
+			return;
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)
 		std::error_code std_ec;
 		if (webData->isTls) {
@@ -93,6 +95,8 @@ WebSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> session, boost
 	packet->GetMsg()->SerializeWithCachedSizesToArray(buf.get());
 
 	boost::shared_ptr<WebSocketData> webData = session->GetWebData();
+	if (!webData)
+		return;
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)
 	std::error_code std_ec;
 	if (webData->isTls) {

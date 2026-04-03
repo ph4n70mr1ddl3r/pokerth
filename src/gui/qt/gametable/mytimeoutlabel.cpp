@@ -38,7 +38,7 @@ MyTimeoutLabel::MyTimeoutLabel(QGroupBox* parent)
 	: QLabel(parent), timeOutAnimation(false), timeOutValue(0), timeOutFrame(0), waitFrames(0), timerIntervall(0), isBeep(0), isBeepPlayed(0)
 {
 
-	timeOutAnimationTimer = new QTimer;
+	timeOutAnimationTimer = new QTimer(this);
 
 	connect(timeOutAnimationTimer, SIGNAL(timeout()), this, SLOT(nextTimeOutAnimationFrame()));
 }

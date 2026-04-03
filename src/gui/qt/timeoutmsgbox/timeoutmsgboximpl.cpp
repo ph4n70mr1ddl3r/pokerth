@@ -44,7 +44,7 @@ timeoutMsgBoxImpl::timeoutMsgBoxImpl(QMainWindow *parent)
 	this->setWindowFlags(Qt::ToolTip);
 	this->setStyleSheet("QDialog{ border: 1px solid black; border-style: solid; border-radius: 4px; }");
 #endif
-	timeOutTimer = new QTimer;
+	timeOutTimer = new QTimer(this);
 
 	connect(timeOutTimer, SIGNAL(timeout()), this, SLOT(timerRefresh()));
 	connect(okButton, SIGNAL(clicked()), this, SLOT(stopTimeout()));
