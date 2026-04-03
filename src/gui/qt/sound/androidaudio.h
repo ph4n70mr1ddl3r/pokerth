@@ -81,7 +81,6 @@ private:
 	SLBufferQueueItf mPlayerQueue;
 
 	QMap<QString, AndroidSoundEffect*> mSounds;
-	int32_t mSoundCount;
 
 	ConfigFile *myConfig;
 	bool audioEnabled;

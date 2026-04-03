@@ -246,8 +246,8 @@ CryptHelper::MD5Sum(const std::string &fileName, MD5Buf &buf)
 		return false;
 	}
 	while ((numBytes = fread(readBuf.get(), 1, ReadBufSize, file)) > 0) {
-			gcry_md_write(hash, readBuf.get(), numBytes);
-		}
+		gcry_md_write(hash, readBuf.get(), numBytes);
+	}
 		unsigned char *digest = gcry_md_read(hash, GCRY_MD_MD5);
 		if (digest)
 			memcpy(buf.GetData(), digest, MD5_DATA_SIZE);

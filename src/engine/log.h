@@ -56,10 +56,7 @@ public:
     void logAfterGame();
 //    void closeLogDbAtExit();
 
-    void setCurrentRound(GameState theValue)
-    {
-        currentRound = theValue;
-    }
+    void setCurrentRound(GameState theValue);
 
     [[nodiscard]] std::string getMySqliteLogFileName() const
     {
@@ -69,8 +66,10 @@ public:
 private:
 
     void exec_transaction();
+    void logPlayerActionUnlocked(std::string playerName, PlayerActionLog action, int amount = 0);
+    void logPlayerActionUnlocked(int seat, PlayerActionLog action, int amount = 0);
 
-    mutable std::mutex m_logMutex;
+    mutable std::recursive_mutex m_logMutex;
     QSqlDatabase mySqliteLogDb;
     QString myConnectionName;
 

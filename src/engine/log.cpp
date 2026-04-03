@@ -52,7 +52,7 @@ Log::~Log() noexcept
 void
 Log::init()
 {
-	std::lock_guard<std::mutex> lock(m_logMutex);
+	std::lock_guard<std::recursive_mutex> lock(m_logMutex);
 
 	if (mySqliteLogDb.isValid() && mySqliteLogDb.isOpen()) {
 		mySqliteLogDb.close();
@@ -183,7 +183,7 @@ Log::init()
 void
 Log::logNewGameMsg(int gameID, int startCash, int startSmallBlind, unsigned dealerPosition, PlayerList seatsList)
 {
-	std::lock_guard<std::mutex> lock(m_logMutex);
+	std::lock_guard<std::recursive_mutex> lock(m_logMutex);
 	uniqueGameID++;
 
 	if(SQLITE_LOG) {
@@ -232,7 +232,7 @@ Log::logNewGameMsg(int gameID, int startCash, int startSmallBlind, unsigned deal
 void
 Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned smallBlindPosition, int bigBlind, unsigned bigBlindPosition, PlayerList seatsList)
 {
-	std::lock_guard<std::mutex> lock(m_logMutex);
+	std::lock_guard<std::recursive_mutex> lock(m_logMutex);
 
 	currentRound = GAME_STATE_PREFLOP;
 	currentHandID = handID;
@@ -297,22 +297,22 @@ Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned
 					}
 				}
 				if(countActivePlayer==2) {
-					logPlayerAction(smallBlindPosition,LOG_ACTION_DEALER);
+					logPlayerActionUnlocked(smallBlindPosition,LOG_ACTION_DEALER);
 				} else {
 					if(dealerButtonOnTable) {
-						logPlayerAction(dealerPosition,LOG_ACTION_DEALER);
+						logPlayerActionUnlocked(dealerPosition,LOG_ACTION_DEALER);
 					}
 				}
 
 				// log blinds
 				for(it_c = seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 					if((*it_c)->getMyButton() == BUTTON_SMALL_BLIND && (*it_c)->getMySet()>0) {
-						logPlayerAction(smallBlindPosition,LOG_ACTION_SMALL_BLIND,(*it_c)->getMySet());
+						logPlayerActionUnlocked(smallBlindPosition,LOG_ACTION_SMALL_BLIND,(*it_c)->getMySet());
 					}
 				}
 				for(it_c = seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 					if((*it_c)->getMyButton() == BUTTON_BIG_BLIND && (*it_c)->getMySet()>0) {
-						logPlayerAction(bigBlindPosition,LOG_ACTION_BIG_BLIND,(*it_c)->getMySet());
+						logPlayerActionUnlocked(bigBlindPosition,LOG_ACTION_BIG_BLIND,(*it_c)->getMySet());
 					}
 				}
 
@@ -328,8 +328,20 @@ Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned
 void
 Log::logPlayerAction(string playerName, PlayerActionLog action, int amount)
 {
-	std::lock_guard<std::mutex> lock(m_logMutex);
+	std::lock_guard<std::recursive_mutex> lock(m_logMutex);
+	logPlayerActionUnlocked(playerName, action, amount);
+}
 
+void
+Log::logPlayerAction(int seat, PlayerActionLog action, int amount)
+{
+	std::lock_guard<std::recursive_mutex> lock(m_logMutex);
+	logPlayerActionUnlocked(seat, action, amount);
+}
+
+void
+Log::logPlayerActionUnlocked(string playerName, PlayerActionLog action, int amount)
+{
     if(SQLITE_LOG) {
 
         if(myConfig->readConfigInt("LogOnOff")) {
@@ -349,7 +361,7 @@ Log::logPlayerAction(string playerName, PlayerActionLog action, int amount)
                 } else {
                     if(q.next()) {
                         int seat = q.value(0).toInt();
-                        logPlayerAction(seat, action, amount);
+                        logPlayerActionUnlocked(seat, action, amount);
                     } else {
                         cout << "Implausible information about player " << playerName << " in log-db!" << endl;
                     }
@@ -360,10 +372,8 @@ Log::logPlayerAction(string playerName, PlayerActionLog action, int amount)
 }
 
 void
-Log::logPlayerAction(int seat, PlayerActionLog action, int amount)
+Log::logPlayerActionUnlocked(int seat, PlayerActionLog action, int amount)
 {
-	std::lock_guard<std::mutex> lock(m_logMutex);
-
     if(SQLITE_LOG) {
 
         if(myConfig->readConfigInt("LogOnOff")) {
@@ -488,7 +498,7 @@ Log::transformPlayerActionLog(PlayerAction action)
 void
 Log::logBoardCards(std::array<int, 5> boardCards)
 {
-	std::lock_guard<std::mutex> lock(m_logMutex);
+	std::lock_guard<std::recursive_mutex> lock(m_logMutex);
 
     if(SQLITE_LOG) {
 
@@ -534,6 +544,8 @@ Log::logBoardCards(std::array<int, 5> boardCards)
 void
 Log::logHoleCardsHandName(PlayerList activePlayerList)
 {
+	std::lock_guard<std::recursive_mutex> lock(m_logMutex);
+
 	PlayerListConstIterator it_c;
 
 	for(it_c=activePlayerList->begin(); it_c!=activePlayerList->end(); ++it_c) {
@@ -549,7 +561,7 @@ Log::logHoleCardsHandName(PlayerList activePlayerList)
 void
 Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerInterface> player, bool forceExecLog)
 {
-	std::lock_guard<std::mutex> lock(m_logMutex);
+	std::lock_guard<std::recursive_mutex> lock(m_logMutex);
 
 	if(SQLITE_LOG) {
 
@@ -586,9 +598,9 @@ Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerI
 				}
 
 				if(!player->getLogHoleCardsDone()) {
-					logPlayerAction(player->getMyName(),LOG_ACTION_SHOW);
+					logPlayerActionUnlocked(player->getMyName(),LOG_ACTION_SHOW);
 				} else {
-					logPlayerAction(player->getMyName(),LOG_ACTION_HAS);
+					logPlayerActionUnlocked(player->getMyName(),LOG_ACTION_HAS);
 				}
 
 				player->setLogHoleCardsDone(true);
@@ -664,7 +676,7 @@ Log::logPlayerSitsOut(PlayerList activePlayerList)
 void
 Log::logAfterHand()
 {
-	std::lock_guard<std::mutex> lock(m_logMutex);
+	std::lock_guard<std::recursive_mutex> lock(m_logMutex);
 	if(myConfig->readConfigInt("LogInterval") == 1) {
 		exec_transaction();
 	}
@@ -673,7 +685,7 @@ Log::logAfterHand()
 void
 Log::logAfterGame()
 {
-	std::lock_guard<std::mutex> lock(m_logMutex);
+	std::lock_guard<std::recursive_mutex> lock(m_logMutex);
 	if(myConfig->readConfigInt("LogInterval") == 2) {
 		exec_transaction();
 	}
@@ -727,4 +739,11 @@ Log::exec_transaction()
         err = mySqliteLogDb.lastError();
         cout << "Failed to commit transaction: " << err.text().toStdString() << endl;
     }
+}
+
+void
+Log::setCurrentRound(GameState theValue)
+{
+	std::lock_guard<std::recursive_mutex> lock(m_logMutex);
+	currentRound = theValue;
 }

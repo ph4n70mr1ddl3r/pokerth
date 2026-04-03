@@ -907,7 +907,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 		// read session
 		sql = "SELECT * FROM Session";
 		if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Session,&nRow_Session,&nCol_Session,&errmsg) != SQLITE_OK) {
-			cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+			cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 			sqlite3_free(errmsg);
 			cleanUp(results, mySqliteLogDb);
 			return 1;
@@ -990,7 +990,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			sql = "SELECT * FROM Game";
 		}
 		if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Game,&nRow_Game,&nCol_Game,&errmsg) != SQLITE_OK) {
-			cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+			cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 			sqlite3_free(errmsg);
 			cleanUp(results, mySqliteLogDb);
 			return 1;
@@ -1044,7 +1044,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			sql += std::to_string(uniqueGameID);
 			sql += " ORDER BY Seat;";
 			if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Player,&nRow_Player,&nCol_Player,&errmsg) != SQLITE_OK) {
-				cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+				cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 				sqlite3_free(errmsg);
 				cleanUp(results, mySqliteLogDb);
 				return 1;
@@ -1062,7 +1062,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			sql = "SELECT HandID FROM Hand WHERE UniqueGameID=";
 			sql+= std::to_string(uniqueGameID);
 			if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand_ID,&nRow_Hand_ID,&nCol_Hand,&errmsg) != SQLITE_OK) {
-				cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+				cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 				sqlite3_free(errmsg);
 				cleanUp(results, mySqliteLogDb);
 				return 1;
@@ -1101,7 +1101,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				sql+= " AND HandID=";
 				sql+= results.result_Hand_ID[hand_ctr] ? results.result_Hand_ID[hand_ctr] : "0";
 				if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand,&nRow_Hand,&nCol_Hand,&errmsg) != SQLITE_OK) {
-					cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+					cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 					sqlite3_free(errmsg);
 					cleanUp(results, mySqliteLogDb);
 					return 1;
@@ -1218,7 +1218,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
                 sql += " AND (Action='posts small blind' OR Action='posts big blind' OR Action='starts as dealer')";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
-						cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+						cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
@@ -1266,7 +1266,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					sql += " AND BeRo=0 AND Action='posts small blind'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
-						cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+						cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
@@ -1291,7 +1291,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					sql += " AND BeRo=0 AND Action='posts big blind'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
-						cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+						cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
@@ -1316,7 +1316,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					sql += " AND BeRo=0 AND Action='starts as dealer'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
-						cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+						cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
@@ -1446,7 +1446,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
                     sql += " AND Action<>'starts as dealer' AND Action<>'posts big blind' AND Action<>'posts small blind'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
-						cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+						cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
@@ -1702,7 +1702,7 @@ QList<int> guiLog::getGameList(QString fileStringPdb)
 
 	string sql = "SELECT * FROM Game";
 	if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Game,&nRow_Game,&nCol_Game,&errmsg) != SQLITE_OK) {
-		cout << "Error in statement: " << sql.c_str() << "[" << errmsg << "]." << endl;
+		cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 		sqlite3_free(errmsg);
 	} else {
 		for(game_ctr=1; game_ctr<=nRow_Game; game_ctr++) {

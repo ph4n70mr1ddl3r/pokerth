@@ -122,8 +122,12 @@ Thread::Join(unsigned msecTimeout)
 		tmpIsTerminated = m_isTerminatedSemaphore.timed_wait(boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(msecTimeout));
 	}
 
-	if (threadToJoin)
-		threadToJoin->join();
+	if (tmpIsTerminated) {
+		if (threadToJoin)
+			threadToJoin->join();
+	} else if (threadToJoin) {
+		threadToJoin->detach();
+	}
 
 	return tmpIsTerminated;
 }

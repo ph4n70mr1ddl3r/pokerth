@@ -35,7 +35,7 @@
 #include <QDebug>
 
 AndroidAudio::AndroidAudio(ConfigFile *c, QObject *parent) :
-	QObject(parent), mEngineObject(nullptr), mEngineEngine(nullptr), mOutputMixObject(nullptr), mSounds(), mSoundCount(0), mPlayerObject(nullptr), myConfig(c), audioEnabled(false)
+	QObject(parent), mEngineObject(nullptr), mEngineEngine(nullptr), mOutputMixObject(nullptr), mSounds(), mPlayerObject(nullptr), myConfig(c), audioEnabled(false)
 {
 	initAudio();
 }
@@ -115,8 +115,8 @@ void AndroidAudio::destroyEngine()
 		(*mPlayerObject)->Destroy(mPlayerObject);
 	}
 
-	for (int32_t i = 0; i < mSoundCount; ++i) {
-		mSounds.values().at(i)->unload();
+	for (auto* sound : mSounds) {
+		sound->unload();
 	}
 
 	qDebug() << "Destroyed Android Audio Engine";
