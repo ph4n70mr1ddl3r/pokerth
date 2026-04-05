@@ -205,8 +205,11 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 				sendMessageToClient(*tmpAck);
 			} else
 				qDebug() << "Invalid client secret.";
-		} else
+			error = true;
+		} else {
 			qDebug() << "Invalid client version: " << netInit.requestedversion();
+			error = true;
+		}
 	} else if (msg.messagetype() == ChatCleanerMessage::Type_CleanerChatRequestMessage) {
 		if (!m_authenticated) {
 			qDebug() << "Chat request received before authentication";

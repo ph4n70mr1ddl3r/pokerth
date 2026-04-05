@@ -729,9 +729,8 @@ ServerDBThread::HandleNextQuery()
 			} catch (const mysqlpp::Exception &e) {
 				string errorMsg = string("Query execution failed: ") + e.what();
 				LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
-				if (!m_connData->conn.connected()) {
-					SetConnected(false);
-				}
+				m_connData->conn.disconnect();
+				SetConnected(false);
 				nextQuery->HandleError(*m_ioService, m_callback);
 				m_dbIdManager.RemoveGameId(nextQuery->GetId());
 			} catch (const std::exception &e) {
