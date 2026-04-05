@@ -58,6 +58,8 @@ public:
 	virtual bool RequiresResultSet() const override;
 	virtual bool Next() override;
 
+	virtual unsigned GetId() const override;
+
 	virtual unsigned GetLastGameDBId() const override;
 	virtual void SetLastGameDBId(unsigned id) override;
 

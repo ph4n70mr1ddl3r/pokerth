@@ -484,8 +484,8 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
             &ClientStateStartConnect::TimerTimeout, this, boost::asio::placeholders::error, client));
 
     boost::asio::ip::tcp::endpoint endpoint = m_remoteEndpointIterator->endpoint();
-    auto nextIterator = m_remoteEndpointIterator;
     ++m_remoteEndpointIterator;
+    auto nextIterator = m_remoteEndpointIterator;
 
     if (client->GetContext().GetSessionData()->IsSsl()) {
         client->GetContext().GetSessionData()->GetSslStream()->lowest_layer().async_connect(
@@ -536,13 +536,13 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
                 client->GetCallback().SignalNetClientConnect(MSG_SOCK_CONNECT_DONE);
                 client->SetState(ClientStateStartSession::Instance());
             }
-        } else if (endpoint_iterator != m_remoteEndpoint.end()) {
+        } else if (m_remoteEndpointIterator != m_remoteEndpoint.end()) {
             // Try next resolve entry.
             ClientContext &context = client->GetContext();
             boost::system::error_code closeEc;
-            boost::asio::ip::tcp::endpoint endpoint = endpoint_iterator->endpoint();
-            auto nextIterator = m_remoteEndpointIterator;
+            boost::asio::ip::tcp::endpoint endpoint = m_remoteEndpointIterator->endpoint();
             ++m_remoteEndpointIterator;
+            auto nextIterator = m_remoteEndpointIterator;
 
             if (context.GetSessionData()->IsSsl()) {
                 context.GetSessionData()->GetSslStream()->lowest_layer().close(closeEc);
@@ -1625,11 +1625,11 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		// Basic synchronisation before a new hand is started.
 		client->GetGui().waitForGuiUpdateDone();
 		// Start new hand.
-		client->GetGame()->getSeatsList()->front()->setMyCards(myCards);
-		client->GetGame()->initHand();
-		client->GetGame()->getCurrentHand()->setSmallBlind(netHandStart.smallblind());
-		client->GetGame()->getCurrentHand()->getCurrentBeRo()->setMinimumRaise(2 * netHandStart.smallblind());
-		client->GetGame()->startHand();
+		game->getSeatsList()->front()->setMyCards(myCards);
+		game->initHand();
+		game->getCurrentHand()->setSmallBlind(netHandStart.smallblind());
+		game->getCurrentHand()->getCurrentBeRo()->setMinimumRaise(2 * netHandStart.smallblind());
+		game->startHand();
 		client->GetGui().dealHoleCards();
 		client->GetGui().refreshGameLabels(GAME_STATE_PREFLOP);
 		client->GetGui().refreshPot();
@@ -1639,25 +1639,28 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		client->SetState(ClientStateRunHand::Instance());
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_EndOfGameMessage) {
 		boost::shared_ptr<Game> curGame = client->GetGame();
-		if (curGame) {
-			const EndOfGameMessage &netEndOfGame = tmpPacket->GetMsg()->endofgamemessage();
+		if (!curGame)
+			throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_STATE, 0);
+		const EndOfGameMessage &netEndOfGame = tmpPacket->GetMsg()->endofgamemessage();
 
-			boost::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(netEndOfGame.winnerplayerid());
-			if (!tmpPlayer)
-				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
-			client->GetGui().logPlayerWinGame(tmpPlayer->getMyName(), curGame->getMyGameID());
-			// Resubscribe Lobby messages.
-			client->ResubscribeLobbyMsg();
-			// Show Lobby dialog.
-			client->GetCallback().SignalNetClientWaitDialog();
-			client->GetCallback().SignalNetClientGameInfo(MSG_NET_GAME_CLIENT_END);
-			client->SetState(ClientStateWaitGame::Instance());
-		}
+		boost::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(netEndOfGame.winnerplayerid());
+		if (!tmpPlayer)
+			throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
+		client->GetGui().logPlayerWinGame(tmpPlayer->getMyName(), curGame->getMyGameID());
+		// Resubscribe Lobby messages.
+		client->ResubscribeLobbyMsg();
+		// Show Lobby dialog.
+		client->GetCallback().SignalNetClientWaitDialog();
+		client->GetCallback().SignalNetClientGameInfo(MSG_NET_GAME_CLIENT_END);
+		client->SetState(ClientStateWaitGame::Instance());
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_AfterHandShowCardsMessage) {
+		boost::shared_ptr<Game> curGame = client->GetGame();
+		if (!curGame)
+			throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_STATE, 0);
 		const AfterHandShowCardsMessage &showCards = tmpPacket->GetMsg()->afterhandshowcardsmessage();
 		const PlayerResult &r = showCards.playerresult();
 
-		boost::shared_ptr<PlayerInterface> tmpPlayer = client->GetGame()->getPlayerByUniqueId(r.playerid());
+		boost::shared_ptr<PlayerInterface> tmpPlayer = curGame->getPlayerByUniqueId(r.playerid());
 		if (!tmpPlayer)
 			throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 
@@ -1677,7 +1680,7 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		tmpPlayer->setLastMoneyWon(r.moneywon());
 
 		client->GetCallback().SignalNetClientPostRiverShowCards(r.playerid());
-		client->GetClientLog()->logHoleCardsHandName(client->GetGame()->getActivePlayerList(), tmpPlayer, true);
+		client->GetClientLog()->logHoleCardsHandName(curGame->getActivePlayerList(), tmpPlayer, true);
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_PlayerIdChangedMessage) {
 		boost::shared_ptr<Game> curGame = client->GetGame();
 		if (curGame) {

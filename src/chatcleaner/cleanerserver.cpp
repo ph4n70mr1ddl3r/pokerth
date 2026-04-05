@@ -203,9 +203,10 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 				CleanerInitAckMessage *netAck = tmpAck->mutable_cleanerinitackmessage();
 				netAck->set_serverversion(CLEANER_PROTOCOL_VERSION);
 				sendMessageToClient(*tmpAck);
-			} else
+			} else {
 				qDebug() << "Invalid client secret.";
-			error = true;
+				error = true;
+			}
 		} else {
 			qDebug() << "Invalid client version: " << netInit.requestedversion();
 			error = true;

@@ -194,7 +194,6 @@ protected:
 	void TimerRemoveGame(const boost::system::error_code &ec);
 	void TimerUpdateClientLoginLock(const boost::system::error_code &ec);
 	void TimerCleanupRateMaps(const boost::system::error_code &ec);
-	void CleanupChatRateMap();
 
 	bool IsGameNameInUse(const std::string &gameName) const;
 	boost::shared_ptr<ServerGame> InternalGetGameFromId(unsigned gameId);

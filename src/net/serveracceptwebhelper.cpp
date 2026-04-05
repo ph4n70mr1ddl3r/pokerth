@@ -100,6 +100,17 @@ ServerAcceptWebHelper::Listen(unsigned serverPort, bool /*ipv6*/, const std::str
 void
 ServerAcceptWebHelper::Close()
 {
+	try {
+		if (m_tls) {
+			if (m_webSocketTlsServer)
+				m_webSocketTlsServer->stop_listening();
+		} else {
+			if (m_webSocketServer)
+				m_webSocketServer->stop_listening();
+		}
+	} catch (const std::exception &e) {
+		LOG_ERROR("WebSocket stop_listening error: " << e.what());
+	}
 }
 
 bool
@@ -206,6 +217,7 @@ context_ptr ServerAcceptWebHelper::on_tls_init(websocketpp::connection_hdl hdl) 
         }
     } catch (std::exception& e) {
         LOG_ERROR("TLS initialization error: " << e.what());
+        throw;
     }
     return ctx;
 }

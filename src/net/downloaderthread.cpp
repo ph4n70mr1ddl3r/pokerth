@@ -107,7 +107,9 @@ DownloaderThread::Main()
 				std::streamoff posDiff(endPos - startPos);
 				if (posDiff <= 0) {
 					instream.close();
-					remove(filepath);
+					std::error_code ec;
+					fs::remove(filepath, ec);
+					myCurDownloadData.reset();
 					continue;
 				}
 				size_t fileSize = static_cast<size_t>(posDiff);
@@ -115,7 +117,8 @@ DownloaderThread::Main()
 				vector<unsigned char> fileData(fileSize);
 				instream.read(reinterpret_cast<char *>(&fileData[0]), fileSize);
 					instream.close();
-					remove(filepath);
+					std::error_code ec;
+					fs::remove(filepath, ec);
 
 					{
 						boost::mutex::scoped_lock lock(myDownloadDoneQueueMutex);

@@ -41,7 +41,7 @@ public:
 	SingleAsyncDBQuery(unsigned queryId, const std::string &preparedName, const std::list<std::string> &params);
 	virtual ~SingleAsyncDBQuery() noexcept;
 
-	unsigned GetId() const;
+	unsigned GetId() const override;
 	virtual std::string GetPreparedName() const override;
 	virtual void GetParams(std::list<std::string> &params) const override;
 	virtual void SetParams(const std::list<std::string> &params) override;

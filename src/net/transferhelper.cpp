@@ -146,10 +146,6 @@ TransferHelper::Process()
 void
 TransferHelper::Cleanup()
 {
-	if (m_data->post) {
-		curl_mime_free(m_data->post);
-		m_data->post = nullptr;
-	}
 	if (m_data->curlMultiHandle) {
 		curl_multi_cleanup(m_data->curlMultiHandle);
 		m_data->curlMultiHandle = nullptr;
@@ -157,6 +153,10 @@ TransferHelper::Cleanup()
 	if (m_data->curlHandle) {
 		curl_easy_cleanup(m_data->curlHandle);
 		m_data->curlHandle = nullptr;
+	}
+	if (m_data->post) {
+		curl_mime_free(m_data->post);
+		m_data->post = nullptr;
 	}
 	if (m_data->targetFile) {
 		fflush(m_data->targetFile);

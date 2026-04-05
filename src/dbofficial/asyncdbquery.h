@@ -56,6 +56,7 @@ public:
 	virtual void HandleError(boost::asio::io_context &service, ServerDBCallback &cb) = 0;
 	virtual bool RequiresResultSet() const = 0;
 	virtual bool Next() = 0;
+	virtual unsigned GetId() const = 0;
 };
 
 #endif

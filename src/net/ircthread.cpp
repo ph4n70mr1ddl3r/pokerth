@@ -116,8 +116,8 @@ void irc_auto_rename_nick(irc_session_t *session)
 		// Automatically rename the nick on collision.
 		// First: Try to append the string "Lobby".
 		if (context->nick.find(IRC_RENAME_ATTACH) == string::npos) {
-			if (context->nick.length() + (sizeof(IRC_RENAME_ATTACH)) > IRC_MAX_NICK_LEN)
-				context->nick = context->nick.substr(0, IRC_MAX_NICK_LEN - (sizeof(IRC_RENAME_ATTACH)));
+			if (context->nick.length() + ((sizeof(IRC_RENAME_ATTACH) - 1)) > IRC_MAX_NICK_LEN)
+				context->nick = context->nick.substr(0, IRC_MAX_NICK_LEN - ((sizeof(IRC_RENAME_ATTACH) - 1)));
 			context->nick = context->nick + IRC_RENAME_ATTACH;
 		} else {
 			// This didn't work out. Append a number or increment it.

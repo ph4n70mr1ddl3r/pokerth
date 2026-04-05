@@ -811,6 +811,8 @@ ServerLobbyThread::GetBanManager()
 SessionDataCallback &
 ServerLobbyThread::GetSessionDataCallback()
 {
+	if (!m_internalServerCallback)
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_STATE, 0);
 	return *m_internalServerCallback;
 }
 
@@ -1544,7 +1546,6 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 		}
 		constexpr size_t MAX_CHAT_RATE_MESSAGES = 10;
 		constexpr int MAX_CHAT_RATE_WINDOW_SEC = 10;
-		constexpr size_t MAX_CHAT_RATE_MAP_SIZE = 5000;
 		unsigned playerId = session->GetPlayerData()->GetUniqueId();
 		{
 			boost::mutex::scoped_lock lock(m_chatRateMapMutex);
@@ -1610,8 +1611,9 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 					}
 					if (GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId())
 						&& chatText.size() >= 3 && chatText.substr(0, 3) == "gn ") {
-						LOG_ERROR("Global Notice: " << chatText.substr(3) << " by player_id " << session->GetPlayerData()->GetDBId());
+						LOG_MSG("Global Notice: " << chatText.substr(3) << " by player_id " << session->GetPlayerData()->GetDBId());
 						SendGlobalChat(chatText.substr(3));
+						chatSent = true;
 					} else {
 						auto packet = boost::make_shared<NetPacket>();
 						packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatMessage);
@@ -1763,7 +1765,7 @@ ServerLobbyThread::HandleNetPacketAdminBanPlayer(boost::shared_ptr<SessionData> 
 			RemovePlayer(tmpPlayer->GetUniqueId(), ERR_NET_PLAYER_KICKED);
 			// Permanently ban the player in the database.
 			if (tmpPlayer->GetDBId() != DB_ID_INVALID) {
-				LOG_ERROR("Player " << session->GetPlayerData()->GetName() << "(" << session->GetPlayerData()->GetDBId()
+				LOG_MSG("Player " << session->GetPlayerData()->GetName() << "(" << session->GetPlayerData()->GetDBId()
 						  << ") bans player " << tmpPlayer->GetName() << "(" << tmpPlayer->GetDBId()
 						  << ") who has IP " << tmpSession->GetClientAddr());
 				GetDatabase()->AsyncBlockPlayer(session->GetPlayerData()->GetUniqueId(), tmpPlayer->GetUniqueId(), tmpPlayer->GetDBId(), 0, 4);
@@ -1965,11 +1967,7 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
 					}
 				}
 				if (shouldEstablish) {
-					if (it->second.count > 2) {
-						it->second.count -= 2;
-					} else {
-						m_failedLoginMap.erase(it);
-					}
+					m_failedLoginMap.erase(it);
 				}
 			}
 		}
@@ -2252,11 +2250,12 @@ ServerLobbyThread::InternalAddGame(boost::shared_ptr<ServerGame> game)
 void
 ServerLobbyThread::InternalRemoveGame(boost::shared_ptr<ServerGame> game)
 {
+	bool wasInMap = false;
 	{
 		boost::mutex::scoped_lock lock(m_gameMapMutex);
-		m_gameMap.erase(game->GetId());
+		wasInMap = m_gameMap.erase(game->GetId()) > 0;
 	}
-	{
+	if (wasInMap) {
 		boost::mutex::scoped_lock lock(m_statMutex);
 		if (m_statData.numberOfGamesOpen) {
 			--m_statData.numberOfGamesOpen;

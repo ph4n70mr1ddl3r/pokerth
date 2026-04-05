@@ -97,8 +97,10 @@ UploaderThread::Main()
 		} catch (const NetException &e) {
 			LOG_ERROR("Upload failed: " << e.what());
 			m_uploadInProgress = false;
+			std::string errorFile = lastfile;
+			lastfile.clear();
 			if (m_callback) {
-				m_callback->UploadError(lastfile, e.what());
+				m_callback->UploadError(errorFile, e.what());
 			}
 		}
 	}

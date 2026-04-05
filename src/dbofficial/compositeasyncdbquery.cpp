@@ -111,6 +111,12 @@ CompositeAsyncDBQuery::Next()
 }
 
 unsigned
+CompositeAsyncDBQuery::GetId() const
+{
+	return (*m_currentQuery)->GetId();
+}
+
+unsigned
 CompositeAsyncDBQuery::GetLastGameDBId() const
 {
 	return m_lastGameDBId;

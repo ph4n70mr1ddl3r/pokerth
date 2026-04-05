@@ -298,9 +298,11 @@ ChatCleanerManager::SendMessageToServer(ChatCleanerMessage &msg)
 	uint32_t netSize = htonl(packetSize);
 	std::memcpy(buf.data(), &netSize, sizeof(netSize));
 	msg.SerializeWithCachedSizesToArray(buf.data() + CLEANER_NET_HEADER_SIZE);
-	m_sendManager->EncodeToBuf(buf.data(), packetSize + CLEANER_NET_HEADER_SIZE);
-
-	m_sendManager->AsyncSendNextPacket(m_socket);
+	{
+		boost::mutex::scoped_lock lock(m_sendManager->dataMutex);
+		m_sendManager->EncodeToBuf(buf.data(), packetSize + CLEANER_NET_HEADER_SIZE);
+		m_sendManager->AsyncSendNextPacket(m_socket);
+	}
 }
 
 unsigned
