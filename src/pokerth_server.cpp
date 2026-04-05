@@ -187,7 +187,11 @@ main(int argc, char *argv[])
 		if (myServerGuiInterface->getSession()->pollNetworkServerTerminated())
 			g_pokerthTerminate = true;
 	}
-	myServerGuiInterface->getSession()->terminateNetworkServer();
+	try {
+		myServerGuiInterface->getSession()->terminateNetworkServer();
+	} catch (const std::exception &e) {
+		LOG_ERROR("Exception during network termination: " << e.what());
+	}
 
 	if (!pidFile.empty()) {
 		fs::remove(pidFile);

@@ -104,7 +104,9 @@ void LocalBeRoPreflop::run()
 
 				// smallBlindPlayer not found in runningPlayerList (he is all in) -> no running player -> showdown and no firstRoundLastPlayersTurnId is used
 				if(smallBlindPositionIt == getMyHand()->getRunningPlayerList()->end()) {
-
+					// Both players all-in in heads-up: no running players remain.
+					// Mark firstRound as done so the round ends immediately on next check.
+					setFirstRound(false);
 				}
 				// smallBlindPlayer found in runningPlayerList -> running player before first action player (himself)
 				else {

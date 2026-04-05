@@ -484,6 +484,8 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
             &ClientStateStartConnect::TimerTimeout, this, boost::asio::placeholders::error, client));
 
     boost::asio::ip::tcp::endpoint endpoint = m_remoteEndpointIterator->endpoint();
+    auto nextIterator = m_remoteEndpointIterator;
+    ++m_remoteEndpointIterator;
 
     if (client->GetContext().GetSessionData()->IsSsl()) {
         client->GetContext().GetSessionData()->GetSslStream()->lowest_layer().async_connect(
@@ -491,7 +493,7 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
             boost::bind(&ClientStateStartConnect::HandleConnect,
                         this,
                         boost::asio::placeholders::error,
-                        ++m_remoteEndpointIterator,
+                        nextIterator,
                         client));
     } else {
         client->GetContext().GetSessionData()->GetAsioSocket()->async_connect(
@@ -499,7 +501,7 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
             boost::bind(&ClientStateStartConnect::HandleConnect,
                         this,
                         boost::asio::placeholders::error,
-                        ++m_remoteEndpointIterator,
+                        nextIterator,
                         client));
     }
 }
@@ -539,6 +541,8 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
             ClientContext &context = client->GetContext();
             boost::system::error_code closeEc;
             boost::asio::ip::tcp::endpoint endpoint = endpoint_iterator->endpoint();
+            auto nextIterator = m_remoteEndpointIterator;
+            ++m_remoteEndpointIterator;
 
             if (context.GetSessionData()->IsSsl()) {
                 context.GetSessionData()->GetSslStream()->lowest_layer().close(closeEc);
@@ -547,7 +551,7 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
                     boost::bind(&ClientStateStartConnect::HandleConnect,
                                 this,
                                 boost::asio::placeholders::error,
-                                ++m_remoteEndpointIterator,
+                                nextIterator,
                                 client));
             } else {
                 context.GetSessionData()->GetAsioSocket()->close(closeEc);
@@ -556,7 +560,7 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
                     boost::bind(&ClientStateStartConnect::HandleConnect,
                                 this,
                                 boost::asio::placeholders::error,
-                                ++m_remoteEndpointIterator,
+                                nextIterator,
                                 client));
             }
         } else {

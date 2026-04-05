@@ -130,6 +130,10 @@ void SDLPlayer::playSound(string audioString, int playerID)
 			}
 
 			QDataStream in(&myFile);
+			if (currentChannel >= 0) {
+				Mix_HaltChannel(currentChannel);
+				currentChannel = -1;
+			}
 			soundData.clear();
 			if (sound) {
 				Mix_FreeChunk(sound);

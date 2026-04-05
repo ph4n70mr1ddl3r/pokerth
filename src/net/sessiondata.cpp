@@ -325,7 +325,7 @@ SessionData::WantsLobbyMsg() const
 	return m_wantsLobbyMsg;
 }
 
-const std::string &
+std::string
 SessionData::GetClientAddr() const
 {
 	boost::mutex::scoped_lock lock(m_dataMutex);

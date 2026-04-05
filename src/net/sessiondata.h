@@ -96,7 +96,7 @@ public:
 	void ResetWantsLobbyMsg();
 	[[nodiscard]] bool WantsLobbyMsg() const;
 
-	[[nodiscard]] const std::string &GetClientAddr() const;
+	[[nodiscard]] std::string GetClientAddr() const;
 	void SetClientAddr(const std::string &addr);
 
 	ReceiveBuffer &GetReceiveBuffer()

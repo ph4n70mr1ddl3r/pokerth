@@ -663,7 +663,15 @@ ServerDBThread::HandleNextQuery()
 	if (nextQuery) {
 		do {
 			try {
-				nextQuery->Init(m_dbIdManager);
+				try {
+					nextQuery->Init(m_dbIdManager);
+				} catch (const std::runtime_error &e) {
+					// Init errors are logic errors (e.g. missing game ID), not connection errors.
+					// Skip this query without disconnecting.
+					LOG_ERROR("Query Init failed (logic error): " << e.what());
+					nextQuery->HandleError(*m_ioService, m_callback);
+					break;
+				}
 				mysqlpp::Query executeQuery = m_connData->conn.query();
 				executeQuery << "EXECUTE " << nextQuery->GetPreparedName();
 

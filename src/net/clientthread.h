@@ -36,6 +36,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/steady_timer.hpp>
+#include <boost/asio/ssl.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <string>
 #include <algorithm>

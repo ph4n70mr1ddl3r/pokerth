@@ -276,7 +276,7 @@ guiLog::guiLog(gameTableImpl* w, ConfigFile *c) : myW(w), myConfig(c), myLogDir(
 //                myW->textBrowser_Log->append(myHtmlLogFile_old->fileName());
 
 				// erstelle html-Datei
-				myHtmlLogFile_old->open( QIODevice::WriteOnly );
+				myHtmlLogFile_old->open( QIODevice::WriteOnly | QIODevice::Truncate );
 				QTextStream stream_old( myHtmlLogFile_old );
 				stream_old << "<html>\n";
 				stream_old << "<head>\n";
@@ -1038,6 +1038,8 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			}
 
 			// read player
+			sqlite3_free_table(results.result_Player);
+			results.result_Player = nullptr;
 			sql  = "SELECT Player,Seat FROM Player WHERE UniqueGameID=";
 			sql += std::to_string(uniqueGameID);
 			sql += " ORDER BY Seat;";
@@ -1059,6 +1061,8 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			// read all hand id
 			sql = "SELECT HandID FROM Hand WHERE UniqueGameID=";
 			sql+= std::to_string(uniqueGameID);
+			sqlite3_free_table(results.result_Hand_ID);
+			results.result_Hand_ID = nullptr;
 			if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand_ID,&nRow_Hand_ID,&nCol_Hand,&errmsg) != SQLITE_OK) {
 				cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 				sqlite3_free(errmsg);
@@ -1101,6 +1105,8 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand,&nRow_Hand,&nCol_Hand,&errmsg) != SQLITE_OK) {
 					cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 					sqlite3_free(errmsg);
+				sqlite3_free_table(results.result_Hand);
+				results.result_Hand = nullptr;
 					cleanUp(results, mySqliteLogDb);
 					return 1;
 				}
@@ -1218,6 +1224,8 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
 						cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 						sqlite3_free(errmsg);
+					sqlite3_free_table(results.result_Action);
+					results.result_Action = nullptr;
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}

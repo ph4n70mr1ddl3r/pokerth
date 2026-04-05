@@ -47,6 +47,7 @@ MyStatusLabel::~MyStatusLabel() noexcept
 
 void MyStatusLabel::mousePressEvent(QMouseEvent * event)
 {
+	if (!myW) { QLabel::mousePressEvent(event); return; }
 
 	if (!mousePress && objectName().contains("textLabel_Status0")) {
 		mousePress = true;
@@ -59,6 +60,7 @@ void MyStatusLabel::mousePressEvent(QMouseEvent * event)
 
 void MyStatusLabel::mouseReleaseEvent(QMouseEvent * event)
 {
+	if (!myW) { QLabel::mouseReleaseEvent(event); return; }
 
 	if (mousePress && objectName().contains("textLabel_Status0")) {
 		mousePress = false;

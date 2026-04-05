@@ -103,9 +103,10 @@ void LocalBeRo::run()
 
 		if(firstRound) {
 
-			firstRound = false;
-
-			if(!(myHand->getAllInCondition())) {
+			if(myHand->getAllInCondition()) {
+				// All-in: skip betting entirely, let the round end on next check.
+				firstRound = false;
+			} else {
 
 				PlayerListIterator it_1, it_2;
 

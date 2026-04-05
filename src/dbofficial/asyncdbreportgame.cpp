@@ -54,7 +54,7 @@ AsyncDBReportGame::Init(DBIdManager& idManager)
 	ostringstream paramStream;
 	unsigned tmpGameId = idManager.GetGameDBId(m_gameId);
 	if (tmpGameId) {
-		paramStream << idManager.GetGameDBId(m_gameId);
+		paramStream << tmpGameId;
 		// Add game id as last parameter (where-clause).
 		params.push_back(paramStream.str());
 	} else {

@@ -187,6 +187,9 @@ void MyAvatarLabel::startChangePlayerTip(QString playerName)
 
 void MyAvatarLabel::refreshStars()
 {
+	if (!myW || !myW->myStartWindow) return;
+	auto session = myW->myStartWindow->getSession();
+	if (!session) return;
 	QString fontSize("12");
 	QString fontFamily(myW->getMyGameTableStyle()->getFont1String());
 
@@ -200,7 +203,8 @@ void MyAvatarLabel::refreshStars()
 #endif
 #endif
 
-	boost::shared_ptr<Game> curGame = myW->myStartWindow->getSession()->getCurrentGame();
+	boost::shared_ptr<Game> curGame = session->getCurrentGame();
+	if (!curGame) return;
 	PlayerListConstIterator it_c;
 	int seatPlace = 0;
 	PlayerList seatsList = curGame->getSeatsList();
@@ -227,7 +231,11 @@ void MyAvatarLabel::refreshStars()
 
 void MyAvatarLabel::refreshTooltips()
 {
-	boost::shared_ptr<Game> currentGame = myW->myStartWindow->getSession()->getCurrentGame();
+	if (!myW || !myW->myStartWindow) return;
+	auto session = myW->myStartWindow->getSession();
+	if (!session) return;
+	boost::shared_ptr<Game> currentGame = session->getCurrentGame();
+	if (!currentGame) return;
 	PlayerListConstIterator it_c;
 	int seatPlace = 0;
 	PlayerList seatsList = currentGame->getSeatsList();
@@ -293,6 +301,7 @@ void MyAvatarLabel::setPlayerTip()
 
 void MyAvatarLabel::sendTriggerVoteOnKickSignal()
 {
+	if (!myW) return;
 	myW->triggerVoteOnKick(myId);
 }
 
@@ -337,6 +346,7 @@ void MyAvatarLabel::setPixmapAndCountry ( const QPixmap &pix,QString countryStri
 
 void MyAvatarLabel::paintEvent(QPaintEvent*)
 {
+	if (!myW || !myW->myStartWindow) return;
 
 	QPainter painter(this);
 	if(transparent)
@@ -346,6 +356,7 @@ void MyAvatarLabel::paintEvent(QPaintEvent*)
 
 	//hide avatar if player is on ignore list
 	boost::shared_ptr<Session> mySession = myW->myStartWindow->getSession();
+	if(!mySession) return;
 	if(!playerIsOnIgnoreList(QString::fromUtf8(mySession->getClientPlayerInfo(myUniqueId).playerName.c_str()))) {
 		painter.drawPixmap(0,0,myPixmap);
 	} else if(myW->getMyConfig()->readConfigInt("DontHideAvatarsOfIgnored")) {
@@ -389,6 +400,7 @@ void MyAvatarLabel::paintEvent(QPaintEvent*)
 
 void MyAvatarLabel::refreshPing(unsigned minPing, unsigned avgPing, unsigned maxPing)
 {
+	if (!myW) return;
 	myMinPing = minPing;
 	myAvgPing = avgPing;
 	myMaxPing = maxPing;

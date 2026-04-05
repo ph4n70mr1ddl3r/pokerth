@@ -104,6 +104,7 @@ void MyTimeoutLabel::stopTimeOutAnimation()
 
 void MyTimeoutLabel::nextTimeOutAnimationFrame()
 {
+	if (!myW || !myW->getMySoundEventHandler()) return;
 
 	if(timeOutAnimationWidth >=0) {
 		if(timeOutFrame > waitFrames) {

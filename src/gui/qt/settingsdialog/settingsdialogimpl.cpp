@@ -1054,7 +1054,7 @@ void settingsDialogImpl::removeGameTableStyle()
 			firstItem->setIcon(0, QIcon(QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str())+"/gfx/gui/misc/rating.png"));
 		}
 		//remove from List
-		treeWidget_gameTableStyles->takeTopLevelItem(treeWidget_gameTableStyles->currentIndex().row());
+		delete treeWidget_gameTableStyles->takeTopLevelItem(treeWidget_gameTableStyles->currentIndex().row());
 
 	}
 }
@@ -1181,14 +1181,14 @@ void settingsDialogImpl::removeCardDeckStyle()
 			firstItem->setIcon(0, QIcon(QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str())+"/gfx/gui/misc/rating.png"));
 		}
 		//remove from List
-		treeWidget_cardDeckStyles->takeTopLevelItem(treeWidget_cardDeckStyles->currentIndex().row());
+		delete treeWidget_cardDeckStyles->takeTopLevelItem(treeWidget_cardDeckStyles->currentIndex().row());
 	}
 }
 
 void settingsDialogImpl::removePlayerFromIgnoredPlayersList()
 {
 	if(treeWidget_internetGameIgnoredPlayers->selectedItems().count()) {
-		treeWidget_internetGameIgnoredPlayers->takeTopLevelItem(treeWidget_internetGameIgnoredPlayers->currentIndex().row());
+		delete treeWidget_internetGameIgnoredPlayers->takeTopLevelItem(treeWidget_internetGameIgnoredPlayers->currentIndex().row());
 	}
 }
 

@@ -127,7 +127,7 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 			potLevel.push_back(playerSetsSort[i]);
 
 			// level sum
-			potLevel.push_back((playerSetsSort.size()-i)*potLevel[0] + potCarryOver);
+			potLevel.push_back(static_cast<unsigned>(static_cast<unsigned long long>(playerSetsSort.size()-i) * potLevel[0] + static_cast<unsigned long long>(potCarryOver)));
 
 			// determine level highestCardsValue
 			for(it_c=seatsList->begin(), j=0; it_c!=seatsList->end(); ++it_c,j++) {
@@ -221,7 +221,7 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 							(*it)->setMyCash( (*it)->getMyCash() + static_cast<int>((potLevel[1])/winnerCount) + 1);
 							// filling winners vector
 							winners.push_back((*it)->getMyUniqueID());
-							(*it)->setLastMoneyWon( (*it)->getLastMoneyWon() + ((potLevel[1])/winnerCount) + 1 );
+							(*it)->setLastMoneyWon( (*it)->getLastMoneyWon() + static_cast<int>((potLevel[1])/winnerCount) + 1 );
 						} else {
 							(*it)->setMyCash( (*it)->getMyCash() + static_cast<int>((potLevel[1])/winnerCount));
 							// filling winners vector
@@ -233,10 +233,10 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 				potCarryOver = 0;
 
 				// pot refresh
-				pot -= potLevel[1];
+				pot -= static_cast<int>(potLevel[1]);
 
 			} else {
-				potCarryOver = potLevel[1];
+				potCarryOver = static_cast<int>(potLevel[1]);
 			}
 
 			// reevaluate the player sets

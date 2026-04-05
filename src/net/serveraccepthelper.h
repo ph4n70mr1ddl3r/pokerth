@@ -199,6 +199,12 @@ protected:
         } else {
             LOG_ERROR("In boost::asio handler: Accept failed.");
             GetCallback().SignalNetServerError(ERR_SOCK_ACCEPT_FAILED, 0);
+            // Restart accept even on error so server continues accepting connections.
+            auto newSocket = boost::make_shared<P_socket>(*m_ioService);
+            m_acceptor->async_accept(
+                *newSocket,
+                boost::bind(&ServerAcceptHelper::HandleAccept, this, newSocket,
+                            boost::asio::placeholders::error));
         }
     }
 

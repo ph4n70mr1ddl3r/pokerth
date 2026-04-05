@@ -480,6 +480,7 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 
 gameTableImpl::~gameTableImpl() noexcept
 {
+	delete myChat;
 	delete mySoundEventHandler;
 	delete myGameTableStyle;
 	delete myCardDeckStyle;

@@ -594,7 +594,9 @@ Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerI
 				sql += "HandID=" + std::to_string(currentHandID);
 				sql += ";";
 				if(myConfig->readConfigInt("LogInterval") == 0 || forceExecLog) {
-					exec_transaction();
+					if(sql.find("SET  WHERE") == std::string::npos) {
+						exec_transaction();
+					}
 				}
 
 				if(!player->getLogHoleCardsDone()) {
