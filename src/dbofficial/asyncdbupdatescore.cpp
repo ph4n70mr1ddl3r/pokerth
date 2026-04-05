@@ -80,8 +80,7 @@ AsyncDBUpdateScore::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& idMan
 void
 AsyncDBUpdateScore::HandleError(boost::asio::io_context &/*service*/, ServerDBCallback &/*cb*/)
 {
-	// Note: idManager is not available in HandleError (base class limitation).
-	// The game ID should be removed to prevent leakage, but this requires
-	// caller-side cleanup in serverdbthread.cpp.
+	// Game ID cleanup is handled by ServerDBThread::HandleNextQuery caller
+	// which calls m_dbIdManager.RemoveGameId() after HandleError.
 	LOG_ERROR("AsyncDBUpdateScore::HandleError: Database error occurred while updating score for game " << GetId());
 }

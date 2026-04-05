@@ -1980,6 +1980,26 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
 		}
 	} else {
 		LOG_MSG("Authentication failed for player " << playerId << " (" << tmpSession->GetClientAddr() << ")");
+		std::string clientAddr = tmpSession->GetClientAddr();
+		{
+			boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
+			FailedLoginMap::iterator it = m_failedLoginMap.find(clientAddr);
+			if (it == m_failedLoginMap.end()) {
+				FailedLoginEntry entry;
+				entry.count = 1;
+				entry.firstFailTime = boost::posix_time::second_clock::local_time();
+				m_failedLoginMap[clientAddr] = entry;
+			} else {
+				boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+				boost::posix_time::time_duration duration = now - it->second.firstFailTime;
+				if (duration.total_seconds() < MAX_FAILED_LOGIN_RATE_LIMIT_SECONDS) {
+					it->second.count++;
+				} else {
+					it->second.count = 1;
+					it->second.firstFailTime = now;
+				}
+			}
+		}
 		SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
 	}
 }
