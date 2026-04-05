@@ -1110,20 +1110,21 @@ ClientThread::CreateContextSession()
     context.SetResolver(resolver);
 
     if (context.GetTls()) {
-        auto sslCtx = boost::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::sslv23_client);
-        
+        // Store as member to ensure context outlives the SSL stream.
+        m_sslContext = boost::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::sslv23_client);
+
         if (context.GetTlsVerifyPeer()) {
-            sslCtx->set_verify_mode(boost::asio::ssl::verify_peer);
-            sslCtx->set_default_verify_paths();
+            m_sslContext->set_verify_mode(boost::asio::ssl::verify_peer);
+            m_sslContext->set_default_verify_paths();
         } else {
             LOG_ERROR("WARNING: TLS peer verification is disabled - connection is vulnerable to MITM attacks");
-            sslCtx->set_verify_mode(boost::asio::ssl::verify_none);
+            m_sslContext->set_verify_mode(boost::asio::ssl::verify_none);
         }
 
-        SSL_CTX_set_info_callback(sslCtx->native_handle(), &ClientThread::SslInfoCallback);
+        SSL_CTX_set_info_callback(m_sslContext->native_handle(), &ClientThread::SslInfoCallback);
 
         boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sslStream(
-            new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(*m_ioService, *sslCtx));
+            new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(*m_ioService, *m_sslContext));
 
         SSL_set_info_callback(sslStream->native_handle(), &ClientThread::SslInfoCallback);
 
@@ -1629,25 +1630,39 @@ ClientThread::EndPetition(unsigned petitionId)
 void
 ClientThread::UpdateStatData(const ServerStats &stats)
 {
-	boost::mutex::scoped_lock lock(m_curStatsMutex);
-	if (stats.numberOfPlayersOnServer)
-		m_curStats.numberOfPlayersOnServer = stats.numberOfPlayersOnServer;
+	ServerStats curStats;
+	{
+		boost::mutex::scoped_lock lock(m_curStatsMutex);
+		if (stats.numberOfPlayersOnServer)
+			m_curStats.numberOfPlayersOnServer = stats.numberOfPlayersOnServer;
 
-	if (stats.totalPlayersEverLoggedIn)
-		m_curStats.totalPlayersEverLoggedIn = stats.totalPlayersEverLoggedIn;
+		if (stats.totalPlayersEverLoggedIn)
+			m_curStats.totalPlayersEverLoggedIn = stats.totalPlayersEverLoggedIn;
 
-	if (stats.totalGamesEverCreated)
-		m_curStats.totalGamesEverCreated = stats.totalGamesEverCreated;
+		if (stats.totalGamesEverCreated)
+			m_curStats.totalGamesEverCreated = stats.totalGamesEverCreated;
 
-	GetCallback().SignalNetClientStatsUpdate(m_curStats);
+		curStats = m_curStats;
+	}
+	GetCallback().SignalNetClientStatsUpdate(curStats);
 }
 
 void
 ClientThread::EndPing()
 {
-	boost::mutex::scoped_lock lock(m_pingDataMutex);
-	if (m_pingData.EndPing()) {
-		GetCallback().SignalNetClientPingUpdate(m_pingData.MinPing(), m_pingData.AveragePing(), m_pingData.MaxPing());
+	unsigned minPing, avgPing, maxPing;
+	bool pingChanged;
+	{
+		boost::mutex::scoped_lock lock(m_pingDataMutex);
+		pingChanged = m_pingData.EndPing();
+		if (pingChanged) {
+			minPing = m_pingData.MinPing();
+			avgPing = m_pingData.AveragePing();
+			maxPing = m_pingData.MaxPing();
+		}
+	}
+	if (pingChanged) {
+		GetCallback().SignalNetClientPingUpdate(minPing, avgPing, maxPing);
 	}
 }
 

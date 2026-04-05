@@ -180,11 +180,12 @@ ServerGame::HandlePacket(boost::shared_ptr<SessionData> session, boost::shared_p
 GameState
 ServerGame::GetCurRound() const
 {
-	auto game = GetGame();
-	auto hand = game->getCurrentHand();
-	if (!hand) {
+	boost::mutex::scoped_lock lock(m_gameMutex);
+	if (!m_game)
 		return GAME_STATE_PREFLOP;
-	}
+	auto hand = m_game->getCurrentHand();
+	if (!hand)
+		return GAME_STATE_PREFLOP;
 	return static_cast<GameState>(hand->getCurrentRound());
 }
 
@@ -1164,11 +1165,17 @@ ServerGame::IsCurrentState(const ServerGameState *state) const
 void
 ServerGame::SetState(ServerGameState &newState)
 {
-	boost::mutex::scoped_lock lock(m_curStateMutex);
-	if (m_curState)
-		m_curState->Exit(shared_from_this());
-	m_curState = &newState;
-	m_curState->Enter(shared_from_this());
+	ServerGameState *oldState = nullptr;
+	{
+		boost::mutex::scoped_lock lock(m_curStateMutex);
+		oldState = m_curState;
+		m_curState = &newState;
+	}
+	// Call virtual functions outside the lock to prevent deadlock if
+	// Enter/Exit directly or indirectly call GetState().
+	if (oldState)
+		oldState->Exit(shared_from_this());
+	newState.Enter(shared_from_this());
 }
 
 boost::asio::steady_timer &

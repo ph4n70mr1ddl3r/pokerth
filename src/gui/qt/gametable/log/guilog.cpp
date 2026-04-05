@@ -732,9 +732,8 @@ void guiLog::writeLogFileStream(QString streamString)
 {
 
 	if(myHtmlLogFile_old) {
-		if(myHtmlLogFile_old->open( QIODevice::ReadWrite )) {
+		if(myHtmlLogFile_old->open( QIODevice::WriteOnly | QIODevice::Append )) {
 			QTextStream stream_old( myHtmlLogFile_old );
-			stream_old.readAll();
 			stream_old << streamString;
 			myHtmlLogFile_old->close();
 		} else {
@@ -749,7 +748,6 @@ void guiLog::writeLogFileStream(string log_string, QFile *LogFile)
 {
 
 	QTextStream stream( LogFile );
-	stream.readAll();
 	stream << log_string.c_str();
 
 }
@@ -1728,12 +1726,14 @@ void guiLog::cleanUp(result_struct &results, sqlite3 *mySqliteLogDb)
 {
 	sqlite3_free_table(results.result_Session);
 	sqlite3_free_table(results.result_Game);
+	sqlite3_free_table(results.result_Player);
 	sqlite3_free_table(results.result_Hand);
 	sqlite3_free_table(results.result_Hand_ID);
 	sqlite3_free_table(results.result_Action);
 	sqlite3_close(mySqliteLogDb);
 	results.result_Session = nullptr;
 	results.result_Game = nullptr;
+	results.result_Player = nullptr;
 	results.result_Hand = nullptr;
 	results.result_Hand_ID = nullptr;
 	results.result_Action = nullptr;

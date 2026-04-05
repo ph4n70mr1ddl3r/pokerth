@@ -289,6 +289,7 @@ private:
 
 	boost::shared_ptr<boost::asio::io_context> m_ioService;
 	boost::shared_ptr<Log> m_clientLog;
+	boost::shared_ptr<boost::asio::ssl::context> m_sslContext;
 
 	Gsasl *m_authContext = nullptr;
 
