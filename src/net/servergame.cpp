@@ -570,39 +570,49 @@ ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned 
 		size_t numPlayers = GetSessionManager().GetPlayerIdList(SessionData::Game).size();
 		if (numPlayers > 2) {
 			if (IsValidPlayer(playerIdWho)) {
-			boost::mutex::scoped_lock lock(m_voteKickDataMutex);
-			if (!m_voteKickData) {
-				m_voteKickData = boost::make_shared<VoteKickData>();
-				m_voteKickData->petitionId = m_curPetitionId++;
-				m_voteKickData->kickPlayerId = playerIdWho;
-				m_voteKickData->numVotesToKick = static_cast<int>(ceil(numPlayers * 2.0 / 3.0));
-				m_voteKickData->timeLimitSec = timeoutSec + SERVER_KICK_TIMEOUT_ADD_DELAY_SEC;
-				m_voteKickData->numVotesInFavourOfKicking = 1;
-				m_voteKickData->votedPlayerIds.push_back(playerIdByWhom);
-				unsigned petitionId = m_voteKickData->petitionId;
-				unsigned kickPlayerId = m_voteKickData->kickPlayerId;
-				int numVotesNeeded = m_voteKickData->numVotesToKick;
+				bool petitionStarted = false;
+				bool otherInProgress = false;
+				unsigned petitionId = 0;
+				unsigned kickPlayerId = 0;
+				int numVotesNeeded = 0;
+				{
+					boost::mutex::scoped_lock lock(m_voteKickDataMutex);
+					if (!m_voteKickData) {
+						m_voteKickData = boost::make_shared<VoteKickData>();
+						m_voteKickData->petitionId = m_curPetitionId++;
+						m_voteKickData->kickPlayerId = playerIdWho;
+						m_voteKickData->numVotesToKick = static_cast<int>(ceil(numPlayers * 2.0 / 3.0));
+						m_voteKickData->timeLimitSec = timeoutSec + SERVER_KICK_TIMEOUT_ADD_DELAY_SEC;
+						m_voteKickData->numVotesInFavourOfKicking = 1;
+						m_voteKickData->votedPlayerIds.push_back(playerIdByWhom);
+						petitionId = m_voteKickData->petitionId;
+						kickPlayerId = m_voteKickData->kickPlayerId;
+						numVotesNeeded = m_voteKickData->numVotesToKick;
 
-				m_voteKickTimer.expires_after(milliseconds(SERVER_CHECK_VOTE_KICK_INTERVAL_MSEC));
-				m_voteKickTimer.async_wait(
-					boost::bind(
-						&ServerGame::TimerVoteKick, shared_from_this(), boost::asio::placeholders::error));
+						m_voteKickTimer.expires_after(milliseconds(SERVER_CHECK_VOTE_KICK_INTERVAL_MSEC));
+						m_voteKickTimer.async_wait(
+							boost::bind(
+								&ServerGame::TimerVoteKick, shared_from_this(), boost::asio::placeholders::error));
 
-				lock.unlock();
-
-				auto packet = boost::make_shared<NetPacket>();
-				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_StartKickPetitionMessage);
-				StartKickPetitionMessage *netStartPetition = packet->GetMsg()->mutable_startkickpetitionmessage();
-				netStartPetition->set_gameid(GetId());
-				netStartPetition->set_petitionid(petitionId);
-				netStartPetition->set_proposingplayerid(playerIdByWhom);
-				netStartPetition->set_kickplayerid(kickPlayerId);
-				netStartPetition->set_kicktimeoutsec(timeoutSec);
-				netStartPetition->set_numvotesneededtokick(numVotesNeeded);
-				SendToAllPlayers(packet, SessionData::Game);
-
-			} else
-				InternalDenyAskVoteKick(byWhom, playerIdWho, KICK_DENIED_OTHER_IN_PROGRESS);
+						petitionStarted = true;
+					} else {
+						otherInProgress = true;
+					}
+				}
+				if (petitionStarted) {
+					auto packet = boost::make_shared<NetPacket>();
+					packet->GetMsg()->set_messagetype(PokerTHMessage::Type_StartKickPetitionMessage);
+					StartKickPetitionMessage *netStartPetition = packet->GetMsg()->mutable_startkickpetitionmessage();
+					netStartPetition->set_gameid(GetId());
+					netStartPetition->set_petitionid(petitionId);
+					netStartPetition->set_proposingplayerid(playerIdByWhom);
+					netStartPetition->set_kickplayerid(kickPlayerId);
+					netStartPetition->set_kicktimeoutsec(timeoutSec);
+					netStartPetition->set_numvotesneededtokick(numVotesNeeded);
+					SendToAllPlayers(packet, SessionData::Game);
+				} else if (otherInProgress) {
+					InternalDenyAskVoteKick(byWhom, playerIdWho, KICK_DENIED_OTHER_IN_PROGRESS);
+				}
 			} else
 				InternalDenyAskVoteKick(byWhom, playerIdWho, KICK_DENIED_INVALID_PLAYER_ID);
 		} else
@@ -627,36 +637,43 @@ void
 ServerGame::InternalVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned petitionId, KickVote vote)
 {
 	if (IsRunning() && byWhom->GetPlayerData()) {
-		// Check whether this is the valid petition id.
-		boost::mutex::scoped_lock lock(m_voteKickDataMutex);
-		if (m_voteKickData && m_voteKickData->petitionId == petitionId) {
-			// Check whether the player already voted.
-			unsigned playerId = byWhom->GetPlayerData()->GetUniqueId();
-			if (find(m_voteKickData->votedPlayerIds.begin(), m_voteKickData->votedPlayerIds.end(), playerId) == m_voteKickData->votedPlayerIds.end()) {
-				m_voteKickData->votedPlayerIds.push_back(playerId);
-				if (vote == KICK_VOTE_IN_FAVOUR)
-					m_voteKickData->numVotesInFavourOfKicking++;
-				else
-					m_voteKickData->numVotesAgainstKicking++;
-            unsigned currentPetitionId = m_voteKickData->petitionId;
-                int numVotesAgainst = m_voteKickData->numVotesAgainstKicking;
-                int numVotesInFavour = m_voteKickData->numVotesInFavourOfKicking;
-                int numVotesNeeded = m_voteKickData->numVotesToKick;
-                lock.unlock();
-				// Send update notification.
-				auto packet = boost::make_shared<NetPacket>();
-				packet->GetMsg()->set_messagetype(PokerTHMessage::Type_KickPetitionUpdateMessage);
-				KickPetitionUpdateMessage *netKickUpdate = packet->GetMsg()->mutable_kickpetitionupdatemessage();
-				netKickUpdate->set_gameid(GetId());
-				netKickUpdate->set_petitionid(petitionId);
-				netKickUpdate->set_numvotesagainstkicking(numVotesAgainst);
-				netKickUpdate->set_numvotesinfavourofkicking(numVotesInFavour);
-				netKickUpdate->set_numvotesneededtokick(numVotesNeeded);
-				SendToAllPlayers(packet, SessionData::Game);
-			} else
-				InternalDenyVoteKick(byWhom, petitionId, VOTE_DENIED_ALREADY_VOTED);
-		} else
-			InternalDenyVoteKick(byWhom, petitionId, VOTE_DENIED_INVALID_PETITION);
+		DenyVoteReason denyReason = VOTE_DENIED_INVALID_PETITION;
+		bool shouldSendUpdate = false;
+		int numVotesAgainst = 0;
+		int numVotesInFavour = 0;
+		int numVotesNeeded = 0;
+		{
+			boost::mutex::scoped_lock lock(m_voteKickDataMutex);
+			if (m_voteKickData && m_voteKickData->petitionId == petitionId) {
+				unsigned playerId = byWhom->GetPlayerData()->GetUniqueId();
+				if (find(m_voteKickData->votedPlayerIds.begin(), m_voteKickData->votedPlayerIds.end(), playerId) == m_voteKickData->votedPlayerIds.end()) {
+					m_voteKickData->votedPlayerIds.push_back(playerId);
+					if (vote == KICK_VOTE_IN_FAVOUR)
+						m_voteKickData->numVotesInFavourOfKicking++;
+					else
+						m_voteKickData->numVotesAgainstKicking++;
+					numVotesAgainst = m_voteKickData->numVotesAgainstKicking;
+					numVotesInFavour = m_voteKickData->numVotesInFavourOfKicking;
+					numVotesNeeded = m_voteKickData->numVotesToKick;
+					shouldSendUpdate = true;
+				} else {
+					denyReason = VOTE_DENIED_ALREADY_VOTED;
+				}
+			}
+		}
+		if (shouldSendUpdate) {
+			auto packet = boost::make_shared<NetPacket>();
+			packet->GetMsg()->set_messagetype(PokerTHMessage::Type_KickPetitionUpdateMessage);
+			KickPetitionUpdateMessage *netKickUpdate = packet->GetMsg()->mutable_kickpetitionupdatemessage();
+			netKickUpdate->set_gameid(GetId());
+			netKickUpdate->set_petitionid(petitionId);
+			netKickUpdate->set_numvotesagainstkicking(numVotesAgainst);
+			netKickUpdate->set_numvotesinfavourofkicking(numVotesInFavour);
+			netKickUpdate->set_numvotesneededtokick(numVotesNeeded);
+			SendToAllPlayers(packet, SessionData::Game);
+		} else {
+			InternalDenyVoteKick(byWhom, petitionId, denyReason);
+		}
 	} else
 		InternalDenyVoteKick(byWhom, petitionId, VOTE_DENIED_INVALID_PETITION);
 }

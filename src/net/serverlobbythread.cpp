@@ -177,6 +177,11 @@ public:
 
 	void PlayerLoginSuccess(unsigned requestId, boost::shared_ptr<DBPlayerData> dbPlayerData) override
 	{
+		if (!dbPlayerData) {
+			LOG_ERROR("PlayerLoginSuccess called with null player data for requestId " << requestId);
+			m_server.UserInvalid(requestId);
+			return;
+		}
 		m_server.UserValid(requestId, *dbPlayerData);
 	}
 
@@ -944,24 +949,24 @@ ServerLobbyThread::DispatchPacket(boost::shared_ptr<SessionData> session, boost:
 	if (session) {
 		boost::shared_ptr<ServerGame> game = session->GetGame();
 		if (game) {
-		try {
-			game->HandlePacket(session, packet);
-		} catch (const PokerTHException &e) {
-			LOG_ERROR("Game " << game->GetId() << " - Read handler exception: " << e.what());
-			game->RemoveAllSessions();
-		} catch (const std::exception &e) {
-			LOG_ERROR("Game " << game->GetId() << " - Read handler std::exception: " << e.what());
-			game->RemoveAllSessions();
-		}
+			try {
+				game->HandlePacket(session, packet);
+			} catch (const PokerTHException &e) {
+				LOG_ERROR("Game " << game->GetId() << " - Read handler exception: " << e.what());
+				game->RemoveAllSessions();
+			} catch (const std::exception &e) {
+				LOG_ERROR("Game " << game->GetId() << " - Read handler std::exception: " << e.what());
+				game->RemoveAllSessions();
+			}
 		} else {
 			try {
 				HandlePacket(session, packet);
 			} catch (const PokerTHException &e) {
 				LOG_ERROR("Session " << session->GetId() << " - Lobby packet handler exception: " << e.what());
-			SessionError(session, ERR_SOCK_INVALID_PACKET);
-		} catch (const std::exception &e) {
-			LOG_ERROR("Session " << session->GetId() << " - Lobby packet handler std::exception: " << e.what());
-			SessionError(session, ERR_SOCK_INVALID_PACKET);
+				SessionError(session, ERR_SOCK_INVALID_PACKET);
+			} catch (const std::exception &e) {
+				LOG_ERROR("Session " << session->GetId() << " - Lobby packet handler std::exception: " << e.what());
+				SessionError(session, ERR_SOCK_INVALID_PACKET);
 			}
 		}
 	}
@@ -2322,6 +2327,7 @@ ServerLobbyThread::SessionError(boost::shared_ptr<SessionData> session, int erro
 void
 ServerLobbyThread::SendError(boost::shared_ptr<SessionData> s, int errorCode)
 {
+	if (!s) return;
 	LOG_VERBOSE("Sending error code " << errorCode << " to session #" << s->GetId() << ".");
 	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ErrorMessage);

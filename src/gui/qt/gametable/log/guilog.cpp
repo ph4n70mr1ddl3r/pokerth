@@ -1097,7 +1097,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 				// read current hand
 				sql = "SELECT * FROM Hand WHERE UniqueGameID=";
-				sql+= std::string(uniqueGameID);
+				sql+= std::to_string(uniqueGameID);
 				sql+= " AND HandID=";
 				sql+= results.result_Hand_ID[hand_ctr] ? results.result_Hand_ID[hand_ctr] : "0";
 				if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand,&nRow_Hand,&nCol_Hand,&errmsg) != SQLITE_OK) {
@@ -1162,12 +1162,12 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					data_found = false;
 					for(j=0; j<nCol_Hand; j++) {
 						cmpString = "Seat_";
-						cmpString+= std::string(i);
+						cmpString+= std::to_string(i);
 						cmpString+= "_Cash";
 						if(std::string(results.result_Hand[j]) == cmpString) { // seat found
 							if(results.result_Hand[j+nCol_Hand]) { // player has cash > 0
 								log_string += "Seat ";
-								log_string += std::string(i);
+								log_string += std::to_string(i);
 								log_string += ": ";
 								if(modus == 1 || modus == 3) {
 									log_string += "<b>";
@@ -1260,7 +1260,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					// read small blind
 					sql = "SELECT Player,Amount FROM Action WHERE UniqueGameID=";
-					sql += std::string(uniqueGameID);
+					sql += std::to_string(uniqueGameID);
 					sql += " AND HandID=";
 					sql += std::string(results.result_Hand_ID[hand_ctr]);
 					sql += " AND BeRo=0 AND Action='posts small blind'";
@@ -1285,7 +1285,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					// read big blind
 					sql = "SELECT Player,Amount FROM Action WHERE UniqueGameID=";
-					sql += std::string(uniqueGameID);
+					sql += std::to_string(uniqueGameID);
 					sql += " AND HandID=";
 					sql += std::string(results.result_Hand_ID[hand_ctr]);
 					sql += " AND BeRo=0 AND Action='posts big blind'";
@@ -1310,7 +1310,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					// read dealer
 					sql = "SELECT Player,Amount FROM Action WHERE UniqueGameID=";
-					sql += std::string(uniqueGameID);
+					sql += std::to_string(uniqueGameID);
 					sql += " AND HandID=";
 					sql += std::string(results.result_Hand_ID[hand_ctr]);
 					sql += " AND BeRo=0 AND Action='starts as dealer'";
@@ -1400,7 +1400,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 							for(i=1; i<=round_ctr+2; i++) {
 								data_found = false;
 								for(j=0; j<nCol_Hand; j++) {
-									if(std::string(results.result_Hand[j]) == "BoardCard_"+std::string(i)) {
+									if(std::string(results.result_Hand[j]) == "BoardCard_"+std::to_string(i)) {
 										if(results.result_Hand[j+nCol_Hand]) {
 											if(modus == 1 || modus == 3) round_string += "<b>";
 											int cardInt = 0;
@@ -1493,14 +1493,14 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						if(std::string(results.result_Action[3*action_ctr+1]) == "wins game") {
 							switch(modus) {
 							case 1:
-								if(!neu) action_string = "</br></br><i><b>" + action_string + " " + std::string(gameID) + "!</i></b></br>";
-								else action_string = "</br><i><b>" + action_string + " " + std::string(gameID) + "!</b></i>";
+								if(!neu) action_string = "</br></br><i><b>" + action_string + " " + std::to_string(gameID) + "!</i></b></br>";
+								else action_string = "</br><i><b>" + action_string + " " + std::to_string(gameID) + "!</b></i>";
 								break;
 							case 2:
-								action_string += action_string + " " + std::string(gameID) + "!";
+								action_string = action_string + " " + std::to_string(gameID) + "!";
 								break;
 							case 3:
-								action_string = "<i><b>" + action_string + " " + std::string(gameID) + "!</b></i>";
+								action_string = "<i><b>" + action_string + " " + std::to_string(gameID) + "!</b></i>";
 								break;
 							default:
 								;
@@ -1739,7 +1739,7 @@ void guiLog::cleanUp(result_struct &results, sqlite3 *mySqliteLogDb)
 	results.result_Action = nullptr;
 }
 
-int guiLog::convertCardStringToInt(string val, string col)
+int guiLog::convertCardStringToInt(std::string val, std::string col)
 {
 
 	int tmp = 0;
@@ -1809,7 +1809,7 @@ int guiLog::convertCardStringToInt(string val, string col)
 
 }
 
-string guiLog::convertCardIntToString(int code, int modus)
+std::string guiLog::convertCardIntToString(int code, int modus)
 {
 
 	string tmp;

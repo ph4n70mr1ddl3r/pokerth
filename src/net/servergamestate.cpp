@@ -1063,7 +1063,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 			playersWithCash.remove_if(boost::bind(&PlayerInterface::getMyCash, boost::placeholders::_1) < 1);
 
 			if (playersWithCash.empty()) {
-				// No more players left - restart.
+				server->InternalEndGame();
 				server->SetState(SERVER_INITIAL_STATE::Instance());
 			} else if (playersWithCash.size() == 1) {
 				boost::shared_ptr<PlayerInterface> winnerPlayer = *(playersWithCash.begin());
@@ -1128,7 +1128,7 @@ ServerGameStateHand::TimerNextHand(const boost::system::error_code &ec, boost::s
 void
 ServerGameStateHand::TimerNextGame(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server, unsigned winnerPlayerId)
 {
-	if (!ec && &server->GetState() == this) {
+	if (!ec && server->IsCurrentState(this)) {
 		auto endGame = boost::make_shared<NetPacket>();
 		endGame->GetMsg()->set_messagetype(PokerTHMessage::Type_EndOfGameMessage);
 		EndOfGameMessage *netEndGame = endGame->GetMsg()->mutable_endofgamemessage();
@@ -1315,7 +1315,8 @@ ServerGameStateHand::CheckPlayerTimeouts(boost::shared_ptr<ServerGame> server)
 						packet->GetMsg()->set_messagetype(PokerTHMessage::Type_TimeoutWarningMessage);
 						TimeoutWarningMessage *netWarning = packet->GetMsg()->mutable_timeoutwarningmessage();
 						netWarning->set_timeoutreason(TimeoutWarningMessage::timeoutKickAfterAutofold);
-						netWarning->set_remainingseconds(actionTimeout * SERVER_GAME_FORCED_TIMEOUT_FACTOR - tmpPlayer->getTimeSecSinceLastRemoteAction());
+						int remainingSec = actionTimeout * SERVER_GAME_FORCED_TIMEOUT_FACTOR - static_cast<int>(tmpPlayer->getTimeSecSinceLastRemoteAction());
+						netWarning->set_remainingseconds(std::max(remainingSec, 0));
 						server->GetLobbyThread().GetSender().Send(session, packet);
 					}
 				}
