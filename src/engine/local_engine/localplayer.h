@@ -281,10 +281,11 @@ public:
 		myAverageSets[1] = myAverageSets[2];
 		myAverageSets[2] = myAverageSets[3];
 		myAverageSets[3] = theValue;
+		if (myAverageSetsCount < 4) ++myAverageSetsCount;
 	}
 	int getMyAverageSets() const override
 	{
-		return (myAverageSets[0]+myAverageSets[1]+myAverageSets[2]+myAverageSets[3])/4;
+		return (myAverageSets[0]+myAverageSets[1]+myAverageSets[2]+myAverageSets[3])/(myAverageSetsCount > 0 ? myAverageSetsCount : 1);
 	}
 
 	void setMyAggressive(bool theValue) override
@@ -392,6 +393,7 @@ private:
 	int myLastMoneyWon;
 
 	std::array<int, 4> myAverageSets;
+	int myAverageSetsCount = 0;
 	std::array<bool, 7> myAggressive;
 
 	int mySBluff;

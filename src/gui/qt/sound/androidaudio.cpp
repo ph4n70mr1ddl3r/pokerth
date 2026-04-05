@@ -204,7 +204,8 @@ void AndroidAudio::playSound(const std::string& name, int i)
 
 	if(audioEnabled && myConfig->readConfigInt("PlaySoundEffects")) {
 
-		this->registerSound(QString(":/android/android-data/sounds/default/"+QString::fromStdString(name)+".wav"), QString::fromStdString(name));
+			if (!mSounds.contains(QString::fromStdString(name)))
+				this->registerSound(QString(":/android/android-data/sounds/default/"+QString::fromStdString(name)+".wav"), QString::fromStdString(name));
 		this->reallyPlaySound(QString::fromStdString(name));
 	}
 }
@@ -220,6 +221,7 @@ void AndroidAudio::reallyPlaySound(const QString& name)
 		qDebug() << "No such sound:" << name;
 		return;
 	}
+	if (!mPlayerObject) return;
 	//Get the current state of the player
 	(*mPlayerObject)->GetState(mPlayerObject, &lPlayerState);
 

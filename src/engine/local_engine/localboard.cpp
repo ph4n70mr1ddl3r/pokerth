@@ -338,7 +338,7 @@ void LocalBoard::determinePlayerNeedToShowCards()
 		std::pair<int,int> level_tmp;
 		// get position und cardsValue of the player who show his cards first
 		level_tmp.first = (*lastActionPlayerIt)->getMyCardsValueInt();
-		level_tmp.second = (*lastActionPlayerIt)->getMyRoundStartCash()-(*lastActionPlayerIt)->getMyCash();
+		level_tmp.second = std::max(0, (*lastActionPlayerIt)->getMyRoundStartCash()-(*lastActionPlayerIt)->getMyCash());
 
 		level.push_back(level_tmp);
 
@@ -361,7 +361,7 @@ void LocalBoard::determinePlayerNeedToShowCards()
 						if(next_level_it == level.end()) {
 							playerNeedToShowCards.push_back((*it_c)->getMyUniqueID());
 							level_tmp.first = (*it_c)->getMyCardsValueInt();
-							level_tmp.second = (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash();
+							level_tmp.second = std::max(0, (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash());
 							level.push_back(level_tmp);
 							break;
 						}
@@ -370,18 +370,18 @@ void LocalBoard::determinePlayerNeedToShowCards()
 							next_level_it = level_it;
 							++next_level_it;
 
-							if(next_level_it == level.end() || (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash() > (*next_level_it).second) {
+							if(next_level_it == level.end() || std::max(0, (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash()) > (*next_level_it).second) {
 								playerNeedToShowCards.push_back((*it_c)->getMyUniqueID());
-								if((*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash() > (*level_it).second) {
-									(*level_it).second = (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash();
+								if(std::max(0, (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash()) > (*level_it).second) {
+									(*level_it).second = std::max(0, (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash());
 								}
 							}
 							break;
 						} else {
-							if((*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash() > (*level_it).second) {
+							if(std::max(0, (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash()) > (*level_it).second) {
 								playerNeedToShowCards.push_back((*it_c)->getMyUniqueID());
 								level_tmp.first = (*it_c)->getMyCardsValueInt();
-								level_tmp.second = (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash();
+								level_tmp.second = std::max(0, (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash());
 
 								level.insert(level_it,level_tmp);
 

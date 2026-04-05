@@ -388,6 +388,7 @@ IrcThread::Init(const std::string &serverAddress, unsigned serverPort, bool ipv6
 void
 IrcThread::SendChatMessage(const std::string &msg)
 {
+	boost::mutex::scoped_lock lock(m_sendMutex);
 	IrcContext &context = GetContext();
 	if (!context.sendingBlocked) {
 		irc_cmd_msg(context.session, context.channel.c_str(), msg.c_str());
@@ -413,7 +414,7 @@ void
 IrcThread::SignalTermination()
 {
 	Thread::SignalTermination();
-	irc_cmd_quit(GetContext().session, nullptr);
+	if (GetContext().session) irc_cmd_quit(GetContext().session, nullptr);
 }
 
 void
@@ -422,7 +423,7 @@ IrcThread::Main()
 	do {
 		if (IrcInit())
 			IrcMain(); // Will loop until terminated.
-	} while (!ShouldTerminate() && GetContext().session && !irc_is_connected(GetContext().session) && m_lastConnectTimer.elapsed().total_seconds() > IRC_MIN_RECONNECT_INTERVAL_SEC);
+	} while (!ShouldTerminate() && !GetContext().session && m_lastConnectTimer.elapsed().total_seconds() >= IRC_MIN_RECONNECT_INTERVAL_SEC);
 }
 
 bool

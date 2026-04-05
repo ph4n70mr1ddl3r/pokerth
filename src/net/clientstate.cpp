@@ -1566,7 +1566,9 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		// Hand was started.
 		// These are the cards. Good luck.
 		const HandStartMessage &netHandStart = tmpPacket->GetMsg()->handstartmessage();
-		std::array<int, 2> myCards;
+		boost::shared_ptr<Game> game = client->GetGame();
+		if (!game) throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_REQUEST_ID, 0);
+		std::array<int, 2> myCards{-1, -1};
 		string userPassword(client->GetContext().GetPassword());
 		if (netHandStart.has_plaincards() && userPassword.empty()) {
 			const HandStartMessage::PlainCards &plainCards = netHandStart.plaincards();
@@ -1576,25 +1578,27 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 			const string &encryptedCards = netHandStart.encryptedcards();
 			string plainCards;
 			if (!CryptHelper::AES128Decrypt((const unsigned char *)userPassword.c_str(),
-											static_cast<unsigned>(userPassword.size()),
-											(const unsigned char *)encryptedCards.data(),
-											static_cast<unsigned>(encryptedCards.size()),
-											plainCards)) {
+								static_cast<unsigned>(userPassword.size()),
+								(const unsigned char *)encryptedCards.data(),
+								static_cast<unsigned>(encryptedCards.size()),
+								plainCards)) {
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
-		}
-		istringstream cardDataStream(plainCards);
-		unsigned tmpPlayerId = 0, tmpGameId = 0;
-		int tmpHandNum = 0;
-		cardDataStream >> tmpPlayerId;
+			}
+			istringstream cardDataStream(plainCards);
+			unsigned tmpPlayerId = 0, tmpGameId = 0;
+			int tmpHandNum = 0;
+			cardDataStream >> tmpPlayerId;
 			cardDataStream >> tmpGameId;
 			cardDataStream >> tmpHandNum;
-			if (tmpPlayerId != client->GetGuiPlayerId()
+			if (!game || tmpPlayerId != client->GetGuiPlayerId()
 					|| tmpGameId != client->GetGameId()
-					|| tmpHandNum != client->GetGame()->getCurrentHandID() + 1) {
+					|| tmpHandNum != game->getCurrentHandID() + 1) {
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 			}
 			cardDataStream >> myCards[0];
 			cardDataStream >> myCards[1];
+		} else {
+			throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_REQUEST_ID, 0);
 		}
 		// Retrieve state for each seat (not based on player id).
 		unsigned numPlayers = netHandStart.seatstates_size();
@@ -1602,7 +1606,7 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		for (int i = 0; i < static_cast<int>(numPlayers); i++) {
 			NetPlayerState seatState = netHandStart.seatstates(i);
 			int numberDiff = client->GetStartData().numberOfPlayers - client->GetOrigGuiPlayerNum();
-			boost::shared_ptr<PlayerInterface> tmpPlayer = client->GetGame()->getPlayerByNumber((i + numberDiff) % client->GetStartData().numberOfPlayers);
+			boost::shared_ptr<PlayerInterface> tmpPlayer = game->getPlayerByNumber((i + numberDiff) % client->GetStartData().numberOfPlayers);
 			if (!tmpPlayer)
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 			switch (seatState) {
@@ -1727,6 +1731,8 @@ void
 ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
 {
 	boost::shared_ptr<Game> curGame = client->GetGame();
+	if (!curGame)
+		throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_PlayersActionDoneMessage) {
 		const PlayersActionDoneMessage &netActionDone = tmpPacket->GetMsg()->playersactiondonemessage();
 
@@ -1863,7 +1869,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		PlayerList activePlayers = curGame->getCurrentHand()->getActivePlayerList();
 		for (PlayerListIterator it = activePlayers->begin(); it != activePlayers->end(); ++it)
 			(*it)->setMySetNull();
-		curGame->getCurrentHand()->setPreviousPlayerID(-1);
+		curGame->getCurrentHand()->setPreviousPlayerID(UINT_MAX);
 
 		client->GetGui().logDealBoardCardsMsg(GAME_STATE_FLOP, tmpCards[0], tmpCards[1], tmpCards[2], tmpCards[3], tmpCards[4]);
 		client->GetClientLog()->setCurrentRound(GAME_STATE_FLOP);
@@ -1884,7 +1890,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		PlayerList activePlayers = curGame->getCurrentHand()->getActivePlayerList();
 		for (PlayerListIterator it = activePlayers->begin(); it != activePlayers->end(); ++it)
 			(*it)->setMySetNull();
-		curGame->getCurrentHand()->setPreviousPlayerID(-1);
+		curGame->getCurrentHand()->setPreviousPlayerID(UINT_MAX);
 
 		client->GetGui().logDealBoardCardsMsg(GAME_STATE_TURN, tmpCards[0], tmpCards[1], tmpCards[2], tmpCards[3], tmpCards[4]);
 		client->GetClientLog()->setCurrentRound(GAME_STATE_TURN);
@@ -1905,7 +1911,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		PlayerList activePlayers = curGame->getCurrentHand()->getActivePlayerList();
 		for (PlayerListIterator it = activePlayers->begin(); it != activePlayers->end(); ++it)
 			(*it)->setMySetNull();
-		curGame->getCurrentHand()->setPreviousPlayerID(-1);
+		curGame->getCurrentHand()->setPreviousPlayerID(UINT_MAX);
 
 		client->GetGui().logDealBoardCardsMsg(GAME_STATE_RIVER, tmpCards[0], tmpCards[1], tmpCards[2], tmpCards[3], tmpCards[4]);
 		client->GetClientLog()->setCurrentRound(GAME_STATE_RIVER);

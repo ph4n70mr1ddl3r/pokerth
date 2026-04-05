@@ -70,7 +70,6 @@
 #define SERVER_SAVE_STATISTICS_INTERVAL_SEC			60
 #define SERVER_CHECK_SESSION_TIMEOUTS_INTERVAL_MSEC	500
 #define SERVER_REMOVE_GAME_INTERVAL_MSEC			500
-#define SERVER_REMOVE_PLAYER_INTERVAL_MSEC			100
 #define SERVER_UPDATE_LOGIN_LOCK_INTERVAL_MSEC		1000
 #define SERVER_PROCESS_SEND_INTERVAL_MSEC			10
 #define SERVER_CLEANUP_RATE_MAPS_INTERVAL_MSEC		60000	// Cleanup rate limiting maps every minute
@@ -1297,6 +1296,10 @@ ServerLobbyThread::HandleNetPacketAvatarEnd(boost::shared_ptr<SessionData> sessi
 						<< std::filesystem::path(avatarFileName).string() << "\".");
 			} else
 				SessionError(session, ERR_NET_WRONG_AVATAR_SIZE);
+			} else {
+				LOG_ERROR("Session " << session->GetId() << " - AvatarEnd with invalid avatar data.");
+				SessionError(session, ERR_NET_INVALID_AVATAR_FILE);
+			}
 		}
 	}
 }
@@ -1411,6 +1414,8 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 	boost::replace_all(gameName, "\t", " ");
 	boost::replace_all(gameName, "\v", " ");
 	boost::replace_all(gameName, "\f", " ");
+	// Re-trim after replacing control chars with spaces.
+	boost::trim(gameName);
 
 	bool validGameName = !gameName.empty() && gameName.size() <= 64;
 	if (validGameName) {
@@ -1839,8 +1844,10 @@ ServerLobbyThread::InitAfterLogin(boost::shared_ptr<SessionData> session)
 void
 ServerLobbyThread::EstablishSession(boost::shared_ptr<SessionData> session)
 {
-	if (!session->GetPlayerData())
-		throw ServerException(__FILE__, __LINE__, ERR_NET_INVALID_SESSION, 0);
+	if (!session->GetPlayerData()) {
+		SessionError(session, ERR_NET_INVALID_SESSION);
+		return;
+	}
 
 	unsigned rejoinPlayerId = 0;
 	u_int32_t rejoinGameId = GetRejoinGameIdForPlayer(session->GetPlayerData()->GetName(), session->GetPlayerData()->GetOldGuid(), rejoinPlayerId);
@@ -1880,7 +1887,11 @@ ServerLobbyThread::EstablishSession(boost::shared_ptr<SessionData> session)
 	m_database->PlayerPostLogin(session->GetPlayerData()->GetDBId(), tmpAvatarHash, tmpAvatarType);
 
 	// Generate a new GUID.
-	boost::uuids::uuid sessionGuid(m_sessionIdGenerator());
+	boost::uuids::uuid sessionGuid;
+	{
+		boost::mutex::scoped_lock lock(m_sessionIdMutex);
+		sessionGuid = m_sessionIdGenerator();
+	}
 	session->GetPlayerData()->SetGuid(string(reinterpret_cast<char*>(&sessionGuid), boost::uuids::uuid::static_size()));
 
 	// Send ACK to client.
@@ -1940,9 +1951,9 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
 	bool passwordMatch = Tools::ConstantTimeStringCompare(providedPassword, dbPlayerData.secret);
 	if (passwordMatch) {
 		bool shouldEstablish = true;
+		std::string clientAddr = tmpSession->GetClientAddr();
 		{
 			boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
-			std::string clientAddr = tmpSession->GetClientAddr();
 			FailedLoginMap::iterator it = m_failedLoginMap.find(clientAddr);
 			if (it != m_failedLoginMap.end()) {
 				boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
@@ -1978,8 +1989,8 @@ ServerLobbyThread::UserInvalid(unsigned playerId)
 {
 	boost::shared_ptr<SessionData> session = m_sessionManager.GetSessionByUniquePlayerId(playerId, true);
 	if (session) {
-		boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
 		std::string clientAddr = session->GetClientAddr();
+		boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
 		FailedLoginMap::iterator it = m_failedLoginMap.find(clientAddr);
 		if (it == m_failedLoginMap.end()) {
 			FailedLoginEntry entry;
@@ -2080,14 +2091,21 @@ ServerLobbyThread::SendAdminBanPlayerResult(unsigned byPlayerId, unsigned report
 void
 ServerLobbyThread::UserBlocked(unsigned playerId)
 {
-	SessionError(m_sessionManager.GetSessionByUniquePlayerId(playerId, true), ERR_NET_PLAYER_BLOCKED);
+	boost::shared_ptr<SessionData> session = m_sessionManager.GetSessionByUniquePlayerId(playerId, true);
+	if (session) {
+		SessionError(session, ERR_NET_PLAYER_BLOCKED);
+	} else {
+		LOG_ERROR("UserBlocked: session not found for player " << playerId);
+	}
 }
 
 void
 ServerLobbyThread::RequestPlayerAvatar(boost::shared_ptr<SessionData> session)
 {
-	if (!session->GetPlayerData())
-		throw ServerException(__FILE__, __LINE__, ERR_NET_INVALID_SESSION, 0);
+	if (!session->GetPlayerData()) {
+		SessionError(session, ERR_NET_INVALID_SESSION);
+		return;
+	}
 	// Ask the client to send its avatar.
 	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_AvatarRequestMessage);
@@ -2192,18 +2210,15 @@ ServerLobbyThread::InternalGetGameFromId(unsigned gameId)
 void
 ServerLobbyThread::InternalAddGame(boost::shared_ptr<ServerGame> game)
 {
+	unsigned numGames = 0;
 	{
 		boost::mutex::scoped_lock lock(m_gameMapMutex);
 		m_gameMap.insert(GameMap::value_type(game->GetId(), game));
+		numGames = static_cast<unsigned>(m_gameMap.size());
 	}
 	m_sessionManager.SendLobbyMsgToAllSessions(GetSender(), CreateNetPacketGameListNew(*game), SessionData::Established);
 	m_gameSessionManager.SendLobbyMsgToAllSessions(GetSender(), CreateNetPacketGameListNew(*game), SessionData::Game);
 
-	unsigned numGames = 0;
-	{
-		boost::mutex::scoped_lock lock(m_gameMapMutex);
-		numGames = static_cast<unsigned>(m_gameMap.size());
-	}
 	{
 		boost::mutex::scoped_lock lock(m_statMutex);
 		++m_statData.totalGamesEverCreated;
@@ -2437,22 +2452,29 @@ ServerLobbyThread::ReadStatisticsFile()
 	ifstream i(m_statisticsFileName.c_str(), ios_base::in);
 
 	if (!i.fail() && !i.eof()) {
-		boost::mutex::scoped_lock lock(m_statMutex);
+		// Read file data first, then apply under lock to minimize lock hold time.
+		std::vector<std::pair<string, unsigned>> entries;
 		do {
 			string statisticsType;
 			unsigned statisticsValue = 0;
 			i >> statisticsType;
+			if (i.fail()) break;
 			i >> statisticsValue;
-			if (statisticsType == SERVER_STATISTICS_STR_TOTAL_PLAYERS)
-				m_statData.totalPlayersEverLoggedIn = statisticsValue;
-			else if (statisticsType == SERVER_STATISTICS_STR_TOTAL_GAMES)
-				m_statData.totalGamesEverCreated = statisticsValue;
-			else if (statisticsType == SERVER_STATISTICS_STR_MAX_PLAYERS)
-				m_statData.maxPlayersLoggedIn = statisticsValue;
-			else if (statisticsType == SERVER_STATISTICS_STR_MAX_GAMES)
-				m_statData.maxGamesOpen = statisticsValue;
-			// other statistics are non-persistant and not read.
-		} while (!i.fail() && !i.eof());
+			if (i.fail()) break;
+			entries.emplace_back(statisticsType, statisticsValue);
+		} while (!i.eof());
+
+		boost::mutex::scoped_lock lock(m_statMutex);
+		for (const auto& entry : entries) {
+			if (entry.first == SERVER_STATISTICS_STR_TOTAL_PLAYERS)
+				m_statData.totalPlayersEverLoggedIn = entry.second;
+			else if (entry.first == SERVER_STATISTICS_STR_TOTAL_GAMES)
+				m_statData.totalGamesEverCreated = entry.second;
+			else if (entry.first == SERVER_STATISTICS_STR_MAX_PLAYERS)
+				m_statData.maxPlayersLoggedIn = entry.second;
+			else if (entry.first == SERVER_STATISTICS_STR_MAX_GAMES)
+				m_statData.maxGamesOpen = entry.second;
+		}
 		m_statDataChanged = false;
 	}
 }
@@ -2630,7 +2652,7 @@ ServerLobbyThread::TimerCleanupRateMaps(const boost::system::error_code &ec)
 	if (!ec) {
 		{
 			boost::mutex::scoped_lock lock(m_chatRateMapMutex);
-			boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
+			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
 			boost::posix_time::ptime chatCutoff = now - boost::posix_time::minutes(10);
 			auto cit = m_chatRateMap.begin();
 			while (cit != m_chatRateMap.end()) {
@@ -2647,7 +2669,7 @@ ServerLobbyThread::TimerCleanupRateMaps(const boost::system::error_code &ec)
 		}
 		{
 			boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
-			boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
+			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
 			boost::posix_time::ptime loginCutoff = now - boost::posix_time::minutes(30);
 			auto fit = m_failedLoginMap.begin();
 			while (fit != m_failedLoginMap.end()) {
@@ -2658,7 +2680,7 @@ ServerLobbyThread::TimerCleanupRateMaps(const boost::system::error_code &ec)
 				}
 			}
 		}
-		m_cleanupRateMapsTimer.expires_after(std::chrono::minutes(5));
+		m_cleanupRateMapsTimer.expires_after(milliseconds(SERVER_CLEANUP_RATE_MAPS_INTERVAL_MSEC));
 		m_cleanupRateMapsTimer.async_wait(
 			boost::bind(&ServerLobbyThread::TimerCleanupRateMaps, shared_from_this(), boost::asio::placeholders::error));
 	}

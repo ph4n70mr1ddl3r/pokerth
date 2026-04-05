@@ -39,6 +39,7 @@
 #include <handinterface.h>
 #include <berointerface.h>
 
+#include <cassert>
 #include <vector>
 
 class Log;
@@ -90,6 +91,7 @@ public:
 	}
 	boost::shared_ptr<BeRoInterface> getCurrentBeRo() const override
 	{
+		assert(currentRound < myBeRo.size());
 		return myBeRo[currentRound];
 	}
 
@@ -166,11 +168,11 @@ public:
 		return startCash;
 	}
 
-	void setPreviousPlayerID(int theValue) override
+	void setPreviousPlayerID(unsigned theValue) override
 	{
 		previousPlayerID = theValue;
 	}
-	int getPreviousPlayerID() const override
+	unsigned getPreviousPlayerID() const override
 	{
 		return previousPlayerID;
 	}
@@ -223,7 +225,7 @@ private:
 	int smallBlind = 0;
 	int startCash = 0;
 
-	int previousPlayerID = 0;
+	unsigned previousPlayerID = 0;
 	unsigned lastActionPlayerID = 0;
 
 	bool allInCondition = false;

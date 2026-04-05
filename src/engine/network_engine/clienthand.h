@@ -96,8 +96,8 @@ public:
 	void setBettingRoundsPlayed ( int theValue );
 	int getBettingRoundsPlayed() const;
 
-	void setPreviousPlayerID ( int theValue ) override;
-	int getPreviousPlayerID() const override;
+	void setPreviousPlayerID ( unsigned theValue ) override;
+	unsigned getPreviousPlayerID() const override;
 
 	void setLastActionPlayerID ( unsigned theValue ) override;
 	unsigned getLastActionPlayerID() const override;
@@ -135,7 +135,7 @@ private:
 	int smallBlind = 0;
 	int startCash = 0;
 
-	int previousPlayerID = 0;
+	unsigned previousPlayerID = 0;
 	unsigned lastActionPlayerID = 0;
 
 	bool allInCondition = false;

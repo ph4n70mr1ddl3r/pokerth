@@ -215,8 +215,6 @@ private:
 
 	bool firstRound = true;
 	bool firstRunGui = false;
-	bool firstHeadsUpRound = true;
-
 	PlayerListIterator currentPlayersTurnIt;
 	PlayerListIterator lastPlayersTurnIt;
 

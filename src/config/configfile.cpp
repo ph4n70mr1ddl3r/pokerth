@@ -398,7 +398,6 @@ void ConfigFile::fillBuffer()
     QFile file(QString::fromStdString(configFileName));
     if (file.open(QIODevice::ReadOnly) && xmlDoc.setContent(&file))
 	{
-		file.close();
 
 		for (size_t i = 0; i < configBufferList.size(); i++)
 		{
@@ -436,7 +435,6 @@ void ConfigFile::fillBuffer()
 			// cout << configBufferList[i].name << " " << configBufferList[i].defaultValue << endl;
 		}
 	}
-	file.close();
 }
 
 void ConfigFile::checkAndCorrectBuffer()
@@ -526,7 +524,6 @@ void ConfigFile::writeBuffer() const
 			QTextStream stream(&file);
 			stream << xmlDoc.toString();
 		}
-		file.close();
 	}
 }
 
@@ -590,8 +587,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState, int oldRevision)
 		QDomDocument oldDoc;
 		QFile file(QString::fromStdString(configFileName));
 		if (file.open(QIODevice::ReadOnly) && oldDoc.setContent(&file))
-		{
-			file.close();
+			{
 
 			string tempString1("");
 			string tempString2("");
@@ -727,12 +723,8 @@ void ConfigFile::updateConfig(ConfigState myConfigState, int oldRevision)
 				stream << newDoc.toString();
 				file.close();
 			}
+			}
 		}
-		else
-		{
-			LOG_ERROR("Cannot update config file: Unable to load configuration.");
-		}
-	}
 }
 
 ConfigState ConfigFile::getConfigState() const
@@ -761,13 +753,23 @@ int ConfigFile::readConfigInt(string varName) const
 	int tempInt = 0;
 
 	auto it = configIndexMap.find(varName);
-	if (it != configIndexMap.end()) {
-		tempString = configBufferList[it->second].defaultValue;
+	if (it == configIndexMap.end()) {
+		LOG_ERROR("Config key not found: " << varName);
+		return 0;
 	}
 
-	istringstream isst;
-	isst.str(tempString);
+	tempString = configBufferList[it->second].defaultValue;
+	if (tempString.empty()) {
+		LOG_ERROR("Config value is empty for: " << varName);
+		return 0;
+	}
+
+	istringstream isst(tempString);
 	isst >> tempInt;
+	if (isst.fail() || !isst.eof()) {
+		LOG_ERROR("Config parse error for: " << varName << " value: \"" << tempString << "\"");
+		return 0;
+	}
 
 	return tempInt;
 }

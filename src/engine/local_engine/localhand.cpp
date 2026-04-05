@@ -40,11 +40,12 @@
 
 #include <iostream>
 #include <array>
+#include <climits>
 
 using namespace std;
 
 LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost::shared_ptr<BoardInterface> b, Log *l, PlayerList sl, PlayerList apl, PlayerList rpl, int id, int sP, unsigned dP, int sB,int sC)
-	: myFactory(f), myGui(g),  myBoard(b), myLog(l), seatsList(sl), activePlayerList(apl), runningPlayerList(rpl), myBeRo(0), myID(id), startQuantityPlayers(sP), dealerPosition(dP), smallBlindPosition(dP), bigBlindPosition(dP), currentRound(GAME_STATE_PREFLOP), roundBeforePostRiver(GAME_STATE_PREFLOP), smallBlind(sB), startCash(sC), previousPlayerID(-1), lastActionPlayerID(0), allInCondition(false),
+	: myFactory(f), myGui(g),  myBoard(b), myLog(l), seatsList(sl), activePlayerList(apl), runningPlayerList(rpl), myBeRo(0), myID(id), startQuantityPlayers(sP), dealerPosition(dP), smallBlindPosition(dP), bigBlindPosition(dP), currentRound(GAME_STATE_PREFLOP), roundBeforePostRiver(GAME_STATE_PREFLOP), smallBlind(sB), startCash(sC), previousPlayerID(UINT_MAX), lastActionPlayerID(0), allInCondition(false),
 	  cardsShown(false)
 {
 
@@ -365,7 +366,7 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 
 	setBlinds();
 
-	if(myLog) myLog->logNewHandMsg(myID, dealerPosition+1, smallBlind, smallBlindPosition+1, 2*smallBlind, bigBlindPosition+1, seatsList);
+	if(myLog) myLog->logNewHandMsg(myID, dealerPosition+1, smallBlind, smallBlindPosition+1, 2LL*smallBlind, bigBlindPosition+1, seatsList);
 
 	myBeRo = myFactory->createBeRo(this, dealerPosition, smallBlind);
 }
@@ -506,14 +507,14 @@ void LocalHand::setBlinds()
 		if((*it_c)->getMyButton() == BUTTON_BIG_BLIND) {
 
 			// all in ?
-			if((*it_c)->getMyCash() <= 2*smallBlind) {
+			if((*it_c)->getMyCash() <= 2LL*smallBlind) {
 
 				(*it_c)->setMySet((*it_c)->getMyCash());
 				// 1 to do not log this
 				(*it_c)->setMyAction(PLAYER_ACTION_ALLIN);
 
 			} else {
-				(*it_c)->setMySet(2*smallBlind);
+				(*it_c)->setMySet(2LL*smallBlind);
 			}
 		}
 	}

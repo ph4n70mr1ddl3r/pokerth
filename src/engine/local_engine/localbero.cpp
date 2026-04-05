@@ -35,10 +35,12 @@
 #include "engine_msg.h"
 #include <core/loghelper.h>
 
+#include <climits>
+
 using namespace std;
 
 LocalBeRo::LocalBeRo(HandInterface* hi, unsigned dP, int sB, GameState gS)
-	: BeRoInterface(), myHand(hi), myBeRoID(gS), dealerPosition(dP), smallBlindPosition(0), smallBlindPositionId(0), bigBlindPositionId(0), smallBlind(sB), highestSet(0), minimumRaise(2*sB), fullBetRule(false), firstRound(true), firstRunGui(true), firstHeadsUpRound(true), currentPlayersTurnId(0), firstRoundLastPlayersTurnId(0), logBoardCardsDone(false)
+	: BeRoInterface(), myHand(hi), myBeRoID(gS), dealerPosition(dP), smallBlindPosition(0), smallBlindPositionId(0), bigBlindPositionId(0), smallBlind(sB), highestSet(0), minimumRaise(2*sB), fullBetRule(false), firstRound(true), firstRunGui(true), currentPlayersTurnId(0), firstRoundLastPlayersTurnId(0), logBoardCardsDone(false)
 {
 	currentPlayersTurnIt = myHand->getRunningPlayerList()->begin();
 	lastPlayersTurnIt = myHand->getRunningPlayerList()->begin();
@@ -97,7 +99,7 @@ void LocalBeRo::run()
 
 	if(firstRunGui) {
 		firstRunGui = false;
-		myHand->setPreviousPlayerID(-1);
+		myHand->setPreviousPlayerID(UINT_MAX);
 		myHand->getGuiInterface()->dealBeRoCards(myBeRoID);
 	} else {
 

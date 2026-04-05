@@ -37,6 +37,7 @@
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <queue>
+#include <atomic>
 #include <db/serverdbinterface.h>
 #include <db/serverdbcallback.h>
 #include <dbofficial/dbidmanager.h>
@@ -102,8 +103,8 @@ private:
 
 	mutable boost::mutex m_isConnectedMutex;
 	bool m_isConnected;
-	bool m_permanentError;
-	bool m_previouslyConnected;
+	std::atomic<bool> m_permanentError;
+	std::atomic<bool> m_previouslyConnected;
 };
 
 #endif

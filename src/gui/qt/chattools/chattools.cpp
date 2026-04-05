@@ -265,7 +265,7 @@ void ChatTools::nickAutoCompletition()
 		}
 	}
 
-	if(!matchStringList.isEmpty() || nickAutoCompletitionCounter > 0) {
+	if(!lastMatchStringList.isEmpty() && nickAutoCompletitionCounter < lastMatchStringList.size()) {
 
 		myChatStringList.removeLast();
 

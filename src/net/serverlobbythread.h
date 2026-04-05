@@ -192,12 +192,9 @@ protected:
 	void SendAdminBanPlayerResult(unsigned byPlayerId, unsigned reportedPlayerId, bool success);
 	void RequestPlayerAvatar(boost::shared_ptr<SessionData> session);
 	void TimerRemoveGame(const boost::system::error_code &ec);
-	void TimerRemovePlayer(const boost::system::error_code &ec);
 	void TimerUpdateClientLoginLock(const boost::system::error_code &ec);
-	void TimerCleanupAvatarCache(const boost::system::error_code &ec);
 	void TimerCleanupRateMaps(const boost::system::error_code &ec);
 	void CleanupChatRateMap();
-	void CleanupReportLists();
 
 	bool IsGameNameInUse(const std::string &gameName) const;
 	boost::shared_ptr<ServerGame> InternalGetGameFromId(unsigned gameId);
@@ -210,8 +207,6 @@ protected:
 	void HandleReAddedSession(boost::shared_ptr<SessionData> session);
 
 	void SessionTimeoutWarning(boost::shared_ptr<SessionData> session, unsigned remainingSec);
-
-	void CleanupSessionMap();
 
 	void CloseSession(boost::shared_ptr<SessionData> session);
 	void SendError(boost::shared_ptr<SessionData> s, int errorCode);
@@ -309,6 +304,7 @@ private:
 	boost::asio::steady_timer m_cleanupRateMapsTimer;
 
 	boost::uuids::random_generator m_sessionIdGenerator;
+	mutable boost::mutex m_sessionIdMutex;
 
 	const boost::posix_time::ptime m_startTime;
 

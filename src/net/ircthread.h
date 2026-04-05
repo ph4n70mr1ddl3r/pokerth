@@ -36,6 +36,7 @@
 #include <third_party/boost/timers.hpp>
 #include <string>
 
+#include <boost/thread/mutex.hpp>
 #include <net/irccallback.h>
 #include <core/thread.h>
 
@@ -78,6 +79,7 @@ private:
 
 	boost::timers::portable::microsec_timer m_terminationTimer;
 	boost::timers::portable::microsec_timer m_lastConnectTimer;
+	boost::mutex m_sendMutex;
 };
 
 #endif

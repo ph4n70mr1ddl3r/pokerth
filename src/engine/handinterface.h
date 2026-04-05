@@ -38,6 +38,8 @@
 #include "berointerface.h"
 #include "log.h"
 
+#include <limits>
+
 class HandInterface
 {
 public:
@@ -81,8 +83,8 @@ public:
 	virtual void setStartCash(int theValue) =0;
 	[[nodiscard]] virtual int getStartCash() const =0;
 
-	virtual void setPreviousPlayerID(int theValue) =0;
-	[[nodiscard]] virtual int getPreviousPlayerID() const =0;
+	virtual void setPreviousPlayerID(unsigned theValue) =0;
+	[[nodiscard]] virtual unsigned getPreviousPlayerID() const =0;
 
 	virtual void setLastActionPlayerID( unsigned theValue ) =0;
 	[[nodiscard]] virtual unsigned getLastActionPlayerID() const =0;

@@ -712,7 +712,9 @@ ClientThread::SendQueuedPackets()
 		NetPacketList::iterator end = m_outPacketList.end();
 
 		while (i != end) {
-			GetSender().Send(GetContext().GetSessionData(), *i);
+			auto session = GetContext().GetSessionData();
+			if (session)
+				GetSender().Send(session, *i);
 			++i;
 		}
 		m_outPacketList.clear();
@@ -994,12 +996,14 @@ void
 ClientThread::TimerCheckAvatarDownloads(const boost::system::error_code& ec)
 {
 	if (!ec) {
-		if (m_avatarDownloader && m_avatarDownloader->HasDownloadResult()) {
-			unsigned playerId = 0;
-			auto tmpAvatar = boost::make_shared<AvatarFile>();
-			m_avatarDownloader->GetDownloadResult(playerId, tmpAvatar->fileData);
-			tmpAvatar->reportedSize = tmpAvatar->fileData.size();
-			PassAvatarFileToManager(playerId, tmpAvatar);
+		if (m_avatarDownloader) {
+			while (m_avatarDownloader->HasDownloadResult()) {
+				unsigned playerId = 0;
+				auto tmpAvatar = boost::make_shared<AvatarFile>();
+				m_avatarDownloader->GetDownloadResult(playerId, tmpAvatar->fileData);
+				tmpAvatar->reportedSize = tmpAvatar->fileData.size();
+				PassAvatarFileToManager(playerId, tmpAvatar);
+			}
 		}
 		m_avatarTimer.expires_after(milliseconds(CLIENT_AVATAR_LOOP_MSEC));
 		m_avatarTimer.async_wait(
@@ -1074,6 +1078,7 @@ ClientThread::GetCacheServerListFileName()
 void
 ClientThread::SslInfoCallback(const SSL *ssl, int where, int ret)
 {
+    if (!ssl) return;
     const char *state = SSL_state_string_long(ssl);
     
     if (where & SSL_CB_LOOP) {

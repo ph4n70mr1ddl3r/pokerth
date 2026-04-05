@@ -861,6 +861,7 @@ static string safeGetPlayerName(const char* str, string* playerArray, int maxPla
 
 void guiLog::showLog(QString fileStringPdb, QTextBrowser *tb_tmp, int uniqueGameID)
 {
+	if (!tb_tmp) return;
 	tb = tb_tmp;
 	tb->clear();
 	exportLog(fileStringPdb,3,uniqueGameID);
