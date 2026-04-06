@@ -294,6 +294,10 @@ void
 ChatCleanerManager::SendMessageToServer(ChatCleanerMessage &msg)
 {
 	uint32_t packetSize = msg.ByteSizeLong();
+	if (packetSize > MAX_CLEANER_PACKET_SIZE) {
+		LOG_ERROR("Chat cleaner send packet too large: " << packetSize);
+		return;
+	}
 	std::vector<google::protobuf::uint8> buf(packetSize + CLEANER_NET_HEADER_SIZE);
 	uint32_t netSize = htonl(packetSize);
 	std::memcpy(buf.data(), &netSize, sizeof(netSize));

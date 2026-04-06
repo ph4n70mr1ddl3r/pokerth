@@ -4125,8 +4125,9 @@ void LocalPlayer::preflopEngine3()
 
 	// 	cout << "nextID " << currentHand->getPlayerArray()[(myID+1)%5]->getMyID() << endl;
 
+	int oldMySet = mySet;
 
-	// 	Bauchgefhl (zufÃ¯Â¿Ålig)
+	// 	BauchgefÃ¯Â¿Ålig (zufÃ¯Â¿Ålig)
 	int tempRand = 0;
 	Tools::GetRand(1, 10, 1, &tempRand);
 
@@ -4286,10 +4287,12 @@ void LocalPlayer::preflopEngine3()
 		}
 	}
 	myCash = std::max(0, myCash);
+	myLastRelativeSet = mySet - oldMySet;
 }
 
 void LocalPlayer::flopEngine3()
 {
+	int oldMySet = mySet;
 
 	// Prozent ausrechnen
 
@@ -4462,11 +4465,13 @@ void LocalPlayer::flopEngine3()
 
 
 	myCash = std::max(0, myCash);
+	myLastRelativeSet = mySet - oldMySet;
 }
 
 
 void LocalPlayer::turnEngine3()
 {
+	int oldMySet = mySet;
 
 	// Prozent ausrechnen
 
@@ -4633,11 +4638,13 @@ void LocalPlayer::turnEngine3()
 		}
 	}
 	myCash = std::max(0, myCash);
+	myLastRelativeSet = mySet - oldMySet;
 
 }
 
 void LocalPlayer::riverEngine3()
 {
+	int oldMySet = mySet;
 
 	// Prozent ausrechnen
 
@@ -4800,6 +4807,7 @@ void LocalPlayer::riverEngine3()
 		}
 	}
 	myCash = std::max(0, myCash);
+	myLastRelativeSet = mySet - oldMySet;
 }
 
 void LocalPlayer::setIsSessionActive(bool active)

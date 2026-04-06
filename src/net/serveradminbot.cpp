@@ -326,10 +326,10 @@ ServerAdminBot::CheckFileHandler(const boost::system::error_code& ec)
 {
 	if (!ec) {
 		// Reconnect the irc bot if a signal file exists.
-		path cachePath(m_cacheDir);
+		fs::path cachePath(m_cacheDir);
 		cachePath /= "SignalAdminReconnect";
-		if (exists(cachePath)) {
-			remove(cachePath);
+		if (fs::exists(cachePath)) {
+			fs::remove(cachePath);
 			Reconnect();
 		}
 		m_checkFileTimer.expires_after(seconds(SERVER_CHECK_IRC_BOT_INTERVAL_SEC));
