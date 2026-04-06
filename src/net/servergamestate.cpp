@@ -528,7 +528,7 @@ ServerGameStateInit::HandleNewPlayer(boost::shared_ptr<ServerGame> server, boost
 		const GameData &tmpGameData = server->GetGameData();
 
 		// Check the number of players and number of joins per player
-		if (server->GetCurNumberOfPlayers() >= tmpGameData.maxNumberOfPlayers || server->GetNumJoinsPerPlayer(session->GetPlayerData()->GetName()) > GAME_MAX_NUM_JOINS_PER_PLAYER) {
+		if (server->GetCurNumberOfPlayers() >= tmpGameData.maxNumberOfPlayers || server->GetNumJoinsPerPlayer(session->GetPlayerData()->GetName()) >= GAME_MAX_NUM_JOINS_PER_PLAYER) {
 			server->MoveSessionToLobby(session, NTF_NET_REMOVED_GAME_FULL);
 		} else {
 			// add player to NumJoinsPerPlayerMap

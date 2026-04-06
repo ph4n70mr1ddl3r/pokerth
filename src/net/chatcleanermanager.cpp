@@ -286,6 +286,10 @@ ChatCleanerManager::HandleMessage(ChatCleanerMessage &msg)
 		else if (netReply.cleaneractiontype() == CleanerChatReplyMessage_CleanerActionType_cleanerActionMute)
 			m_callback.SignalMutePlayer(netReply.playerid());
 		error = false;
+	} else {
+		// Unknown message type - log but don't treat as fatal error
+		LOG_VERBOSE("Chat cleaner received unknown message type: " << msg.messagetype());
+		error = false;
 	}
 	return error;
 }

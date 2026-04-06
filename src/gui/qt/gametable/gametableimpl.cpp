@@ -2982,7 +2982,7 @@ void gameTableImpl::keyPressEvent ( QKeyEvent * event )
 //		radioButton_autoCheckCallAny->click();
 //	}
 	if (event->key() == Qt::Key_Shift) {
-		if(myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_LOCAL) {
+		{ boost::shared_ptr<Session> s = getSession(); if(s && s->getGameType() == Session::GAME_TYPE_LOCAL) {
 //			pushButton_break->click();
 			//ctrlPressed = true;
 		}
@@ -3350,13 +3350,17 @@ void gameTableImpl::endVoteOnKick()
 void gameTableImpl::voteOnKickYes()
 {
 	changeVoteOnKickButtonsState(false);
-	myStartWindow->getSession()->voteKick(true);
+	boost::shared_ptr<Session> session = getSession();
+	if (session)
+		session->voteKick(true);
 }
 
 void gameTableImpl::voteOnKickNo()
 {
 	changeVoteOnKickButtonsState(false);
-	myStartWindow->getSession()->voteKick(false);
+	boost::shared_ptr<Session> session = getSession();
+	if (session)
+		session->voteKick(false);
 }
 
 void gameTableImpl::startVoteOnKickTimeout()
@@ -3684,7 +3688,9 @@ void gameTableImpl::sendShowMyCardsSignal()
 {
 	if(pushButton_showMyCards->isVisible()) {
 
-		myStartWindow->getSession()->showMyCards();
+		boost::shared_ptr<Session> session = getSession();
+		if (session)
+			session->showMyCards();
 
 		pushButton_showMyCards->hide();
 	}

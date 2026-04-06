@@ -95,6 +95,12 @@ void
 ServerGame::Exit()
 {
 	m_voteKickTimer.cancel();
+	// Skip SetState if already in Final state (RemoveAllSessions sets it first)
+	{
+		boost::mutex::scoped_lock lock(m_curStateMutex);
+		if (m_curState == &ServerGameStateFinal::Instance())
+			return;
+	}
 	SetState(ServerGameStateFinal::Instance());
 }
 
@@ -1279,6 +1285,10 @@ ServerGame::GetGui()
 unsigned
 ServerGame::GetNextGameNum()
 {
+	constexpr unsigned MAX_SAFE_GAME_NUM = std::numeric_limits<unsigned>::max() - 1000;
+	if (m_gameNum >= MAX_SAFE_GAME_NUM) {
+		LOG_ERROR("Game number counter near overflow - server capacity exhausted");
+	}
 	return m_gameNum++;
 }
 

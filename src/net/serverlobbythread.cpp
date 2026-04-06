@@ -1734,7 +1734,7 @@ ServerLobbyThread::HandleNetPacketAdminRemoveGame(boost::shared_ptr<SessionData>
 	netRemoveAck->set_removegameid(removeGame.removegameid());
 
 	if (gameToRemove && session->GetPlayerData() && GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId())) {
-		LOG_ERROR("Player " << session->GetPlayerData()->GetName() << "(" << session->GetPlayerData()->GetDBId() << ") removes game '" << gameToRemove->GetName() << "'");
+		LOG_MSG("Player " << session->GetPlayerData()->GetName() << "(" << session->GetPlayerData()->GetDBId() << ") removes game '" << gameToRemove->GetName() << "'");
 		InternalRemoveGame(gameToRemove);
 		netRemoveAck->set_removegameresult(AdminRemoveGameAckMessage::gameRemoveAccepted);
 	} else {
