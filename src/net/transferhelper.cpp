@@ -78,8 +78,10 @@ TransferHelper::Init(const string &url, const string &targetFileName, const stri
 	InternalInit(url, targetFileName, user, password, filesize, httpPost);
 
 	// Use the multi interface for better abort handling.
-	if (curl_multi_add_handle(m_data->curlMultiHandle, m_data->curlHandle) != CURLM_OK)
+	if (curl_multi_add_handle(m_data->curlMultiHandle, m_data->curlHandle) != CURLM_OK) {
+		Cleanup();
 		throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_INIT_FAILED, 0);
+	}
 }
 
 bool

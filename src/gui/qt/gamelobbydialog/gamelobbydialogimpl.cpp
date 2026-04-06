@@ -453,7 +453,7 @@ void gameLobbyDialogImpl::refresh(int actionID)
 		waitStartGameMsgBoxTimer->stop();
 		closeAllChildDialogs();
 		this->accept();
-		myW->show();
+		if (myW) myW->show();
 	} else if(actionID == MSG_NET_GAME_CLIENT_SYNCSTART) {
 		waitStartGameMsgBoxTimer->start(2000);
 	} else if(actionID == MSG_NET_GAME_CLIENT_SYNCREJOIN) {
@@ -1000,11 +1000,11 @@ void gameLobbyDialogImpl::addConnectedPlayer(unsigned playerId, QString playerNa
 
 	if(isGameAdmin) item->setBackground(0, QBrush(QColor(0, 255, 0, 127)));
 
-	if(this->isVisible() && inGame && myConfig->readConfigInt("PlayNetworkGameNotification")) {
-		if(treeWidget_connectedPlayers->topLevelItemCount() < info.data.maxNumberOfPlayers) {
-			myW->getMySoundEventHandler()->playSound("playerconnected", 0);
+		if(this->isVisible() && inGame && myW && myConfig->readConfigInt("PlayNetworkGameNotification")) {
+			if(treeWidget_connectedPlayers->topLevelItemCount() < info.data.maxNumberOfPlayers) {
+			if (myW) myW->getMySoundEventHandler()->playSound("playerconnected", 0);
 		} else {
-			myW->getMySoundEventHandler()->playSound("onlinegameready", 0);
+			if (myW) myW->getMySoundEventHandler()->playSound("onlinegameready", 0);
 			showAutoStartTimer();
 		}
 	}

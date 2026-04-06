@@ -89,23 +89,28 @@ UploadHelper::InternalInit(const string &/*url*/, const string &targetFileName, 
 		GetData()->post = mime;
 		curl_mimepart *part = curl_mime_addpart(mime);
 		if (!part) {
+			Cleanup();
 			throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_INIT_FAILED, 0);
 		}
 		CURLcode rc;
 		rc = curl_mime_filedata(part, targetFileName.c_str());
 		if (rc != CURLE_OK) {
+			Cleanup();
 			throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_INIT_FAILED, rc);
 		}
 		rc = curl_mime_name(part, httpPost.c_str());
 		if (rc != CURLE_OK) {
+			Cleanup();
 			throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_INIT_FAILED, rc);
 		}
 		curl_easy_setopt(GetData()->curlHandle, CURLOPT_MIMEPOST, mime);
 		curl_easy_setopt(GetData()->curlHandle, CURLOPT_WRITEFUNCTION, writeFunction);
 		curl_easy_setopt(GetData()->curlHandle, CURLOPT_WRITEDATA, &GetData()->returnMessage);
 		rc = curl_easy_perform(GetData()->curlHandle);
-		if (rc != CURLE_OK)
+		if (rc != CURLE_OK) {
+			Cleanup();
 			throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_FAILED, rc);
+		}
 	}
 }
 

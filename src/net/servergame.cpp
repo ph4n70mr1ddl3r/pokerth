@@ -1173,9 +1173,16 @@ ServerGame::SetState(ServerGameState &newState)
 	}
 	// Call virtual functions outside the lock to prevent deadlock if
 	// Enter/Exit directly or indirectly call GetState().
-	if (oldState)
+	if (oldState) {
 		oldState->Exit(shared_from_this());
-	newState.Enter(shared_from_this());
+	}
+	try {
+		newState.Enter(shared_from_this());
+	} catch (...) {
+		// Roll back on Enter failure - restore previous state
+		boost::mutex::scoped_lock lock(m_curStateMutex);
+		m_curState = oldState;
+	}
 }
 
 boost::asio::steady_timer &

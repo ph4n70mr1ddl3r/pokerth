@@ -483,6 +483,9 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
         boost::bind(
             &ClientStateStartConnect::TimerTimeout, this, boost::asio::placeholders::error, client));
 
+    if (m_remoteEndpointIterator == m_remoteEndpoint.end()) {
+        throw ClientException(__FILE__, __LINE__, ERR_SOCK_CONNECT_FAILED, 0);
+    }
     boost::asio::ip::tcp::endpoint endpoint = m_remoteEndpointIterator->endpoint();
     ++m_remoteEndpointIterator;
     auto nextIterator = m_remoteEndpointIterator;
@@ -1606,7 +1609,9 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		for (int i = 0; i < static_cast<int>(numPlayers); i++) {
 			NetPlayerState seatState = netHandStart.seatstates(i);
 			int numberDiff = client->GetStartData().numberOfPlayers - client->GetOrigGuiPlayerNum();
-			boost::shared_ptr<PlayerInterface> tmpPlayer = game->getPlayerByNumber((i + numberDiff) % client->GetStartData().numberOfPlayers);
+			int totalPlayers = client->GetStartData().numberOfPlayers;
+			int playerNum = ((i + numberDiff) % totalPlayers + totalPlayers) % totalPlayers;
+			boost::shared_ptr<PlayerInterface> tmpPlayer = game->getPlayerByNumber(playerNum);
 			if (!tmpPlayer)
 				throw ClientException(__FILE__, __LINE__, ERR_NET_UNKNOWN_PLAYER_ID, 0);
 			switch (seatState) {
