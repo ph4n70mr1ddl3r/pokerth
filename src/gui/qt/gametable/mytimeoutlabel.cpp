@@ -115,7 +115,9 @@ void MyTimeoutLabel::nextTimeOutAnimationFrame()
 			}
 			//save gfx ressources and never play more the 10 pps
 			unsigned int realTimerValue = realTimer.elapsed().total_milliseconds();
-			timeOutAnimationWidth = 52-(((realTimerValue-3000)*52)/((timeOutValue-3)*1000));
+			if (timeOutValue > 3 && realTimerValue >= 3000) {
+				timeOutAnimationWidth = 52-(((realTimerValue-3000)*52)/((timeOutValue-3)*1000));
+			}
 
 		}
 		timeOutFrame++;

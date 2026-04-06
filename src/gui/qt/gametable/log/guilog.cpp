@@ -1056,7 +1056,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				return 1;
 			}
 			for(i=1; i<=nRow_Player; i++) {
-				player[i-1] = std::string(results.result_Player[nCol_Player*i]);
+				player[i-1] = results.result_Player[nCol_Player*i] ? std::string(results.result_Player[nCol_Player*i]) : "";
 			}
 
 			// read all hand id
@@ -1239,7 +1239,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					for(i=1; i<=nRow_Action; i++) {
 						log_string += safeGetPlayerName(results.result_Action[3*i], player, MAX_NUMBER_OF_PLAYERS);
 						log_string += " ";
-						log_string += std::string(results.result_Action[3*i+1]);
+						log_string += results.result_Action[3*i+1] ? std::string(results.result_Action[3*i+1]) : "";
 						if(results.result_Action[3*i+2]) {
 							// with amount
 							log_string +=  " $";
@@ -1287,7 +1287,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					// log small blind
 					log_string += safeGetPlayerName(results.result_Action[2], player, MAX_NUMBER_OF_PLAYERS);
 					log_string += " ($";
-					log_string += std::string(results.result_Action[3]);
+					log_string += results.result_Action[3] ? std::string(results.result_Action[3]) : "0";
 					log_string += "), ";
 
 					// read big blind
@@ -1312,7 +1312,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					// log big blind
 					log_string += safeGetPlayerName(results.result_Action[2], player, MAX_NUMBER_OF_PLAYERS);
 					log_string += " ($";
-					log_string += std::string(results.result_Action[3]);
+					log_string += results.result_Action[3] ? std::string(results.result_Action[3]) : "0";
 					log_string += ")";
 
 					// read dealer

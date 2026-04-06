@@ -291,7 +291,7 @@ PlayerData::IsPlayerAllowedToJoinCreateLimitRank(const std::string &num, const s
 		return false;
 	}
 
-	long then = static_cast<long>(time(nullptr)) - static_cast<long>(periodMinutes) * 60;
+	long long then = static_cast<long long>(time(nullptr)) - static_cast<long long>(periodMinutes) * 60LL;
 
 	m_last_games.erase(
 		std::remove_if(m_last_games.begin(), m_last_games.end(),

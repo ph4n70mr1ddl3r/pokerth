@@ -507,7 +507,7 @@ void ConfigFile::writeBuffer() const
 			for (auto it = tempList.begin(); it != tempList.end(); ++it)
 				{
 
-					QDomElement tmpSubElement = xmlDoc.createElement(QString::fromStdString(configBufferList[i].defaultValue));
+					QDomElement tmpSubElement = xmlDoc.createElement(QString::fromStdString(configBufferList[i].name));
 					tmpElement.appendChild(tmpSubElement);
 					tmpSubElement.setAttribute("value", QString::fromStdString(*it));
 				}
@@ -561,7 +561,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState, int oldRevision)
 				for (auto it = tempList.begin(); it != tempList.end(); ++it)
 				{
 
-					QDomElement tmpSubElement = xmlDoc.createElement(QString::fromStdString(configList[i].defaultValue));
+					QDomElement tmpSubElement = xmlDoc.createElement(QString::fromStdString(configList[i].name));
 					tmpElement.appendChild(tmpSubElement);
 					tmpSubElement.setAttribute("value", QString::fromStdString(*it));
 				}
@@ -683,7 +683,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState, int oldRevision)
 				for (auto it2 = tempList.begin(); it2 != tempList.end(); ++it2)
 								{
 
-									QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(configList[i].defaultValue));
+									QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(configList[i].name));
 									tmpElement.appendChild(tmpSubElement);
 									tmpSubElement.setAttribute("value", QString::fromStdString(*it2));
 								}
@@ -705,7 +705,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState, int oldRevision)
 					for (auto it = tempList.begin(); it != tempList.end(); ++it)
 						{
 
-							QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(configList[i].defaultValue));
+							QDomElement tmpSubElement = newDoc.createElement(QString::fromStdString(configList[i].name));
 							tmpElement.appendChild(tmpSubElement);
 							tmpSubElement.setAttribute("value", QString::fromStdString(*it));
 						}

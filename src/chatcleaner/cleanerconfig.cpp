@@ -507,6 +507,7 @@ int CleanerConfig::readConfigInt(string varName) const
 	size_t i;
 	string tempString("");
 	int tempInt = 0;
+	bool found = false;
 
 	for (i = 0; i < configBufferList.size(); i++)
 	{
@@ -514,12 +515,21 @@ int CleanerConfig::readConfigInt(string varName) const
 		if (configBufferList[i].name == varName)
 		{
 			tempString = configBufferList[i].defaultValue;
+			found = true;
 		}
+	}
+
+	if (!found || tempString.empty()) {
+		LOG_ERROR("CleanerConfig::readConfigInt: variable not found or empty: " << varName);
+		return 0;
 	}
 
 	istringstream isst;
 	isst.str(tempString);
-	isst >> tempInt;
+	if (!(isst >> tempInt)) {
+		LOG_ERROR("CleanerConfig::readConfigInt: failed to parse integer for: " << varName << " value: " << tempString);
+		return 0;
+	}
 
 	return tempInt;
 }

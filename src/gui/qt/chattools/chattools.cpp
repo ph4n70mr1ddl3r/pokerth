@@ -81,18 +81,22 @@ void ChatTools::receiveMessage(QString playerName, QString message, bool pm)
 
 	if(myTextBrowser) {
 
-		playerName = playerName.toHtmlEscaped();
-		message = message.toHtmlEscaped();
-		message = message.replace(QRegularExpression("((?:https?)://\\S+)"), "<a href=\"\\1\">\\1</a>");
-
 		//refresh myNick if it was changed during runtime
 		myNick = QString::fromUtf8(myConfig->readConfigString("MyName").c_str());
 
 		QString tempMsg;
 
-		if(myChatType == INET_LOBBY_CHAT && playerName == "(chat bot)" && message.startsWith(myNick)) {
+		// Check nick-matching on original unescaped message before HTML escaping
+		bool botHighlight = (myChatType == INET_LOBBY_CHAT && playerName == "(chat bot)" && message.startsWith(myNick));
+		bool nickMentioned = message.contains(myNick, Qt::CaseInsensitive);
+
+		playerName = playerName.toHtmlEscaped();
+		message = message.toHtmlEscaped();
+		message = message.replace(QRegularExpression("((?:https?)://\\S+)"), "<a href=\"\\1\">\\1</a>");
+
+		if(botHighlight) {
 			tempMsg = QString("<span style=\"font-weight:bold; color:red;\">"+message+"</span>");
-		} else if(message.contains(myNick, Qt::CaseInsensitive)) {
+		} else if(nickMentioned) {
 			switch (myChatType) {
 			case INET_LOBBY_CHAT: {
 				tempMsg = QString("<span style=\"font-weight:bold; color:"+myLobby->palette().link().color().name()+";\">"+message+"</span>");
