@@ -216,6 +216,7 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 							}
 
 						}
+						if (!winnerHit) continue;
 
 						if(j<mod) {
 							(*it)->setMyCash( (*it)->getMyCash() + static_cast<int>((potLevel[1])/winnerCount) + 1);

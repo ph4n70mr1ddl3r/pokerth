@@ -52,7 +52,7 @@ ServerManagerIrc::~ServerManagerIrc() noexcept
 }
 
 void
-ServerManagerIrc::Init(unsigned serverPort, unsigned websocketPort, bool ipv6, int proto, const string &logDir,
+ServerManagerIrc::Init(unsigned serverPort, unsigned websocketPort, bool ipv6, bool serverTls, bool websocketTls, int proto, const string &logDir,
 					   const std::string &webSocketResource, const std::string &webSocketOrigin)
 {
 	boost::shared_ptr<IrcThread> tmpIrcAdminThread;
@@ -84,7 +84,7 @@ ServerManagerIrc::Init(unsigned serverPort, unsigned websocketPort, bool ipv6, i
 
 	m_adminBot->Init(m_lobbyThread, tmpIrcAdminThread, myConfig.readConfigString("CacheDir"));
 	m_lobbyBot->Init(m_lobbyThread, tmpIrcLobbyThread);
-	ServerManager::Init(serverPort, websocketPort, ipv6, proto, logDir, webSocketResource, webSocketOrigin);
+	ServerManager::Init(serverPort, websocketPort, ipv6, serverTls, websocketTls, proto, logDir, webSocketResource, webSocketOrigin);
 }
 
 void

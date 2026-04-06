@@ -780,6 +780,7 @@ void gameTableImpl::refreshButton()
 
 void gameTableImpl::refreshPlayerName()
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 
 	if(myStartWindow->getSession()->getCurrentGame() && myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) {
 
@@ -826,6 +827,7 @@ void gameTableImpl::refreshPlayerName()
 
 void gameTableImpl::refreshPlayerAvatar()
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 
 	if(myStartWindow->getSession()->getCurrentGame() && myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) {
 
@@ -3668,6 +3670,7 @@ void gameTableImpl::restoreGameTableGeometry()
 
 void gameTableImpl::netClientPlayerLeft(unsigned /*playerId*/)
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 	if (myStartWindow->getSession()->getCurrentGame() && myStartWindow->getSession()->isNetworkClientRunning()) {
 		refreshPlayerAvatar();
 		refreshPlayerName();
@@ -3713,6 +3716,7 @@ void gameTableImpl::hide()
 
 SeatState gameTableImpl::getCurrentSeatState(boost::shared_ptr<PlayerInterface> player)
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return SEAT_CLEAR;
 
 	if(player->getMyActiveStatus()) {
 		if(player->isSessionActive()) {

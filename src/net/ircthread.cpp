@@ -395,6 +395,10 @@ IrcThread::SendChatMessage(const std::string &msg)
 	boost::mutex::scoped_lock lock(m_sendMutex);
 	IrcContext &context = GetContext();
 	if (!context.sendingBlocked) {
+		if (!context.session) {
+			LOG_ERROR("IrcThread::SendChatMessage: session is null");
+			return;
+		}
 		irc_cmd_msg(context.session, context.channel.c_str(), msg.c_str());
 		context.sendCounter += msg.size();
 
@@ -411,6 +415,7 @@ void
 IrcThread::SendPing()
 {
 	IrcContext &context = GetContext();
+	if (!context.session) return;
 	irc_send_raw(context.session, "PING %s", context.serverAddress.c_str());
 }
 

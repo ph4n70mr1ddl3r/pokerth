@@ -282,11 +282,15 @@ ServerBanManager::TimerRemoveBan(const boost::system::error_code &ec, unsigned b
 ServerBanManager::GetNextBanId()
 {
 	unsigned startId = m_curBanId;
+	// Use checked counter to handle startId==0 case: when m_curBanId wraps
+	// from UINT_MAX to 0 (forced to 1), it can never equal startId==0,
+	// causing an infinite loop. Track iterations to detect full cycle.
+	unsigned checked = 0;
 	do {
 		m_curBanId++;
 		if (m_curBanId == 0)
 			m_curBanId = 1;
-		if (m_curBanId == startId)
+		if (++checked == 0) // wrapped around - checked all possible IDs
 			break;
 		if (m_banPlayerNameMap.find(m_curBanId) == m_banPlayerNameMap.end()
 			&& m_banIPAddressMap.find(m_curBanId) == m_banIPAddressMap.end()) {
