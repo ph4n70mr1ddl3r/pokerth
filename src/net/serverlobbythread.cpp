@@ -1516,6 +1516,10 @@ ServerLobbyThread::HandleNetPacketJoinGame(boost::shared_ptr<SessionData> sessio
 void
 ServerLobbyThread::HandleNetPacketRejoinGame(boost::shared_ptr<SessionData> session, const RejoinExistingGameMessage &rejoinGame)
 {
+	if (!session->GetPlayerData()) {
+		SendJoinGameFailed(session, rejoinGame.gameid(), NTF_NET_JOIN_INVALID_SETTINGS);
+		return;
+	}
 	boost::shared_ptr<ServerGame> game;
 	{
 		boost::mutex::scoped_lock lock(m_gameMapMutex);

@@ -966,7 +966,9 @@ void gameTableImpl::refreshAction(int playerID, int playerAction)
 void gameTableImpl::refreshCash()
 {
 
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+	if (!currentGame) return;
 
 	bool transparent = true;
 	PlayerListConstIterator it_c;
@@ -1006,8 +1008,9 @@ void gameTableImpl::refreshGroupbox(int playerID, int status)
 	int j = 0;
 
 	if(playerID == -1 || status == -1) {
-
+		if (!myStartWindow || !myStartWindow->getSession()) return;
 		boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+		if (!currentGame) return;
 		PlayerListConstIterator it_c;
 		PlayerList seatsList = currentGame->getSeatsList();
 		for (it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
@@ -1184,6 +1187,7 @@ void gameTableImpl::waitForGuiUpdateDone()
 
 void gameTableImpl::dealHoleCards()
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 
 	for (int i=0; i<MAX_NUMBER_OF_PLAYERS; i++ ) {
 		for (int k=0; k<=1; k++ ) {
@@ -1296,6 +1300,7 @@ void gameTableImpl::dealFlopCards3()
 
 void gameTableImpl::dealFlopCards4()
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 
 	int tempBoardCardsArray[5];
 
@@ -1316,6 +1321,7 @@ void gameTableImpl::dealFlopCards4()
 
 void gameTableImpl::dealFlopCards5()
 {
+    if (!myStartWindow || !myStartWindow->getSession()) return;
 
     int tempBoardCardsArray[5];
     myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getBoard()->getMyCards(tempBoardCardsArray);
@@ -1335,6 +1341,7 @@ void gameTableImpl::dealFlopCards5()
 
 void gameTableImpl::dealFlopCards6()
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 
 	int tempBoardCardsArray[5];
 	myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getBoard()->getMyCards(tempBoardCardsArray);
@@ -1379,6 +1386,7 @@ void gameTableImpl::dealTurnCards1()
 
 void gameTableImpl::dealTurnCards2()
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 
 	int tempBoardCardsArray[5];
 	myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getBoard()->getMyCards(tempBoardCardsArray);
@@ -1424,6 +1432,7 @@ void gameTableImpl::dealRiverCards1()
 
 void gameTableImpl::dealRiverCards2()
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 
 	int tempBoardCardsArray[5];
 	myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getBoard()->getMyCards(tempBoardCardsArray);
@@ -1797,8 +1806,10 @@ void gameTableImpl::myFold()
 {
 
 	if(pushButton_Fold->text() == FoldString) {
-
-		boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+		if (!myStartWindow || !myStartWindow->getSession()) return;
+		boost::shared_ptr<Game> g = myStartWindow->getSession()->getCurrentGame();
+		if (!g || !g->getCurrentHand()) return;
+		boost::shared_ptr<HandInterface> currentHand = g->getCurrentHand();
 		boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 		humanPlayer->setMyAction(PLAYER_ACTION_FOLD,true);
 		humanPlayer->setMyTurn(0);
@@ -1815,8 +1826,10 @@ void gameTableImpl::myFold()
 
 void gameTableImpl::myCheck()
 {
-
-	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	if (!myStartWindow || !myStartWindow->getSession()) return;
+	boost::shared_ptr<Game> g = myStartWindow->getSession()->getCurrentGame();
+	if (!g || !g->getCurrentHand()) return;
+	boost::shared_ptr<HandInterface> currentHand = g->getCurrentHand();
 	boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 	humanPlayer->setMyTurn(0);
 	humanPlayer->setMyAction(PLAYER_ACTION_CHECK,true);
@@ -1832,8 +1845,10 @@ void gameTableImpl::myCheck()
 
 int gameTableImpl::getMyCallAmount() const
 {
-
-	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	if (!myStartWindow || !myStartWindow->getSession()) return 0;
+	boost::shared_ptr<Game> g = myStartWindow->getSession()->getCurrentGame();
+	if (!g || !g->getCurrentHand()) return 0;
+	boost::shared_ptr<HandInterface> currentHand = g->getCurrentHand();
 	boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 	int tempHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 
@@ -1854,8 +1869,10 @@ int gameTableImpl::getBetRaisePushButtonValue() const
 
 int gameTableImpl::getMyBetAmount() const
 {
-
-	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	if (!myStartWindow || !myStartWindow->getSession()) return 0;
+	boost::shared_ptr<Game> g = myStartWindow->getSession()->getCurrentGame();
+	if (!g || !g->getCurrentHand()) return 0;
+	boost::shared_ptr<HandInterface> currentHand = g->getCurrentHand();
 	boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 
 	int betValue = getBetRaisePushButtonValue();
@@ -1870,8 +1887,10 @@ int gameTableImpl::getMyBetAmount() const
 
 void gameTableImpl::myCall()
 {
-
-	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	if (!myStartWindow || !myStartWindow->getSession()) return;
+	boost::shared_ptr<Game> g = myStartWindow->getSession()->getCurrentGame();
+	if (!g || !g->getCurrentHand()) return;
+	boost::shared_ptr<HandInterface> currentHand = g->getCurrentHand();
 	boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 
 	int tempHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
@@ -1971,8 +1990,10 @@ void gameTableImpl::myAllIn()
 {
 
 	if(pushButton_AllIn->text() == AllInString) {
-
-		boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+		if (!myStartWindow || !myStartWindow->getSession()) return;
+		boost::shared_ptr<Game> g = myStartWindow->getSession()->getCurrentGame();
+		if (!g || !g->getCurrentHand()) return;
+		boost::shared_ptr<HandInterface> currentHand = g->getCurrentHand();
 		boost::shared_ptr<PlayerInterface> humanPlayer = currentHand->getSeatsList()->front();
 
 		humanPlayer->setMySet(humanPlayer->getMyCash());
@@ -2151,8 +2172,10 @@ void gameTableImpl::myActionDone()
 
 void gameTableImpl::nextPlayerAnimation()
 {
-
-	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	if (!myStartWindow || !myStartWindow->getSession()) return;
+	boost::shared_ptr<Game> g = myStartWindow->getSession()->getCurrentGame();
+	if (!g || !g->getCurrentHand()) return;
+	boost::shared_ptr<HandInterface> currentHand = g->getCurrentHand();
 
 	//refresh Change Player
 	refreshSet();
@@ -2686,8 +2709,9 @@ void gameTableImpl::showHoleCards(unsigned playerId, bool allIn)
 
 void gameTableImpl::flipHolecardsAllIn()
 {
-
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+	if (!currentGame || !currentGame->getCurrentHand()) return;
 
 	if(!flipHolecardsAllInAlreadyDone && currentGame->getCurrentHand()->getCurrentRound() < GAME_STATE_RIVER) {
 		//Aktive Spieler zählen --> wenn nur noch einer nicht-folded dann keine Karten umdrehen
@@ -2717,10 +2741,14 @@ void gameTableImpl::startNewHand()
 {
 
 	if( !breakAfterCurrentHand) {
-		myStartWindow->getSession()->getCurrentGame()->initHand();
-		myStartWindow->getSession()->getCurrentGame()->startHand();
+		if (!myStartWindow || !myStartWindow->getSession()) return;
+		boost::shared_ptr<Game> g = myStartWindow->getSession()->getCurrentGame();
+		if (!g) return;
+		g->initHand();
+		g->startHand();
 	} else {
 
+		if(!myStartWindow || !myStartWindow->getSession()) return;
 		if(myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_LOCAL) {
 #ifdef GUI_800x480
 //			tabs.pushButton_break->setDisabled(false);
@@ -2747,11 +2775,15 @@ void gameTableImpl::startNewHand()
 
 void gameTableImpl::handSwitchRounds()
 {
-	myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->switchRounds();
+	if (!myStartWindow || !myStartWindow->getSession()) return;
+	boost::shared_ptr<Game> g = myStartWindow->getSession()->getCurrentGame();
+	if (!g || !g->getCurrentHand()) return;
+	g->getCurrentHand()->switchRounds();
 }
 
 void gameTableImpl::nextRoundCleanGui()
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 
 	QPixmap onePix = QPixmap::fromImage(QImage(myAppDataPath +"gfx/gui/misc/1px.png"));
 	for (int i=0; i<5; i++ ) {
@@ -3139,8 +3171,10 @@ void gameTableImpl::clearMyButtons()
 
 void gameTableImpl::myButtonsCheckable(bool state)
 {
-
-	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
+	if (!myStartWindow || !myStartWindow->getSession()) return;
+	boost::shared_ptr<Game> g = myStartWindow->getSession()->getCurrentGame();
+	if (!g || !g->getCurrentHand()) return;
+	boost::shared_ptr<HandInterface> currentHand = g->getCurrentHand();
 
 	if(state) {
 		//checkable
