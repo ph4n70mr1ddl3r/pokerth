@@ -2168,6 +2168,7 @@ void gameTableImpl::pushButtonAllInClicked(bool checked)
 
 void gameTableImpl::myActionDone()
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 
 	// If a network client is running, we need
 	// to transfer the action to the server.

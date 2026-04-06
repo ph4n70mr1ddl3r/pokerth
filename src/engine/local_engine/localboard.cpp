@@ -110,7 +110,7 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 	int highestCardsValue = 0;
 	size_t winnerCount = 0;
 	bool finalPot = false;
-	int potCarryOver = 0;
+	unsigned potCarryOver = 0;
 	size_t mod = 0;
 	bool winnerHit = false;
 
@@ -237,7 +237,7 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 				pot -= static_cast<int>(potLevel[1]);
 
 			} else {
-				potCarryOver = static_cast<int>(potLevel[1]);
+				potCarryOver = static_cast<unsigned>(potLevel[1]);
 			}
 
 			// reevaluate the player sets

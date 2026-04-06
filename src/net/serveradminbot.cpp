@@ -384,7 +384,7 @@ ServerAdminBot::NotifyLoop(const boost::system::error_code& ec)
 				notifyStream.str("");
 				notifyStream << "El servidor se reiniciará en " << remainingMinutes << " minuto.";
 				GetLobbyThread().SendGlobalChat(notifyStream.str());
-			} else {
+			} else if (remainingMinutes <= 0 && m_notifyTimer.elapsed().total_seconds() >= static_cast<long long>(m_notifyTimeoutMinutes) * 60) {
 				GetLobbyThread().SendGlobalChat("The server will be restarted NOW.");
 				GetLobbyThread().SendGlobalMsgBox("The server will be restarted NOW.");
 				m_notifyTimeoutMinutes = m_notifyCounter = m_notifyIntervalMinutes = 0;
