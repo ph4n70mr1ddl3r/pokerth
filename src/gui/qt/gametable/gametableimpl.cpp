@@ -488,6 +488,7 @@ gameTableImpl::~gameTableImpl() noexcept
 
 void gameTableImpl::callSettingsDialog()
 {
+	if (!myStartWindow) return;
 	bool iamInGame = true;
 	myStartWindow->callSettingsDialog(iamInGame);
 }
@@ -886,6 +887,7 @@ void gameTableImpl::refreshPlayerAvatar()
 
 void gameTableImpl::setPlayerAvatar(int myID, QString myAvatar)
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 
 	if(myStartWindow->getSession()->getCurrentGame() && myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) {
 

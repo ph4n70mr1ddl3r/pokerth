@@ -1433,7 +1433,7 @@ void gameLobbyDialogImpl::hideWaitStartGameMsgBox()
 
 void gameLobbyDialogImpl::reject()
 {
-	myStartWindow->show();
+	if (myStartWindow) myStartWindow->show();
 	QDialog::reject();
 }
 
@@ -1743,7 +1743,7 @@ void gameLobbyDialogImpl::chatInfoPlayerRejectedInvitation(unsigned gameId, unsi
 
 bool gameLobbyDialogImpl::playerIsOnIgnoreList(unsigned playerId)
 {
-
+	if (!mySession) return false;
 	list<std::string> playerIgnoreList = myConfig->readConfigStringList("PlayerIgnoreList");
 	for(auto it1= playerIgnoreList.begin(); it1 != playerIgnoreList.end(); ++it1) {
 

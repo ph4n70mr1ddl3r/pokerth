@@ -40,17 +40,17 @@
 int CardsValue::holeCardsClass(int one, int two)
 {
 
-	if((one-1)%13<(two-1)%13) {
+	if((one)%13<(two)%13) {
 		int temp = one;
 		one = two;
 		two = temp;
 	}
 
 
-	if((one-1)%13 == (two-1)%13) {
-		if((one-1)%13+2 > 10) return 10;
+	if((one)%13 == (two)%13) {
+		if((one)%13+2 > 10) return 10;
 		else {
-			switch((one-1)%13+2) {
+			switch((one)%13+2) {
 			case 10:
 				return 9;
 			case 9:
@@ -64,11 +64,11 @@ int CardsValue::holeCardsClass(int one, int two)
 			}
 		}
 	}
-	switch((one-1)%13+2) {
+	switch((one)%13+2) {
 	//Ass
 	case 14: {
-		if((one-1)/13 == (two-1)/13) {
-			switch((one-1)%13-(two-1)%13) {
+		if((one)/13 == (two)/13) {
+			switch((one)%13-(two)%13) {
 			case 1:
 				return 10;
 			case 2:
@@ -81,7 +81,7 @@ int CardsValue::holeCardsClass(int one, int two)
 				return 7;
 			}
 		} else {
-			switch((one-1)%13-(two-1)%13) {
+			switch((one)%13-(two)%13) {
 			case 1:
 				return 9;
 			case 2:
@@ -98,8 +98,8 @@ int CardsValue::holeCardsClass(int one, int two)
 	break;
 	//K�ig
 	case 13: {
-		if((one-1)/13 == (two-1)/13) {
-			switch((one-1)%13-(two-1)%13) {
+		if((one)/13 == (two)/13) {
+			switch((one)%13-(two)%13) {
 			case 1:
 				return 9;
 			case 2:
@@ -112,7 +112,7 @@ int CardsValue::holeCardsClass(int one, int two)
 				return 5;
 			}
 		} else {
-			switch((one-1)%13-(two-1)%13) {
+			switch((one)%13-(two)%13) {
 			case 1:
 				return 7;
 			case 2:
@@ -127,8 +127,8 @@ int CardsValue::holeCardsClass(int one, int two)
 	break;
 	//Dame
 	case 12: {
-		if((one-1)/13 == (two-1)/13) {
-			switch((one-1)%13-(two-1)%13) {
+		if((one)/13 == (two)/13) {
+			switch((one)%13-(two)%13) {
 			case 1:
 				return 8;
 			case 2:
@@ -141,7 +141,7 @@ int CardsValue::holeCardsClass(int one, int two)
 				return 4;
 			}
 		} else {
-			switch((one-1)%13-(two-1)%13) {
+			switch((one)%13-(two)%13) {
 			case 1:
 				return 6;
 			case 2:
@@ -156,8 +156,8 @@ int CardsValue::holeCardsClass(int one, int two)
 	break;
 	//Bube
 	case 11: {
-		if((one-1)/13 == (two-1)/13) {
-			switch((one-1)%13-(two-1)%13) {
+		if((one)/13 == (two)/13) {
+			switch((one)%13-(two)%13) {
 			case 1:
 				return 7;
 			case 2:
@@ -170,7 +170,7 @@ int CardsValue::holeCardsClass(int one, int two)
 				return 3;
 			}
 		} else {
-			switch((one-1)%13-(two-1)%13) {
+			switch((one)%13-(two)%13) {
 			case 1:
 				return 6;
 			case 2:
@@ -185,8 +185,8 @@ int CardsValue::holeCardsClass(int one, int two)
 	break;
 	//10
 	case 10: {
-		if((one-1)/13 == (two-1)/13) {
-			switch((one-1)%13-(two-1)%13) {
+		if((one)/13 == (two)/13) {
+			switch((one)%13-(two)%13) {
 			case 1:
 				return 6;
 			case 2:
@@ -195,7 +195,7 @@ int CardsValue::holeCardsClass(int one, int two)
 				return 2;
 			}
 		} else {
-			switch((one-1)%13-(two-1)%13) {
+			switch((one)%13-(two)%13) {
 			case 1:
 				return 5;
 			case 2:
@@ -208,11 +208,11 @@ int CardsValue::holeCardsClass(int one, int two)
 	break;
 	//Rest
 	default: {
-		if((one-1)%13 - (two-1)%13 <= 2) {
-			if((one-1)/13 == (two-1)/13) return 5;
+		if((one)%13 - (two)%13 <= 2) {
+			if((one)/13 == (two)/13) return 5;
 			else return 3;
 		} else {
-			if((one-1)%13 - (two-1)%13 == 3) return 2;
+			if((one)%13 - (two)%13 == 3) return 2;
 			else return 1;
 		}
 	}

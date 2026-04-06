@@ -288,6 +288,8 @@ SessionManager::Clear()
 
 	boost::system::error_code ec;
 	while (i != end) {
+		// Cancel timers before closing to prevent callbacks on destroyed objects.
+		i->second->CancelTimers();
 		// Close all raw handles.
 		i->second->CloseSocketHandle();
 		i->second->CloseWebSocketHandle();

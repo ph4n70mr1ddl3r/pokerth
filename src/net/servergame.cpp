@@ -1293,6 +1293,7 @@ ServerGame::GetNextGameNum()
 	constexpr unsigned MAX_SAFE_GAME_NUM = std::numeric_limits<unsigned>::max() - 1000;
 	if (m_gameNum >= MAX_SAFE_GAME_NUM) {
 		LOG_ERROR("Game number counter near overflow - server capacity exhausted");
+		throw ServerException(__FILE__, __LINE__, ERR_NET_SERVER_FULL, 0);
 	}
 	return m_gameNum++;
 }
