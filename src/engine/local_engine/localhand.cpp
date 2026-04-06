@@ -574,7 +574,7 @@ void LocalHand::switchRounds()
 
 	// check for all in condition
 	// for all in condition at least two active players have to remain
-	else {
+	else if(nonFoldPlayerCounter >= 2) {
 
 		// 1) all players all in
 		if(allInPlayersCounter == nonFoldPlayerCounter) {

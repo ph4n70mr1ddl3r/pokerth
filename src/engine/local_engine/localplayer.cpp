@@ -4053,23 +4053,23 @@ int LocalPlayer::turnCardsValue(int* cards)
 						// Strassenansatz am Rand?
 						if(array[j1][1] == 12) {
 							// 							cout << "zusammenhaengender Straight-Draw mit Ass high   ";
-							break;
+							return 30;
 						}
 						// Strassenansatz in der Mitte
 						else {
 							//                        					cout << "zusammenhaengender Straight-Draw in der Mitte   ";
-							break;
+							return 30;
 						}
 					} else {
 						// Bauchschuss ?
 						if((array[j1][1]-2 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-1 == array[j4][1]) || (array[j1][1]-1 == array[j2][1] && array[j2][1]-2 == array[j3][1] && array[j3][1]-1 == array[j4][1]) || (array[j1][1]-1 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-2 == array[j4][1])) {
 							//                         				cout << "Straight-Bauchschuss   ";
-							break;
+							return 30;
 						} else {
 							// Test auf Straßenansatz-Ausnahme 5-4-3-2-A
 							if((array[j1][1]-9 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-1 == array[j4][1]) || (array[j1][1]-9 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-2 == array[j4][1]) || (array[j1][1]-9 == array[j2][1] && array[j2][1]-2 == array[j3][1] && array[j3][1]-1 == array[j4][1]) || (array[j1][1]-10 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-1 == array[j4][1])) {
 								//                              					cout << "Straight-Draw Ass unten   ";
-								break;
+								return 30;
 							}
 						}
 					}
