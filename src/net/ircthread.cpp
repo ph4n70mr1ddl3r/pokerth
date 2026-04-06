@@ -541,12 +541,19 @@ IrcThread::IrcMain()
 void
 IrcThread::FlushQueue()
 {
-	IrcContext &context = GetContext();
-
-	while (!context.sendingBlocked && !context.sendQueue.empty()) {
-		string msg(context.sendQueue.front());
-		context.sendQueue.pop();
-		SendChatMessage(msg);
+	// Drain the queue under the lock, then send each message without holding it lock
+ (SendChatMessage acquires m_sendMutex internally).
+	std::queue<string> msgs;
+	{
+		boost::mutex::scoped_lock lock(m_sendMutex);
+		IrcContext &context = GetContext();
+		if (context.sendingBlocked)
+			return;
+		msgs = std::move(context.sendQueue);
+	}
+	while (!msgs.empty()) {
+		SendChatMessage(msgs.front());
+		msgs.pop();
 	}
 }
 
