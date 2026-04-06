@@ -2489,7 +2489,7 @@ void LocalPlayer::riverEngine()
 	if(individualHighestSet > myCash) individualHighestSet = myCash;
 
 	// Active or passive?
-	if(currentHand->getCurrentBeRo()->getHighestSet() > 0) {
+	if(currentHand->getCurrentBeRo()->getHighestSet() > 0 && individualHighestSet > 0) {
 
 		// Verhaeltnis Set / Cash
 		if(myCash/individualHighestSet >= 25) {

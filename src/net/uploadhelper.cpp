@@ -112,5 +112,10 @@ UploadHelper::InternalInit(const string &/*url*/, const string &targetFileName, 
 			throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_FAILED, rc);
 		}
 	}
+	// Close file handle on success path (Cleanup handles error paths)
+	if (GetData()->targetFile) {
+		fclose(GetData()->targetFile);
+		GetData()->targetFile = nullptr;
+	}
 }
 
