@@ -295,53 +295,62 @@ int CardsValue::cardsValue(int* cards, int* position)
 	// Karten auf Bl�ter testen. Klasseneinteilung absteigend: 9 - Royal Flush, 8 - Straight Flush, ... 2 - Zwei Paare, 1 - Ein Paar, 0 - Nischt
 
 	// auf Royal Flush (Klasse 9) und Straight Flush (Klasse 8) testen
-	for(j1=0; j1<3; j1++) {
-		// 5 Karten gleiche Farbe ?
-		if(array[j1][0] == array[j1+1][0] && array[j1][0] == array[j1+2][0] && array[j1][0] == array[j1+3][0] && array[j1][0] == array[j1+4][0]) {
-			// zus�zlich in Stra�nform ?
-			if(array[j1][1]-1 == array[j1+1][1] && array[j1+1][1]-1 == array[j1+2][1] && array[j1+2][1]-1 == array[j1+3][1] && array[j1+3][1]-1 == array[j1+4][1]) {
-				// mit Ass an der Spitze ?
-				if(array[j1][1] == 12) {
-					// Royal Flush (9*100000000)
-					if(position) {
-						// Position-Array fuellen
-						for(j2=0; j2<5; j2++) {
-							position[j2] = array[j1+j2][2];
+	// Scan each suit group for 5 consecutive-rank cards (handles 6+ same-suit correctly)
+	{
+		int suitStart = 0;
+		while (suitStart < 7) {
+			// Find the extent of this suit group
+			int suitEnd = suitStart;
+			while (suitEnd + 1 < 7 && array[suitEnd + 1][0] == array[suitStart][0])
+				suitEnd++;
+			int suitCount = suitEnd - suitStart + 1;
+			if (suitCount >= 5) {
+				// Check for straight flush within this suit group
+				// Cards are sorted by rank descending within the suit
+				for (int si = suitStart; si + 4 <= suitEnd; si++) {
+					if (array[si][1]-1 == array[si+1][1] && array[si+1][1]-1 == array[si+2][1]
+						&& array[si+2][1]-1 == array[si+3][1] && array[si+3][1]-1 == array[si+4][1]) {
+						if(array[si][1] == 12) {
+							// Royal Flush (9*100000000)
+							if(position) {
+								for(j2=0; j2<5; j2++) {
+									position[j2] = array[si+j2][2];
+								}
+							}
+							return 900000000;
+						} else {
+							if(position) {
+								for(j2=0; j2<5; j2++) {
+									position[j2] = array[si+j2][2];
+								}
+							}
+							return 800000000+array[si][1]*1000000;
 						}
 					}
-					return 900000000;
 				}
-				// sonst nur Straight Flush (8*100000000 + (h�hste Straight-Karte)*1000000)
-				else {
-					if(position) {
-						// Position-Array fuellen
-						for(j2=0; j2<5; j2++) {
-							position[j2] = array[j1+j2][2];
+				// Straight Flush Ausnahme: 5-4-3-2-A (wheel) within this suit group
+				for (int si = suitStart; si <= suitEnd; si++) {
+					if (array[si][1] != 12) continue; // Must be Ace
+					// Look for 5-4-3-2 of the same suit
+					for (int sj = suitStart; sj + 3 <= suitEnd; sj++) {
+						if (array[si][1]-9 == array[sj][1]
+							&& array[sj][1]-1 == array[sj+1][1]
+							&& array[sj+1][1]-1 == array[sj+2][1]
+							&& array[sj+2][1]-1 == array[sj+3][1]
+							&& array[si][0] == array[sj][0]
+							&& array[si][0] == array[sj+3][0]) {
+							if(position) {
+								position[0] = array[si][2];
+								for(j3=0; j3<4; j3++) {
+									position[j3+1] = array[sj+j3][2];
+								}
+							}
+							return 800000000+3*1000000;
 						}
 					}
-					return 800000000+array[j1][1]*1000000;
 				}
 			}
-		}
-	}
-
-	// Straight Flush Ausnahme: 5-4-3-2-A
-	for(j1=0; j1<3; j1++) {
-		// 5 Karten gleiche Farbe ?
-		if(array[j1][0] == array[j1+1][0] && array[j1][0] == array[j1+2][0] && array[j1][0] == array[j1+3][0] && array[j1][0] == array[j1+4][0]) {
-			for(j2=j1+1; j2<4; j2++) {
-				if(array[j1][1]-9==array[j2][1] && array[j2][1]-1==array[j2+1][1] && array[j2+1][1]-1==array[j2+2][1] && array[j2+2][1]-1==array[j2+3][1] && array[j1][0]==array[j2+2][0] && array[j1][0]==array[j2+3][0]) {
-					// Straight Flush mit 5 als höchste Karte -> 8*100000000+3*1000000
-					if(position) {
-						// Position-Array fuellen
-						position[0] = array[j1][2];
-						for(j3=0; j3<4; j3++) {
-							position[j3+1] = array[j2+j3][2];
-						}
-					}
-					return 800000000+3*1000000;
-				}
-			}
+			suitStart = suitEnd + 1;
 		}
 	}
 

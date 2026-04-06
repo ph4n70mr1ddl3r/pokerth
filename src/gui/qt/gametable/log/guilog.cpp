@@ -108,7 +108,7 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 	}
 
 	int nRow = rows.size();
-	int total = (nRow + 1) * nCol;
+	size_t total = static_cast<size_t>(nRow + 1) * static_cast<size_t>(nCol);
 
 	struct FreeDeleter {
 		void operator()(char** p) const { if(p) { for(char **ptr = p; *ptr; ++ptr) free(*ptr); free(p); } }

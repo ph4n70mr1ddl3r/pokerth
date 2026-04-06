@@ -523,6 +523,8 @@ void ConfigFile::writeBuffer() const
 		{
 			QTextStream stream(&file);
 			stream << xmlDoc.toString();
+			stream.flush();
+			file.close();
 		}
 	}
 }
