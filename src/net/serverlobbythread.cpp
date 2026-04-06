@@ -1970,7 +1970,8 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
 						shouldEstablish = false;
 					}
 				}
-				if (shouldEstablish) {
+				else {
+					// Window expired - safe to clear the rate limit entry
 					m_failedLoginMap.erase(it);
 				}
 			}

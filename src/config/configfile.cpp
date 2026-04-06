@@ -434,6 +434,7 @@ void ConfigFile::fillBuffer()
 
 			// cout << configBufferList[i].name << " " << configBufferList[i].defaultValue << endl;
 		}
+		file.close();
 	}
 }
 

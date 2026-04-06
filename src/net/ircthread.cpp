@@ -427,7 +427,7 @@ IrcThread::Main()
 	do {
 		if (IrcInit())
 			IrcMain(); // Will loop until terminated.
-	} while (!ShouldTerminate() && m_lastConnectTimer.elapsed().total_seconds() >= IRC_MIN_RECONNECT_INTERVAL_SEC);
+	} while (!ShouldTerminate());
 }
 
 bool

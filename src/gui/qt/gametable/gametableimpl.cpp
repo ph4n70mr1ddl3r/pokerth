@@ -537,7 +537,7 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 	}
 
 	//refresh board cards if game is running
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame() && myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) {
 
 		int tempBoardCardsArray[5];
 		myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getBoard()->getMyCards(tempBoardCardsArray);
@@ -572,7 +572,7 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 	}
 
 	//Check for anti-peek mode
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame() && myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) {
 		// 		check if human player is already active
 		boost::shared_ptr<PlayerInterface> humanPlayer = myStartWindow->getSession()->getCurrentGame()->getSeatsList()->front();
 		if(humanPlayer->getMyActiveStatus()) {
@@ -602,7 +602,7 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 	if(this->isVisible() && myGameTableStyle->getState() != GT_STYLE_OK) myGameTableStyle->showErrorMessage();
 
 	//blind buttons refresh
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame() && myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) {
 		refreshButton();
 		refreshGroupbox();
 		provideMyActions();
@@ -781,7 +781,7 @@ void gameTableImpl::refreshButton()
 void gameTableImpl::refreshPlayerName()
 {
 
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame() && myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) {
 
 		boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
 		PlayerListConstIterator it_c;
@@ -827,7 +827,7 @@ void gameTableImpl::refreshPlayerName()
 void gameTableImpl::refreshPlayerAvatar()
 {
 
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame() && myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) {
 
 		QPixmap onePix = QPixmap::fromImage(QImage(myAppDataPath +"gfx/gui/misc/1px.png"));
 
@@ -884,7 +884,7 @@ void gameTableImpl::refreshPlayerAvatar()
 void gameTableImpl::setPlayerAvatar(int myID, QString myAvatar)
 {
 
-	if(myStartWindow->getSession()->getCurrentGame()) {
+	if(myStartWindow->getSession()->getCurrentGame() && myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) {
 
 		boost::shared_ptr<PlayerInterface> tmpPlayer = myStartWindow->getSession()->getCurrentGame()->getPlayerByUniqueId(myID);
 		if (tmpPlayer.get()) {
@@ -2411,6 +2411,8 @@ void gameTableImpl::postRiverRunAnimation2()
 void gameTableImpl::postRiverRunAnimation3()
 {
 
+	if (!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame() || !myStartWindow->getSession()->getCurrentGame()->getCurrentHand())
+		return;
 	boost::shared_ptr<HandInterface> currentHand = myStartWindow->getSession()->getCurrentGame()->getCurrentHand();
 
 	int nonfoldPlayerCounter = 0;

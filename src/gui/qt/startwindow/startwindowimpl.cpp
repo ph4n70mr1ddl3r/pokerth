@@ -625,6 +625,7 @@ void startWindowImpl::networkError(int errorID, int /*osErrorID*/)
 	break;
 	case ERR_NET_PLAYER_KICKED: {
 		mySession->terminateNetworkClient();
+		connectionTerminated = true;
 		MyMessageBox::warning(this, tr("Network Error"),
 							  tr("You were kicked from the server."),
 							  QMessageBox::Close);
@@ -632,6 +633,7 @@ void startWindowImpl::networkError(int errorID, int /*osErrorID*/)
 	break;
 	case ERR_NET_PLAYER_BANNED: {
 		mySession->terminateNetworkClient();
+		connectionTerminated = true;
 		MyMessageBox::warning(this, tr("Network Error"),
 							  tr("You were temporarily banned from the server."),
 							  QMessageBox::Close);
@@ -639,6 +641,7 @@ void startWindowImpl::networkError(int errorID, int /*osErrorID*/)
 	break;
 	case ERR_NET_PLAYER_BLOCKED: {
 		mySession->terminateNetworkClient();
+		connectionTerminated = true;
 		MyMessageBox::warning(this, tr("Network Error"),
 							  tr("Your account is blocked indefinitely."),
 							  QMessageBox::Close);
@@ -646,6 +649,7 @@ void startWindowImpl::networkError(int errorID, int /*osErrorID*/)
 	break;
 	case ERR_NET_SESSION_TIMED_OUT: {
 		mySession->terminateNetworkClient();
+		connectionTerminated = true;
 		MyMessageBox::warning(this, tr("Network Error"),
 							  tr("Your server connection timed out due to inactivity. You are very welcome to reconnect!"),
 							  QMessageBox::Close);
