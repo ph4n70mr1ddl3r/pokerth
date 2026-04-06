@@ -900,6 +900,7 @@ void startWindowImpl::networkMessage(unsigned msgId)
 
 void startWindowImpl::networkStart(boost::shared_ptr<Game> game)
 {
+	if (!mySession) return;
 	mySession->startClientGame(game);
 
 	//send playerNicksList to chat for nick-autocompletition
@@ -911,6 +912,7 @@ QStringList startWindowImpl::getPlayerNicksList() const
 {
 
 	QStringList list;
+	if (!mySession || !mySession->getCurrentGame()) return list;
 	PlayerListConstIterator it_c;
 	PlayerList seatList = mySession->getCurrentGame()->getSeatsList();
 	for (it_c=seatList->begin(); it_c!=seatList->end(); ++it_c) {
