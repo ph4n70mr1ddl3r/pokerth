@@ -1977,6 +1977,11 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
 			}
 		}
 		if (shouldEstablish) {
+			// Clear failed login counter on successful auth
+			{
+				boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
+				m_failedLoginMap.erase(clientAddr);
+			}
 			EstablishSession(tmpSession);
 		} else {
 			SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
@@ -2527,9 +2532,13 @@ ServerLobbyThread::TimerSaveStatisticsFile(const boost::system::error_code &ec)
 				o << SERVER_STATISTICS_STR_CUR_PLAYERS " " << statCopy.numberOfPlayersOnServer << endl;
 				o << SERVER_STATISTICS_STR_CUR_GAMES " " << statCopy.numberOfGamesOpen << endl;
 				o.flush();
-				{
-					boost::mutex::scoped_lock lock(m_statMutex);
-					m_statDataChanged = false;
+				if (o.good()) {
+					{
+						boost::mutex::scoped_lock lock(m_statMutex);
+						m_statDataChanged = false;
+					}
+				} else {
+					LOG_ERROR("Failed to write statistics file: " << statFileName);
 				}
 			} else {
 				LOG_ERROR("Failed to open statistics file: " << statFileName);

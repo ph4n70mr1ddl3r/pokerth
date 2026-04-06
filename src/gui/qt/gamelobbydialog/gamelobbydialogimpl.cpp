@@ -1681,6 +1681,7 @@ void gameLobbyDialogImpl::showGameListContextMenu(QPoint p)
 
 void gameLobbyDialogImpl::invitePlayerToCurrentGame()
 {
+	if(!mySession) return;
 	if(myNickListSelectionModel->currentIndex().isValid()) {
 		mySession->invitePlayerToCurrentGame(myNickListSelectionModel->currentIndex().data(Qt::UserRole).toUInt());
 	}
@@ -1724,12 +1725,13 @@ void gameLobbyDialogImpl::showInvitationDialog(unsigned gameId, unsigned playerI
 
 void gameLobbyDialogImpl::chatInfoPlayerInvitation(unsigned gameId, unsigned playerIdWho, unsigned playerIdFrom)
 {
+	if(!mySession) return;
 	textBrowser_ChatDisplay->append(tr("<span style='color:blue;'>%1 has been invited to %2 by %3.</span>").arg(QString::fromUtf8(mySession->getClientPlayerInfo(playerIdWho).playerName.c_str())).arg(QString::fromUtf8(mySession->getClientGameInfo(gameId).name.c_str())).arg(QString::fromUtf8(mySession->getClientPlayerInfo(playerIdFrom).playerName.c_str())));
 }
 
 void gameLobbyDialogImpl::chatInfoPlayerRejectedInvitation(unsigned gameId, unsigned playerIdWho, DenyGameInvitationReason reason)
 {
-
+	if(!mySession) return;
 	QString string;
 	if(reason == DENY_GAME_INVITATION_NO) string = tr("<span style='color:red;'>%1 has rejected the invitation to %2.</span>");
 

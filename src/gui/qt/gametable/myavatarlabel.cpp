@@ -112,6 +112,7 @@ void MyAvatarLabel::contextMenuEvent ( QContextMenuEvent *event )
 					if(j == 0) {
 						action_EditTip->setDisabled(true);
 					}
+					if(!myW || !myW->myStartWindow || !myW->myStartWindow->getSession()) return;
 					if(myW->myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_NETWORK) {
 						action_EditTip->setDisabled(true);
 					}
@@ -151,9 +152,11 @@ void MyAvatarLabel::showContextMenu(const QPoint &pos)
 
 void MyAvatarLabel::setPlayerRating(QString playerInfo)
 {
+	if (!myW || !myW->myStartWindow || !myW->myStartWindow->getSession()) return;
 	int found=0;
 	QStringList playerInfoList=playerInfo.split("\"", Qt::KeepEmptyParts, Qt::CaseSensitive), tipInfo;
 	boost::shared_ptr<Game> currentGame = myW->myStartWindow->getSession()->getCurrentGame();
+	if (!currentGame) return;
 	PlayerList seatsList = currentGame->getSeatsList();
 	std::list<std::string> tipsList = myW->getMyConfig()->readConfigStringList("PlayerTooltips");
 	std::list<std::string> result;
@@ -210,6 +213,7 @@ void MyAvatarLabel::refreshStars()
 	PlayerList seatsList = curGame->getSeatsList();
 	for (seatPlace=0,it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
 		for(int i=1; i<=5; i++)myW->playerStarsArray[i][seatPlace]->setText("");
+		if(!myW || !myW->myStartWindow || !myW->myStartWindow->getSession()) return;
 		if(myW->myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_INTERNET && (*it_c)->getMyType() != PLAYER_TYPE_COMPUTER) {
 			if((*it_c)->getMyStayOnTableStatus() == true && (*it_c)->getMyName()!="" && seatPlace!=0) {
 

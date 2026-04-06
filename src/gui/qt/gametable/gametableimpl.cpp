@@ -1208,6 +1208,7 @@ void gameTableImpl::dealHoleCards()
 	// Karten der Gegner und eigene Karten austeilen
 	int j = 0;
 	boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
+	if (!currentGame) return;
 
 	PlayerListConstIterator it_c;
 	PlayerList seatsList = currentGame->getSeatsList();
@@ -1304,6 +1305,7 @@ void gameTableImpl::dealFlopCards3()
 void gameTableImpl::dealFlopCards4()
 {
 	if (!myStartWindow || !myStartWindow->getSession()) return;
+	if (!myStartWindow->getSession()->getCurrentGame() || !myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) return;
 
 	int tempBoardCardsArray[5];
 
@@ -1325,6 +1327,7 @@ void gameTableImpl::dealFlopCards4()
 void gameTableImpl::dealFlopCards5()
 {
     if (!myStartWindow || !myStartWindow->getSession()) return;
+    if (!myStartWindow->getSession()->getCurrentGame() || !myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) return;
 
     int tempBoardCardsArray[5];
     myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getBoard()->getMyCards(tempBoardCardsArray);
@@ -1345,6 +1348,7 @@ void gameTableImpl::dealFlopCards5()
 void gameTableImpl::dealFlopCards6()
 {
 	if (!myStartWindow || !myStartWindow->getSession()) return;
+	if (!myStartWindow->getSession()->getCurrentGame() || !myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) return;
 
 	int tempBoardCardsArray[5];
 	myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getBoard()->getMyCards(tempBoardCardsArray);
@@ -1390,6 +1394,7 @@ void gameTableImpl::dealTurnCards1()
 void gameTableImpl::dealTurnCards2()
 {
 	if (!myStartWindow || !myStartWindow->getSession()) return;
+	if (!myStartWindow->getSession()->getCurrentGame() || !myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) return;
 
 	int tempBoardCardsArray[5];
 	myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getBoard()->getMyCards(tempBoardCardsArray);
@@ -1436,6 +1441,7 @@ void gameTableImpl::dealRiverCards1()
 void gameTableImpl::dealRiverCards2()
 {
 	if (!myStartWindow || !myStartWindow->getSession()) return;
+	if (!myStartWindow->getSession()->getCurrentGame() || !myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) return;
 
 	int tempBoardCardsArray[5];
 	myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getBoard()->getMyCards(tempBoardCardsArray);
@@ -2794,6 +2800,7 @@ void gameTableImpl::handSwitchRounds()
 void gameTableImpl::nextRoundCleanGui()
 {
 	if (!myStartWindow || !myStartWindow->getSession()) return;
+	if (!myStartWindow->getSession()->getCurrentGame() || !myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) return;
 
 	QPixmap onePix = QPixmap::fromImage(QImage(myAppDataPath +"gfx/gui/misc/1px.png"));
 	for (int i=0; i<5; i++ ) {
