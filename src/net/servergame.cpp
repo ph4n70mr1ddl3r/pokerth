@@ -452,6 +452,11 @@ ServerGame::UpdateRankingMap()
 
 			removed_i = next_removed_i;
 		}
+		// Apply final rank decrement for last batch of equal-cash players
+		if (currentRankCounter > 0) {
+			currentRank -= currentRankCounter;
+			if (currentRank < 1) currentRank = 1;
+		}
 	}
 	if (activePlayers.size() == 1) {
 		SetPlayerPlace((*(activePlayers.begin()))->getMyUniqueID(), 1);

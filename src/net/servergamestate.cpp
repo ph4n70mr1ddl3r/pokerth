@@ -467,11 +467,11 @@ AbstractServerGameStateReceiving::AcceptNewSession(boost::shared_ptr<ServerGame>
 		++player_i;
 	}
 
+	// Accept session first, so it's visible to other operations.
+	server->GetSessionManager().AddSession(session);
+
 	// Send "Player Joined" to other fully connected clients.
 	server->SendToAllPlayers(CreateNetPacketPlayerJoined(server->GetId(), *session->GetPlayerData()), SessionData::Game);
-
-	// Accept session.
-	server->GetSessionManager().AddSession(session);
 
 	// Notify lobby.
 	server->GetLobbyThread().NotifyPlayerJoinedGame(server->GetId(), session->GetPlayerData()->GetUniqueId());

@@ -494,6 +494,7 @@ void gameTableImpl::callSettingsDialog()
 
 void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 #ifndef GUI_800x480 //currently not for mobile guis because we just use the default style here
 	//apply card deck style
 	myCardDeckStyle->readStyleFile(QString::fromUtf8(myConfig->readConfigString("CurrentCardDeckStyle").c_str()));
@@ -1467,6 +1468,8 @@ void gameTableImpl::dealRiverCards2()
 void gameTableImpl::provideMyActions(int mode)
 {
 
+	if (!myStartWindow || !myStartWindow->getSession() || !myStartWindow->getSession()->getCurrentGame() || !myStartWindow->getSession()->getCurrentGame()->getCurrentHand()) return;
+
 	QString pushButtonFoldString;
 	QString pushButtonBetRaiseString;
 	QString lastPushButtonBetRaiseString = pushButton_BetRaise->text();
@@ -1645,6 +1648,7 @@ void gameTableImpl::provideMyActions(int mode)
 void gameTableImpl::meInAction()
 {
 
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 	myButtonsCheckable(false);
 
 	horizontalSlider_bet->setEnabled(true);
@@ -3223,6 +3227,7 @@ void gameTableImpl::showMaximized ()
 
 void gameTableImpl::closeGameTable()
 {
+	if (!myStartWindow || !myStartWindow->getSession()) return;
 	bool close = true;
 
 	if(myUniversalMessageDialog->checkIfMesssageWillBeDisplayed(CLOSE_GAMETABLE_QUESTION ) && (myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_INTERNET || myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_NETWORK ) && this->isVisible()) {
