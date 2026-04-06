@@ -1135,6 +1135,7 @@ void gameLobbyDialogImpl::newGameAdmin(unsigned playerId, QString)
 
 void gameLobbyDialogImpl::refreshConnectedPlayerAvatars()
 {
+	if (!mySession) return;
 
 	QTreeWidgetItemIterator it(treeWidget_connectedPlayers);
 	while (*it) {

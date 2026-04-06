@@ -256,7 +256,11 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 			}
 			} catch (const std::exception& e) {
 				LOG_ERROR("Exception in IRC admin bot chat message handler: " << e.what());
-				m_ircAdminThread->SendChatMessage(nickName + ": Syntax error. Please check the command.");
+				try {
+					m_ircAdminThread->SendChatMessage(nickName + ": Syntax error. Please check the command.");
+				} catch (...) {
+					LOG_ERROR("Failed to send syntax error message to IRC admin bot");
+				}
 			}
 	}
 }
@@ -345,8 +349,8 @@ ServerAdminBot::NotifyLoop(const boost::system::error_code& ec)
 	if (!ec) {
 		boost::mutex::scoped_lock lock(m_notifyMutex);
 
-		if (m_notifyTimeoutMinutes && m_notifyTimer.elapsed().total_seconds() >= m_notifyCounter * m_notifyIntervalMinutes * 60) {
-			int remainingMinutes = m_notifyTimeoutMinutes - m_notifyCounter * m_notifyIntervalMinutes;
+		if (m_notifyTimeoutMinutes && m_notifyTimer.elapsed().total_seconds() >= static_cast<long long>(m_notifyCounter) * m_notifyIntervalMinutes * 60) {
+			int remainingMinutes = static_cast<int>(m_notifyTimeoutMinutes - static_cast<long long>(m_notifyCounter) * m_notifyIntervalMinutes);
 			++m_notifyCounter;
 			if (remainingMinutes > 1) {
 				ostringstream notifyStream;

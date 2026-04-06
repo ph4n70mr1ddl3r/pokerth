@@ -73,7 +73,7 @@ Thread::~Thread() noexcept
 			m_threadObj.reset();
 		}
 		if (threadToJoin)
-			threadToJoin->join();
+			threadToJoin->detach();
 	}
 }
 
