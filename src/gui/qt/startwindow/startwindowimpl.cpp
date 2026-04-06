@@ -413,6 +413,7 @@ void startWindowImpl::networkError(int errorID, int /*osErrorID*/)
 {
 
 	hideTimeoutDialog();
+	bool connectionTerminated = false;
 	switch (errorID) {
 	case ERR_SOCK_SERVERADDR_NOT_SET: {
 		MyMessageBox::warning(this, tr("Network Error"),
@@ -705,11 +706,13 @@ void startWindowImpl::networkError(int errorID, int /*osErrorID*/)
 							  QMessageBox::Close);
 	}
 	}
-	// close dialogs
-	myGameLobbyDialog->reject();
-	myConnectToServerDialog->reject();
-	myGuiInterface->getMyW()->close();
-	myInternetGameLoginDialog->reject();
+	// close dialogs only for fatal errors that terminated the connection
+	if (connectionTerminated) {
+		myGameLobbyDialog->reject();
+		myConnectToServerDialog->reject();
+		myGuiInterface->getMyW()->close();
+		myInternetGameLoginDialog->reject();
+	}
 
 }
 

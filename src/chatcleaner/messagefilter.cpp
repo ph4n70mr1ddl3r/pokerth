@@ -238,12 +238,16 @@ void MessageFilter::refreshConfig()
 void MessageFilter::cleanKickCounterList()
 {
 	QMutexLocker locker(&m_dataMutex);
+	QList<QString> keysToRemove;
 	QMapIterator<QString, ClientKickInfos> it(myClientKickCounterList);
 	while (it.hasNext()) {
 		it.next();
 		if(timer.elapsed().total_seconds() - it.value().lastKickTimestamp > config->readConfigInt("SecondsToForgetAboutKick")) {
 //            qDebug() << it.key() << "removed from kick counter list" << endl;
-			myClientKickCounterList.remove(it.key());
+			keysToRemove.append(it.key());
 		}
+	}
+	for (const auto &key : keysToRemove) {
+		myClientKickCounterList.remove(key);
 	}
 }
