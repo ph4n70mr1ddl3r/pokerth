@@ -1953,7 +1953,7 @@ void gameTableImpl::mySet()
 			}
 			myActionIsRaise = 0;
 
-			currentHand->getCurrentBeRo()->setMinimumRaise(humanPlayer->getMySet() - currentHand->getCurrentBeRo()->getHighestSet());
+			currentHand->getCurrentBeRo()->setMinimumRaise(std::max(0, humanPlayer->getMySet() - currentHand->getCurrentBeRo()->getHighestSet()));
 		}
 
 		if(myActionIsBet) {
@@ -1963,7 +1963,9 @@ void gameTableImpl::mySet()
 			}
 			myActionIsBet = 0;
 
-			currentHand->getCurrentBeRo()->setMinimumRaise(humanPlayer->getMySet());
+			if(humanPlayer->getMySet() > 0) {
+				currentHand->getCurrentBeRo()->setMinimumRaise(humanPlayer->getMySet());
+			}
 		}
 
 		currentHand->getCurrentBeRo()->setHighestSet(humanPlayer->getMySet());
