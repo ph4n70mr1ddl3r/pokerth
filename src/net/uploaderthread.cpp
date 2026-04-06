@@ -71,7 +71,7 @@ UploaderThread::Main()
 
 			if (!m_uploadInProgress) {
 				string lastMsg(m_uploadHelper->ResetLastMessage());
-				if (!lastMsg.empty() && m_callback) {
+				if (!lastMsg.empty() && !lastfile.empty() && m_callback) {
 					m_callback->UploadCompleted(lastfile, lastMsg);
 				}
 				Msleep(UPLOAD_DELAY_MSEC);

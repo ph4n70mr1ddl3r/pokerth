@@ -165,6 +165,12 @@ void
 ServerBanManager::ClearBanList()
 {
 	boost::mutex::scoped_lock lock(m_banMutex);
+	for (auto &entry : m_banPlayerNameMap) {
+		if (entry.second.timer) entry.second.timer->cancel();
+	}
+	for (auto &entry : m_banIPAddressMap) {
+		if (entry.second.timer) entry.second.timer->cancel();
+	}
 	m_banPlayerNameMap.clear();
 	m_banIPAddressMap.clear();
 }

@@ -125,10 +125,14 @@ void irc_auto_rename_nick(irc_session_t *session)
 			if (!context->nick.empty() && isdigit(*end)) {
 				if (*end != '9')
 					*end = (*end) + 1;
-				else
-					context->nick = context->nick + "0";
-			} else
-				context->nick = context->nick + "1";
+				else {
+					if (context->nick.length() < IRC_MAX_NICK_LEN)
+						context->nick = context->nick + "0";
+				}
+			} else {
+				if (context->nick.length() < IRC_MAX_NICK_LEN)
+					context->nick = context->nick + "1";
+			}
 		}
 		irc_cmd_nick(session, context->nick.c_str());
 		context->renameTries++;
@@ -423,7 +427,7 @@ IrcThread::Main()
 	do {
 		if (IrcInit())
 			IrcMain(); // Will loop until terminated.
-	} while (!ShouldTerminate() && !GetContext().session && m_lastConnectTimer.elapsed().total_seconds() >= IRC_MIN_RECONNECT_INTERVAL_SEC);
+	} while (!ShouldTerminate() && m_lastConnectTimer.elapsed().total_seconds() >= IRC_MIN_RECONNECT_INTERVAL_SEC);
 }
 
 bool
