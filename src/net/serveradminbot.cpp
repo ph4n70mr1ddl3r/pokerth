@@ -333,8 +333,13 @@ ServerAdminBot::CheckFileHandler(const boost::system::error_code& ec)
 		fs::path cachePath(m_cacheDir);
 		cachePath /= "SignalAdminReconnect";
 		if (fs::exists(cachePath)) {
-			fs::remove(cachePath);
-			Reconnect();
+			std::error_code removeEc;
+			fs::remove(cachePath, removeEc);
+			if (!removeEc) {
+				Reconnect();
+			} else {
+				LOG_ERROR("Failed to remove signal file: " << removeEc.message());
+			}
 		}
 		m_checkFileTimer.expires_after(seconds(SERVER_CHECK_IRC_BOT_INTERVAL_SEC));
 		m_checkFileTimer.async_wait(

@@ -542,7 +542,11 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 			}
 
 			for (const auto &file : filesToRemove) {
-				fs::remove(fs::path(file));
+				boost::system::error_code removeEc;
+				fs::remove(fs::path(file), removeEc);
+				if (removeEc) {
+					LOG_ERROR("Failed to remove cached avatar: " << file << " - " << removeEc.message());
+				}
 			}
 		}
 	} catch (const std::exception& e) {

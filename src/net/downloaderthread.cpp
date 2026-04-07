@@ -97,6 +97,13 @@ DownloaderThread::Main()
 				if (myCurDownloadData) {
 					fs::path filepath(myCurDownloadData->filename);
 					std::ifstream instream(filepath.string().c_str(), ios_base::in | ios_base::binary);
+					if (!instream.is_open()) {
+						LOG_ERROR("Download: failed to open file: " << filepath.string());
+						std::error_code ec;
+						fs::remove(filepath, ec);
+						myCurDownloadData.reset();
+						continue;
+					}
 					// Find out file size.
 					// Not fully portable, but works on win/linux/mac.
 					instream.seekg(0, ios_base::beg);
@@ -146,6 +153,14 @@ DownloaderThread::Main()
 			}
 		} catch (const NetException &e) {
 			LOG_ERROR("Download failed: " << e.what());
+			myDownloadInProgress = false;
+			myCurDownloadData.reset();
+		} catch (const std::exception &e) {
+			LOG_ERROR("Download error: " << e.what());
+			myDownloadInProgress = false;
+			myCurDownloadData.reset();
+		} catch (...) {
+			LOG_ERROR("Unknown download error");
 			myDownloadInProgress = false;
 			myCurDownloadData.reset();
 		}
