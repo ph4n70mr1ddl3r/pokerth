@@ -264,7 +264,7 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 
 	// ERROR-Outputs
 
-	if(pot!=0) {
+	if(pot>0) {
 		LOG_ERROR(__FILE__ << " (" << __LINE__ << "): distributePot-ERROR: Pot = " << pot);
 		if (!winners.empty()) {
 			unsigned winnerId = winners.front();
@@ -275,6 +275,9 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 				(*it)->setLastMoneyWon((*it)->getLastMoneyWon() + pot);
 			}
 		}
+		pot = 0;
+	} else if(pot<0) {
+		LOG_ERROR(__FILE__ << " (" << __LINE__ << "): distributePot-ERROR: Negative Pot = " << pot);
 		pot = 0;
 	}
 

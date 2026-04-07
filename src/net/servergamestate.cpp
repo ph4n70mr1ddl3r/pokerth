@@ -119,8 +119,10 @@ static void SendPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInterfa
 
 static void SendNewRoundCards(ServerGame &server, Game &curGame, int state)
 {
+	auto currentHand = curGame.getCurrentHand();
+	if (!currentHand) return;
 	std::array<int, 5> cards{};
-	curGame.getCurrentHand()->getBoard()->getMyCards(cards);
+	currentHand->getBoard()->getMyCards(cards);
 	switch(state) {
 	case GAME_STATE_PREFLOP: {
 		// nothing to do
@@ -168,34 +170,35 @@ static void PerformPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInte
 	boost::shared_ptr<Game> curGame = server.GetGame();
 	if (!player.get())
 		throw ServerException(__FILE__, __LINE__, ERR_NET_NO_CURRENT_PLAYER, 0);
+	auto hand = curGame ? curGame->getCurrentHand() : nullptr;
 	player->setMyAction(action);
 	// Only change the player bet if action is not fold/check
-	if (action != PLAYER_ACTION_FOLD && action != PLAYER_ACTION_CHECK) {
+	if (action != PLAYER_ACTION_FOLD && action != PLAYER_ACTION_CHECK && hand) {
 
 		player->setMySet(bet);
 
 		// update minimumRaise and lastActionPlayer
 		switch(action) {
 		case PLAYER_ACTION_BET: {
-			curGame->getCurrentHand()->getCurrentBeRo()->setMinimumRaise(bet);
-			curGame->getCurrentHand()->setLastActionPlayerID(player->getMyUniqueID());
+			hand->getCurrentBeRo()->setMinimumRaise(bet);
+			hand->setLastActionPlayerID(player->getMyUniqueID());
 		}
 		break;
 		case PLAYER_ACTION_RAISE: {
-			int newRaise = player->getMySet() - curGame->getCurrentHand()->getCurrentBeRo()->getHighestSet();
+			int newRaise = player->getMySet() - hand->getCurrentBeRo()->getHighestSet();
 			if (newRaise > 0) {
-				curGame->getCurrentHand()->getCurrentBeRo()->setMinimumRaise(newRaise);
+				hand->getCurrentBeRo()->setMinimumRaise(newRaise);
 			}
-			curGame->getCurrentHand()->setLastActionPlayerID(player->getMyUniqueID());
+			hand->setLastActionPlayerID(player->getMyUniqueID());
 		}
 		break;
 		case PLAYER_ACTION_ALLIN: {
-			int allInRaise = player->getMySet() - curGame->getCurrentHand()->getCurrentBeRo()->getHighestSet();
-			if(allInRaise > curGame->getCurrentHand()->getCurrentBeRo()->getMinimumRaise()) {
-				curGame->getCurrentHand()->getCurrentBeRo()->setMinimumRaise(allInRaise);
+			int allInRaise = player->getMySet() - hand->getCurrentBeRo()->getHighestSet();
+			if(allInRaise > hand->getCurrentBeRo()->getMinimumRaise()) {
+				hand->getCurrentBeRo()->setMinimumRaise(allInRaise);
 			}
 			if(allInRaise > 0) {
-				curGame->getCurrentHand()->setLastActionPlayerID(player->getMyUniqueID());
+				hand->setLastActionPlayerID(player->getMyUniqueID());
 			}
 		}
 		break;
@@ -204,10 +207,10 @@ static void PerformPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInte
 		}
 
 		// update highestSet
-		if (player->getMySet() > curGame->getCurrentHand()->getCurrentBeRo()->getHighestSet())
-			curGame->getCurrentHand()->getCurrentBeRo()->setHighestSet(player->getMySet());
+		if (player->getMySet() > hand->getCurrentBeRo()->getHighestSet())
+			hand->getCurrentBeRo()->setHighestSet(player->getMySet());
 		// Update total sets.
-		curGame->getCurrentHand()->getBoard()->collectSets();
+		hand->getBoard()->collectSets();
 	}
 
 	SendPlayerAction(server, player);
@@ -1086,13 +1089,21 @@ void
 ServerGameStateHand::TimerShowCards(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server)
 {
 	if (!ec && server->IsCurrentState(this)) {
-		boost::shared_ptr<Game> curGame = server->GetGame();
-		SendNewRoundCards(*server, *curGame, curGame->getCurrentHand()->getCurrentRound());
+		try {
+			boost::shared_ptr<Game> curGame = server->GetGame();
+			auto currentHand = curGame->getCurrentHand();
+			if (currentHand) {
+				SendNewRoundCards(*server, *curGame, currentHand->getCurrentRound());
 
-		server->GetStateTimer1().expires_after(seconds(GetDealCardsDelaySec(*server)));
-		server->GetStateTimer1().async_wait(
-			boost::bind(
-				&ServerGameStateHand::TimerLoop, this, boost::asio::placeholders::error, server));
+				server->GetStateTimer1().expires_after(seconds(GetDealCardsDelaySec(*server)));
+				server->GetStateTimer1().async_wait(
+					boost::bind(
+						&ServerGameStateHand::TimerLoop, this, boost::asio::placeholders::error, server));
+			}
+		} catch (const PokerTHException &e) {
+			LOG_ERROR("Game " << server->GetId() << " - TimerShowCards exception: " << e.what());
+			server->RemoveAllSessions();
+		}
 	}
 }
 
@@ -1120,8 +1131,13 @@ void
 ServerGameStateHand::TimerNextHand(const boost::system::error_code &ec, boost::shared_ptr<ServerGame> server)
 {
 	if (!ec && server->IsCurrentState(this)) {
-		StartNewHand(server);
-		TimerLoop(ec, server);
+		try {
+			StartNewHand(server);
+			TimerLoop(ec, server);
+		} catch (const PokerTHException &e) {
+			LOG_ERROR("Game " << server->GetId() << " - TimerNextHand exception: " << e.what());
+			server->RemoveAllSessions();
+		}
 	}
 }
 
