@@ -83,7 +83,7 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 	myBoard->setMyCards(tempBoardArray);
 	for(it=activePlayerList->begin(); it!=activePlayerList->end(); ++it, k++) {
 
-		(*it)->getMyBestHandPosition(bestHandPos);
+		bestHandPos = {-1, -1, -1, -1, -1};
 
 		for(j=0; j<2; j++) {
 			tempPlayerArray[j] = cardsArray[2*k+j+5];

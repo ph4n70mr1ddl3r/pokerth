@@ -2266,18 +2266,20 @@ ServerLobbyThread::InternalRemoveGame(boost::shared_ptr<ServerGame> game)
 		wasInMap = m_gameMap.erase(game->GetId()) > 0;
 	}
 	if (wasInMap) {
-		boost::mutex::scoped_lock lock(m_statMutex);
-		if (m_statData.numberOfGamesOpen) {
-			--m_statData.numberOfGamesOpen;
-			m_statDataChanged = true;
+		{
+			boost::mutex::scoped_lock lock(m_statMutex);
+			if (m_statData.numberOfGamesOpen) {
+				--m_statData.numberOfGamesOpen;
+				m_statDataChanged = true;
+			}
 		}
+		game->ResetComputerPlayerList();
+		game->RemoveAllSessions();
+		game->Exit();
+		boost::shared_ptr<NetPacket> packet = CreateNetPacketGameListUpdate(game->GetId(), GAME_MODE_CLOSED);
+		m_sessionManager.SendLobbyMsgToAllSessions(GetSender(), packet, SessionData::Established);
+		m_gameSessionManager.SendLobbyMsgToAllSessions(GetSender(), packet, SessionData::Game);
 	}
-	game->ResetComputerPlayerList();
-	game->RemoveAllSessions();
-	game->Exit();
-	boost::shared_ptr<NetPacket> packet = CreateNetPacketGameListUpdate(game->GetId(), GAME_MODE_CLOSED);
-	m_sessionManager.SendLobbyMsgToAllSessions(GetSender(), packet, SessionData::Established);
-	m_gameSessionManager.SendLobbyMsgToAllSessions(GetSender(), packet, SessionData::Game);
 }
 
 void

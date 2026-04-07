@@ -167,10 +167,6 @@ ClientThread::SendPlayerAction()
 {
 	// Warning: This function is called in the context of the GUI thread.
 	// Create a network packet containing the current player action.
-	{
-		boost::mutex::scoped_lock lock(m_pingDataMutex);
-		m_pingData.StartPing();
-	}
 	boost::shared_ptr<NetPacket> packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_MyActionRequestMessage);
 	MyActionRequestMessage *netMyAction = packet->GetMsg()->mutable_myactionrequestmessage();
@@ -186,6 +182,10 @@ ClientThread::SendPlayerAction()
 	boost::shared_ptr<PlayerInterface> myPlayer = seatsList->front();
 	if (!myPlayer) {
 		return;
+	}
+	{
+		boost::mutex::scoped_lock lock(m_pingDataMutex);
+		m_pingData.StartPing();
 	}
 	netMyAction->set_handnum(game->getCurrentHandID());
 	auto currentHand = game->getCurrentHand();
@@ -628,8 +628,10 @@ ClientThread::Main()
 	GetStateTimer().cancel();
 	CancelTimers();
 	// Terminate sub-threads.
-	m_avatarDownloader->SignalTermination();
-	m_avatarDownloader->Join(DOWNLOADER_THREAD_TERMINATE_TIMEOUT);
+	if (m_avatarDownloader) {
+		m_avatarDownloader->SignalTermination();
+		m_avatarDownloader->Join(DOWNLOADER_THREAD_TERMINATE_TIMEOUT);
+	}
 
 	ClearAuthContext();
 }
@@ -1371,6 +1373,9 @@ ClientThread::MapPlayerDataList()
 		PlayerDataList::const_iterator i = m_playerDataList.begin();
 		PlayerDataList::const_iterator end = m_playerDataList.end();
 		int numPlayers = GetStartData().numberOfPlayers;
+		if (numPlayers <= 0) {
+			throw ClientException(__FILE__, __LINE__, ERR_SOCK_CREATION_FAILED, 0);
+		}
 
 		while (i != end) {
 			auto tmpData = boost::make_shared<PlayerData>(*(*i));
