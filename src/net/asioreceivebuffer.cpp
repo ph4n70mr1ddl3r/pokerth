@@ -83,7 +83,11 @@ AsioReceiveBuffer::HandleRead(boost::shared_ptr<SessionData> session, const boos
                 }
                 recvBufUsed += bytesRead;
                 ScanPackets(session);
+                if (session->GetState() == SessionData::Closed)
+                    return;
                 ProcessPackets(session);
+                if (session->GetState() == SessionData::Closed)
+                    return;
                 StartAsyncRead(session);
             } else if (error == boost::asio::error::interrupted || error == boost::asio::error::try_again) {
                 LOG_ERROR("Session " << session->GetId() << " - recv interrupted: " << error);
