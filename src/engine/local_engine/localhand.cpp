@@ -438,11 +438,11 @@ void LocalHand::assignButtons()
 			nextActivePlayerFound = true;
 			if(activePlayerList->size() > 2) {
 				//small blind normal
-				(*it)->setMyButton(2);
+				(*it)->setMyButton(BUTTON_SMALL_BLIND);
 				smallBlindPosition = (*it)->getMyUniqueID();
 			} else {
 				//big blind in heads up
-				(*it)->setMyButton(3);
+				(*it)->setMyButton(BUTTON_BIG_BLIND);
 				bigBlindPosition = (*it)->getMyUniqueID();
 				// lastPlayerAction for showing cards
 			}
@@ -456,11 +456,11 @@ void LocalHand::assignButtons()
 
 			if(activePlayerList->size() > 2) {
 				//big blind normal
-				(*it)->setMyButton(3);
+				(*it)->setMyButton(BUTTON_BIG_BLIND);
 				bigBlindPosition = (*it)->getMyUniqueID();
 			} else {
 				//small blind in heads up
-				(*it)->setMyButton(2);
+				(*it)->setMyButton(BUTTON_SMALL_BLIND);
 				smallBlindPosition = (*it)->getMyUniqueID();
 			}
 

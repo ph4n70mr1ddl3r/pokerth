@@ -57,9 +57,9 @@ ClientHand::ClientHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boos
 
 		tmpPlayer->setMyRoundStartCash(tmpPlayer->getMyCash());
 		tmpPlayer->setMyCardsValueInt(0);
-		tmpPlayer->setMyButton(0);
+		tmpPlayer->setMyButton(BUTTON_NONE);
 		if (tmpPlayer->getMyUniqueID() == dealerPosition)
-			tmpPlayer->setMyButton(1);
+			tmpPlayer->setMyButton(BUTTON_DEALER);
 	}
 
 	// the rest of the buttons are assigned later as received from the server.

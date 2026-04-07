@@ -324,6 +324,7 @@ void startWindowImpl::callRejoinPossibleDialog(unsigned gameId)
 
 void startWindowImpl::showClientDialog()
 {
+	if (!mySession) return;
 	if (mySession->getGameType() == Session::GAME_TYPE_INTERNET) {
 		if (myGuiInterface->getMyW()->isVisible())
 			myGuiInterface->getMyW()->closeMessageBoxes();
@@ -946,7 +947,7 @@ bool startWindowImpl::eventFilter(QObject *obj, QEvent *event)
 	if (event->type() == QEvent::Close) {
 		event->ignore();
 		//        mySession->getMyLog()->closeLogDbAtExit();
-		return QMainWindow::eventFilter(obj, event);
+		return true;
 	} else {
 		// pass the event on to the parent class
 		return QMainWindow::eventFilter(obj, event);

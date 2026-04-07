@@ -95,6 +95,8 @@ void
 ServerGame::Exit()
 {
 	m_voteKickTimer.cancel();
+	m_stateTimer1.cancel();
+	m_stateTimer2.cancel();
 	// Skip SetState if already in Final state (RemoveAllSessions sets it first)
 	{
 		boost::mutex::scoped_lock lock(m_curStateMutex);
@@ -529,9 +531,14 @@ ServerGame::StoreLastGames(const PlayerDataList &playerDataList)
 void
 ServerGame::RemoveAutoLeavePlayers()
 {
-	boost::mutex::scoped_lock lock(m_autoLeavePlayerListMutex);
-	PlayerIdList::const_iterator i = m_autoLeavePlayerList.begin();
-	PlayerIdList::const_iterator end = m_autoLeavePlayerList.end();
+	PlayerIdList tmpList;
+	{
+		boost::mutex::scoped_lock lock(m_autoLeavePlayerListMutex);
+		tmpList = m_autoLeavePlayerList;
+		m_autoLeavePlayerList.clear();
+	}
+	PlayerIdList::const_iterator i = tmpList.begin();
+	PlayerIdList::const_iterator end = tmpList.end();
 	while (i != end) {
 		boost::shared_ptr<SessionData> tmpSession = GetSessionManager().GetSessionByUniquePlayerId(*i);
 		// Only remove if the player was found.
@@ -539,7 +546,6 @@ ServerGame::RemoveAutoLeavePlayers()
 			MoveSessionToLobby(tmpSession, NTF_NET_REMOVED_ON_REQUEST);
 		++i;
 	}
-	m_autoLeavePlayerList.clear();
 }
 
 void
@@ -946,18 +952,21 @@ ServerGame::IsComputerPlayerActive(unsigned playerId) const
 void
 ServerGame::ResetComputerPlayerList()
 {
-	boost::mutex::scoped_lock lock(m_computerPlayerListMutex);
+	PlayerDataList tmpList;
+	{
+		boost::mutex::scoped_lock lock(m_computerPlayerListMutex);
+		tmpList = m_computerPlayerList;
+		m_computerPlayerList.clear();
+	}
 
-	PlayerDataList::iterator i = m_computerPlayerList.begin();
-	PlayerDataList::iterator end = m_computerPlayerList.end();
+	PlayerDataList::iterator i = tmpList.begin();
+	PlayerDataList::iterator end = tmpList.end();
 
 	while (i != end) {
 		GetLobbyThread().RemoveComputerPlayer(*i);
 		RemovePlayerData(*i, NTF_NET_REMOVED_ON_REQUEST);
 		++i;
 	}
-
-	m_computerPlayerList.clear();
 }
 
 void
