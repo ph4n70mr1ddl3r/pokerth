@@ -2328,10 +2328,13 @@ ServerLobbyThread::HandleReAddedSession(boost::shared_ptr<SessionData> session)
 	// Remove session from game session list.
 	m_gameSessionManager.RemoveSession(session->GetId());
 
+	// Clear game pointer before re-adding or closing, so CloseSession
+	// does not re-enter the game's RemoveSession for this session.
+	session->SetGame(boost::shared_ptr<ServerGame>());
+
 	if (m_sessionManager.GetRawSessionCount() <= SERVER_MAX_NUM_LOBBY_SESSIONS) {
 		// Set state (back) to established.
 		session->SetState(SessionData::Established);
-		session->SetGame(boost::shared_ptr<ServerGame>());
 		// Add session to lobby list.
 		m_sessionManager.AddSession(session);
 	} else {

@@ -602,7 +602,8 @@ ClientThread::Main()
 		// Delete the cached server list, as it may be outdated.
 		std::filesystem::path tmpServerListPath(GetCacheServerListFileName());
 		if (std::filesystem::exists(tmpServerListPath)) {
-			std::filesystem::remove(tmpServerListPath);
+			std::error_code removeEc;
+			std::filesystem::remove(tmpServerListPath, removeEc);
 		}
 		GetCallback().SignalNetClientError(e.GetErrorId(), e.GetOsErrorCode());
 	}
@@ -1172,7 +1173,20 @@ ClientThread::SetState(ClientState &newState)
 	if (oldState) {
 		oldState->Exit(shared_from_this());
 	}
-	newStatePtr->Enter(shared_from_this());
+	try {
+		newStatePtr->Enter(shared_from_this());
+	} catch (...) {
+		// Roll back on Enter failure - restore previous state
+		{
+			boost::mutex::scoped_lock lock(m_curStateMutex);
+			m_curState = oldState;
+		}
+		if (oldState) {
+			try { oldState->Enter(shared_from_this()); } catch (...) {
+				LOG_ERROR("ClientThread SetState: rollback to previous state failed");
+			}
+		}
+	}
 }
 
 boost::asio::steady_timer &

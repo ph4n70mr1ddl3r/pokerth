@@ -214,8 +214,10 @@ ClientStateStartServerListDownload::Enter(boost::shared_ptr<ClientThread> client
 			if (age.count() >= CLIENT_SERVER_LIST_REFRESH_INTERVAL_SEC)
 				removeFile = true;
 		}
-		if (removeFile)
-			fs::remove(tmpServerListPath);
+		if (removeFile) {
+			std::error_code ec;
+			fs::remove(tmpServerListPath, ec);
+		}
 	}
 
 	if (exists(tmpServerListPath)) {
