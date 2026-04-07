@@ -157,8 +157,11 @@ SessionManager::GetPlayerDataList() const
 		// Get all players in the game.
 		if (session_i->second->GetState() == SessionData::Game) {
 			boost::shared_ptr<PlayerData> tmpPlayer(session_i->second->GetPlayerData());
-			if (!tmpPlayer.get() || tmpPlayer->GetName().empty())
-				throw ServerException(__FILE__, __LINE__, ERR_NET_INVALID_SESSION, 0);
+			if (!tmpPlayer.get() || tmpPlayer->GetName().empty()) {
+				LOG_ERROR("Session in Game state with invalid player data, skipping (session " << session_i->first << ")");
+				++session_i;
+				continue;
+			}
 			playerList.push_back(tmpPlayer);
 		}
 		++session_i;

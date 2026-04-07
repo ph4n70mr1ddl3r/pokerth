@@ -174,28 +174,34 @@ static void PerformPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInte
 	player->setMyAction(action);
 	// Only change the player bet if action is not fold/check
 	if (action != PLAYER_ACTION_FOLD && action != PLAYER_ACTION_CHECK && hand) {
+		boost::shared_ptr<BeRoInterface> bero = hand->getCurrentBeRo();
+		if (!bero) {
+			LOG_ERROR("PerformPlayerAction: getCurrentBeRo() returned null, ignoring action");
+			SendPlayerAction(server, player);
+			return;
+		}
 
 		player->setMySet(bet);
 
 		// update minimumRaise and lastActionPlayer
 		switch(action) {
 		case PLAYER_ACTION_BET: {
-			hand->getCurrentBeRo()->setMinimumRaise(bet);
+			bero->setMinimumRaise(bet);
 			hand->setLastActionPlayerID(player->getMyUniqueID());
 		}
 		break;
 		case PLAYER_ACTION_RAISE: {
-			int newRaise = player->getMySet() - hand->getCurrentBeRo()->getHighestSet();
+			int newRaise = player->getMySet() - bero->getHighestSet();
 			if (newRaise > 0) {
-				hand->getCurrentBeRo()->setMinimumRaise(newRaise);
+				bero->setMinimumRaise(newRaise);
 			}
 			hand->setLastActionPlayerID(player->getMyUniqueID());
 		}
 		break;
 		case PLAYER_ACTION_ALLIN: {
-			int allInRaise = player->getMySet() - hand->getCurrentBeRo()->getHighestSet();
-			if(allInRaise > hand->getCurrentBeRo()->getMinimumRaise()) {
-				hand->getCurrentBeRo()->setMinimumRaise(allInRaise);
+			int allInRaise = player->getMySet() - bero->getHighestSet();
+			if(allInRaise > bero->getMinimumRaise()) {
+				bero->setMinimumRaise(allInRaise);
 			}
 			if(allInRaise > 0) {
 				hand->setLastActionPlayerID(player->getMyUniqueID());
@@ -207,8 +213,8 @@ static void PerformPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInte
 		}
 
 		// update highestSet
-		if (player->getMySet() > hand->getCurrentBeRo()->getHighestSet())
-			hand->getCurrentBeRo()->setHighestSet(player->getMySet());
+		if (player->getMySet() > bero->getHighestSet())
+			bero->setHighestSet(player->getMySet());
 		// Update total sets.
 		hand->getBoard()->collectSets();
 	}

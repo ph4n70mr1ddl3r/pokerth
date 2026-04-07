@@ -412,56 +412,65 @@ ServerGame::InitRankingMap(const PlayerDataList &playerDataList)
 void
 ServerGame::UpdateRankingMap()
 {
-	list<boost::shared_ptr<PlayerInterface> > activePlayers;
+	// Snapshot player data under m_gameMutex to prevent race conditions
+	// with concurrent game engine modifications to player cash/roundStartCash.
+	struct PlayerRankingInfo {
+		unsigned uniqueId;
+		int cash;
+		int roundStartCash;
+	};
+	std::vector<PlayerRankingInfo> allPlayers;
+	int activeCount;
 	{
 		boost::mutex::scoped_lock lock(m_gameMutex);
 		if (!m_game)
 			return;
-		activePlayers = *m_game->getActivePlayerList();
+		list<boost::shared_ptr<PlayerInterface>> activePlayers = *m_game->getActivePlayerList();
+		activeCount = static_cast<int>(activePlayers.size());
+		allPlayers.reserve(activePlayers.size());
+		for (const auto& p : activePlayers) {
+			if (p) {
+				allPlayers.push_back({p->getMyUniqueID(), p->getMyCash(), p->getMyRoundStartCash()});
+			}
+		}
 	}
 
-	int currentRank = static_cast<int>(activePlayers.size());
-	list<boost::shared_ptr<PlayerInterface> > tmpRemovedPlayers;
-	PlayerListIterator active_i = activePlayers.begin();
-	PlayerListIterator active_end = activePlayers.end();
-	PlayerListIterator next_active_i = active_i;
-	while(active_i != active_end) {
-		++next_active_i;
-		if ((*active_i)->getMyCash() < 1) {
-			tmpRemovedPlayers.push_back(*active_i);
-			activePlayers.erase(active_i);
+	// Separate removed (cash < 1) from active using the snapshot
+	std::vector<PlayerRankingInfo> removedPlayers;
+	std::vector<PlayerRankingInfo> stillActive;
+	for (auto& info : allPlayers) {
+		if (info.cash < 1) {
+			removedPlayers.push_back(info);
+		} else {
+			stillActive.push_back(info);
 		}
-		active_i = next_active_i;
 	}
 
 	boost::mutex::scoped_lock lock(m_rankingMapMutex);
-	if (!tmpRemovedPlayers.empty()) {
-		tmpRemovedPlayers.sort(LessThanPlayerHandStartMoney);
-		PlayerListConstIterator removed_i = tmpRemovedPlayers.begin();
-		PlayerListConstIterator removed_end = tmpRemovedPlayers.end();
-		PlayerListConstIterator next_removed_i = removed_i;
+	int currentRank = static_cast<int>(removedPlayers.size() + stillActive.size());
+	if (!removedPlayers.empty()) {
+		std::sort(removedPlayers.begin(), removedPlayers.end(),
+			[](const PlayerRankingInfo& a, const PlayerRankingInfo& b) {
+				return a.roundStartCash < b.roundStartCash;
+			});
 		int currentRankCounter = 0;
-		while (removed_i != removed_end) {
-			++next_removed_i;
-
-			SetPlayerPlace((*removed_i)->getMyUniqueID(), currentRank);
+		for (size_t i = 0; i < removedPlayers.size(); ++i) {
+			SetPlayerPlace(removedPlayers[i].uniqueId, currentRank);
 			++currentRankCounter;
-			if (next_removed_i != removed_end && (*removed_i)->getMyRoundStartCash() < (*next_removed_i)->getMyRoundStartCash()) {
+			size_t next = i + 1;
+			if (next < removedPlayers.size() && removedPlayers[i].roundStartCash < removedPlayers[next].roundStartCash) {
 				currentRank -= currentRankCounter;
 				if (currentRank < 1) currentRank = 1;
 				currentRankCounter = 0;
 			}
-
-			removed_i = next_removed_i;
 		}
-		// Apply final rank decrement for last batch of equal-cash players
 		if (currentRankCounter > 0) {
 			currentRank -= currentRankCounter;
 			if (currentRank < 1) currentRank = 1;
 		}
 	}
-	if (activePlayers.size() == 1) {
-		SetPlayerPlace((*(activePlayers.begin()))->getMyUniqueID(), 1);
+	if (stillActive.size() == 1) {
+		SetPlayerPlace(stillActive[0].uniqueId, 1);
 	}
 }
 
