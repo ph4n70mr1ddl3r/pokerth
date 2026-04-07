@@ -40,6 +40,13 @@
 using namespace std;
 
 
+namespace {
+size_t downloadWriteCallback(char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+	return fwrite(ptr, size, nmemb, static_cast<FILE*>(userdata));
+}
+}
+
 DownloadHelper::DownloadHelper()
 {
 }
@@ -56,9 +63,9 @@ DownloadHelper::InternalInit(const string &/*url*/, const string &targetFileName
 	if (!GetData()->targetFile)
 		throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_OPEN_FAILED, 0);
 
-	// Assume that the following calls never fail.
-	// NOTE: A writefunction needs to be set if a DLL version of curl is used on Windows.
-	curl_easy_setopt(GetData()->curlHandle, CURLOPT_WRITEFUNCTION, nullptr);
+	// Use explicit write callback so FILE* from application's CRT is used for writing,
+	// which is required when curl is linked as a DLL with a different CRT on Windows.
+	curl_easy_setopt(GetData()->curlHandle, CURLOPT_WRITEFUNCTION, downloadWriteCallback);
 	curl_easy_setopt(GetData()->curlHandle, CURLOPT_WRITEDATA, GetData()->targetFile);
 }
 
