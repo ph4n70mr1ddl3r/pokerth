@@ -935,9 +935,10 @@ ClientThread::StoreInTempAvatarFile(unsigned playerId, const vector<unsigned cha
 {
 	boost::mutex::scoped_lock lock(m_tempAvatarMapMutex);
 	AvatarFileMap::iterator pos = m_tempAvatarMap.find(playerId);
-	if (pos == m_tempAvatarMap.end())
+	if (pos == m_tempAvatarMap.end()) {
 		LOG_ERROR("StoreInTempAvatarFile: unknown player id: " << playerId);
 		return;
+	}
 	if (pos->second->fileData.size() + data.size() > pos->second->reportedSize ||
 		pos->second->fileData.size() + data.size() > MAX_AVATAR_FILE_SIZE) {
 		LOG_ERROR("Avatar data exceeds reported size or max limit, discarding");
