@@ -2992,7 +2992,7 @@ void LocalPlayer::evaluation(int bet, int raise)
 						currentHand->setLastActionPlayerID(myUniqueID);
 
 						setMySet(myCash);
-						currentHand->getCurrentBeRo()->setMinimumRaise(mySet-highestSet);
+						{ int _mr = mySet - highestSet; if(_mr > 0) currentHand->getCurrentBeRo()->setMinimumRaise(_mr); }
 						myAction = PLAYER_ACTION_ALLIN;
 						highestSet = mySet;
 					}
@@ -3001,7 +3001,7 @@ void LocalPlayer::evaluation(int bet, int raise)
 					currentHand->setLastActionPlayerID(myUniqueID);
 
 					setMySet(myCash);
-					currentHand->getCurrentBeRo()->setMinimumRaise(mySet-highestSet);
+					{ int _mr = mySet - highestSet; if(_mr > 0) currentHand->getCurrentBeRo()->setMinimumRaise(_mr); }
 					myAction = PLAYER_ACTION_ALLIN;
 					highestSet = mySet;
 				}

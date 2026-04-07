@@ -1288,8 +1288,8 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 			netSmallBlind->set_playeraction(static_cast<NetPlayerAction>(tmpPlayer->getMyAction()));
 			netSmallBlind->set_totalplayerbet(tmpPlayer->getMySet());
 			netSmallBlind->set_playermoney(tmpPlayer->getMyCash());
-			netSmallBlind->set_highestset(curGame.getCurrentHand()->getCurrentBeRo()->getHighestSet());
-			netSmallBlind->set_minimumraise(curGame.getCurrentHand()->getCurrentBeRo()->getMinimumRaise());
+			netSmallBlind->set_highestset(startBero ? startBero->getHighestSet() : 0);
+			netSmallBlind->set_minimumraise(startBero ? startBero->getMinimumRaise() : 0);
 			server->SendToAllPlayers(notifySmallBlind, SessionData::Game);
 			break;
 		}
@@ -1310,8 +1310,8 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 			netBigBlind->set_playeraction(static_cast<NetPlayerAction>(tmpPlayer->getMyAction()));
 			netBigBlind->set_totalplayerbet(tmpPlayer->getMySet());
 			netBigBlind->set_playermoney(tmpPlayer->getMyCash());
-			netBigBlind->set_highestset(curGame.getCurrentHand()->getCurrentBeRo()->getHighestSet());
-			netBigBlind->set_minimumraise(curGame.getCurrentHand()->getCurrentBeRo()->getMinimumRaise());
+			netBigBlind->set_highestset(startBero ? startBero->getHighestSet() : 0);
+			netBigBlind->set_minimumraise(startBero ? startBero->getMinimumRaise() : 0);
 			server->SendToAllPlayers(notifyBigBlind, SessionData::Game);
 			break;
 		}
