@@ -1635,7 +1635,7 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		game->getSeatsList()->front()->setMyCards(myCards);
 		game->initHand();
 		game->getCurrentHand()->setSmallBlind(netHandStart.smallblind());
-		game->getCurrentHand()->getCurrentBeRo()->setMinimumRaise(2 * netHandStart.smallblind());
+		{ auto bero = game->getCurrentHand()->getCurrentBeRo(); if (bero) bero->setMinimumRaise(2 * netHandStart.smallblind()); }
 		game->startHand();
 		client->GetGui().dealHoleCards();
 		client->GetGui().refreshGameLabels(GAME_STATE_PREFLOP);
@@ -1753,10 +1753,10 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		bool isBigBlind = false;
 
 		if (netActionDone.gamestate() == netStatePreflopSmallBlind) {
-			curGame->getCurrentHand()->getCurrentBeRo()->setSmallBlindPositionId(tmpPlayer->getMyUniqueID());
+			{ auto bero = curGame->getCurrentHand()->getCurrentBeRo(); if (bero) bero->setSmallBlindPositionId(tmpPlayer->getMyUniqueID()); }
 			tmpPlayer->setMyButton(BUTTON_SMALL_BLIND);
 		} else if (netActionDone.gamestate() == netStatePreflopBigBlind) {
-			curGame->getCurrentHand()->getCurrentBeRo()->setBigBlindPositionId(tmpPlayer->getMyUniqueID());
+			{ auto bero = curGame->getCurrentHand()->getCurrentBeRo(); if (bero) bero->setBigBlindPositionId(tmpPlayer->getMyUniqueID()); }
 			tmpPlayer->setMyButton(BUTTON_BIG_BLIND);
 			isBigBlind = true;
 		} else { // no blind -> log
@@ -1787,15 +1787,17 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		tmpPlayer->setMyAction(PlayerAction(netActionDone.playeraction()));
 		tmpPlayer->setMySetAbsolute(netActionDone.totalplayerbet());
 		tmpPlayer->setMyCash(netActionDone.playermoney());
-		curGame->getCurrentHand()->getCurrentBeRo()->setHighestSet(netActionDone.highestset());
-		curGame->getCurrentHand()->getCurrentBeRo()->setMinimumRaise(netActionDone.minimumraise());
+		{ auto bero = curGame->getCurrentHand()->getCurrentBeRo(); if (bero) bero->setHighestSet(netActionDone.highestset()); }
+		{ auto bero = curGame->getCurrentHand()->getCurrentBeRo(); if (bero) bero->setMinimumRaise(netActionDone.minimumraise()); }
 		curGame->getCurrentHand()->getBoard()->collectSets();
 		curGame->getCurrentHand()->switchRounds();
 
 		//log blinds sets after setting bigblind-button
 		if (isBigBlind) {
-			auto smallBlindPlayer = curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getSmallBlindPositionId());
-			auto bigBlindPlayer = curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getCurrentBeRo()->getBigBlindPositionId());
+			auto bero = curGame->getCurrentHand()->getCurrentBeRo();
+			if (!bero) throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_STATE, 0);
+			auto smallBlindPlayer = curGame->getPlayerByUniqueId(bero->getSmallBlindPositionId());
+			auto bigBlindPlayer = curGame->getPlayerByUniqueId(bero->getBigBlindPositionId());
 			auto dealerPlayer = curGame->getPlayerByUniqueId(curGame->getCurrentHand()->getDealerPosition());
 			if (smallBlindPlayer && bigBlindPlayer && dealerPlayer) {
 				client->GetGui().logNewBlindsSetsMsg(
@@ -1849,7 +1851,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		}
 
 		// Next player's turn.
-		curGame->getCurrentHand()->getCurrentBeRo()->setCurrentPlayersTurnId(tmpPlayer->getMyID());
+		{ auto bero = curGame->getCurrentHand()->getCurrentBeRo(); if (bero) bero->setCurrentPlayersTurnId(tmpPlayer->getMyID()); }
 
 		// Mark current player in GUI.
 		int guiStatus = 2;
@@ -1875,7 +1877,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		tmpCards[3] = tmpCards[4] = 0;
 		curGame->getCurrentHand()->getBoard()->setMyCards(tmpCards);
 		curGame->getCurrentHand()->getBoard()->collectPot();
-		curGame->getCurrentHand()->getCurrentBeRo()->setHighestSet(0);
+		{ auto bero = curGame->getCurrentHand()->getCurrentBeRo(); if (bero) bero->setHighestSet(0); }
 		PlayerList activePlayers = curGame->getCurrentHand()->getActivePlayerList();
 		for (PlayerListIterator it = activePlayers->begin(); it != activePlayers->end(); ++it)
 			(*it)->setMySetNull();
@@ -1896,7 +1898,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		tmpCards[3] = static_cast<int>(netDealTurn.turncard());
 		curGame->getCurrentHand()->getBoard()->setMyCards(tmpCards);
 		curGame->getCurrentHand()->getBoard()->collectPot();
-		curGame->getCurrentHand()->getCurrentBeRo()->setHighestSet(0);
+		{ auto bero = curGame->getCurrentHand()->getCurrentBeRo(); if (bero) bero->setHighestSet(0); }
 		PlayerList activePlayers = curGame->getCurrentHand()->getActivePlayerList();
 		for (PlayerListIterator it = activePlayers->begin(); it != activePlayers->end(); ++it)
 			(*it)->setMySetNull();
@@ -1917,7 +1919,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		tmpCards[4] = static_cast<int>(netDealRiver.rivercard());
 		curGame->getCurrentHand()->getBoard()->setMyCards(tmpCards);
 		curGame->getCurrentHand()->getBoard()->collectPot();
-		curGame->getCurrentHand()->getCurrentBeRo()->setHighestSet(0);
+		{ auto bero = curGame->getCurrentHand()->getCurrentBeRo(); if (bero) bero->setHighestSet(0); }
 		PlayerList activePlayers = curGame->getCurrentHand()->getActivePlayerList();
 		for (PlayerListIterator it = activePlayers->begin(); it != activePlayers->end(); ++it)
 			(*it)->setMySetNull();
@@ -2039,7 +2041,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 
 		curGame->getCurrentHand()->setCurrentRound(GAME_STATE_POST_RIVER);
 		client->GetClientLog()->setCurrentRound(GAME_STATE_POST_RIVER);
-		curGame->getCurrentHand()->getCurrentBeRo()->setHighestCardsValue(highestValueOfCards);
+		{ auto bero = curGame->getCurrentHand()->getCurrentBeRo(); if (bero) bero->setHighestCardsValue(highestValueOfCards); }
 		curGame->getCurrentHand()->getBoard()->setPot(0);
 		curGame->getCurrentHand()->getBoard()->setWinners(winnerList);
 		curGame->getCurrentHand()->getBoard()->setPlayerNeedToShowCards(showList);

@@ -102,14 +102,17 @@ static void SendPlayerAction(ServerGame &server, boost::shared_ptr<PlayerInterfa
 	auto hand = curGame->getCurrentHand();
 	if (!hand)
 		return;
+	auto bero = hand->getCurrentBeRo();
+	if (!bero)
+		return;
 	auto packet = boost::make_shared<NetPacket>();
 	packet->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayersActionDoneMessage);
 	 PlayersActionDoneMessage *netActionDone = packet->GetMsg()->mutable_playersactiondonemessage();
 
 	netActionDone->set_gameid(server.GetId());
 	netActionDone->set_gamestate(static_cast<NetGameState>(server.GetCurRound()));
-	netActionDone->set_highestset(hand->getCurrentBeRo()->getHighestSet());
-	netActionDone->set_minimumraise(hand->getCurrentBeRo()->getMinimumRaise());
+	netActionDone->set_highestset(bero->getHighestSet());
+	netActionDone->set_minimumraise(bero->getMinimumRaise());
 	netActionDone->set_playeraction(static_cast<NetPlayerAction>(player->getMyAction()));
 	netActionDone->set_playerid(player->getMyUniqueID());
 	netActionDone->set_playermoney(player->getMyCash());
@@ -1265,6 +1268,9 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 
 	// Start hand.
 	curGame.startHand();
+
+	auto startHand = curGame.getCurrentHand();
+	auto startBero = startHand ? startHand->getCurrentBeRo() : nullptr;
 
 	// Auto small blind / big blind at the beginning of hand.
 	i = curGame.getActivePlayerList()->begin();
