@@ -1098,6 +1098,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					;
 				}
 
+				if (results.result_Hand) { sqlite3_free_table(results.result_Hand); results.result_Hand = nullptr; }
 				// read current hand
 				sql = "SELECT * FROM Hand WHERE UniqueGameID=";
 				sql+= std::to_string(uniqueGameID);
@@ -1222,6 +1223,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
                 sql += std::to_string(GAME_STATE_PREFLOP);
                 sql += " AND (Action='posts small blind' OR Action='posts big blind' OR Action='starts as dealer')";
 
+					if (results.result_Action) { sqlite3_free_table(results.result_Action); results.result_Action = nullptr; }
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
 						cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 						sqlite3_free(errmsg);

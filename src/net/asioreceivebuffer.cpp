@@ -140,6 +140,13 @@ AsioReceiveBuffer::ScanPackets(boost::shared_ptr<SessionData> session)
 						if (recvBufUsed) {
 							memmove(recvBuf, recvBuf + packetSize + NET_HEADER_SIZE, recvBufUsed);
 						}
+					} else {
+						// Consume unparseable packet to prevent permanent session stall
+						LOG_ERROR(session->GetClientAddr() << "Session " << session->GetId() << " - Failed to parse packet of size " << packetSize);
+						recvBufUsed -= (packetSize + NET_HEADER_SIZE);
+						if (recvBufUsed) {
+							memmove(recvBuf, recvBuf + packetSize + NET_HEADER_SIZE, recvBufUsed);
+						}
 					}
 				} catch (const exception &e) {
 					recvBufUsed -= (packetSize + NET_HEADER_SIZE);
