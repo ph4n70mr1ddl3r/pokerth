@@ -173,7 +173,7 @@ void ChatTools::receiveMessage(QString playerName, QString message, bool pm)
 
 		if(!nickFoundOnIgnoreList && !chatBotWarnNickFoundOnIgnoreList) {
 			//play beep sound as notification
-			if(myChatType == INET_LOBBY_CHAT && message.contains(myNick, Qt::CaseInsensitive) && playerName != myNick) {
+			if(myChatType == INET_LOBBY_CHAT && nickMentioned && playerName != myNick) {
 				if(myLobby->isVisible() && myConfig->readConfigInt("PlayLobbyChatNotification")) {
 					myLobby->getMyW()->getMySoundEventHandler()->playSound("lobbychatnotify",0);
 				}
@@ -266,6 +266,12 @@ void ChatTools::nickAutoCompletition()
 				if (next.startsWith(myChatStringList.last(), Qt::CaseInsensitive) && myChatStringList.last() != "")
 					matchStringList << next;
 			}
+		}
+
+		// Store matches immediately so first Tab press works
+		if(!matchStringList.isEmpty()) {
+			lastChatString = myChatStringList.join(" ");
+			lastMatchStringList = matchStringList;
 		}
 	}
 

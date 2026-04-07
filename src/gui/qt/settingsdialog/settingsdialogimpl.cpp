@@ -571,6 +571,9 @@ void settingsDialogImpl::isAccepted()
 		myConfig->writeConfigString("Opponent1Avatar", pushButton_Opponent1Avatar->getMyLink().toUtf8().constData());
 	}
 
+		// Bail before writing any more config if validation failed
+		if(!settingsCorrect) return;
+
 	//Network Game Settings
 	myConfig->writeConfigInt("NetNumberOfPlayers", 2);
 	myConfig->writeConfigInt("NetStartCash", spinBox_netStartCash->value());
