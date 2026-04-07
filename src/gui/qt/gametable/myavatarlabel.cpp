@@ -272,6 +272,7 @@ void MyAvatarLabel::refreshTooltips()
 
 int MyAvatarLabel::getPlayerRating(QString playerName)
 {
+	if (!myW) return 0;
 	std::list<std::string> tipsList = myW->getMyConfig()->readConfigStringList("PlayerTooltips");
 	QStringList playerInfo;
 	QString result="0";
@@ -330,6 +331,7 @@ void MyAvatarLabel::setPixmap ( const QPixmap &pix, const bool trans)
 
 void MyAvatarLabel::setPixmapAndCountry ( const QPixmap &pix,QString countryString, int seatPlace, const bool trans)
 {
+	if (!myW) return;
 
 	QPixmap resultAvatar(pix.scaled(50,50, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 	QPainter painter(&resultAvatar);
@@ -423,7 +425,7 @@ void MyAvatarLabel::refreshPing(unsigned minPing, unsigned avgPing, unsigned max
 
 bool MyAvatarLabel::playerIsOnIgnoreList(QString playerName)
 {
-
+	if (!myW) return false;
 	list<std::string> playerIgnoreList = myW->getMyConfig()->readConfigStringList("PlayerIgnoreList");
 	for(auto it1= playerIgnoreList.begin(); it1 != playerIgnoreList.end(); ++it1) {
 
@@ -437,7 +439,7 @@ bool MyAvatarLabel::playerIsOnIgnoreList(QString playerName)
 
 void MyAvatarLabel::putPlayerOnIgnoreList()
 {
-	if (!myW->getSession() || !myW->getSession()->getCurrentGame())
+	if (!myW || !myW->getSession() || !myW->getSession()->getCurrentGame())
 		return;
 	QStringList list;
 	PlayerListConstIterator it_c;
@@ -453,7 +455,7 @@ void MyAvatarLabel::putPlayerOnIgnoreList()
 			playerIgnoreList.push_back(list.at(myId).toUtf8().constData());
 			myW->getMyConfig()->writeConfigStringList("PlayerIgnoreList", playerIgnoreList);
 			myW->getMyConfig()->writeBuffer();
-			myW->getMyChat()->refreshIgnoreList();
+			if (myW->getMyChat()) myW->getMyChat()->refreshIgnoreList();
 		}
 	}
 }
@@ -461,7 +463,7 @@ void MyAvatarLabel::putPlayerOnIgnoreList()
 
 void MyAvatarLabel::removePlayerFromIgnoreList()
 {
-	if (!myW->getSession() || !myW->getSession()->getCurrentGame())
+	if (!myW || !myW->getSession() || !myW->getSession()->getCurrentGame())
 		return;
 	QStringList list;
 	PlayerListConstIterator it_c;
@@ -477,7 +479,7 @@ void MyAvatarLabel::removePlayerFromIgnoreList()
 			playerIgnoreList.remove(list.at(myId).toUtf8().constData());
 			myW->getMyConfig()->writeConfigStringList("PlayerIgnoreList", playerIgnoreList);
 			myW->getMyConfig()->writeBuffer();
-			myW->getMyChat()->refreshIgnoreList();
+			if (myW->getMyChat()) myW->getMyChat()->refreshIgnoreList();
 		}
 	}
 }
@@ -516,7 +518,7 @@ void MyAvatarLabel::reportBadAvatar()
 
 void MyAvatarLabel::startEditTip()
 {
-	if (!myW->getSession() || !myW->getSession()->getCurrentGame())
+	if (!myW || !myW->getSession() || !myW->getSession()->getCurrentGame())
 		return;
 	boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
 	int j=0;

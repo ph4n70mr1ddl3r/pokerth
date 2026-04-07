@@ -1190,9 +1190,14 @@ ServerGame::SetState(ServerGameState &newState)
 	try {
 		newState.Enter(shared_from_this());
 	} catch (...) {
-		// Roll back on Enter failure - restore previous state
-		boost::mutex::scoped_lock lock(m_curStateMutex);
-		m_curState = oldState;
+		// Roll back on Enter failure - restore previous state and re-enter it
+		{
+			boost::mutex::scoped_lock lock(m_curStateMutex);
+			m_curState = oldState;
+		}
+		if (oldState) {
+			try { oldState->Enter(shared_from_this()); } catch (...) {}
+		}
 	}
 }
 

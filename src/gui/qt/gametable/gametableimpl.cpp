@@ -2915,6 +2915,8 @@ void gameTableImpl::stopTimer()
 	postRiverAnimation1Timer->stop();
 	postRiverRunAnimation1Timer->stop();
 	postRiverRunAnimation2Timer->stop();
+	postRiverRunAnimation2_flipHoleCards1Timer->stop();
+	postRiverRunAnimation2_flipHoleCards2Timer->stop();
 	postRiverRunAnimation3Timer->stop();
 	postRiverRunAnimation5Timer->stop();
 	postRiverRunAnimation6Timer->stop();

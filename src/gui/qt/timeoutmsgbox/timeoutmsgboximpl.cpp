@@ -86,7 +86,8 @@ void timeoutMsgBoxImpl::timerRefresh()
 
 void timeoutMsgBoxImpl::stopTimeout()
 {
-
+	timeOutTimer->stop();
 	if (mySession)
 		mySession->resetNetworkTimeout();
+	this->hide();
 }

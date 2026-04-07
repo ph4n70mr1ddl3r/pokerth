@@ -4318,11 +4318,11 @@ void LocalPlayer::flopEngine3()
 		int countAll = 0;
 		int countMy = 0;
 
-	for(i=0; i<49; i++) {
+	for(i=0; i<52; i++) {
 		if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2]) {
-			for(j=i+1; j<50; j++) {
+			for(j=i+1; j<52; j++) {
 				if(j != myCards[0] && j != myCards[1] && j != tempBoardCardsArray[0] && j != tempBoardCardsArray[1] && j != tempBoardCardsArray[2]) {
-					for(k=j+1; k<51; k++) {
+					for(k=j+1; k<52; k++) {
 						if(k != myCards[0] && k != myCards[1] && k != tempBoardCardsArray[0] && k != tempBoardCardsArray[1] && k != tempBoardCardsArray[2]) {
 							for(l=k+1; l<52; l++) {
 								if(l != myCards[0] && l != myCards[1] && l != tempBoardCardsArray[0] && l != tempBoardCardsArray[1] && l != tempBoardCardsArray[2]) {
@@ -4499,11 +4499,11 @@ void LocalPlayer::turnEngine3()
 	int countAll = 0;
 	int countMy = 0;
 
-	for(i=0; i<49; i++) {
+	for(i=0; i<52; i++) {
 		if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2] && i != tempBoardCardsArray[3]) {
-			for(j=i+1; j<50; j++) {
+			for(j=i+1; j<52; j++) {
 				if(j != myCards[0] && j != myCards[1] && j != tempBoardCardsArray[0] && j != tempBoardCardsArray[1] && j != tempBoardCardsArray[2] && j != tempBoardCardsArray[3]) {
-					for(k=j+1; k<51; k++) {
+					for(k=j+1; k<52; k++) {
 						if(k != myCards[0] && k != myCards[1] && k != tempBoardCardsArray[0] && k != tempBoardCardsArray[1] && k != tempBoardCardsArray[2] && k != tempBoardCardsArray[3]) {
 
 							countAll++;
@@ -4674,9 +4674,9 @@ void LocalPlayer::riverEngine3()
 	int countAll = 0;
 	int countMy = 0;
 
-	for(i=0; i<49; i++) {
+	for(i=0; i<52; i++) {
 		if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2] && i != tempBoardCardsArray[3] && i != tempBoardCardsArray[4]) {
-			for(j=i+1; j<50; j++) {
+			for(j=i+1; j<52; j++) {
 				if(j != myCards[0] && j != myCards[1] && j != tempBoardCardsArray[0] && j != tempBoardCardsArray[1] && j != tempBoardCardsArray[2] && j != tempBoardCardsArray[3] && j != tempBoardCardsArray[4]) {
 
 					countAll++;

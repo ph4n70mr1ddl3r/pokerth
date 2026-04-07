@@ -1642,7 +1642,9 @@ void gameLobbyDialogImpl::showNickListContextMenu(QPoint p)
 
 //		check for admin	and remove admin actions for non-admins
 		if(!mySession->getClientPlayerInfo(mySession->getClientUniquePlayerId()).isAdmin) {
-			nickListContextMenu->removeAction(nickListAdminSubMenu->menuAction());
+			nickListAdminSubMenu->menuAction()->setVisible(false);
+		} else {
+			nickListAdminSubMenu->menuAction()->setVisible(true);
 		}
 
 		//popup a little more to the right to avaoid double click action
@@ -1669,7 +1671,10 @@ void gameLobbyDialogImpl::showGameListContextMenu(QPoint p)
 
 //		check for admin	and remove admin actions for non-admins
 		if(!mySession->getClientPlayerInfo(mySession->getClientUniquePlayerId()).isAdmin) {
-			gameListContextMenu->removeAction(gameListAdminSubMenu->menuAction());
+			gameListAdminSubMenu->menuAction()->setVisible(false);
+		} else {
+			gameListAdminSubMenu->menuAction()->setVisible(true);
+		}
 		}
 
 		//popup a little more to the right to avaoid double click action
@@ -1703,6 +1708,7 @@ void gameLobbyDialogImpl::showInfoMsgBox()
 
 void gameLobbyDialogImpl::showInvitationDialog(unsigned gameId, unsigned playerIdFrom)
 {
+	if(!mySession) return;
 	if(inviteDialogIsCurrentlyShown || playerIsOnIgnoreList(playerIdFrom)) {
 
 		mySession->rejectGameInvitation(gameId, DENY_GAME_INVITATION_BUSY);
@@ -1757,6 +1763,7 @@ bool gameLobbyDialogImpl::playerIsOnIgnoreList(unsigned playerId)
 
 void gameLobbyDialogImpl::putPlayerOnIgnoreList()
 {
+	if(!mySession) return;
 	if(myNickListSelectionModel->currentIndex().isValid()) {
 		unsigned playerId = myNickListSelectionModel->currentIndex().data(Qt::UserRole).toUInt();
 		if(!playerIsOnIgnoreList(playerId)) {
@@ -1774,6 +1781,7 @@ void gameLobbyDialogImpl::putPlayerOnIgnoreList()
 
 void gameLobbyDialogImpl::removePlayerFromIgnoreList()
 {
+	if(!mySession) return;
 	if(myNickListSelectionModel->currentIndex().isValid()) {
 		unsigned playerId = myNickListSelectionModel->currentIndex().data(Qt::UserRole).toUInt();
 		if(playerIsOnIgnoreList(playerId)) {
