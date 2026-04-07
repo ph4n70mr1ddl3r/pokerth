@@ -80,7 +80,7 @@ public:
 protected:
 	typedef std::map<MD5Buf, std::string> AvatarMap;
 	typedef std::list<MD5Buf> AvatarList;
-	typedef std::map<std::time_t, MD5Buf> TimeAvatarMap;
+	typedef std::multimap<std::time_t, MD5Buf> TimeAvatarMap;
 
 	bool InternalReadDirectory(const std::string &dir, AvatarMap &avatars);
 
