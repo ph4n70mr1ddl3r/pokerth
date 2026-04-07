@@ -162,14 +162,17 @@ ServerAcceptWebHelper::on_open(websocketpp::connection_hdl hdl)
 void
 ServerAcceptWebHelper::on_close(websocketpp::connection_hdl hdl)
 {
-	boost::mutex::scoped_lock lock(m_sessionMapMutex);
-	SessionMap::iterator pos = m_sessionMap.find(hdl);
-	if (pos != m_sessionMap.end()) {
-		boost::shared_ptr<SessionData> tmpSession = pos->second.lock();
-		if (tmpSession) {
-			tmpSession->Close();
+	boost::shared_ptr<SessionData> tmpSession;
+	{
+		boost::mutex::scoped_lock lock(m_sessionMapMutex);
+		SessionMap::iterator pos = m_sessionMap.find(hdl);
+		if (pos != m_sessionMap.end()) {
+			tmpSession = pos->second.lock();
+			m_sessionMap.erase(pos);
 		}
-		m_sessionMap.erase(pos);
+	}
+	if (tmpSession) {
+		tmpSession->Close();
 	}
 }
 

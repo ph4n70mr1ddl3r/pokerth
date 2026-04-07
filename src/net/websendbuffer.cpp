@@ -104,12 +104,18 @@ WebSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> session, boost
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)
 	std::error_code std_ec;
 	if (webData->isTls) {
-		webData->webSocketTlsServer->send(webData->webHandle, string((const char *)buf.get(), packetSize), websocketpp::frame::opcode::BINARY, std_ec);
+		if (webData->webSocketTlsServer)
+			webData->webSocketTlsServer->send(webData->webHandle, string((const char *)buf.get(), packetSize), websocketpp::frame::opcode::BINARY, std_ec);
+		else
+			std_ec = make_error_code(std::errc::not_connected);
 		if (std_ec) {
 			SetCloseAfterSend();
 		}
 	} else {
-		webData->webSocketServer->send(webData->webHandle, string((const char *)buf.get(), packetSize), websocketpp::frame::opcode::BINARY, std_ec);
+		if (webData->webSocketServer)
+			webData->webSocketServer->send(webData->webHandle, string((const char *)buf.get(), packetSize), websocketpp::frame::opcode::BINARY, std_ec);
+		else
+			std_ec = make_error_code(std::errc::not_connected);
 		if (std_ec) {
 			SetCloseAfterSend();
 		}
@@ -117,12 +123,18 @@ WebSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> session, boost
 #else
 	boost::system::error_code ec;
 	if (webData->isTls) {
-		webData->webSocketTlsServer->send(webData->webHandle, string((const char *)buf.get(), packetSize), websocketpp::frame::opcode::BINARY, ec);
+		if (webData->webSocketTlsServer)
+			webData->webSocketTlsServer->send(webData->webHandle, string((const char *)buf.get(), packetSize), websocketpp::frame::opcode::BINARY, ec);
+		else
+			ec = boost::system::errc::make_error_code(boost::system::errc::not_connected);
 		if (ec) {
 			SetCloseAfterSend();
 		}
 	} else {
-		webData->webSocketServer->send(webData->webHandle, string((const char *)buf.get(), packetSize), websocketpp::frame::opcode::BINARY, ec);
+		if (webData->webSocketServer)
+			webData->webSocketServer->send(webData->webHandle, string((const char *)buf.get(), packetSize), websocketpp::frame::opcode::BINARY, ec);
+		else
+			ec = boost::system::errc::make_error_code(boost::system::errc::not_connected);
 		if (ec) {
 			SetCloseAfterSend();
 		}
