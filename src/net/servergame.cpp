@@ -986,6 +986,9 @@ ServerGame::RemoveSession(boost::shared_ptr<SessionData> session, int reason)
 void
 ServerGame::RemovePlayerData(boost::shared_ptr<PlayerData> player, int reason)
 {
+	if (!player)
+		return;
+
 	if (player->IsGameAdmin()) {
 		// Find new admin for the game
 		PlayerDataList playerList(GetSessionManager().GetPlayerDataList());
@@ -1205,7 +1208,9 @@ ServerGame::SetState(ServerGameState &newState)
 			m_curState = oldState;
 		}
 		if (oldState) {
-			try { oldState->Enter(shared_from_this()); } catch (...) {}
+			try { oldState->Enter(shared_from_this()); } catch (...) {
+				LOG_ERROR("SetState: rollback to previous state failed, game may be in inconsistent state");
+			}
 		}
 	}
 }

@@ -86,7 +86,11 @@ ServerDBThread::ServerDBThread(ServerDBCallback &cb, boost::shared_ptr<boost::as
 
 ServerDBThread::~ServerDBThread() noexcept
 {
-	Stop();
+	try {
+		Stop();
+	} catch (...) {
+		LOG_ERROR("Exception in ServerDBThread destructor");
+	}
 }
 
 void

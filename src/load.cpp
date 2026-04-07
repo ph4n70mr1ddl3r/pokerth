@@ -320,6 +320,10 @@ main(int argc, char *argv[])
 
 		for (int g = 0; g < numGames; g++) {
 			NetSession *session = sessionArray[g * 10].get();
+			if (!session) {
+				cout << "Null session at index " << g * 10 << endl;
+				return 1;
+			}
 			// Send create game
 			cout << "Player " << session->name << " creating game " << g+1 << endl;
 			msg = static_cast<PokerTHMessage_t*>(calloc(1, sizeof(PokerTHMessage_t)));

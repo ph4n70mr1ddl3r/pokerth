@@ -2513,45 +2513,48 @@ ServerLobbyThread::ReadStatisticsFile()
 void
 ServerLobbyThread::TimerSaveStatisticsFile(const boost::system::error_code &ec)
 {
-	if (!ec) {
-		LOG_VERBOSE("Saving statistics.");
-		ServerStats statCopy;
-		std::string statFileName;
-		bool dataChanged = false;
-		{
-			boost::mutex::scoped_lock lock(m_statMutex);
-			statCopy = m_statData;
-			statFileName = m_statisticsFileName;
-			dataChanged = m_statDataChanged;
-		}
-		if (dataChanged) {
-			ofstream o(statFileName.c_str(), ios_base::out | ios_base::trunc);
-			if (!o.fail()) {
-				o << SERVER_STATISTICS_STR_TOTAL_PLAYERS " " << statCopy.totalPlayersEverLoggedIn << endl;
-				o << SERVER_STATISTICS_STR_TOTAL_GAMES " " << statCopy.totalGamesEverCreated << endl;
-				o << SERVER_STATISTICS_STR_MAX_PLAYERS " " << statCopy.maxPlayersLoggedIn << endl;
-				o << SERVER_STATISTICS_STR_MAX_GAMES " " << statCopy.maxGamesOpen << endl;
-				o << SERVER_STATISTICS_STR_CUR_PLAYERS " " << statCopy.numberOfPlayersOnServer << endl;
-				o << SERVER_STATISTICS_STR_CUR_GAMES " " << statCopy.numberOfGamesOpen << endl;
-				o.flush();
-				if (o.good()) {
-					{
-						boost::mutex::scoped_lock lock(m_statMutex);
-						m_statDataChanged = false;
-					}
-				} else {
-					LOG_ERROR("Failed to write statistics file: " << statFileName);
+	if (ec == boost::asio::error::operation_aborted)
+		return;
+	if (ec) {
+		LOG_ERROR("TimerSaveStatisticsFile error: " << ec.message());
+	}
+	LOG_VERBOSE("Saving statistics.");
+	ServerStats statCopy;
+	std::string statFileName;
+	bool dataChanged = false;
+	{
+		boost::mutex::scoped_lock lock(m_statMutex);
+		statCopy = m_statData;
+		statFileName = m_statisticsFileName;
+		dataChanged = m_statDataChanged;
+	}
+	if (dataChanged) {
+		ofstream o(statFileName.c_str(), ios_base::out | ios_base::trunc);
+		if (!o.fail()) {
+			o << SERVER_STATISTICS_STR_TOTAL_PLAYERS " " << statCopy.totalPlayersEverLoggedIn << endl;
+			o << SERVER_STATISTICS_STR_TOTAL_GAMES " " << statCopy.totalGamesEverCreated << endl;
+			o << SERVER_STATISTICS_STR_MAX_PLAYERS " " << statCopy.maxPlayersLoggedIn << endl;
+			o << SERVER_STATISTICS_STR_MAX_GAMES " " << statCopy.maxGamesOpen << endl;
+			o << SERVER_STATISTICS_STR_CUR_PLAYERS " " << statCopy.numberOfPlayersOnServer << endl;
+			o << SERVER_STATISTICS_STR_CUR_GAMES " " << statCopy.numberOfGamesOpen << endl;
+			o.flush();
+			if (o.good()) {
+				{
+					boost::mutex::scoped_lock lock(m_statMutex);
+					m_statDataChanged = false;
 				}
 			} else {
-				LOG_ERROR("Failed to open statistics file: " << statFileName);
+				LOG_ERROR("Failed to write statistics file: " << statFileName);
 			}
+		} else {
+			LOG_ERROR("Failed to open statistics file: " << statFileName);
 		}
-		// Restart timer
-		m_saveStatisticsTimer.expires_after(seconds(SERVER_SAVE_STATISTICS_INTERVAL_SEC));
-		m_saveStatisticsTimer.async_wait(
-			boost::bind(
-				&ServerLobbyThread::TimerSaveStatisticsFile, shared_from_this(), boost::asio::placeholders::error));
 	}
+	// Restart timer
+	m_saveStatisticsTimer.expires_after(seconds(SERVER_SAVE_STATISTICS_INTERVAL_SEC));
+	m_saveStatisticsTimer.async_wait(
+		boost::bind(
+			&ServerLobbyThread::TimerSaveStatisticsFile, shared_from_this(), boost::asio::placeholders::error));
 }
 
 ServerCallback &
@@ -2684,39 +2687,42 @@ ServerLobbyThread::ResubscribeLobbyMsg(boost::shared_ptr<SessionData> session)
 void
 ServerLobbyThread::TimerCleanupRateMaps(const boost::system::error_code &ec)
 {
-	if (!ec) {
-		{
-			boost::mutex::scoped_lock lock(m_chatRateMapMutex);
-			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
-			boost::posix_time::ptime chatCutoff = now - boost::posix_time::minutes(10);
-			auto cit = m_chatRateMap.begin();
-			while (cit != m_chatRateMap.end()) {
-				cit->second.messageTimes.erase(
-					std::remove_if(cit->second.messageTimes.begin(), cit->second.messageTimes.end(),
-						[chatCutoff](const boost::posix_time::ptime& t) { return t < chatCutoff; }),
-					cit->second.messageTimes.end());
-				if (cit->second.messageTimes.empty()) {
-					cit = m_chatRateMap.erase(cit);
-				} else {
-					++cit;
-				}
-			}
-		}
-		{
-			boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
-			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
-			boost::posix_time::ptime loginCutoff = now - boost::posix_time::minutes(30);
-			auto fit = m_failedLoginMap.begin();
-			while (fit != m_failedLoginMap.end()) {
-				if (fit->second.firstFailTime < loginCutoff) {
-					fit = m_failedLoginMap.erase(fit);
-				} else {
-					++fit;
-				}
-			}
-		}
-		m_cleanupRateMapsTimer.expires_after(milliseconds(SERVER_CLEANUP_RATE_MAPS_INTERVAL_MSEC));
-		m_cleanupRateMapsTimer.async_wait(
-			boost::bind(&ServerLobbyThread::TimerCleanupRateMaps, shared_from_this(), boost::asio::placeholders::error));
+	if (ec == boost::asio::error::operation_aborted)
+		return;
+	if (ec) {
+		LOG_ERROR("TimerCleanupRateMaps error: " << ec.message());
 	}
+	{
+		boost::mutex::scoped_lock lock(m_chatRateMapMutex);
+		boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+		boost::posix_time::ptime chatCutoff = now - boost::posix_time::minutes(10);
+		auto cit = m_chatRateMap.begin();
+		while (cit != m_chatRateMap.end()) {
+			cit->second.messageTimes.erase(
+				std::remove_if(cit->second.messageTimes.begin(), cit->second.messageTimes.end(),
+					[chatCutoff](const boost::posix_time::ptime& t) { return t < chatCutoff; }),
+				cit->second.messageTimes.end());
+			if (cit->second.messageTimes.empty()) {
+				cit = m_chatRateMap.erase(cit);
+			} else {
+				++cit;
+			}
+		}
+	}
+	{
+		boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
+		boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+		boost::posix_time::ptime loginCutoff = now - boost::posix_time::minutes(30);
+		auto fit = m_failedLoginMap.begin();
+		while (fit != m_failedLoginMap.end()) {
+			if (fit->second.firstFailTime < loginCutoff) {
+				fit = m_failedLoginMap.erase(fit);
+			} else {
+				++fit;
+			}
+		}
+	}
+	m_cleanupRateMapsTimer.expires_after(milliseconds(SERVER_CLEANUP_RATE_MAPS_INTERVAL_MSEC));
+	m_cleanupRateMapsTimer.async_wait(
+		boost::bind(&ServerLobbyThread::TimerCleanupRateMaps, shared_from_this(), boost::asio::placeholders::error));
 }

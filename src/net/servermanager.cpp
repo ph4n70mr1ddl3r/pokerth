@@ -60,6 +60,12 @@ ServerManager::ServerManager(ConfigFile &config, GuiInterface &gui, ServerMode m
 
 ServerManager::~ServerManager() noexcept
 {
+	// Signal the lobby thread to terminate before draining io_service.
+	if (m_lobbyThread) {
+		m_lobbyThread->SignalTermination();
+		m_lobbyThread->Join(NET_LOBBY_THREAD_TERMINATE_TIMEOUT_MSEC);
+	}
+
 	size_t remainingHandler = 0;
 	// Call all pending handlers to clean up.
 	do {

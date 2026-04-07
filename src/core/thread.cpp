@@ -63,8 +63,12 @@ Thread::~Thread() noexcept
 {
 	if (IsRunning()) {
 		SignalTermination();
-		if (!m_isTerminatedSemaphore.timed_wait(boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(5000))) {
-			LOG_ERROR("Thread did not terminate within timeout in destructor");
+		try {
+			if (!m_isTerminatedSemaphore.timed_wait(boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(5000))) {
+				LOG_ERROR("Thread did not terminate within timeout in destructor");
+			}
+		} catch (...) {
+			LOG_ERROR("Exception in thread termination wait");
 		}
 		boost::shared_ptr<boost::thread> threadToJoin;
 		{
@@ -72,8 +76,12 @@ Thread::~Thread() noexcept
 			threadToJoin = m_threadObj;
 			m_threadObj.reset();
 		}
-		if (threadToJoin)
-			threadToJoin->detach();
+		try {
+			if (threadToJoin)
+				threadToJoin->detach();
+		} catch (...) {
+			LOG_ERROR("Exception in thread detach");
+		}
 	}
 }
 
