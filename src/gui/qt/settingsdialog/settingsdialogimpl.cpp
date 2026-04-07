@@ -608,6 +608,7 @@ void settingsDialogImpl::isAccepted()
 									 "Please enter a valid server list address!"),
 								  QMessageBox::Ok);
 			settingsCorrect = false;
+				return;
 		}
 	}
 	if(groupBox_manualServerConfig->isChecked()) {
@@ -674,6 +675,7 @@ void settingsDialogImpl::isAccepted()
 									 "Please enter an valid picture!"),
 								  QMessageBox::Ok);
 			settingsCorrect = false;
+				return;
 		}
 	}
 
@@ -734,6 +736,7 @@ void settingsDialogImpl::isAccepted()
 									 "Please select an valid directory!"),
 								  QMessageBox::Ok);
 			settingsCorrect = false;
+				return;
 		}
 
 		myConfig->writeConfigInt("LogStoreDuration", spinBox_logStoreDuration->value());
