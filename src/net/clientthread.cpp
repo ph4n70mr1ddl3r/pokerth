@@ -1171,7 +1171,11 @@ ClientThread::SetState(ClientState &newState)
 		m_curState = newStatePtr;
 	}
 	if (oldState) {
-		oldState->Exit(shared_from_this());
+		try {
+			oldState->Exit(shared_from_this());
+		} catch (...) {
+			LOG_ERROR("ClientThread SetState: Exit() threw exception, attempting to continue with new state");
+		}
 	}
 	try {
 		newStatePtr->Enter(shared_from_this());

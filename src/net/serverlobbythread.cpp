@@ -2353,8 +2353,9 @@ ServerLobbyThread::SessionTimeoutWarning(boost::shared_ptr<SessionData> session,
 	netWarning->set_remainingseconds(remainingSec);
 	GetSender().Send(session, packet);
 
-	if (session->GetGame() && session->GetPlayerData()) {
-		session->GetGame()->MarkPlayerAsInactive(session->GetPlayerData()->GetUniqueId());
+	auto game = session->GetGame();
+	if (game && session->GetPlayerData()) {
+		game->MarkPlayerAsInactive(session->GetPlayerData()->GetUniqueId());
 	}
 }
 

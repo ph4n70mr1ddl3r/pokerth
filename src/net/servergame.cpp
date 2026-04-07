@@ -1206,7 +1206,11 @@ ServerGame::SetState(ServerGameState &newState)
 	// Call virtual functions outside the lock to prevent deadlock if
 	// Enter/Exit directly or indirectly call GetState().
 	if (oldState) {
-		oldState->Exit(shared_from_this());
+		try {
+			oldState->Exit(shared_from_this());
+		} catch (...) {
+			LOG_ERROR("SetState: Exit() threw exception, attempting to continue with new state");
+		}
 	}
 	try {
 		newState.Enter(shared_from_this());

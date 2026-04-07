@@ -1405,6 +1405,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						default:
 							;
 						}
+						data_found = true;
 						if(round_ctr >= GAME_STATE_FLOP) {
 							round_string += " [board cards ";
 							for(i=1; i<=round_ctr+2; i++) {
