@@ -72,6 +72,8 @@ WebReceiveBuffer::HandleMessage(boost::shared_ptr<SessionData> session, const st
 	}
 	if (tmpPacket) {
 		session->HandlePacket(tmpPacket);
+	} else if (msg.size() > 0) {
+		LOG_ERROR("Session " << session->GetId() << " - WebSocket: failed to parse packet, size=" << msg.size());
 	}
 }
 

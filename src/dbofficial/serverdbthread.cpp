@@ -632,9 +632,22 @@ ServerDBThread::EstablishDBConnection()
 		preparePlayerLastGames
 				<< "PREPARE " QUERY_PLAYER_LASTGAMES_PREPARE " FROM " << mysqlpp::quote
 				<< "UPDATE " DB_TABLE_PLAYER " SET " DB_TABLE_PLAYER_COL_LASTGAMES " = ?, " DB_TABLE_PLAYER_COL_LASTIP " = ? WHERE " DB_TABLE_PLAYER_COL_ID " = ?";
-		if (!prepareNick.exec() || !prepareAvatarBlacklist.exec() || !prepareLogin.exec() || !prepareCreateGame.exec()
-				|| !prepareEndGame.exec() || !prepareRelation.exec() || !prepareScore.exec() || !prepareReportAvatar.exec()
-				|| !prepareReportGame.exec() || !prepareAdminPlayer.exec() || !prepareBlockPlayer.exec() || !preparePlayerLastGames.exec()) {
+		// Execute all prepared statements individually (not short-circuit)
+		// to ensure all are prepared even if one fails, preventing permanent DB outage.
+		bool prepOk = true;
+		prepOk = prepareNick.exec() && prepOk;
+		prepOk = prepareAvatarBlacklist.exec() && prepOk;
+		prepOk = prepareLogin.exec() && prepOk;
+		prepOk = prepareCreateGame.exec() && prepOk;
+		prepOk = prepareEndGame.exec() && prepOk;
+		prepOk = prepareRelation.exec() && prepOk;
+		prepOk = prepareScore.exec() && prepOk;
+		prepOk = prepareReportAvatar.exec() && prepOk;
+		prepOk = prepareReportGame.exec() && prepOk;
+		prepOk = prepareAdminPlayer.exec() && prepOk;
+		prepOk = prepareBlockPlayer.exec() && prepOk;
+		prepOk = preparePlayerLastGames.exec() && prepOk;
+		if (!prepOk) {
 			string tmpError = string(prepareNick.error()) + prepareAvatarBlacklist.error() + prepareLogin.error() + prepareCreateGame.error() +
 							  prepareEndGame.error() + prepareRelation.error() + prepareScore.error() + prepareReportAvatar.error() +
 							  prepareReportGame.error() + prepareAdminPlayer.error() + prepareBlockPlayer.error() + preparePlayerLastGames.error();
