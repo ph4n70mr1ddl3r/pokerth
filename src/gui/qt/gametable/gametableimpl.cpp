@@ -2921,6 +2921,10 @@ void gameTableImpl::stopTimer()
 	postRiverRunAnimation5Timer->stop();
 	postRiverRunAnimation6Timer->stop();
 	potDistributeTimer->stop();
+
+	blinkingStartButtonAnimationTimer->stop();
+	voteOnKickTimeoutTimer->stop();
+	enableCallCheckPushButtonTimer->stop();
 }
 
 void gameTableImpl::setSpeeds()

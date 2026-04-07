@@ -862,7 +862,7 @@ ClientThread::SetNewGameAdmin(unsigned id)
 		playerData->SetGameAdmin(true);
 		GetCallback().SignalNetClientNewGameAdmin(id, playerData->GetName());
 		auto game = GetGame();
-		if(game) {
+		if(game && m_clientLog) {
 			m_clientLog->logPlayerAction(playerData->GetName(),LOG_ACTION_ADMIN);
 		}
 	}
@@ -936,7 +936,8 @@ ClientThread::StoreInTempAvatarFile(unsigned playerId, const vector<unsigned cha
 	boost::mutex::scoped_lock lock(m_tempAvatarMapMutex);
 	AvatarFileMap::iterator pos = m_tempAvatarMap.find(playerId);
 	if (pos == m_tempAvatarMap.end())
-		throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_REQUEST_ID, 0);
+		LOG_ERROR("StoreInTempAvatarFile: unknown player id: " << playerId);
+		return;
 	if (pos->second->fileData.size() + data.size() > pos->second->reportedSize ||
 		pos->second->fileData.size() + data.size() > MAX_AVATAR_FILE_SIZE) {
 		LOG_ERROR("Avatar data exceeds reported size or max limit, discarding");
@@ -949,18 +950,22 @@ ClientThread::StoreInTempAvatarFile(unsigned playerId, const vector<unsigned cha
 void
 ClientThread::CompleteTempAvatarFile(unsigned playerId)
 {
-	boost::mutex::scoped_lock lock(m_tempAvatarMapMutex);
-	AvatarFileMap::iterator pos = m_tempAvatarMap.find(playerId);
-	if (pos == m_tempAvatarMap.end())
-		throw ClientException(__FILE__, __LINE__, ERR_NET_INVALID_REQUEST_ID, 0);
-	boost::shared_ptr<AvatarFile> tmpAvatar = pos->second;
+	boost::shared_ptr<AvatarFile> tmpAvatar;
+	{
+		boost::mutex::scoped_lock lock(m_tempAvatarMapMutex);
+		AvatarFileMap::iterator pos = m_tempAvatarMap.find(playerId);
+		if (pos == m_tempAvatarMap.end()) {
+			LOG_ERROR("CompleteTempAvatarFile: unknown player id: " << playerId);
+			return;
+		}
+		tmpAvatar = pos->second;
+		m_tempAvatarMap.erase(pos);
+	}
 	unsigned avatarSize = static_cast<unsigned>(tmpAvatar->fileData.size());
 	if (avatarSize != tmpAvatar->reportedSize)
 		LOG_ERROR("Client received invalid avatar file size!");
 	else
 		PassAvatarFileToManager(playerId, tmpAvatar);
-
-	m_tempAvatarMap.erase(pos);
 }
 
 void
@@ -1337,7 +1342,7 @@ ClientThread::RemovePlayerData(unsigned playerId, int removeReason)
 		}
 		GetCallback().SignalNetClientPlayerLeft(tmpData->GetUniqueId(), tmpData->GetName(), removeReason);
 
-		if(game) {
+		if(game && m_clientLog) {
 			if(removeReason == NTF_NET_REMOVED_KICKED) {
 				m_clientLog->logPlayerAction(tmpData->GetName(),LOG_ACTION_KICKED);
 			} else {

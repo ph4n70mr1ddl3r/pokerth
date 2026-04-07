@@ -67,6 +67,7 @@ namespace {
 
 void Tools::ShuffleArrayNonDeterministic(int *inout, unsigned count)
 {
+	if (!inout || count == 0) return;
 	shuffle(&inout[0], &inout[count], t_rng);
 }
 
@@ -75,6 +76,7 @@ void Tools::GetRand(int minValue, int maxValue, unsigned count, int *out)
 	if (!out || count == 0) {
 		return;
 	}
+	if (minValue > maxValue) std::swap(minValue, maxValue);
 	uniform_int_distribution<int> dist(minValue, maxValue);
 	for (unsigned i = 0; i < count; i++) {
 		*out++ = dist(t_rng);
