@@ -102,6 +102,14 @@ UploaderThread::Main()
 			if (m_callback) {
 				m_callback->UploadError(errorFile, e.what());
 			}
+		} catch (const std::exception &e) {
+			LOG_ERROR("Upload error: " << e.what());
+			m_uploadInProgress = false;
+			std::string errorFile = lastfile;
+			lastfile.clear();
+			if (m_callback) {
+				m_callback->UploadError(errorFile, e.what());
+			}
 		}
 	}
 }

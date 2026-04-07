@@ -149,6 +149,9 @@ void
 TransferHelper::Cleanup()
 {
 	if (m_data->curlMultiHandle) {
+		if (m_data->curlHandle) {
+			curl_multi_remove_handle(m_data->curlMultiHandle, m_data->curlHandle);
+		}
 		curl_multi_cleanup(m_data->curlMultiHandle);
 		m_data->curlMultiHandle = nullptr;
 	}

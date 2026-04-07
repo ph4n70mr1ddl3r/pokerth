@@ -747,6 +747,7 @@ void guiLog::writeLogFileStream(QString streamString)
 void guiLog::writeLogFileStream(string log_string, QFile *LogFile)
 {
 
+	if (!LogFile) return;
 	QTextStream stream( LogFile );
 	stream << log_string.c_str();
 
@@ -1078,7 +1079,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				log_string += "Game: ";
 				log_string += std::to_string(gameID);
 				log_string += " | Hand: ";
-				log_string += std::to_string(results.result_Hand_ID[hand_ctr]);
+				log_string += (results.result_Hand_ID[hand_ctr] ? std::string(results.result_Hand_ID[hand_ctr]) : "?");
 
 				switch(modus) {
 				case 1:
@@ -1271,7 +1272,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					sql = "SELECT Player,Amount FROM Action WHERE UniqueGameID=";
 					sql += std::to_string(uniqueGameID);
 					sql += " AND HandID=";
-					sql += std::string(results.result_Hand_ID[hand_ctr]);
+					sql += (results.result_Hand_ID[hand_ctr] ? std::string(results.result_Hand_ID[hand_ctr]) : "0");
 					sql += " AND BeRo=0 AND Action='posts small blind'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
@@ -1296,7 +1297,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					sql = "SELECT Player,Amount FROM Action WHERE UniqueGameID=";
 					sql += std::to_string(uniqueGameID);
 					sql += " AND HandID=";
-					sql += std::string(results.result_Hand_ID[hand_ctr]);
+					sql += (results.result_Hand_ID[hand_ctr] ? std::string(results.result_Hand_ID[hand_ctr]) : "0");
 					sql += " AND BeRo=0 AND Action='posts big blind'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
@@ -1321,7 +1322,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					sql = "SELECT Player,Amount FROM Action WHERE UniqueGameID=";
 					sql += std::to_string(uniqueGameID);
 					sql += " AND HandID=";
-					sql += std::string(results.result_Hand_ID[hand_ctr]);
+					sql += (results.result_Hand_ID[hand_ctr] ? std::string(results.result_Hand_ID[hand_ctr]) : "0");
 					sql += " AND BeRo=0 AND Action='starts as dealer'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {

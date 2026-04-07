@@ -875,7 +875,10 @@ void ConfigFile::writeConfigStringList(string varName, list<string> varCont)
 void ConfigFile::deleteConfigFile()
 {
 	boost::recursive_mutex::scoped_lock lock(m_configMutex);
-	if (remove(configFileName.c_str()) != 0) {
-		LOG_ERROR("Failed to delete config file: " << configFileName);
+	std::error_code ec;
+	if (!std::filesystem::remove(std::filesystem::path(configFileName), ec)) {
+		if (ec) {
+			LOG_ERROR("Failed to delete config file: " << configFileName << ": " << ec.message());
+		}
 	}
 }
