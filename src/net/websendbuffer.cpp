@@ -67,16 +67,20 @@ WebSendBuffer::AsyncSendNextPacket(boost::shared_ptr<SessionData> session)
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)
 		std::error_code std_ec;
 		if (webData->isTls) {
-			webData->webSocketTlsServer->close(webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", std_ec);
+			if (webData->webSocketTlsServer)
+				webData->webSocketTlsServer->close(webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", std_ec);
 		} else {
-			webData->webSocketServer->close(webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", std_ec);
+			if (webData->webSocketServer)
+				webData->webSocketServer->close(webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", std_ec);
 		}
 #else
 		boost::system::error_code ec;
 		if (webData->isTls) {
-			webData->webSocketTlsServer->close(webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", ec);
+			if (webData->webSocketTlsServer)
+				webData->webSocketTlsServer->close(webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", ec);
 		} else {
-			webData->webSocketServer->close(webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", ec);
+			if (webData->webSocketServer)
+				webData->webSocketServer->close(webData->webHandle, websocketpp::close::status::normal, "PokerTH server closed the connection.", ec);
 		}
 #endif
 	}

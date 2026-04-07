@@ -72,6 +72,9 @@ ChatCleanerManager::Init(const string &serverAddr, int port, bool ipv6,
 void
 ChatCleanerManager::ReInit()
 {
+	m_recvBufUsed = 0;
+	m_recvBuf[0] = 0;
+
 	if (m_useIpv6)
 		m_socket.reset(new boost::asio::ip::tcp::socket(*m_ioService, tcp::v6()));
 	else

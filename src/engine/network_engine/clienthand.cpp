@@ -178,6 +178,8 @@ ClientHand::getRiver() const
 boost::shared_ptr<BeRoInterface>
 ClientHand::getCurrentBeRo() const
 {
+	if (currentRound < 0 || static_cast<size_t>(currentRound) >= myBeRo.size())
+		return boost::shared_ptr<BeRoInterface>();
 	return myBeRo[currentRound];
 }
 
@@ -351,7 +353,9 @@ ClientHand::switchRounds()
 				it_1 = it;
 				if(it_1 == runningPlayerList->begin()) it_1 = runningPlayerList->end();
 				--it_1;
-				getCurrentBeRo()->setCurrentPlayersTurnId((*it_1)->getMyUniqueID());
+				boost::shared_ptr<BeRoInterface> bero = getCurrentBeRo();
+				if (bero)
+					bero->setCurrentPlayersTurnId((*it_1)->getMyUniqueID());
 
 			}
 		} else {

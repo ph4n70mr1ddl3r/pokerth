@@ -303,7 +303,7 @@ void Game::raiseBlinds()
 		if (maxBlind > INT_MAX) maxBlind = INT_MAX;
 		if (myGameData.raiseMode == DOUBLE_BLINDS) {
 			if (currentSmallBlind <= maxBlind / 2) {
-				currentSmallBlind *= 2;
+				currentSmallBlind = static_cast<int>(std::min(static_cast<long long>(currentSmallBlind) * 2, maxBlind));
 			} else {
 				currentSmallBlind = static_cast<int>(maxBlind);
 			}
@@ -314,7 +314,7 @@ void Game::raiseBlinds()
 			} else {
 				if (myGameData.afterManualBlindsMode == AFTERMB_DOUBLE_BLINDS) {
 					if (currentSmallBlind <= maxBlind / 2) {
-						currentSmallBlind *= 2;
+						currentSmallBlind = static_cast<int>(std::min(static_cast<long long>(currentSmallBlind) * 2, maxBlind));
 					} else {
 						currentSmallBlind = static_cast<int>(maxBlind);
 					}

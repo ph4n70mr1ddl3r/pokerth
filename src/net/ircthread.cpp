@@ -542,7 +542,7 @@ void
 IrcThread::FlushQueue()
 {
 	// Drain the queue under the lock, then send each message without holding it lock
- (SendChatMessage acquires m_sendMutex internally).
+ // (SendChatMessage acquires m_sendMutex internally).
 	std::queue<string> msgs;
 	{
 		boost::mutex::scoped_lock lock(m_sendMutex);

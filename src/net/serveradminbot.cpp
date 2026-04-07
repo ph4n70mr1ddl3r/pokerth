@@ -39,6 +39,7 @@
 #include <core/loghelper.h>
 
 #include <filesystem>
+#include <algorithm>
 #include <boost/bind/bind.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
@@ -101,7 +102,7 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 				if (command == "kick") {
 					while (msgStream.peek() == ' ')
 						msgStream.get();
-					string playerName(msgStream.str().substr(msgStream.tellg()));
+					string playerName(msgStream.str().substr(static_cast<size_t>(std::max(std::streampos(0), msgStream.tellg()))));
 					if (!playerName.empty()) {
 						if (GetLobbyThread().KickPlayerByName(playerName))
 							m_ircAdminThread->SendChatMessage(nickName + ": Successfully kicked player \"" + playerName + "\" from the server.");
@@ -111,7 +112,7 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 				} else if (command == "removegame") {
 					while (msgStream.peek() == ' ')
 						msgStream.get();
-					string playerName(msgStream.str().substr(msgStream.tellg()));
+					string playerName(msgStream.str().substr(static_cast<size_t>(std::max(std::streampos(0), msgStream.tellg()))));
 					if (!playerName.empty()) {
 						if (GetLobbyThread().RemoveGameByPlayerName(playerName))
 							m_ircAdminThread->SendChatMessage(nickName + ": Successfully removed game of player \"" + playerName + "\".");
@@ -124,7 +125,7 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 				} else if (command == "showip") {
 					while (msgStream.peek() == ' ')
 						msgStream.get();
-					string playerName(msgStream.str().substr(msgStream.tellg()));
+					string playerName(msgStream.str().substr(static_cast<size_t>(std::max(std::streampos(0), msgStream.tellg()))));
 					if (!playerName.empty()) {
 						string ipAddress(GetLobbyThread().GetPlayerIPAddress(playerName));
 						if (!ipAddress.empty())
@@ -135,7 +136,7 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 				} else if (command == "bannick") {
 					while (msgStream.peek() == ' ')
 						msgStream.get();
-					string playerRegex(msgStream.str().substr(msgStream.tellg()));
+					string playerRegex(msgStream.str().substr(static_cast<size_t>(std::max(std::streampos(0), msgStream.tellg()))));
 					if (!playerRegex.empty()) {
 						GetLobbyThread().GetBanManager().BanPlayerRegex(playerRegex);
 						m_ircAdminThread->SendChatMessage(nickName + ": The regex \"" + playerRegex + "\" was added to the player ban list.");
@@ -217,7 +218,7 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 				} else if (command == "chat") {
 					while (msgStream.peek() == ' ')
 						msgStream.get();
-					string chat(msgStream.str().substr(msgStream.tellg()));
+					string chat(msgStream.str().substr(static_cast<size_t>(std::max(std::streampos(0), msgStream.tellg()))));
 					if (!chat.empty() && chat.size() < MAX_CHAT_TEXT_SIZE) {
 						GetLobbyThread().SendGlobalChat(chat);
 						m_ircAdminThread->SendChatMessage(nickName + ": Global chat message sent.");
@@ -226,7 +227,7 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 				} else if (command == "msg") {
 					while (msgStream.peek() == ' ')
 						msgStream.get();
-					string message(msgStream.str().substr(msgStream.tellg()));
+					string message(msgStream.str().substr(static_cast<size_t>(std::max(std::streampos(0), msgStream.tellg()))));
 					if (!message.empty() && message.size() < MAX_CHAT_TEXT_SIZE) {
 						GetLobbyThread().SendGlobalMsgBox(message);
 						m_ircAdminThread->SendChatMessage(nickName + ": Global message box sent.");
