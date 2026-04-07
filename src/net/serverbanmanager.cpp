@@ -76,11 +76,16 @@ void
 ServerBanManager::BanPlayerRegex(const string &playerRegex, unsigned durationHours)
 {
 	boost::mutex::scoped_lock lock(m_banMutex);
-	unsigned banId = GetNextBanId();
 
 	TimedPlayerBan tmpBan;
+	try {
+		tmpBan.nameRegex = boost::regex(playerRegex, boost::regex::extended | boost::regex::icase);
+	} catch (const boost::regex_error &e) {
+		LOG_ERROR("BanPlayerRegex: Invalid regex '" << playerRegex << "': " << e.what());
+		return;
+	}
+	unsigned banId = GetNextBanId();
 	tmpBan.timer = InternalRegisterTimedBan(banId, durationHours);
-	tmpBan.nameRegex = boost::regex(playerRegex, boost::regex::extended | boost::regex::icase);
 	m_banPlayerNameMap[banId] = tmpBan;
 }
 
@@ -239,7 +244,11 @@ ServerBanManager::InitGameNameBadWordList(const std::list<string> &badWordList)
 	boost::mutex::scoped_lock lock(m_banMutex);
 	m_gameNameBadWordFilter.clear();
 	for (const auto &word : badWordList) {
-		m_gameNameBadWordFilter.push_back(boost::regex(word, boost::regex::extended | boost::regex::icase));
+		try {
+			m_gameNameBadWordFilter.push_back(boost::regex(word, boost::regex::extended | boost::regex::icase));
+		} catch (const boost::regex_error &e) {
+			LOG_ERROR("InitGameNameBadWordList: Invalid regex '" << word << "': " << e.what());
+		}
 	}
 }
 
