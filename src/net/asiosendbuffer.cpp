@@ -119,6 +119,7 @@ AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<boost::asio::ip::tcp::sock
 							socket,
 							boost::asio::placeholders::error));
         } else if (closeAfterSend) {
+            closeAfterSend = false;
             boost::system::error_code ec;
             socket->close(ec);
         }
@@ -140,6 +141,7 @@ AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::strea
                             sslStream,
                             boost::asio::placeholders::error));
         } else if (closeAfterSend) {
+            closeAfterSend = false;
             boost::system::error_code ec;
             sslStream->lowest_layer().close(ec);
         }

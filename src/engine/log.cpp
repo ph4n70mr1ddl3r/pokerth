@@ -53,6 +53,7 @@ void
 Log::init()
 {
 	std::lock_guard<std::recursive_mutex> lock(m_logMutex);
+	sql.clear();
 
 	if (mySqliteLogDb.isValid() && mySqliteLogDb.isOpen()) {
 		mySqliteLogDb.close();
@@ -107,19 +108,6 @@ Log::init()
                     sql += ",LogVersion INTEGER NOT NULL";
                     sql += ", PRIMARY KEY(Date,Time));";
 
-                    {
-                    QSqlQuery sessionQuery(mySqliteLogDb);
-                    sessionQuery.prepare("INSERT INTO Session (PokerTH_Version, Date, Time, LogVersion) VALUES (?, ?, ?, ?)");
-                    sessionQuery.addBindValue(QString::fromUtf8(POKERTH_BETA_RELEASE_STRING));
-                    sessionQuery.addBindValue(QString::fromUtf8(curDate));
-                    sessionQuery.addBindValue(QString::fromUtf8(curTime));
-                    sessionQuery.addBindValue(SQLITE_LOG_VERSION);
-                    if (!sessionQuery.exec()) {
-                        QSqlError err = sessionQuery.lastError();
-                        LOG_ERROR("Failed to insert session: " << err.text().toStdString());
-                    }
-                }
-
                     // create game table
                     sql += "CREATE TABLE Game (";
                     sql += "UniqueGameID INTEGER PRIMARY KEY";
@@ -170,6 +158,21 @@ Log::init()
                     sql += ");";
 
                     exec_transaction();
+
+                    // Insert session metadata AFTER tables are created
+                    {
+                        QSqlQuery sessionQuery(mySqliteLogDb);
+                        sessionQuery.prepare("INSERT INTO Session (PokerTH_Version, Date, Time, LogVersion) VALUES (?, ?, ?, ?)");
+                        sessionQuery.addBindValue(QString::fromUtf8(POKERTH_BETA_RELEASE_STRING));
+                        sessionQuery.addBindValue(QString::fromUtf8(curDate));
+                        sessionQuery.addBindValue(QString::fromUtf8(curTime));
+                        sessionQuery.addBindValue(SQLITE_LOG_VERSION);
+                        if (!sessionQuery.exec()) {
+                            QSqlError err = sessionQuery.lastError();
+                            LOG_ERROR("Failed to insert session: " << err.text().toStdString());
+                        }
+                    }
+
                 } else {
                     // open failed
                     QSqlError err = mySqliteLogDb.lastError();
