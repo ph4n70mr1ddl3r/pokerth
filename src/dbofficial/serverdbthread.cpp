@@ -314,11 +314,6 @@ ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, const std
 {
 	LOG_MSG("ServerDBThread::SetPlayerLastGames() entered.");
 
-	if (!IsConnected()) {
-		LOG_ERROR("SetPlayerLastGames: Database not connected, skipping update for player " << playerId);
-		return;
-	}
-
 	std::string safePlayerIp = playerIp;
 	if (!IsValidIpAddress(safePlayerIp)) {
 		LOG_ERROR("Invalid IP address format rejected: " << playerIp);

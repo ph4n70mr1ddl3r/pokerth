@@ -4248,7 +4248,7 @@ void LocalPlayer::preflopEngine3()
 					mySet += myCash;
 					myCash = 0;
 					myAction = PLAYER_ACTION_ALLIN;
-					if(mySet > currentHand->getCurrentBeRo()->getHighestSet()) currentHand->getCurrentBeRo()->setHighestSet(mySet);
+					if(mySet > currentHand->getCurrentBeRo()->getHighestSet()) { int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 
 				}
 				// sonst
@@ -4256,7 +4256,7 @@ void LocalPlayer::preflopEngine3()
 
 					myCash = myCash + mySet - currentHand->getCurrentBeRo()->getHighestSet() - raise;
 					mySet = currentHand->getCurrentBeRo()->getHighestSet() + raise;
-					currentHand->getCurrentBeRo()->setHighestSet(mySet);
+					{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 					myAction = PLAYER_ACTION_RAISE;
 				}
 			}
@@ -4408,7 +4408,7 @@ void LocalPlayer::flopEngine3()
 					myCash -= mySet;
 					myAction = PLAYER_ACTION_BET;
 				}
-				currentHand->getCurrentBeRo()->setHighestSet(mySet);
+				{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 			}
 
 		}
@@ -4430,7 +4430,7 @@ void LocalPlayer::flopEngine3()
 					mySet += myCash;
 					myCash = 0;
 					myAction = PLAYER_ACTION_ALLIN;
-					if(mySet > currentHand->getCurrentBeRo()->getHighestSet()) currentHand->getCurrentBeRo()->setHighestSet(mySet);
+					if(mySet > currentHand->getCurrentBeRo()->getHighestSet()) { int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 
 				}
 				// sonst
@@ -4438,7 +4438,7 @@ void LocalPlayer::flopEngine3()
 
 					myCash = myCash + mySet - currentHand->getCurrentBeRo()->getHighestSet() - raise;
 					mySet = currentHand->getCurrentBeRo()->getHighestSet() + raise;
-					currentHand->getCurrentBeRo()->setHighestSet(mySet);
+					{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 					myAction = PLAYER_ACTION_RAISE;
 				}
 			}
@@ -4584,7 +4584,7 @@ void LocalPlayer::turnEngine3()
 					myCash -= mySet;
 					myAction = PLAYER_ACTION_BET;
 				}
-				currentHand->getCurrentBeRo()->setHighestSet(mySet);
+				{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 			}
 
 		}
@@ -4606,7 +4606,7 @@ void LocalPlayer::turnEngine3()
 					mySet += myCash;
 					myCash = 0;
 					myAction = PLAYER_ACTION_ALLIN;
-					if(mySet > currentHand->getCurrentBeRo()->getHighestSet()) currentHand->getCurrentBeRo()->setHighestSet(mySet);
+					if(mySet > currentHand->getCurrentBeRo()->getHighestSet()) { int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 
 				}
 				// sonst
@@ -4614,7 +4614,7 @@ void LocalPlayer::turnEngine3()
 
 					myCash = myCash + mySet - currentHand->getCurrentBeRo()->getHighestSet() - raise;
 					mySet = currentHand->getCurrentBeRo()->getHighestSet() + raise;
-					currentHand->getCurrentBeRo()->setHighestSet(mySet);
+					{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 					myAction = PLAYER_ACTION_RAISE;
 				}
 			}
@@ -4753,7 +4753,7 @@ void LocalPlayer::riverEngine3()
 					myCash -= mySet;
 					myAction = PLAYER_ACTION_BET;
 				}
-				currentHand->getCurrentBeRo()->setHighestSet(mySet);
+				{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 			}
 
 		}
@@ -4775,7 +4775,7 @@ void LocalPlayer::riverEngine3()
 					mySet += myCash;
 					myCash = 0;
 					myAction = PLAYER_ACTION_ALLIN;
-					if(mySet > currentHand->getCurrentBeRo()->getHighestSet()) currentHand->getCurrentBeRo()->setHighestSet(mySet);
+					if(mySet > currentHand->getCurrentBeRo()->getHighestSet()) { int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 
 				}
 				// sonst
@@ -4783,7 +4783,7 @@ void LocalPlayer::riverEngine3()
 
 					myCash = myCash + mySet - currentHand->getCurrentBeRo()->getHighestSet() - raise;
 					mySet = currentHand->getCurrentBeRo()->getHighestSet() + raise;
-					currentHand->getCurrentBeRo()->setHighestSet(mySet);
+					{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 					myAction = PLAYER_ACTION_RAISE;
 				}
 			}

@@ -192,7 +192,6 @@ void LocalBeRo::run()
 
 			// aktuelle bero nicht dran, weil alle Sets gleich sind
 			//also gehe in naechste bero
-			myHand->setCurrentRound(GameState(myBeRoID+1));
 
 			//Action loeschen und ActionButtons refresh
 			for(it_c=myHand->getRunningPlayerList()->begin(); it_c!=myHand->getRunningPlayerList()->end(); ++it_c) {
@@ -210,7 +209,10 @@ void LocalBeRo::run()
 				myHand->getGuiInterface()->refreshAction(i,PLAYER_ACTION_NONE);
 			}
 
+			// switchRounds uses current round's BeRo for all-in detection,
+			// so advance the round AFTER switchRounds to use the correct highestSet.
 			myHand->switchRounds();
+			myHand->setCurrentRound(GameState(myBeRoID+1));
 		} else {
 			// aktuelle bero ist wirklich dran
 
