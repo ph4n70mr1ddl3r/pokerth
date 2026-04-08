@@ -560,6 +560,11 @@ ServerGame::RemoveAutoLeavePlayers()
 void
 ServerGame::InternalEndGame()
 {
+	{
+		boost::mutex::scoped_lock lock(m_voteKickDataMutex);
+		m_voteKickData.reset();
+	}
+	m_voteKickTimer.cancel();
 	StoreAndResetRanking();
 	{
 		boost::mutex::scoped_lock lock(m_gameMutex);

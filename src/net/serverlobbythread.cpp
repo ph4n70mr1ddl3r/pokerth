@@ -414,12 +414,14 @@ ServerLobbyThread::CloseSession(boost::shared_ptr<SessionData> session)
 	if (session && session->GetState() != SessionData::Closed) { // Make this call reentrant.
 		LOG_VERBOSE("Closing session #" << session->GetId() << ".");
 
+		// Set state to Closed FIRST to prevent reentrant calls from
+		// RemoveSession triggering CloseSession again on the same session.
+		session->SetState(SessionData::Closed);
 		boost::shared_ptr<ServerGame> tmpGame = session->GetGame();
 		if (tmpGame) {
 			tmpGame->RemoveSession(session, NTF_NET_INTERNAL);
 		}
 		session->SetGame(boost::shared_ptr<ServerGame>());
-		session->SetState(SessionData::Closed);
 
 		m_sessionManager.RemoveSession(session->GetId());
 		m_gameSessionManager.RemoveSession(session->GetId());
@@ -2170,26 +2172,28 @@ void
 ServerLobbyThread::TimerRemoveGame(const boost::system::error_code &ec)
 {
 	if (ec) {
-		if (ec != boost::asio::error::operation_aborted) {
-			LOG_ERROR("TimerRemoveGame error: " << ec.message());
+		if (ec == boost::asio::error::operation_aborted) {
+			return;
 		}
-		return;
-	}
-	std::vector<boost::shared_ptr<ServerGame>> gamesToRemove;
-	{
-		boost::mutex::scoped_lock lock(m_gameMapMutex);
-		GameMap::iterator i = m_gameMap.begin();
-		GameMap::iterator end = m_gameMap.end();
-		while (i != end) {
-			boost::shared_ptr<ServerGame> tmpGame = i->second;
-			if (!tmpGame->GetSessionManager().HasSessionWithState(SessionData::Game)) {
-				gamesToRemove.push_back(tmpGame);
+		LOG_ERROR("TimerRemoveGame error: " << ec.message());
+		// Fall through to reschedule even on transient errors.
+	} else {
+		std::vector<boost::shared_ptr<ServerGame>> gamesToRemove;
+		{
+			boost::mutex::scoped_lock lock(m_gameMapMutex);
+			GameMap::iterator i = m_gameMap.begin();
+			GameMap::iterator end = m_gameMap.end();
+			while (i != end) {
+				boost::shared_ptr<ServerGame> tmpGame = i->second;
+				if (!tmpGame->GetSessionManager().HasSessionWithState(SessionData::Game)) {
+					gamesToRemove.push_back(tmpGame);
+				}
+				++i;
 			}
-			++i;
 		}
-	}
-	for (auto& game : gamesToRemove) {
-		InternalRemoveGame(game);
+		for (auto& game : gamesToRemove) {
+			InternalRemoveGame(game);
+		}
 	}
 	m_removeGameTimer.expires_after(milliseconds(SERVER_REMOVE_GAME_INTERVAL_MSEC));
 	m_removeGameTimer.async_wait(
@@ -2201,22 +2205,24 @@ void
 ServerLobbyThread::TimerUpdateClientLoginLock(const boost::system::error_code &ec)
 {
 	if (ec) {
-		if (ec != boost::asio::error::operation_aborted) {
-			LOG_ERROR("TimerUpdateClientLoginLock error: " << ec.message());
+		if (ec == boost::asio::error::operation_aborted) {
+			return;
 		}
-		return;
-	}
-	boost::mutex::scoped_lock lock(m_timerClientAddressMapMutex);
+		LOG_ERROR("TimerUpdateClientLoginLock error: " << ec.message());
+		// Fall through to reschedule even on transient errors.
+	} else {
+		boost::mutex::scoped_lock lock(m_timerClientAddressMapMutex);
 
-	TimerClientAddressMap::iterator i = m_timerClientAddressMap.begin();
-	TimerClientAddressMap::iterator end = m_timerClientAddressMap.end();
+		TimerClientAddressMap::iterator i = m_timerClientAddressMap.begin();
+		TimerClientAddressMap::iterator end = m_timerClientAddressMap.end();
 
-	while (i != end) {
-		TimerClientAddressMap::iterator next = i;
-		++next;
-		if (i->second.elapsed().total_seconds() > static_cast<boost::int64_t>(SERVER_INIT_LOGIN_CLIENT_LOCK_SEC))
-			m_timerClientAddressMap.erase(i);
-		i = next;
+		while (i != end) {
+			TimerClientAddressMap::iterator next = i;
+			++next;
+			if (i->second.elapsed().total_seconds() > static_cast<boost::int64_t>(SERVER_INIT_LOGIN_CLIENT_LOCK_SEC))
+				m_timerClientAddressMap.erase(i);
+			i = next;
+		}
 	}
 	// Restart timer
 	m_loginLockTimer.expires_after(milliseconds(SERVER_UPDATE_LOGIN_LOCK_INTERVAL_MSEC));
@@ -2386,8 +2392,9 @@ ServerLobbyThread::SessionError(boost::shared_ptr<SessionData> session, int erro
 {
 	if (session) {
 		if (errorCode == ERR_NET_PLAYER_KICKED || errorCode == ERR_NET_SESSION_TIMED_OUT) {
-			if (session->GetGame() && session->GetPlayerData()) {
-				session->GetGame()->MarkPlayerAsKicked(session->GetPlayerData()->GetUniqueId());
+			auto game = session->GetGame();
+			if (game && session->GetPlayerData()) {
+				game->MarkPlayerAsKicked(session->GetPlayerData()->GetUniqueId());
 			}
 		}
 
