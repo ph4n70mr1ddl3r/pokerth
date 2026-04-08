@@ -395,15 +395,16 @@ AvatarManager::StoreAvatarInCache(const MD5Buf &md5buf, AvatarFileType avatarFil
 					LOG_ERROR("Path traversal attempt detected - file path outside cache directory");
 					return retVal;
 				}
-				std::ofstream o(fileName.c_str(), ios_base::out | ios_base::binary | ios_base::trunc);
+				std::string canonicalFileName = canonicalFilePath.string();
+				std::ofstream o(canonicalFileName.c_str(), ios_base::out | ios_base::binary | ios_base::trunc);
 				if (!o.fail()) {
 					o.write((const char *)data, size);
 					o.flush();
 					if (o.fail()) {
-						LOG_ERROR("Failed to write avatar data to file: " << fileName);
+						LOG_ERROR("Failed to write avatar data to file: " << canonicalFileName);
 						o.close();
 						boost::system::error_code ec;
-						fs::remove(fileName, ec);
+						fs::remove(canonicalFileName, ec);
 						return retVal;
 					}
 					o.close();

@@ -979,7 +979,7 @@ ClientThread::PassAvatarFileToManager(unsigned playerId, boost::shared_ptr<Avata
 	else {
 		if (AvatarFile->fileType == AVATAR_FILE_TYPE_UNKNOWN)
 			AvatarFile->fileType = tmpPlayerInfo.avatarType;
-		if (!AvatarFile->fileData.empty() && !GetAvatarManager().StoreAvatarInCache(tmpPlayerInfo.avatar, AvatarFile->fileType, AvatarFile->fileData.data(), AvatarFile->reportedSize, false))
+		if (!AvatarFile->fileData.empty() && !GetAvatarManager().StoreAvatarInCache(tmpPlayerInfo.avatar, AvatarFile->fileType, AvatarFile->fileData.data(), AvatarFile->fileData.size(), false))
 			LOG_ERROR("Failed to store avatar in cache directory.");
 
 		// Update player info, but never re-request avatar.
