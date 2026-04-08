@@ -214,6 +214,7 @@ ServerDBThread::PlayerLogout(DB_id /*playerId*/)
 void
 ServerDBThread::AsyncCreateGame(unsigned requestId, const string &gameName)
 {
+	if (!IsConnected()) return;
 	list<string> params;
 	params.push_back(gameName);
 	params.push_back(mysqlpp::DateTime(time(nullptr)));
@@ -234,6 +235,7 @@ ServerDBThread::AsyncCreateGame(unsigned requestId, const string &gameName)
 void
 ServerDBThread::SetGamePlayerPlace(unsigned requestId, DB_id playerId, unsigned place)
 {
+	if (!IsConnected()) return;
 	// The game id param is added later (during init of the async op), because it may be unknown.
 	list<string> params;
 	ostringstream paramStream;
@@ -312,6 +314,7 @@ namespace {
 void
 ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, const std::vector<long long> &last_games, const std::string &playerIp)
 {
+	if (!IsConnected()) return;
 	LOG_MSG("ServerDBThread::SetPlayerLastGames() entered.");
 
 	std::string safePlayerIp = playerIp;
@@ -348,6 +351,7 @@ ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, const std
 void
 ServerDBThread::EndGame(unsigned requestId)
 {
+	if (!IsConnected()) return;
 	boost::mutex::scoped_lock lock(m_asyncQueueMutex);
 
 	// Set the end time of the game.
@@ -382,6 +386,7 @@ ServerDBThread::EndGame(unsigned requestId)
 void
 ServerDBThread::AsyncReportAvatar(unsigned requestId, unsigned replyId, DB_id reportedPlayerId, const std::string &avatarHash, const std::string &avatarType, DB_id *byPlayerId)
 {
+	if (!IsConnected()) return;
 	list<string> params;
 	ostringstream paramStream;
 	paramStream << reportedPlayerId;
@@ -415,6 +420,7 @@ ServerDBThread::AsyncReportAvatar(unsigned requestId, unsigned replyId, DB_id re
 void
 ServerDBThread::AsyncReportGame(unsigned requestId, unsigned replyId, DB_id *creatorPlayerId, unsigned gameId, const std::string &gameName, DB_id *byPlayerId)
 {
+	if (!IsConnected()) return;
 	list<string> params;
 	ostringstream paramStream;
 	if (creatorPlayerId) {
@@ -453,6 +459,7 @@ ServerDBThread::AsyncReportGame(unsigned requestId, unsigned replyId, DB_id *cre
 void
 ServerDBThread::AsyncQueryAdminPlayers(unsigned requestId)
 {
+	if (!IsConnected()) return;
 	boost::shared_ptr<AsyncDBQuery> asyncQuery(
 		new AsyncDBAdminPlayers(
 			requestId,
@@ -469,6 +476,7 @@ ServerDBThread::AsyncQueryAdminPlayers(unsigned requestId)
 void
 ServerDBThread::AsyncBlockPlayer(unsigned requestId, unsigned replyId, DB_id playerId, int valid, int active)
 {
+	if (!IsConnected()) return;
 	list<string> params;
 	ostringstream paramStream;
 	paramStream << valid;

@@ -1299,6 +1299,9 @@ ServerGame::CheckSettings(const GameData &data, const string &password, ServerMo
 	if (data.startMoney < 1) {
 		retVal = false;
 	}
+	if (data.raiseIntervalMode == RAISE_ON_HANDNUMBER && data.raiseSmallBlindEveryHandsValue < 1) {
+		retVal = false;
+	}
 	if (data.gameType == GAME_TYPE_RANKING) {
 		if ((data.startMoney != RANKING_GAME_START_CASH)
 				|| (data.maxNumberOfPlayers != RANKING_GAME_NUMBER_OF_PLAYERS)

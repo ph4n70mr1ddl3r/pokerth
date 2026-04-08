@@ -623,8 +623,8 @@ void LocalHand::switchRounds()
 		}
 	}
 
-	// special routine
-	if(allInCondition) {
+	// special routine (only when 2+ non-fold players remain, else already handled above)
+	else if(allInCondition && nonFoldPlayerCounter >= 2) {
 		myBoard->collectPot();
 		myGui->refreshPot();
 		myGui->refreshSet();
