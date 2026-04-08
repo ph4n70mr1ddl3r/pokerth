@@ -424,7 +424,7 @@ ServerLobbyThread::CloseSession(boost::shared_ptr<SessionData> session)
 		m_sessionManager.RemoveSession(session->GetId());
 		m_gameSessionManager.RemoveSession(session->GetId());
 
-		if (session->GetPlayerData() && !tmpGame) {
+		if (session->GetPlayerData()) {
 			NotifyPlayerLeftLobby(session->GetPlayerData()->GetUniqueId());
 		}
 		// Update stats (if needed).
@@ -1530,7 +1530,29 @@ ServerLobbyThread::HandleNetPacketRejoinGame(boost::shared_ptr<SessionData> sess
 	}
 
 	if (game) {
-		MoveSessionToGame(game, session, rejoinGame.autoleave());
+		const GameData &tmpData = game->GetGameData();
+		bool blocked = false;
+		if (tmpData.gameType == GAME_TYPE_INVITE_ONLY
+			&& !game->IsPlayerInvited(session->GetPlayerData()->GetUniqueId())) {
+			SendJoinGameFailed(session, rejoinGame.gameid(), NTF_NET_JOIN_NOT_INVITED);
+			blocked = true;
+		} else if (game->IsPasswordProtected()) {
+			SendJoinGameFailed(session, rejoinGame.gameid(), NTF_NET_JOIN_INVALID_PASSWORD);
+			blocked = true;
+		} else if (tmpData.gameType == GAME_TYPE_RANKING && !session->GetPlayerData()->IsPlayerAllowedToJoinCreateLimitRank(m_serverConfig.readConfigString("ServerLimitRankNum"), m_serverConfig.readConfigString("ServerLimitRankPeriod"))) {
+			SendJoinGameFailed(session, rejoinGame.gameid(), NTF_NET_JOIN_IP_BLOCKED);
+			blocked = true;
+		} else if (tmpData.gameType == GAME_TYPE_RANKING
+			   && session->GetClientAddr() != SERVER_ADDRESS_LOCALHOST_STR
+			   && session->GetClientAddr() != SERVER_ADDRESS_LOCALHOST_STR_V4V6
+			   && session->GetClientAddr() != SERVER_ADDRESS_LOCALHOST_STR_V4
+			   && game->IsClientAddressConnected(session->GetClientAddr())) {
+			SendJoinGameFailed(session, rejoinGame.gameid(), NTF_NET_JOIN_IP_BLOCKED);
+			blocked = true;
+		}
+		if (!blocked) {
+			MoveSessionToGame(game, session, rejoinGame.autoleave());
+		}
 	} else {
 		SendJoinGameFailed(session, rejoinGame.gameid(), NTF_NET_JOIN_GAME_INVALID);
 	}
