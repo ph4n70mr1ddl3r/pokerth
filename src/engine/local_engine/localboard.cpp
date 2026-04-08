@@ -146,7 +146,23 @@ void LocalBoard::distributePot(unsigned dealerPosition)
 			// determine the number of level winners
 			winnerCount = potLevel.size()-2;
 			if (!winnerCount) {
-				throw LocalException(__FILE__, __LINE__, ERR_NO_WINNER);
+				// No non-folded winner at this level (e.g. folded player's excess contribution).
+				// Distribute to the best non-folded hand among all active players.
+				int fallbackHighest = 0;
+				for(it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
+					if((*it_c)->getMyActiveStatus() && (*it_c)->getMyAction() != PLAYER_ACTION_FOLD && (*it_c)->getMyCardsValueInt() > fallbackHighest) {
+						fallbackHighest = (*it_c)->getMyCardsValueInt();
+					}
+				}
+				for(it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
+					if((*it_c)->getMyActiveStatus() && (*it_c)->getMyAction() != PLAYER_ACTION_FOLD && (*it_c)->getMyCardsValueInt() == fallbackHighest) {
+						potLevel.push_back((*it_c)->getMyUniqueID());
+					}
+				}
+				winnerCount = potLevel.size()-2;
+				if (!winnerCount) {
+					throw LocalException(__FILE__, __LINE__, ERR_NO_WINNER);
+				}
 			}
 
 			// check if this is the final pot level for at least one winner
