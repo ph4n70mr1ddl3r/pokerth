@@ -56,6 +56,35 @@
 
 using namespace std;
 
+// Write config file atomically: write to temp file then rename to prevent
+// data loss if the process crashes between truncation and write completion.
+static bool atomicWriteFile(const std::string &filePath, const QString &data)
+{
+	QString qPath = QString::fromStdString(filePath);
+	QString tempPath = qPath + ".tmp";
+
+	QFile tempFile(tempPath);
+	if (!tempFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+		qDebug("Failed to open temp file for writing: %s", tempPath.toUtf8().constData());
+		return false;
+	}
+	QTextStream stream(&tempFile);
+	stream << data;
+	stream.flush();
+	tempFile.close();
+
+	// Remove old file if it exists (rename won't overwrite on all platforms)
+	QFile::remove(qPath);
+
+	if (!QFile::rename(tempPath, qPath)) {
+		qDebug("Failed to rename temp file to: %s", qPath.toUtf8().constData());
+		QFile::remove(tempPath);
+		return false;
+	}
+	return true;
+}
+
+
 ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 {
 
@@ -362,17 +391,7 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 			{
 				confAppDataPath.setAttribute("value", QString::fromStdString(myQtToolsInterface->getDataPathStdString(myArgv0.c_str())));
 #endif
-					QFile file(QString::fromStdString(configFileName));
-					if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-					{
-						qDebug("Failed to open file for writing.");
-					}
-					else
-					{
-						QTextStream stream(&file);
-						stream << xmlDoc.toString();
-						file.close();
-					}
+					atomicWriteFile(configFileName, xmlDoc.toString());
 				}
 			}
 			if (tempRevision < configRev)
@@ -515,18 +534,7 @@ void ConfigFile::writeBuffer() const
 			}
 		}
 
-		QFile file(QString::fromStdString(configFileName));
-		if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-		{
-			qDebug("Failed to open file for writing.");
-		}
-		else
-		{
-			QTextStream stream(&file);
-			stream << xmlDoc.toString();
-			stream.flush();
-			file.close();
-		}
+		atomicWriteFile(configFileName, xmlDoc.toString());
 	}
 }
 
@@ -570,17 +578,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState, int oldRevision)
 				}
 			}
 		}
-		QFile file(QString::fromStdString(configFileName));
-		if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-		{
-			qDebug("Failed to open file for writing.");
-		}
-		else
-		{
-			QTextStream stream(&file);
-			stream << xmlDoc.toString();
-			file.close();
-		}
+		atomicWriteFile(configFileName, xmlDoc.toString());
 	}
 
 	if (myConfigState == OLD)
@@ -715,17 +713,7 @@ void ConfigFile::updateConfig(ConfigState myConfigState, int oldRevision)
 					}
 				}
 			}
-			QFile file(QString::fromStdString(configFileName));
-			if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-			{
-				qDebug("Failed to open file for writing.");
-			}
-			else
-			{
-				QTextStream stream(&file);
-				stream << newDoc.toString();
-				file.close();
-			}
+			atomicWriteFile(configFileName, newDoc.toString());
 			}
 		}
 }
