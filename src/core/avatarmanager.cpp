@@ -73,8 +73,12 @@ AvatarManager::AvatarManager(bool useExternalServer, const std::string &external
 
 AvatarManager::~AvatarManager() noexcept
 {
-	m_uploader->SignalTermination();
-	m_uploader->Join(THREAD_WAIT_INFINITE);
+	try {
+		m_uploader->SignalTermination();
+		m_uploader->Join(THREAD_WAIT_INFINITE);
+	} catch (...) {
+		LOG_ERROR("Exception caught in AvatarManager destructor during uploader thread cleanup");
+	}
 }
 
 bool

@@ -60,10 +60,14 @@ ServerManager::ServerManager(ConfigFile &config, GuiInterface &gui, ServerMode m
 
 ServerManager::~ServerManager() noexcept
 {
-	// Signal the lobby thread to terminate before draining io_service.
-	if (m_lobbyThread) {
-		m_lobbyThread->SignalTermination();
-		m_lobbyThread->Join(NET_LOBBY_THREAD_TERMINATE_TIMEOUT_MSEC);
+	try {
+		// Signal the lobby thread to terminate before draining io_service.
+		if (m_lobbyThread) {
+			m_lobbyThread->SignalTermination();
+			m_lobbyThread->Join(NET_LOBBY_THREAD_TERMINATE_TIMEOUT_MSEC);
+		}
+	} catch (...) {
+		LOG_ERROR("Exception caught in ServerManager destructor during lobby thread cleanup");
 	}
 
 	size_t remainingHandler = 0;
