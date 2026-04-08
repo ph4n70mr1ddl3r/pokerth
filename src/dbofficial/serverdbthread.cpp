@@ -520,7 +520,11 @@ ServerDBThread::Main()
 				SetConnected(true);
 				reconnectDelay = 250;
 				m_semaphore.wait();
-				HandleNextQuery();
+				// Drain all pending queries - EndGame posts twice for two items,
+				// so we must process all available items per wake-up to stay in sync.
+				do {
+					HandleNextQuery();
+				} while (m_semaphore.try_wait());
 			} else {
 				SetConnected(false);
 				EstablishDBConnection();
