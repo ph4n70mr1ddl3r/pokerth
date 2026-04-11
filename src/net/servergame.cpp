@@ -1310,6 +1310,12 @@ ServerGame::CheckSettings(const GameData &data, const string &password, ServerMo
 	if (data.raiseIntervalMode == RAISE_ON_TIME && data.raiseSmallBlindEveryMinutesValue < 1) {
 		retVal = false;
 	}
+	if (data.raiseMode == MANUAL_BLINDS_ORDER && data.manualBlindsList.empty()) {
+		retVal = false;
+	}
+	if (data.afterManualBlindsMode == AFTERMB_RAISE_ABOUT && data.afterMBAlwaysRaiseValue < 1) {
+		retVal = false;
+	}
 	if (data.gameType == GAME_TYPE_RANKING) {
 		if ((data.startMoney != RANKING_GAME_START_CASH)
 				|| (data.maxNumberOfPlayers != RANKING_GAME_NUMBER_OF_PLAYERS)

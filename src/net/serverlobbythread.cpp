@@ -1300,12 +1300,12 @@ ServerLobbyThread::HandleNetPacketAvatarEnd(boost::shared_ptr<SessionData> sessi
 				EstablishSession(session);
 				LOG_MSG("Client \"" << session->GetClientAddr() << "\" uploaded avatar \""
 						<< std::filesystem::path(avatarFileName).string() << "\".");
-			} else
-				SessionError(session, ERR_NET_WRONG_AVATAR_SIZE);
 			} else {
-				LOG_ERROR("Session " << session->GetId() << " - AvatarEnd with invalid avatar data.");
-				SessionError(session, ERR_NET_INVALID_AVATAR_FILE);
+				SessionError(session, ERR_NET_WRONG_AVATAR_SIZE);
 			}
+		} else {
+			LOG_ERROR("Session " << session->GetId() << " - AvatarEnd with invalid avatar data.");
+			SessionError(session, ERR_NET_INVALID_AVATAR_FILE);
 		}
 	}
 }
