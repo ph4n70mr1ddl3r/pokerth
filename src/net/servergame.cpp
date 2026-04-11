@@ -382,7 +382,7 @@ ServerGame::InternalStartGame()
 			if (!factory) {
 				throw ServerException(__FILE__, __LINE__, ERR_SOCK_INTERNAL, 0);
 			}
-			m_game.reset(new Game(&gui, factory, playerData, GetGameData(), GetStartData(), GetNextGameNum(), nullptr));
+			m_game = boost::make_shared<Game>(&gui, factory, playerData, GetGameData(), GetStartData(), GetNextGameNum(), nullptr);
 		}
 
 		GetDatabase().AsyncCreateGame(GetId(), GetName());

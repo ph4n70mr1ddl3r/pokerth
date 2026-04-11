@@ -40,6 +40,7 @@
 
 #include <iostream>
 #include <array>
+#include <cassert>
 #include <climits>
 
 using namespace std;
@@ -82,6 +83,11 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 	k = 0;
 	myBoard->setMyCards(tempBoardArray);
 	for(it=activePlayerList->begin(); it!=activePlayerList->end(); ++it, k++) {
+
+		// Bounds check: 2*k+1+5 must be < NumCards (52)
+		// With MAX_NUMBER_OF_PLAYERS=10, max index is 2*9+1+5=24 which is safe.
+		assert(k < static_cast<int>(activePlayerList->size()));
+		assert(2*k+1+5 < NumCards);
 
 		bestHandPos = {-1, -1, -1, -1, -1};
 
@@ -480,7 +486,7 @@ void LocalHand::setBlinds()
 
 	PlayerListConstIterator it_c;
 
-	//do sets --> TODO switch?
+	// Set small blind amounts
 	for (it_c=runningPlayerList->begin(); it_c!=runningPlayerList->end(); ++it_c) {
 
 		//small blind
@@ -500,7 +506,7 @@ void LocalHand::setBlinds()
 
 	}
 
-	//do sets --> TODO switch?
+	// Set big blind amounts
 	for (it_c=runningPlayerList->begin(); it_c!=runningPlayerList->end(); ++it_c) {
 
 		//big blind

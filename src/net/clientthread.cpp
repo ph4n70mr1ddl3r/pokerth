@@ -679,7 +679,7 @@ ClientThread::InitGame()
 		m_startData.numberOfPlayers = static_cast<int>(GetPlayerDataList().size());
 		{
 			boost::mutex::scoped_lock lock(m_gameMutex);
-			m_game.reset(new Game(&m_gui, factory, GetPlayerDataList(), GetGameData(), GetStartData(), m_curGameNum++, m_clientLog.get()));
+			m_game = boost::make_shared<Game>(&m_gui, factory, GetPlayerDataList(), GetGameData(), GetStartData(), m_curGameNum++, m_clientLog.get());
 		}
 		// Initialize Minimum GUI speed.
 		int minimumGuiSpeed = 1;

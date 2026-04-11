@@ -64,7 +64,7 @@ NetPacket::Create(const char *data, size_t dataSize)
 
 	std::unique_ptr<PokerTHMessage> msg(PokerTHMessage::default_instance().New());
 	if (msg->ParseFromArray(data, static_cast<int>(dataSize))) {
-		tmpPacket.reset(new NetPacket(msg.release()));
+		tmpPacket = boost::make_shared<NetPacket>(msg.release());
 	} else {
 		LOG_ERROR("NetPacket::Create - Failed to parse message from " << dataSize << " bytes");
 	}

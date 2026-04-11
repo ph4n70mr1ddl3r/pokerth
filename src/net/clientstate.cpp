@@ -1257,9 +1257,8 @@ ClientStateWaitJoin::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		client->SetGameData(tmpData);
 
 		// Player number is 0 on init. Will be set when the game starts.
-		boost::shared_ptr<PlayerData> playerData(
-			new PlayerData(client->GetGuiPlayerId(), 0, PLAYER_TYPE_HUMAN,
-						   context.GetPlayerRights(), netJoinAck.areyougameadmin()));
+		auto playerData = boost::make_shared<PlayerData>(client->GetGuiPlayerId(), 0, PLAYER_TYPE_HUMAN,
+								   context.GetPlayerRights(), netJoinAck.areyougameadmin());
 		playerData->SetName(context.GetPlayerName());
 		playerData->SetAvatarFile(context.GetAvatarFile());
 		client->AddPlayerData(playerData);

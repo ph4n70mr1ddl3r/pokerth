@@ -187,11 +187,11 @@ void LocalBeRo::run()
 			}
 		}
 
-		// prfen, ob aktuelle bero wirklich dran ist
+		// Check whether the current betting round is really active
 		if(!firstRound && allHighestSet) {
 
-			// aktuelle bero nicht dran, weil alle Sets gleich sind
-			//also gehe in naechste bero
+			// Current betting round is not active because all sets are equal.
+			// Move to the next betting round.
 
 			//Action loeschen und ActionButtons refresh
 			for(it_c=myHand->getRunningPlayerList()->begin(); it_c!=myHand->getRunningPlayerList()->end(); ++it_c) {
@@ -214,7 +214,7 @@ void LocalBeRo::run()
 			myHand->switchRounds();
 			myHand->setCurrentRound(GameState(myBeRoID+1));
 		} else {
-			// aktuelle bero ist wirklich dran
+			// Current betting round is active.
 
 			// determine next running player
 			PlayerListConstIterator currentPlayersTurnIt = myHand->getRunningPlayerIt( currentPlayersTurnId );
@@ -244,11 +244,11 @@ void LocalBeRo::run()
 			}
 
 			if( currentPlayersTurnId == 0) {
-				// Wir sind dran
+				// It is our turn
 				myHand->getGuiInterface()->meInAction();
 			} else {
 
-				//Gegner sind dran
+				// Opponents' turn
 				myHand->getGuiInterface()->beRoAnimation2(myBeRoID);
 			}
 
