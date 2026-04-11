@@ -611,7 +611,10 @@ ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned 
 					boost::mutex::scoped_lock lock(m_voteKickDataMutex);
 					if (!m_voteKickData) {
 						m_voteKickData = boost::make_shared<VoteKickData>();
-						m_voteKickData->petitionId = m_curPetitionId++;
+						// Skip 0 as petition ID - it could be confused with unset/invalid
+						unsigned nextId = m_curPetitionId.fetch_add(1, std::memory_order_relaxed);
+						if (nextId == 0) nextId = m_curPetitionId.fetch_add(1, std::memory_order_relaxed);
+						m_voteKickData->petitionId = nextId;
 						m_voteKickData->kickPlayerId = playerIdWho;
 						m_voteKickData->numVotesToKick = static_cast<int>(ceil(numPlayers * 2.0 / 3.0));
 						m_voteKickData->timeLimitSec = timeoutSec + SERVER_KICK_TIMEOUT_ADD_DELAY_SEC;
