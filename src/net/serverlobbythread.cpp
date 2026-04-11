@@ -878,6 +878,8 @@ ServerLobbyThread::Main()
 	{
 		boost::mutex::scoped_lock lock(m_gameMapMutex);
 		for(const GameMap::value_type& tmpGame : m_gameMap) {
+			tmpGame.second->ResetComputerPlayerList();
+			tmpGame.second->RemoveAllSessions();
 			tmpGame.second->Exit();
 		}
 		m_gameMap.clear();
@@ -1638,10 +1640,14 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 						return;
 					}
 					if (GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId())
-						&& chatText.size() >= 3 && chatText.substr(0, 3) == "gn ") {
-						LOG_MSG("Global Notice: " << chatText.substr(3) << " by player_id " << session->GetPlayerData()->GetDBId());
-						SendGlobalChat(chatText.substr(3));
-						chatSent = true;
+						&& chatText.size() >= 4 && chatText.substr(0, 3) == "gn ") {
+						std::string noticeText = chatText.substr(3);
+						boost::trim(noticeText);
+						if (!noticeText.empty()) {
+							LOG_MSG("Global Notice: " << noticeText << " by player_id " << session->GetPlayerData()->GetDBId());
+							SendGlobalChat(noticeText);
+							chatSent = true;
+						}
 					} else {
 						auto packet = boost::make_shared<NetPacket>();
 						packet->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatMessage);
@@ -2561,8 +2567,12 @@ ServerLobbyThread::TimerSaveStatisticsFile(const boost::system::error_code &ec)
 		statFileName = m_statisticsFileName;
 		dataChanged = m_statDataChanged;
 	}
-	if (dataChanged) {
-		ofstream o(statFileName.c_str(), ios_base::out | ios_base::trunc);
+	if (dataChanged && !statFileName.empty()) {
+		// Write to a temporary file first, then rename atomically.
+		// This prevents data loss if the process crashes between
+		// truncation and write completion.
+		std::string tmpFileName = statFileName + ".tmp";
+		ofstream o(tmpFileName.c_str(), ios_base::out | ios_base::trunc);
 		if (!o.fail()) {
 			o << SERVER_STATISTICS_STR_TOTAL_PLAYERS " " << statCopy.totalPlayersEverLoggedIn << endl;
 			o << SERVER_STATISTICS_STR_TOTAL_GAMES " " << statCopy.totalGamesEverCreated << endl;
@@ -2572,15 +2582,24 @@ ServerLobbyThread::TimerSaveStatisticsFile(const boost::system::error_code &ec)
 			o << SERVER_STATISTICS_STR_CUR_GAMES " " << statCopy.numberOfGamesOpen << endl;
 			o.flush();
 			if (o.good()) {
-				{
+				o.close();
+				std::error_code renameEc;
+				std::filesystem::rename(tmpFileName, statFileName, renameEc);
+				if (renameEc) {
+					LOG_ERROR("Failed to rename statistics temp file: " << renameEc.message());
+					std::filesystem::remove(tmpFileName, renameEc);
+				} else {
 					boost::mutex::scoped_lock lock(m_statMutex);
 					m_statDataChanged = false;
 				}
 			} else {
 				LOG_ERROR("Failed to write statistics file: " << statFileName);
+				o.close();
+				std::error_code removeEc;
+				std::filesystem::remove(tmpFileName, removeEc);
 			}
 		} else {
-			LOG_ERROR("Failed to open statistics file: " << statFileName);
+			LOG_ERROR("Failed to open statistics temp file: " << tmpFileName);
 		}
 	}
 	// Restart timer
