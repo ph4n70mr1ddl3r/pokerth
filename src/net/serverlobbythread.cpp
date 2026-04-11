@@ -45,6 +45,7 @@
 #include <db/serverdbfactorygeneric.h>
 #endif
 #include <core/avatarmanager.h>
+#include <core/crypthelper.h>
 #include <core/loghelper.h>
 #include <core/openssl_wrapper.h>
 #include <configfile.h>
@@ -1077,11 +1078,17 @@ ServerLobbyThread::HandleNetPacketInit(boost::shared_ptr<SessionData> session, c
 		serverPassword = initMessage.authserverpassword();
 		if (serverPassword.size() > 128) {
 			LOG_ERROR("Server password too long from " << session->GetClientAddr());
+			CryptHelper::SecureClearMemory(&serverPassword[0], serverPassword.size());
 			SessionError(session, ERR_NET_INVALID_PASSWORD);
 			return;
 		}
 	}
-	if (!Tools::ConstantTimeStringCompare(serverPassword, m_serverConfig.readConfigString("ServerPassword"))) {
+	bool passwordOk = Tools::ConstantTimeStringCompare(serverPassword, m_serverConfig.readConfigString("ServerPassword"));
+	if (!serverPassword.empty()) {
+		CryptHelper::SecureClearMemory(&serverPassword[0], serverPassword.size());
+		std::string().swap(serverPassword);
+	}
+	if (!passwordOk) {
 		LOG_MSG("Invalid server password attempt from " << session->GetClientAddr());
 		SessionError(session, ERR_NET_INVALID_PASSWORD);
 		return;
@@ -1421,7 +1428,7 @@ ServerLobbyThread::HandleNetPacketCreateGame(boost::shared_ptr<SessionData> sess
 	bool validGameName = !gameName.empty() && gameName.size() <= 64;
 	if (validGameName) {
 		for (char c : gameName) {
-			if (!isprint(static_cast<unsigned char>(c)) || c == '\0') {
+			if (!isprint(static_cast<unsigned char>(c))) {
 				validGameName = false;
 				break;
 			}
@@ -2734,38 +2741,43 @@ ServerLobbyThread::ResubscribeLobbyMsg(boost::shared_ptr<SessionData> session)
 void
 ServerLobbyThread::TimerCleanupRateMaps(const boost::system::error_code &ec)
 {
-	if (ec == boost::asio::error::operation_aborted)
-		return;
 	if (ec) {
+		if (ec == boost::asio::error::operation_aborted) {
+			return;
+		}
 		LOG_ERROR("TimerCleanupRateMaps error: " << ec.message());
-	}
-	{
-		boost::mutex::scoped_lock lock(m_chatRateMapMutex);
-		boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
-		boost::posix_time::ptime chatCutoff = now - boost::posix_time::minutes(10);
-		auto cit = m_chatRateMap.begin();
-		while (cit != m_chatRateMap.end()) {
-			cit->second.messageTimes.erase(
-				std::remove_if(cit->second.messageTimes.begin(), cit->second.messageTimes.end(),
-					[chatCutoff](const boost::posix_time::ptime& t) { return t < chatCutoff; }),
-				cit->second.messageTimes.end());
-			if (cit->second.messageTimes.empty()) {
-				cit = m_chatRateMap.erase(cit);
-			} else {
-				++cit;
+		// Fall through to reschedule even on transient errors.
+	} else {
+		// Cleanup stale chat rate limiting entries.
+		{
+			boost::mutex::scoped_lock lock(m_chatRateMapMutex);
+			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+			boost::posix_time::ptime chatCutoff = now - boost::posix_time::minutes(10);
+			auto cit = m_chatRateMap.begin();
+			while (cit != m_chatRateMap.end()) {
+				cit->second.messageTimes.erase(
+					std::remove_if(cit->second.messageTimes.begin(), cit->second.messageTimes.end(),
+						[chatCutoff](const boost::posix_time::ptime& t) { return t < chatCutoff; }),
+					cit->second.messageTimes.end());
+				if (cit->second.messageTimes.empty()) {
+					cit = m_chatRateMap.erase(cit);
+				} else {
+					++cit;
+				}
 			}
 		}
-	}
-	{
-		boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
-		boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
-		boost::posix_time::ptime loginCutoff = now - boost::posix_time::minutes(30);
-		auto fit = m_failedLoginMap.begin();
-		while (fit != m_failedLoginMap.end()) {
-			if (fit->second.firstFailTime < loginCutoff) {
-				fit = m_failedLoginMap.erase(fit);
-			} else {
-				++fit;
+		// Cleanup stale failed login tracking entries.
+		{
+			boost::mutex::scoped_lock lock(m_failedLoginMapMutex);
+			boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+			boost::posix_time::ptime loginCutoff = now - boost::posix_time::minutes(30);
+			auto fit = m_failedLoginMap.begin();
+			while (fit != m_failedLoginMap.end()) {
+				if (fit->second.firstFailTime < loginCutoff) {
+					fit = m_failedLoginMap.erase(fit);
+				} else {
+					++fit;
+				}
 			}
 		}
 	}

@@ -1293,6 +1293,21 @@ bool
 ServerGame::CheckSettings(const GameData &data, const string &password, ServerMode mode)
 {
 	bool retVal = true;
+
+	// Validate enum ranges - reject unknown values that could bypass conditional checks.
+	if (data.gameType < GAME_TYPE_NORMAL || data.gameType > GAME_TYPE_RANKING) {
+		retVal = false;
+	}
+	if (data.raiseIntervalMode < RAISE_ON_HANDNUMBER || data.raiseIntervalMode > RAISE_ON_MINUTES) {
+		retVal = false;
+	}
+	if (data.raiseMode < DOUBLE_BLINDS || data.raiseMode > MANUAL_BLINDS_ORDER) {
+		retVal = false;
+	}
+	if (data.afterManualBlindsMode < AFTERMB_DOUBLE_BLINDS || data.afterManualBlindsMode > AFTERMB_STAY_AT_LAST_BLIND) {
+		retVal = false;
+	}
+
 	if (mode != SERVER_MODE_LAN) {
 		if (data.playerActionTimeoutSec < 5 || data.playerActionTimeoutSec > 60) {
 			retVal = false;
