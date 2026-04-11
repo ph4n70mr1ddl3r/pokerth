@@ -43,7 +43,7 @@ using namespace std;
 
 TransferHelper::TransferHelper()
 {
-	m_data.reset(new TransferData);
+	m_data = boost::make_shared<TransferData>();
 }
 
 TransferHelper::~TransferHelper() noexcept

@@ -47,7 +47,7 @@ namespace fs = std::filesystem;
 DownloaderThread::DownloaderThread()
 	: myDownloadInProgress(false)
 {
-	myDownloadHelper.reset(new DownloadHelper());
+	myDownloadHelper = boost::make_shared<DownloadHelper>();
 }
 
 DownloaderThread::~DownloaderThread() noexcept
@@ -141,7 +141,7 @@ DownloaderThread::Main()
 				{
 					boost::mutex::scoped_lock lock(myDownloadQueueMutex);
 					if (!myDownloadQueue.empty()) {
-						myCurDownloadData.reset(new DownloadData(myDownloadQueue.front()));
+						myCurDownloadData = boost::make_shared<DownloadData>(myDownloadQueue.front());
 						myDownloadQueue.pop();
 					}
 				}

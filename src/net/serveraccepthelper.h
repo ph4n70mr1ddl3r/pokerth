@@ -61,10 +61,10 @@ public:
         : m_ioService(ioService), m_serverCallback(serverCallback)
     {
         m_tls = tls;
-        m_acceptor.reset(new P_acceptor(*m_ioService));
+        m_acceptor = boost::make_shared<P_acceptor>(*m_ioService);
         if (m_tls) {
             try{
-                m_sslContext.reset(new boost::asio::ssl::context(boost::asio::ssl::context::sslv23));
+                m_sslContext = boost::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::sslv23);
                 m_sslContext->set_options(
                     boost::asio::ssl::context::default_workarounds
                     | boost::asio::ssl::context::no_sslv2
@@ -133,9 +133,9 @@ protected:
         // TODO consider sctp
         // Prepare Listen.
         if (ipv6) {
-            m_endpoint.reset(new P_endpoint(P::v6(), serverPort));
+            m_endpoint = boost::make_shared<P_endpoint>(P::v6(), serverPort);
         } else {
-            m_endpoint.reset(new P_endpoint(P::v4(), serverPort));
+            m_endpoint = boost::make_shared<P_endpoint>(P::v4(), serverPort);
         }
 
         m_acceptor->open(m_endpoint->protocol());

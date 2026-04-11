@@ -74,7 +74,7 @@ using namespace boost::chrono;
 #endif
 
 ClientThread::ClientThread(GuiInterface &gui, AvatarManager &avatarManager, Log *myLog)
-	: m_ioService(new boost::asio::io_context), m_clientLog(myLog), m_curState(nullptr), m_gui(gui),
+	: m_ioService(boost::make_shared<boost::asio::io_context>()), m_clientLog(myLog), m_curState(nullptr), m_gui(gui),
 	  m_avatarManager(avatarManager), m_stateTimer(*m_ioService), m_avatarTimer(*m_ioService)
 {
 	m_context = boost::make_shared<ClientContext>();
@@ -591,7 +591,7 @@ ClientThread::Main()
 	try {
 		InitAuthContext();
 		// Start sub-threads.
-		m_avatarDownloader.reset(new DownloaderThread);
+		m_avatarDownloader = boost::make_shared<DownloaderThread>();
 		m_avatarDownloader->Run();
 		SetState(CLIENT_INITIAL_STATE::Instance());
 		RegisterTimers();
@@ -1137,8 +1137,7 @@ ClientThread::CreateContextSession()
 
         SSL_CTX_set_info_callback(m_sslContext->native_handle(), &ClientThread::SslInfoCallback);
 
-        boost::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sslStream(
-            new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(*m_ioService, *m_sslContext));
+        auto sslStream = boost::make_shared<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>(*m_ioService, *m_sslContext);
 
         SSL_set_info_callback(sslStream->native_handle(), &ClientThread::SslInfoCallback);
 

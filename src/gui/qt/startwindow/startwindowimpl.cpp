@@ -67,9 +67,9 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 	: myConfig(c), myLog(l), msgBoxOutdatedVersionActive(false)
 {
 
-	myGuiInterface.reset(new GuiWrapper(myConfig, this));
+	myGuiInterface = boost::make_shared<GuiWrapper>(myConfig, this);
 	{
-		mySession.reset(new Session(myGuiInterface.get(), myConfig, myLog));
+		mySession = boost::make_shared<Session>(myGuiInterface.get(), myConfig, myLog);
 		mySession->init();
 		myLog->init();
 		// 		myGuiInterface->setSession(session);

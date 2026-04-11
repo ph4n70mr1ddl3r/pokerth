@@ -930,12 +930,20 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 {
 	Game &curGame = *server->GetGame();
 
+	auto currentHand = curGame.getCurrentHand();
+	if (!currentHand)
+		throw ServerException(__FILE__, __LINE__, ERR_NET_INTERNAL_GAME_ERROR, 0);
+
 	// Main game loop.
-	int curRound = curGame.getCurrentHand()->getCurrentRound();
-	curGame.getCurrentHand()->switchRounds();
-	if (!curGame.getCurrentHand()->getAllInCondition())
-		curGame.getCurrentHand()->getCurrentBeRo()->run();
-	int newRound = curGame.getCurrentHand()->getCurrentRound();
+	int curRound = currentHand->getCurrentRound();
+	currentHand->switchRounds();
+	if (!currentHand->getAllInCondition()) {
+		auto bero = currentHand->getCurrentBeRo();
+		if (!bero)
+			throw ServerException(__FILE__, __LINE__, ERR_NET_INTERNAL_GAME_ERROR, 0);
+		bero->run();
+	}
+	int newRound = currentHand->getCurrentRound();
 
 	// If round changes, deal cards if needed.
 	if (newRound != curRound && newRound != GAME_STATE_POST_RIVER) {
@@ -946,8 +954,8 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 		list<boost::shared_ptr<PlayerInterface> > nonFoldPlayers = *curGame.getActivePlayerList();
 		nonFoldPlayers.remove_if(boost::bind(&PlayerInterface::getMyAction, boost::placeholders::_1) == PLAYER_ACTION_FOLD);
 
-		if (curGame.getCurrentHand()->getAllInCondition()
-				&& !curGame.getCurrentHand()->getCardsShown()
+		if (currentHand->getAllInCondition()
+				&& !currentHand->getCardsShown()
 				&& nonFoldPlayers.size() > 1) {
 			// Send cards of all active players to all players (all in).
 			auto allIn = boost::make_shared<NetPacket>();
@@ -968,7 +976,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 				++i;
 			}
 			server->SendToAllPlayers(allIn, SessionData::Game);
-			curGame.getCurrentHand()->setCardsShown(true);
+			currentHand->setCardsShown(true);
 
 			server->GetStateTimer1().expires_after(seconds(SERVER_SHOW_CARDS_DELAY_SEC));
 
@@ -985,7 +993,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 		}
 	} else {
 		if (newRound != GAME_STATE_POST_RIVER) { // continue hand
-			if (curGame.getCurrentHand()->getAllInCondition())
+			if (currentHand->getAllInCondition())
 				throw ServerException(__FILE__, __LINE__, ERR_NET_INTERNAL_GAME_ERROR, 0);
 
 			// Retrieve current player.
@@ -999,7 +1007,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 			notification->GetMsg()->set_messagetype(PokerTHMessage::Type_PlayersTurnMessage);
 			PlayersTurnMessage *netPlayersTurn = notification->GetMsg()->mutable_playersturnmessage();
 			netPlayersTurn->set_gameid(server->GetId());
-			netPlayersTurn->set_gamestate(static_cast<NetGameState>(curGame.getCurrentHand()->getCurrentRound()));
+			netPlayersTurn->set_gamestate(static_cast<NetGameState>(currentHand->getCurrentRound()));
 			netPlayersTurn->set_playerid(curPlayer->getMyUniqueID());
 			server->SendToAllPlayers(notification, SessionData::Game);
 
@@ -1026,7 +1034,12 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 			}
 		} else { // hand is over
 			// Engine will find out who won.
-			curGame.getCurrentHand()->getCurrentBeRo()->postRiverRun();
+			{
+				auto bero = currentHand->getCurrentBeRo();
+				if (!bero)
+					throw ServerException(__FILE__, __LINE__, ERR_NET_INTERNAL_GAME_ERROR, 0);
+				bero->postRiverRun();
+			}
 
 			// Retrieve non-fold players. If only one player is left, no cards are shown.
 			list<boost::shared_ptr<PlayerInterface> > nonFoldPlayers = *curGame.getActivePlayerList();
@@ -1045,7 +1058,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 				server->SendToAllPlayers(endHand, SessionData::Game);
 			} else {
 				// End of Hand - show cards.
-				const PlayerIdList showList(curGame.getCurrentHand()->getBoard()->getPlayerNeedToShowCards());
+				const PlayerIdList showList(currentHand->getBoard()->getPlayerNeedToShowCards());
 				auto endHand = boost::make_shared<NetPacket>();
 				endHand->GetMsg()->set_messagetype(PokerTHMessage::Type_EndOfHandShowCardsMessage);
 				EndOfHandShowCardsMessage *netEndHand = endHand->GetMsg()->mutable_endofhandshowcardsmessage();

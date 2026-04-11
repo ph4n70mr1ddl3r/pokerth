@@ -42,9 +42,9 @@ using namespace std;
 ServerManagerIrc::ServerManagerIrc(ConfigFile &config, GuiInterface &gui, ServerMode mode, AvatarManager &avatarManager)
 	: ServerManager(config, gui)
 {
-	m_adminBot.reset(new ServerAdminBot(m_ioService));
-	m_lobbyBot.reset(new ServerLobbyBot(m_ioService));
-	m_lobbyThread.reset(new ServerLobbyThread(gui, mode, *m_lobbyBot, config, avatarManager, m_ioService));
+	m_adminBot = boost::make_shared<ServerAdminBot>(m_ioService);
+	m_lobbyBot = boost::make_shared<ServerLobbyBot>(m_ioService);
+	m_lobbyThread = boost::make_shared<ServerLobbyThread>(gui, mode, *m_lobbyBot, config, avatarManager, m_ioService);
 }
 
 ServerManagerIrc::~ServerManagerIrc() noexcept

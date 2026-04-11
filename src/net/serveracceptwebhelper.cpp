@@ -45,9 +45,9 @@ ServerAcceptWebHelper::ServerAcceptWebHelper(ServerCallback &serverCallback, boo
 {
 	m_tls = websocketTls;
 	if(m_tls){
-		m_webSocketTlsServer.reset(new tls_server);
+		m_webSocketTlsServer = boost::make_shared<tls_server>();
 	}else{
-		m_webSocketServer.reset(new server);
+		m_webSocketServer = boost::make_shared<server>();
 	}
 	
 }

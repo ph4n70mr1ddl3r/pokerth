@@ -337,7 +337,7 @@ IrcThread::IrcThread(const IrcThread &other)
 	  m_lastConnectTimer(boost::posix_time::time_duration(0, 0, 0), boost::timers::portable::microsec_timer::manual_start)
 {
 	m_callback = other.m_callback;
-	m_context.reset(new IrcContext(*this));
+	m_context = boost::make_shared<IrcContext>(*this);
 
 	IrcContext &context = GetContext();
 	const IrcContext &otherContext = other.GetContext();
@@ -358,7 +358,7 @@ IrcThread::IrcThread(IrcCallback *callback)
 {
 	if (!callback)
 		throw PokerTHException(__FILE__, __LINE__, ERR_IRC_INVALID_PARAM, 0);
-	m_context.reset(new IrcContext(*this));
+	m_context = boost::make_shared<IrcContext>(*this);
 }
 
 IrcThread::~IrcThread() noexcept

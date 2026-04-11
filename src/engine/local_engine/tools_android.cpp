@@ -53,7 +53,7 @@ static inline void InitRandState()
 {
 	if (!g_rand_state.get()) {
 		std::random_device rd;
-		g_rand_state.reset(new boost::mt19937(rd()));
+		g_rand_state = boost::make_shared<boost::mt19937>(rd());
 	}
 }
 

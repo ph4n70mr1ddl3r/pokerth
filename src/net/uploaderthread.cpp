@@ -45,7 +45,7 @@ namespace fs = std::filesystem;
 UploaderThread::UploaderThread(UploadCallback *callback)
 	: m_uploadInProgress(false), m_callback(callback)
 {
-	m_uploadHelper.reset(new UploadHelper());
+	m_uploadHelper = boost::make_shared<UploadHelper>();
 }
 
 UploaderThread::~UploaderThread() noexcept

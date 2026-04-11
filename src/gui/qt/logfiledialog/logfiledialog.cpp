@@ -63,7 +63,7 @@ LogFileDialog::LogFileDialog(QWidget *parent, ConfigFile *c) :
 	connect( this, SIGNAL(signalUploadCompleted(QString,QString)), this, SLOT(showLogAnalysis(QString,QString)));
 	connect( this, SIGNAL(signalUploadError(QString,QString)), this, SLOT(showUploadError(QString,QString)));
 
-	uploader.reset(new UploaderThread(this));
+	uploader = boost::make_shared<UploaderThread>(this);
 }
 
 LogFileDialog::~LogFileDialog() noexcept

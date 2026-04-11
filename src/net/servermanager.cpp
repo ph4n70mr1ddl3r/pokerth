@@ -48,14 +48,14 @@ using namespace std;
 ServerManager::ServerManager(ConfigFile &config, GuiInterface &gui)
 	: m_playerConfig(config), m_gui(gui)
 {
-	m_ioService.reset(new boost::asio::io_context);
+	m_ioService = boost::make_shared<boost::asio::io_context>();
 }
 
 ServerManager::ServerManager(ConfigFile &config, GuiInterface &gui, ServerMode mode, AvatarManager &avatarManager)
 	: m_playerConfig(config), m_gui(gui)
 {
-	m_ioService.reset(new boost::asio::io_context);
-	m_lobbyThread.reset(new ServerLobbyThread(gui, mode, config, avatarManager, m_ioService));
+	m_ioService = boost::make_shared<boost::asio::io_context>();
+	m_lobbyThread = boost::make_shared<ServerLobbyThread>(gui, mode, config, avatarManager, m_ioService);
 }
 
 ServerManager::~ServerManager() noexcept
@@ -86,19 +86,18 @@ ServerManager::Init(unsigned serverPort, unsigned websocketPort, bool ipv6, bool
 	GetLobbyThread().Init(logDir);
 
 	if (proto & TRANSPORT_PROTOCOL_TCP) {
-		boost::shared_ptr<ServerAcceptInterface> tcpAcceptHelper(new ServerAcceptHelper<boost::asio::ip::tcp>(GetGui(), m_ioService, serverTls));
+		auto tcpAcceptHelper = boost::make_shared<ServerAcceptHelper<boost::asio::ip::tcp>>(GetGui(), m_ioService, serverTls);
 		tcpAcceptHelper->Listen(serverPort, ipv6, logDir, m_lobbyThread);
 		m_acceptHelperPool.push_back(tcpAcceptHelper);
 	}
 	/*	if (proto & TRANSPORT_PROTOCOL_SCTP)
 		{
-			boost::shared_ptr<ServerAcceptInterface> sctpAcceptHelper(new ServerAcceptHelper<boost::asio::ip::sctp>(GetGui(), m_ioService));
+			auto sctpAcceptHelper = boost::make_shared<ServerAcceptHelper<boost::asio::ip::sctp>>(GetGui(), m_ioService);
 			sctpAcceptHelper->Listen(serverPort, ipv6, logDir, m_lobbyThread);
 			m_acceptHelperPool.push_back(sctpAcceptHelper);
 		}*/
 	if (proto & TRANSPORT_PROTOCOL_WEBSOCKET) {
-		boost::shared_ptr<ServerAcceptInterface> webAcceptHelper(
-			new ServerAcceptWebHelper(GetGui(), m_ioService, webSocketResource, webSocketOrigin, websocketTls));
+		auto webAcceptHelper = boost::make_shared<ServerAcceptWebHelper>(GetGui(), m_ioService, webSocketResource, webSocketOrigin, websocketTls);
 		webAcceptHelper->Listen(websocketPort, ipv6, logDir, m_lobbyThread);
 		m_acceptHelperPool.push_back(webAcceptHelper);
 	}

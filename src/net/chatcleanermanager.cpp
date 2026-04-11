@@ -47,10 +47,10 @@ ChatCleanerManager::ChatCleanerManager(ChatCleanerCallback &cb, boost::shared_pt
 	  m_recvBufUsed(0)
 {
 	m_recvBuf[0] = 0;
-	m_resolver.reset(
-		new boost::asio::ip::tcp::resolver(*m_ioService));
-	m_sendManager.reset(
-		new AsioSendBuffer);
+	m_resolver =
+		boost::make_shared<boost::asio::ip::tcp::resolver>(*m_ioService);
+	m_sendManager =
+		boost::make_shared<AsioSendBuffer>();
 }
 
 ChatCleanerManager::~ChatCleanerManager() noexcept
@@ -76,9 +76,9 @@ ChatCleanerManager::ReInit()
 	m_recvBuf[0] = 0;
 
 	if (m_useIpv6)
-		m_socket.reset(new boost::asio::ip::tcp::socket(*m_ioService, tcp::v6()));
+		m_socket = boost::make_shared<boost::asio::ip::tcp::socket>(*m_ioService, tcp::v6());
 	else
-		m_socket.reset(new boost::asio::ip::tcp::socket(*m_ioService, tcp::v4()));
+		m_socket = boost::make_shared<boost::asio::ip::tcp::socket>(*m_ioService, tcp::v4());
 
 	ostringstream portStr;
 	portStr << m_serverPort;
