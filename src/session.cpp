@@ -138,15 +138,15 @@ void Session::startLocalGame(const GameData &gameData, const StartData &startDat
 
 		playerDataList.push_back(playerData);
 	}
-	// EngineFactory erstellen
-	auto factory = boost::make_shared<LocalEngineFactory>(myConfig); // LocalEngine erstellen
+	// Create engine factory
+	auto factory = boost::make_shared<LocalEngineFactory>(myConfig); // Create local engine
 
 	myCurrentGame = boost::make_shared<Game>(myGui, factory, playerDataList, gameData, startData, myCurrentGameNum, myLog);
 
-	//// SPIEL-SCHLEIFE
+	//// GAME LOOP
 	myCurrentGame->initHand();
 	myCurrentGame->startHand();
-	// SPIEL-SCHLEIFE
+	// GAME LOOP
 }
 
 void Session::startClientGame(boost::shared_ptr<Game> game)

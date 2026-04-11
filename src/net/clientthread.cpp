@@ -661,7 +661,7 @@ ClientThread::InitAuthContext()
 void
 ClientThread::ClearAuthContext()
 {
-    // GSASL entfernt: nichts zu räumen.
+    // GSASL removed: nothing to clear.
     m_authContext = nullptr;
 }
 
@@ -672,8 +672,8 @@ ClientThread::InitGame()
 		// Store current session guid, in case we need to rejoin the game.
 		WriteSessionGuidToFile();
 
-		// EngineFactory erstellen
-		boost::shared_ptr<EngineFactory> factory(new ClientEngineFactory); // LocalEngine erstellen
+		// Create engine factory
+		auto factory = boost::make_shared<ClientEngineFactory>();
 
 		MapPlayerDataList();
 		m_startData.numberOfPlayers = static_cast<int>(GetPlayerDataList().size());
@@ -1292,9 +1292,8 @@ ClientThread::CreatePlayerData(unsigned playerId, bool isGameAdmin)
 	boost::shared_ptr<PlayerData> playerData;
 	PlayerInfo info{};
 	if (GetCachedPlayerInfo(playerId, info)) {
-		playerData.reset(
-			new PlayerData(playerId, 0, info.ptype,
-						   PLAYER_RIGHTS_NORMAL, isGameAdmin));
+		playerData = boost::make_shared<PlayerData>(playerId, 0, info.ptype,
+													 PLAYER_RIGHTS_NORMAL, isGameAdmin);
 		playerData->SetName(info.playerName);
 		if (info.hasAvatar) {
 			string avatarFile;
@@ -1310,8 +1309,7 @@ ClientThread::CreatePlayerData(unsigned playerId, bool isGameAdmin)
 		// Request player info.
 		RequestPlayerInfo(playerId, true);
 		// Use temporary data until the PlayerInfo request is completed.
-		playerData.reset(
-			new PlayerData(playerId, 0, PLAYER_TYPE_HUMAN, PLAYER_RIGHTS_NORMAL, isGameAdmin));
+		playerData = boost::make_shared<PlayerData>(playerId, 0, PLAYER_TYPE_HUMAN, PLAYER_RIGHTS_NORMAL, isGameAdmin);
 		playerData->SetName(name.str());
 	}
 	return playerData;

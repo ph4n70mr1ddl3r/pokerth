@@ -193,12 +193,12 @@ void LocalBeRo::run()
 			// Current betting round is not active because all sets are equal.
 			// Move to the next betting round.
 
-			//Action loeschen und ActionButtons refresh
+			// Clear actions and refresh action buttons
 			for(it_c=myHand->getRunningPlayerList()->begin(); it_c!=myHand->getRunningPlayerList()->end(); ++it_c) {
 				(*it_c)->setMyAction(PLAYER_ACTION_NONE);
 			}
 
-			//Sets in den Pot verschieben und Sets = 0 und Pot-refresh
+			// Move sets to pot, reset sets to 0, and refresh pot
 			myHand->getBoard()->collectSets();
 			myHand->getBoard()->collectPot();
 			myHand->getGuiInterface()->refreshPot();
