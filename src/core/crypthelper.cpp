@@ -412,6 +412,7 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 #endif
 		SecureClearMemory(key, sizeof(key));
 		SecureClearMemory(iv, sizeof(iv));
+		SecureClearMemory(paddedPlainStr.data(), paddedPlainStr.size());
 	}
 	return retVal;
 }

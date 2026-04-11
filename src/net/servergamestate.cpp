@@ -48,6 +48,7 @@
 
 #include <boost/bind/bind.hpp>
 
+#include <core/crypthelper.h>
 #include <sstream>
 
 using namespace std;
@@ -1245,25 +1246,26 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 						<< curGame.getCurrentHandID() << " "
 						<< cards[0] << " "
 						<< cards[1];
-                std::string plainCardData = cardDataStream.str();
-                // Clear the ostringstream buffer to remove plaintext card data from memory
-                cardDataStream.str("");
-                cardDataStream.clear();
-                if (CryptHelper::AES128Encrypt(reinterpret_cast<const unsigned char*>(tmpPassword.c_str()),
+				std::string plainCardData = cardDataStream.str();
+				// Clear the ostringstream buffer to remove plaintext card data from memory
+				cardDataStream.str("");
+				cardDataStream.clear();
+				if (CryptHelper::AES128Encrypt(reinterpret_cast<const unsigned char*>(tmpPassword.c_str()),
 											   static_cast<unsigned>(tmpPassword.size()),
 											   plainCardData,
 											   tmpCipher)
 						&& !tmpCipher.empty()) {
-                    netHandStart->set_encryptedcards(reinterpret_cast<const char*>(tmpCipher.data()), tmpCipher.size());
-                } else {
-                    server->RemovePlayer(tmpPlayer->getMyUniqueID(), ERR_SOCK_INVALID_STATE);
-                    errorFlag = true;
-                }
-                // Clear plaintext card data from memory
-                std::fill(plainCardData.begin(), plainCardData.end(), '\0');
-            }
-            std::fill(tmpPassword.begin(), tmpPassword.end(), '\0');
-            std::string().swap(tmpPassword);
+					netHandStart->set_encryptedcards(reinterpret_cast<const char*>(tmpCipher.data()), tmpCipher.size());
+				} else {
+					server->RemovePlayer(tmpPlayer->getMyUniqueID(), ERR_SOCK_INVALID_STATE);
+					errorFlag = true;
+				}
+				// Clear plaintext card data from memory (SecureClearMemory prevents compiler optimization)
+				CryptHelper::SecureClearMemory(&plainCardData[0], plainCardData.size());
+				std::string().swap(plainCardData);
+			}
+			CryptHelper::SecureClearMemory(&tmpPassword[0], tmpPassword.size());
+			std::string().swap(tmpPassword);
 
 			if (!errorFlag) {
 				server->GetLobbyThread().GetSender().Send(tmpSession, notifyCards);
