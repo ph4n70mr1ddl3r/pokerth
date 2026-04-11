@@ -565,6 +565,11 @@ ServerGame::InternalEndGame()
 		m_voteKickData.reset();
 	}
 	m_voteKickTimer.cancel();
+	m_isNameReported.store(false);
+	{
+		boost::mutex::scoped_lock lock(m_reportedAvatarListMutex);
+		m_reportedAvatarList.clear();
+	}
 	StoreAndResetRanking();
 	{
 		boost::mutex::scoped_lock lock(m_gameMutex);

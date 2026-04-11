@@ -1205,10 +1205,13 @@ int
 ServerGameStateHand::GetDealCardsDelaySec(ServerGame &server)
 {
 	Game &curGame = *server.GetGame();
-	int allInDelay = curGame.getCurrentHand()->getAllInCondition() ? SERVER_DEAL_ADD_ALL_IN_DELAY_SEC : 0;
+	auto currentHand = curGame.getCurrentHand();
+	if (!currentHand)
+		return 0;
+	int allInDelay = currentHand->getAllInCondition() ? SERVER_DEAL_ADD_ALL_IN_DELAY_SEC : 0;
 	int delay = 0;
 
-	switch(curGame.getCurrentHand()->getCurrentRound()) {
+	switch(currentHand->getCurrentRound()) {
 	case GAME_STATE_FLOP:
 		delay = SERVER_DEAL_FLOP_CARDS_DELAY_SEC;
 		break;

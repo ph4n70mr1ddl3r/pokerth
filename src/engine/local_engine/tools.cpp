@@ -94,7 +94,10 @@ bool Tools::ConstantTimeStringCompare(const std::string& a, const std::string& b
 		unsigned char cb = i < b.size() ? static_cast<unsigned char>(b[i]) : 0;
 		result |= ca ^ cb;
 	}
+	// Use bitwise & instead of logical && to prevent short-circuit evaluation,
+	// ensuring truly constant-time comparison resistant to timing side-channel attacks.
 	volatile bool sizeMatch = (a.size() == b.size());
-	return result == 0 && sizeMatch;
+	volatile bool contentMatch = (result == 0);
+	return contentMatch & sizeMatch;
 }
 
