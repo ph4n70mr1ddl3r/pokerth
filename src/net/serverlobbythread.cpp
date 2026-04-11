@@ -1116,7 +1116,8 @@ ServerLobbyThread::HandleNetPacketInit(boost::shared_ptr<SessionData> session, c
 		return;
 	}
 	
-	// Additional validation: check for valid characters
+	// Check for valid printable ASCII characters and ensure name is not whitespace-only.
+	// The char loop rejects c < 32 (which covers NUL and all control chars) and c > 126.
 	bool hasNonWhitespace = false;
 	for (char c : playerName) {
 		if (c < 32 || c > 126) {
@@ -1127,14 +1128,8 @@ ServerLobbyThread::HandleNetPacketInit(boost::shared_ptr<SessionData> session, c
 			hasNonWhitespace = true;
 		}
 	}
-	
-	if (!hasNonWhitespace) {
-		SessionError(session, ERR_NET_INVALID_PLAYER_NAME);
-		return;
-	}
 
-	// Check for control characters and null bytes
-	if (playerName.find('\0') != std::string::npos) {
+	if (!hasNonWhitespace) {
 		SessionError(session, ERR_NET_INVALID_PLAYER_NAME);
 		return;
 	}

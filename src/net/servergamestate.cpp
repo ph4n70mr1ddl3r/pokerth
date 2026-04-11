@@ -1076,8 +1076,26 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 			playersWithCash.remove_if(boost::bind(&PlayerInterface::getMyCash, boost::placeholders::_1) < 1);
 
 			if (playersWithCash.empty()) {
+				// All active players have zero cash. This can happen when all remaining
+				// players were disconnected and had their cash zeroed by
+				// RemoveDisconnectedPlayers, or in a rare multi-way all-in where the pot
+				// is exactly split leaving everyone with 0.
+				// Use the dealer as a nominal "winner" for the EndOfGameMessage (cash is 0
+				// so the choice is cosmetic), then properly clean up and reopen the game.
+				unsigned nominalWinnerId = curGame.getDealerPosition();
 				server->InternalEndGame();
-				server->SetState(SERVER_INITIAL_STATE::Instance());
+
+				auto endGame = boost::make_shared<NetPacket>();
+				endGame->GetMsg()->set_messagetype(PokerTHMessage::Type_EndOfGameMessage);
+				EndOfGameMessage *netEndGame = endGame->GetMsg()->mutable_endofgamemessage();
+				netEndGame->set_gameid(server->GetId());
+				netEndGame->set_winnerplayerid(nominalWinnerId);
+				server->SendToAllPlayers(endGame, SessionData::Game);
+
+				server->RemoveAutoLeavePlayers();
+				server->ResetComputerPlayerList();
+				server->GetLobbyThread().NotifyReopeningGame(server->GetId());
+				server->SetState(ServerGameStateInit::Instance());
 			} else if (playersWithCash.size() == 1) {
 				boost::shared_ptr<PlayerInterface> winnerPlayer = *(playersWithCash.begin());
 				server->InternalEndGame();
@@ -1233,11 +1251,13 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 			boost::shared_ptr<NetPacket> notifyCards = CreateNetPacketHandStart(*server);
 			HandStartMessage *netHandStart = notifyCards->GetMsg()->mutable_handstartmessage();
 			string tmpPassword(tmpSession->AuthGetPassword());
-			if (tmpPassword.empty()) { // encrypt only if password is present
+			if (tmpPassword.empty()) {
+				// No password available - send cards in plaintext.
 				HandStartMessage::PlainCards *plainCards = netHandStart->mutable_plaincards();
 				plainCards->set_plaincard1(cards[0]);
 				plainCards->set_plaincard2(cards[1]);
 			} else {
+				// Password available - encrypt card data.
 				ostringstream cardDataStream;
 				vector<unsigned char> tmpCipher;
 				cardDataStream
