@@ -81,7 +81,6 @@ static bool atomicWriteFile(const std::string &filePath, const QString &data)
 
 	// On POSIX, QFile::rename() atomically replaces the target if it exists.
 	// Avoid explicit remove() which creates a window where no config file exists.
-	QFile::remove(qPath);
 
 	if (!QFile::rename(tempPath, qPath)) {
 		qDebug("Failed to rename temp file to: %s", qPath.toUtf8().constData());

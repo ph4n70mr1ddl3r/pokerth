@@ -3171,7 +3171,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 								if(temp2Array[0] < array[j1+j2][1]) temp2++;
 							}
 							tempValue = (50000 + temp1*1000 + temp2*100 + temp2Array[0]);
-							breakLoop = 1;
+							breakLoop = true;
 						}
 					}
 				}
@@ -3287,7 +3287,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 
 								tempValue = (40012 + (temp1+1)*1000);
 							}
-							breakLoop = 1;
+							breakLoop = true;
 						}
 						// Straight draw in the middle
 						else {
@@ -3362,7 +3362,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 
 								tempValue = (40000 + (temp1+5)*1000 + temp2*100 + array[j1][1]);
 							}
-							breakLoop = 1;
+							breakLoop = true;
 						}
 					} else {
 						// Bauchschuss ?
@@ -3438,7 +3438,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 
 								tempValue = (40000 + (temp1+1)*1000 + temp2*100 + array[j1][1]);
 							}
-							breakLoop = 1;
+							breakLoop = true;
 						} else {
 							// Test for straight draw exception 5-4-3-2-A
 							if(array[j1][1] == 12 && ((array[j1][1]-9 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-1 == array[j4][1]) || (array[j1][1]-9 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-2 == array[j4][1]) || (array[j1][1]-9 == array[j2][1] && array[j2][1]-2 == array[j3][1] && array[j3][1]-1 == array[j4][1]) || (array[j1][1]-10 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-1 == array[j4][1]))) {
@@ -3503,7 +3503,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 									tempValue = (40004 + (temp1+1)*1000 + 100);
 								}
 
-								breakLoop = 1;
+								breakLoop = true;
 							}
 						}
 					}

@@ -83,12 +83,12 @@ public:
 
 protected:
 
-	HandInterface* getMyHand() const
+	[[nodiscard]] HandInterface* getMyHand() const
 	{
 		return myHand;
 	}
 
-	unsigned getDealerPosition() const
+	[[nodiscard]] unsigned getDealerPosition() const
 	{
 		return dealerPosition;
 	}
@@ -97,7 +97,7 @@ protected:
 	{
 		currentPlayersTurnId = theValue;
 	}
-	unsigned getCurrentPlayersTurnId() const override
+	[[nodiscard]] unsigned getCurrentPlayersTurnId() const override
 	{
 		return currentPlayersTurnId;
 	}
@@ -106,7 +106,7 @@ protected:
 	{
 		firstRoundLastPlayersTurnId = theValue;
 	}
-	unsigned getFirstRoundLastPlayersTurnId() const
+	[[nodiscard]] unsigned getFirstRoundLastPlayersTurnId() const
 	{
 		return firstRoundLastPlayersTurnId;
 	}
@@ -115,7 +115,7 @@ protected:
 	{
 		currentPlayersTurnIt = theValue;
 	}
-	PlayerListIterator getCurrentPlayersTurnIt() const override
+	[[nodiscard]] PlayerListIterator getCurrentPlayersTurnIt() const override
 	{
 		return currentPlayersTurnIt;
 	}
@@ -124,7 +124,7 @@ protected:
 	{
 		lastPlayersTurnIt = theValue;
 	}
-	PlayerListIterator getLastPlayersTurnIt() const
+	[[nodiscard]] PlayerListIterator getLastPlayersTurnIt() const
 	{
 		return lastPlayersTurnIt;
 	}
@@ -133,7 +133,7 @@ protected:
 	{
 		highestSet = theValue;
 	}
-	int getHighestSet() const override
+	[[nodiscard]] int getHighestSet() const override
 	{
 		return highestSet;
 	}
@@ -142,7 +142,7 @@ protected:
 	{
 		firstRunGui = theValue;
 	}
-	bool getFirstRun() const
+	[[nodiscard]] bool getFirstRun() const
 	{
 		return firstRunGui;
 	}
@@ -151,7 +151,7 @@ protected:
 	{
 		firstRound = theValue;
 	}
-	bool getFirstRound() const
+	[[nodiscard]] bool getFirstRound() const
 	{
 		return firstRound;
 	}
@@ -160,7 +160,7 @@ protected:
 	{
 		smallBlindPositionId = theValue;
 	}
-	unsigned getSmallBlindPositionId() const override
+	[[nodiscard]] unsigned getSmallBlindPositionId() const override
 	{
 		return smallBlindPositionId;
 	}
@@ -169,7 +169,7 @@ protected:
 	{
 		bigBlindPositionId = theValue;
 	}
-	unsigned getBigBlindPositionId() const override
+	[[nodiscard]] unsigned getBigBlindPositionId() const override
 	{
 		return bigBlindPositionId;
 	}
@@ -179,7 +179,7 @@ protected:
 	{
 		smallBlindPosition = theValue;
 	}
-	int getSmallBlindPosition() const
+	[[nodiscard]] int getSmallBlindPosition() const
 	{
 		return smallBlindPosition;
 	}
@@ -188,7 +188,7 @@ protected:
 	{
 		smallBlind = theValue;
 	}
-	int getSmallBlind() const
+	[[nodiscard]] int getSmallBlind() const
 	{
 		return smallBlind;
 	}
