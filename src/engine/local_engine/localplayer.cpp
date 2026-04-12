@@ -3656,6 +3656,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 void LocalPlayer::calcMyOdds()
 {
 
+	myOdds = -1.0;
 	int handCode = 0;
 
 	switch(currentHand->getCurrentRound()) {

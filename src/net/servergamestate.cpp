@@ -1383,8 +1383,9 @@ ServerGameStateHand::CheckPlayerTimeouts(boost::shared_ptr<ServerGame> server)
 		// Check timeouts of players.
 		while (i != end) {
 			boost::shared_ptr<PlayerInterface> tmpPlayer = *i;
+			int secsSinceAction = static_cast<int>(tmpPlayer->getTimeSecSinceLastRemoteAction());
 			if (tmpPlayer->getMyType() == PLAYER_TYPE_HUMAN
-					&& static_cast<int>(tmpPlayer->getTimeSecSinceLastRemoteAction()) >= actionTimeout * SERVER_GAME_AUTOFOLD_TIMEOUT_FACTOR) {
+					&& secsSinceAction >= actionTimeout * SERVER_GAME_AUTOFOLD_TIMEOUT_FACTOR) {
 				if (tmpPlayer->isSessionActive()) {
 					tmpPlayer->setIsSessionActive(false);
 					boost::shared_ptr<SessionData> session = server->GetSessionManager().GetSessionByUniquePlayerId(tmpPlayer->getMyUniqueID());
@@ -1393,12 +1394,12 @@ ServerGameStateHand::CheckPlayerTimeouts(boost::shared_ptr<ServerGame> server)
 						packet->GetMsg()->set_messagetype(PokerTHMessage::Type_TimeoutWarningMessage);
 						TimeoutWarningMessage *netWarning = packet->GetMsg()->mutable_timeoutwarningmessage();
 						netWarning->set_timeoutreason(TimeoutWarningMessage::timeoutKickAfterAutofold);
-						int remainingSec = actionTimeout * SERVER_GAME_FORCED_TIMEOUT_FACTOR - static_cast<int>(tmpPlayer->getTimeSecSinceLastRemoteAction());
+						int remainingSec = actionTimeout * SERVER_GAME_FORCED_TIMEOUT_FACTOR - secsSinceAction;
 						netWarning->set_remainingseconds(std::max(remainingSec, 0));
 						server->GetLobbyThread().GetSender().Send(session, packet);
 					}
 				}
-				if (static_cast<int>(tmpPlayer->getTimeSecSinceLastRemoteAction()) >= actionTimeout * SERVER_GAME_FORCED_TIMEOUT_FACTOR) {
+				if (secsSinceAction >= actionTimeout * SERVER_GAME_FORCED_TIMEOUT_FACTOR) {
 					server->KickPlayer(tmpPlayer->getMyUniqueID());
 				}
 			}
