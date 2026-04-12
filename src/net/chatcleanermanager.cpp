@@ -31,7 +31,6 @@
 
 #include <net/chatcleanermanager.h>
 #include <net/asiosendbuffer.h>
-#include <boost/bind/bind.hpp>
 #include <core/loghelper.h>
 #include <third_party/protobuf/chatcleaner.pb.h>
 #include <tools.h>
@@ -86,10 +85,9 @@ ChatCleanerManager::ReInit()
 	m_resolver->async_resolve(
 		m_serverAddr,
 		portStr.str(),
-		boost::bind(&ChatCleanerManager::HandleResolve,
-					shared_from_this(),
-					boost::asio::placeholders::error,
-					boost::asio::placeholders::iterator));
+		[self = shared_from_this()](const boost::system::error_code& ec, boost::asio::ip::tcp::resolver::results_type results) {
+			self->HandleResolve(ec, results);
+		});
 }
 
 void
@@ -132,11 +130,9 @@ ChatCleanerManager::HandleResolve(const boost::system::error_code& ec,
 		boost::asio::ip::tcp::endpoint endpoint = endpoint_iterator->endpoint();
 		m_socket->async_connect(
 			endpoint,
-			boost::bind(&ChatCleanerManager::HandleConnect,
-						shared_from_this(),
-						boost::asio::placeholders::error,
-						++endpoint_iterator,
-						endpoint_range));
+			[self = shared_from_this(), next_it = ++endpoint_iterator, endpoint_range](const boost::system::error_code& ec) {
+				self->HandleConnect(ec, next_it, endpoint_range);
+			});
 	} else if (ec != boost::asio::error::operation_aborted) {
 		LOG_ERROR("Could not resolve chat cleaner server.");
 	}
@@ -156,11 +152,9 @@ ChatCleanerManager::HandleConnect(const boost::system::error_code& ec,
 		SendMessageToServer(*tmpInit);
 		m_socket->async_read_some(
 			boost::asio::buffer(m_recvBuf, sizeof(m_recvBuf)),
-			boost::bind(
-				&ChatCleanerManager::HandleRead,
-				shared_from_this(),
-				boost::asio::placeholders::error,
-				boost::asio::placeholders::bytes_transferred));
+			[self = shared_from_this()](const boost::system::error_code& ec, size_t bytes) {
+				self->HandleRead(ec, bytes);
+			});
 	} else if (ec != boost::asio::error::operation_aborted) {
 		if (endpoint_iterator != endpoint_range.end()) {
 			// Try next resolve entry.
@@ -169,11 +163,9 @@ ChatCleanerManager::HandleConnect(const boost::system::error_code& ec,
 			boost::asio::ip::tcp::endpoint endpoint = endpoint_iterator->endpoint();
 			m_socket->async_connect(
 				endpoint,
-				boost::bind(&ChatCleanerManager::HandleConnect,
-							shared_from_this(),
-							boost::asio::placeholders::error,
-							++endpoint_iterator,
-							endpoint_range));
+				[self = shared_from_this(), next_it = ++endpoint_iterator, endpoint_range](const boost::system::error_code& ec) {
+					self->HandleConnect(ec, next_it, endpoint_range);
+				});
 		} else {
 			boost::system::error_code closeEc;
 			m_socket->close(closeEc);
@@ -237,11 +229,9 @@ ChatCleanerManager::HandleRead(const boost::system::error_code &ec, size_t bytes
 		if (!error) {
 			m_socket->async_read_some(
 				boost::asio::buffer(m_recvBuf + m_recvBufUsed, sizeof(m_recvBuf) - m_recvBufUsed),
-				boost::bind(
-					&ChatCleanerManager::HandleRead,
-					shared_from_this(),
-					boost::asio::placeholders::error,
-					boost::asio::placeholders::bytes_transferred));
+				[self = shared_from_this()](const boost::system::error_code& ec, size_t bytes) {
+					self->HandleRead(ec, bytes);
+				});
 		} else {
 			boost::system::error_code ec;
 			m_socket->close(ec);

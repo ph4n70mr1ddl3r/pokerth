@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 
-#include <boost/bind/bind.hpp>
 #include <dbofficial/asyncdblogin.h>
 
 
@@ -61,5 +60,5 @@ AsyncDBLogin::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManager
 void
 AsyncDBLogin::HandleError(boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	boost::asio::post(service, boost::bind(&ServerDBCallback::QueryError, &cb, "AsyncDBLogin: Failure."));
+	boost::asio::post(service, [&cb]() { cb.QueryError("AsyncDBLogin: Failure."); });
 }

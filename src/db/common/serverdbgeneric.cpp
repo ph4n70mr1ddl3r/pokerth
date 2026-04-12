@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 
-#include <boost/bind/bind.hpp>
 #include <db/serverdbgeneric.h>
 
 using namespace std;
@@ -63,13 +62,13 @@ ServerDBGeneric::Stop()
 void
 ServerDBGeneric::AsyncPlayerLogin(unsigned requestId, const string &/*playerName*/)
 {
-	boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::PlayerLoginFailed, &m_callback, requestId));
+	boost::asio::post(*m_ioService, [this, requestId]() { m_callback.PlayerLoginFailed(requestId); });
 }
 
 void
 ServerDBGeneric::AsyncCheckAvatarBlacklist(unsigned requestId, const std::string &/*avatarHash*/)
 {
-	boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::AvatarIsBlacklisted, &m_callback, requestId));
+	boost::asio::post(*m_ioService, [this, requestId]() { m_callback.AvatarIsBlacklisted(requestId); });
 }
 
 void
@@ -85,7 +84,7 @@ ServerDBGeneric::PlayerLogout(DB_id /*playerId*/)
 void
 ServerDBGeneric::AsyncCreateGame(unsigned requestId, const string &/*gameName*/)
 {
-	boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::CreateGameFailed, &m_callback, requestId));
+	boost::asio::post(*m_ioService, [this, requestId]() { m_callback.CreateGameFailed(requestId); });
 }
 
 void
@@ -106,13 +105,13 @@ ServerDBGeneric::EndGame(unsigned /*requestId*/)
 void
 ServerDBGeneric::AsyncReportAvatar(unsigned requestId, unsigned replyId, DB_id /*reportedPlayerId*/, const std::string &/*avatarHash*/, const std::string &/*avatarType*/, DB_id * /*byPlayerId*/)
 {
-	boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::ReportAvatarFailed, &m_callback, requestId, replyId));
+	boost::asio::post(*m_ioService, [this, requestId, replyId]() { m_callback.ReportAvatarFailed(requestId, replyId); });
 }
 
 void
 ServerDBGeneric::AsyncReportGame(unsigned requestId, unsigned replyId, DB_id * /*creatorPlayerId*/, unsigned /*gameId*/, const std::string &/*gameName*/, DB_id * /*byPlayerId*/)
 {
-	boost::asio::post(*m_ioService, boost::bind(&ServerDBCallback::ReportGameFailed, &m_callback, requestId, replyId));
+	boost::asio::post(*m_ioService, [this, requestId, replyId]() { m_callback.ReportGameFailed(requestId, replyId); });
 }
 
 void

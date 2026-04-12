@@ -59,7 +59,7 @@ AsyncDBAdminPlayers::HandleResult(mysqlpp::Query &/*query*/, DBIdManager& /*idMa
 			adminPlayers.push_back(result[i][0]);
 		}
 	}
-	boost::asio::post(service, boost::bind(&ServerDBCallback::PlayerAdminList, &cb, GetId(), adminPlayers));
+	boost::asio::post(service, [&cb, id = GetId(), adminPlayers]() { cb.PlayerAdminList(id, adminPlayers); });
 }
 
 void
@@ -72,5 +72,5 @@ AsyncDBAdminPlayers::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& /*id
 void
 AsyncDBAdminPlayers::HandleError(boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	boost::asio::post(service, boost::bind(&ServerDBCallback::QueryError, &cb, "AsyncDBAdminPlayers: Failure."));
+	boost::asio::post(service, [&cb]() { cb.QueryError("AsyncDBAdminPlayers: Failure."); });
 }

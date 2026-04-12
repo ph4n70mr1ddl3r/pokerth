@@ -642,8 +642,7 @@ ClientThread::RegisterTimers()
 {
 	m_avatarTimer.expires_after(milliseconds(CLIENT_AVATAR_LOOP_MSEC));
 	m_avatarTimer.async_wait(
-		boost::bind(
-			&ClientThread::TimerCheckAvatarDownloads, shared_from_this(), boost::asio::placeholders::error));
+		[self = shared_from_this()](const boost::system::error_code& ec) { self->TimerCheckAvatarDownloads(ec); });
 }
 
 void

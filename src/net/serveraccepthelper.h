@@ -150,8 +150,9 @@ protected:
         auto newSocket = boost::make_shared<P_socket>(*m_ioService);
         m_acceptor->async_accept(
             *newSocket,
-            boost::bind(&ServerAcceptHelper::HandleAccept, this, newSocket,
-                        boost::asio::placeholders::error)
+            [this, newSocket](const boost::system::error_code& error) {
+                HandleAccept(newSocket, error);
+            }
         );
     }
 
@@ -168,13 +169,11 @@ protected:
                 auto sslStream = boost::make_shared<ssl_stream_t>(*m_ioService, *m_sslContext);
                 sslStream->next_layer() = std::move(*acceptedSocket);
 
-                // SSL_set_info_callback(sslStream->native_handle(), &SslServerInfoCallback);
-                // LOG_MSG("Starting TLS handshake for accepted connection.");
-
                 sslStream->async_handshake(
                     boost::asio::ssl::stream_base::server,
-                    boost::bind(&ServerAcceptHelper::HandleHandshake, this, sslStream,
-                                boost::asio::placeholders::error)
+                    [this, sslStream](const boost::system::error_code& error) {
+                        HandleHandshake(sslStream, error);
+                    }
                 );
             } else {
                 auto sessionData = boost::make_shared<SessionData>(acceptedSocket, m_lobbyThread->GetNextSessionId(), m_lobbyThread->GetSessionDataCallback(), *m_ioService);
@@ -183,8 +182,9 @@ protected:
                 auto newSocket = boost::make_shared<P_socket>(*m_ioService);
                 m_acceptor->async_accept(
                     *newSocket,
-                    boost::bind(&ServerAcceptHelper::HandleAccept, this, newSocket,
-                                boost::asio::placeholders::error)
+                    [this, newSocket](const boost::system::error_code& error) {
+                        HandleAccept(newSocket, error);
+                    }
                 );
             }
         } else {
@@ -198,8 +198,9 @@ protected:
             auto newSocket = boost::make_shared<P_socket>(*m_ioService);
             m_acceptor->async_accept(
                 *newSocket,
-                boost::bind(&ServerAcceptHelper::HandleAccept, this, newSocket,
-                            boost::asio::placeholders::error));
+                [this, newSocket](const boost::system::error_code& error) {
+                    HandleAccept(newSocket, error);
+                });
         }
     }
 
@@ -217,8 +218,9 @@ protected:
         auto newSocket = boost::make_shared<P_socket>(*m_ioService);
         m_acceptor->async_accept(
             *newSocket,
-            boost::bind(&ServerAcceptHelper::HandleAccept, this, newSocket,
-                        boost::asio::placeholders::error)
+            [this, newSocket](const boost::system::error_code& error) {
+                HandleAccept(newSocket, error);
+            }
         );
     }
 

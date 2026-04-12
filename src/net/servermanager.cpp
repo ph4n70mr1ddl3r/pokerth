@@ -40,7 +40,6 @@
 #include <net/socket_startup.h>
 #include <core/loghelper.h>
 
-#include <boost/bind/bind.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
 using namespace std;

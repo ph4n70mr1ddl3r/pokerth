@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 
-#include <boost/bind/bind.hpp>
 #include <net/serveracceptwebhelper.h>
 #include <net/sessiondata.h>
 #include <net/webreceivebuffer.h>
@@ -68,11 +67,11 @@ ServerAcceptWebHelper::Listen(unsigned serverPort, bool /*ipv6*/, const std::str
 
 		m_webSocketTlsServer->init_asio(m_ioService.get());
 
-		m_webSocketTlsServer->set_validate_handler(boost::bind(boost::mem_fn(&ServerAcceptWebHelper::validate), this, boost::placeholders::_1));
-		m_webSocketTlsServer->set_open_handler(boost::bind(boost::mem_fn(&ServerAcceptWebHelper::on_open), this, boost::placeholders::_1));
-		m_webSocketTlsServer->set_close_handler(boost::bind(boost::mem_fn(&ServerAcceptWebHelper::on_close), this, boost::placeholders::_1));
-		m_webSocketTlsServer->set_message_handler(boost::bind(boost::mem_fn(&ServerAcceptWebHelper::on_message), this, boost::placeholders::_1, boost::placeholders::_2));
-		m_webSocketTlsServer->set_tls_init_handler(boost::bind(boost::mem_fn(&ServerAcceptWebHelper::on_tls_init), this, boost::placeholders::_1));
+		m_webSocketTlsServer->set_validate_handler([this](auto && conn_hdl) { return validate(conn_hdl); });
+		m_webSocketTlsServer->set_open_handler([this](auto && conn_hdl) { on_open(conn_hdl); });
+		m_webSocketTlsServer->set_close_handler([this](auto && conn_hdl) { on_close(conn_hdl); });
+		m_webSocketTlsServer->set_message_handler([this](auto && conn_hdl, auto && msg_ptr) { on_message(conn_hdl, msg_ptr); });
+		m_webSocketTlsServer->set_tls_init_handler([this](auto && conn_hdl) { return on_tls_init(conn_hdl); });
 
 		m_webSocketTlsServer->listen(serverPort);
 		m_webSocketTlsServer->start_accept();
@@ -86,10 +85,10 @@ ServerAcceptWebHelper::Listen(unsigned serverPort, bool /*ipv6*/, const std::str
 
 		m_webSocketServer->init_asio(m_ioService.get());
 
-		m_webSocketServer->set_validate_handler(boost::bind(boost::mem_fn(&ServerAcceptWebHelper::validate), this, boost::placeholders::_1));
-		m_webSocketServer->set_open_handler(boost::bind(boost::mem_fn(&ServerAcceptWebHelper::on_open), this, boost::placeholders::_1));
-		m_webSocketServer->set_close_handler(boost::bind(boost::mem_fn(&ServerAcceptWebHelper::on_close), this, boost::placeholders::_1));
-		m_webSocketServer->set_message_handler(boost::bind(boost::mem_fn(&ServerAcceptWebHelper::on_message), this, boost::placeholders::_1, boost::placeholders::_2));
+		m_webSocketServer->set_validate_handler([this](auto && conn_hdl) { return validate(conn_hdl); });
+		m_webSocketServer->set_open_handler([this](auto && conn_hdl) { on_open(conn_hdl); });
+		m_webSocketServer->set_close_handler([this](auto && conn_hdl) { on_close(conn_hdl); });
+		m_webSocketServer->set_message_handler([this](auto && conn_hdl, auto && msg_ptr) { on_message(conn_hdl, msg_ptr); });
 
 		m_webSocketServer->listen(serverPort);
 		m_webSocketServer->start_accept();

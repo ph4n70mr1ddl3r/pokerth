@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 
-#include <boost/bind/bind.hpp>
 #include <dbofficial/asyncdbreportavatar.h>
 
 
@@ -55,11 +54,11 @@ AsyncDBReportAvatar::HandleResult(mysqlpp::Query &query, DBIdManager& idManager,
 void
 AsyncDBReportAvatar::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManager*/, boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	boost::asio::post(service, boost::bind(&ServerDBCallback::ReportAvatarSuccess, &cb, GetId(), m_replyId));
+	boost::asio::post(service, [&cb, id = GetId(), replyId = m_replyId]() { cb.ReportAvatarSuccess(id, replyId); });
 }
 
 void
 AsyncDBReportAvatar::HandleError(boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	boost::asio::post(service, boost::bind(&ServerDBCallback::ReportAvatarFailed, &cb, GetId(), m_replyId));
+	boost::asio::post(service, [&cb, id = GetId(), replyId = m_replyId]() { cb.ReportAvatarFailed(id, replyId); });
 }

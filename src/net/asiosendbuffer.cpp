@@ -30,7 +30,6 @@
  *****************************************************************************/
 
 #include <boost/asio.hpp>
-#include <boost/bind/bind.hpp>
 #include <boost/asio/ssl.hpp>
 
 #include <net/asiosendbuffer.h>
@@ -114,10 +113,9 @@ AsioSendBuffer::AsyncSendNextPacket(boost::shared_ptr<boost::asio::ip::tcp::sock
             boost::asio::async_write(
 				*socket,
 				boost::asio::buffer(curWriteBuf.data(), curWriteBufUsed),
-				boost::bind(&SendBuffer::HandleWrite,
-							shared_from_this(),
-							socket,
-							boost::asio::placeholders::error));
+				[self = shared_from_this(), socket](const boost::system::error_code& ec, size_t) {
+					self->HandleWrite(socket, ec);
+				});
         } else if (closeAfterSend) {
             closeAfterSend = false;
             boost::system::error_code ec;
@@ -136,10 +134,9 @@ AsioSendBuffer::AsyncSendNextPacketSsl(boost::shared_ptr<boost::asio::ssl::strea
             boost::asio::async_write(
                 *sslStream,
                 boost::asio::buffer(curWriteBuf.data(), curWriteBufUsed),
-                boost::bind(&AsioSendBuffer::HandleWriteSsl,
-                            boost::static_pointer_cast<AsioSendBuffer>(shared_from_this()),
-                            sslStream,
-                            boost::asio::placeholders::error));
+                [self = boost::static_pointer_cast<AsioSendBuffer>(shared_from_this()), sslStream](const boost::system::error_code& ec, size_t) {
+                    self->HandleWriteSsl(sslStream, ec);
+                });
         } else if (closeAfterSend) {
             closeAfterSend = false;
             boost::system::error_code ec;

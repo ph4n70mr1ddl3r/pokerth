@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 
-#include <boost/bind/bind.hpp>
 #include <dbofficial/asyncdbavatarblacklist.h>
 
 
@@ -49,9 +48,9 @@ void
 AsyncDBAvatarBlacklist::HandleResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManager*/, mysqlpp::StoreQueryResult& result, boost::asio::io_context &service, ServerDBCallback &cb)
 {
 	if (result.num_rows() == 0)
-		boost::asio::post(service, boost::bind(&ServerDBCallback::AvatarIsOK, &cb, GetId()));
+		boost::asio::post(service, [&cb, id = GetId()]() { cb.AvatarIsOK(id); });
 	else
-		boost::asio::post(service, boost::bind(&ServerDBCallback::AvatarIsBlacklisted, &cb, GetId()));
+		boost::asio::post(service, [&cb, id = GetId()]() { cb.AvatarIsBlacklisted(id); });
 }
 
 void
@@ -64,5 +63,5 @@ void
 AsyncDBAvatarBlacklist::HandleError(boost::asio::io_context &service, ServerDBCallback &cb)
 {
 	// If query failed: Avatar is blacklisted.
-	boost::asio::post(service, boost::bind(&ServerDBCallback::AvatarIsBlacklisted, &cb, GetId()));
+	boost::asio::post(service, [&cb, id = GetId()]() { cb.AvatarIsBlacklisted(id); });
 }

@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 
-#include <boost/bind/bind.hpp>
 #include <dbofficial/asyncdbgameplace.h>
 #include <dbofficial/dbidmanager.h>
 #include <core/loghelper.h>
@@ -80,5 +79,5 @@ AsyncDBGamePlace::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& /*idMan
 void
 AsyncDBGamePlace::HandleError(boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	boost::asio::post(service, boost::bind(&ServerDBCallback::QueryError, &cb, "AsyncDBGamePlace: Failure."));
+	boost::asio::post(service, [&cb]() { cb.QueryError("AsyncDBGamePlace: Failure."); });
 }

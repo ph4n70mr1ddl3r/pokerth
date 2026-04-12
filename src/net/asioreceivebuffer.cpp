@@ -30,7 +30,6 @@
  *****************************************************************************/
 
 #include <boost/asio.hpp>
-#include <boost/bind/bind.hpp>
 
 #include <net/asioreceivebuffer.h>
 #include <net/sessiondata.h>
@@ -48,23 +47,17 @@ void
 AsioReceiveBuffer::StartAsyncRead(boost::shared_ptr<SessionData> session)
 {
     if (session->IsSsl()) {
-        session->GetSslStream()->async_read_some(
-            boost::asio::buffer(recvBuf + recvBufUsed, RECV_BUF_SIZE - recvBufUsed),
-            boost::bind(
-                &ReceiveBuffer::HandleRead,
-                shared_from_this(),
-                session,
-                boost::asio::placeholders::error,
-                boost::asio::placeholders::bytes_transferred));
+            session->GetSslStream()->async_read_some(
+                boost::asio::buffer(recvBuf + recvBufUsed, RECV_BUF_SIZE - recvBufUsed),
+                [self = shared_from_this(), session](const boost::system::error_code& ec, size_t bytes) {
+                    self->HandleRead(session, ec, bytes);
+                });
     } else {
         session->GetAsioSocket()->async_read_some(
             boost::asio::buffer(recvBuf + recvBufUsed, RECV_BUF_SIZE - recvBufUsed),
-            boost::bind(
-                &ReceiveBuffer::HandleRead,
-                shared_from_this(),
-                session,
-                boost::asio::placeholders::error,
-                boost::asio::placeholders::bytes_transferred));
+            [self = shared_from_this(), session](const boost::system::error_code& ec, size_t bytes) {
+                self->HandleRead(session, ec, bytes);
+            });
     }
 }
 

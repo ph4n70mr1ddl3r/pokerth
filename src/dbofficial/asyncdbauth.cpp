@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 
-#include <boost/bind/bind.hpp>
 #include <boost/make_shared.hpp>
 #include <dbofficial/asyncdbauth.h>
 
@@ -50,12 +49,12 @@ void
 AsyncDBAuth::HandleResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManager*/, mysqlpp::StoreQueryResult& result, boost::asio::io_context &service, ServerDBCallback &cb)
 {
 	if (result.num_rows() != 1) {
-		boost::asio::post(service, boost::bind(&ServerDBCallback::PlayerLoginFailed, &cb, GetId()));
+		boost::asio::post(service, [&cb, id = GetId()]() { cb.PlayerLoginFailed(id); });
 	} else {
 		int blocked = result[0][2];
 		int active = result[0][7];
 		if ((active != 1) || (blocked != 0)) {
-			boost::asio::post(service, boost::bind(&ServerDBCallback::PlayerLoginBlocked, &cb, GetId()));
+			boost::asio::post(service, [&cb, id = GetId()]() { cb.PlayerLoginBlocked(id); });
 		} else {
 			mysqlpp::String secret(result[0][1]);
 			mysqlpp::String country(result[0][3]);
@@ -73,7 +72,7 @@ AsyncDBAuth::HandleResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManager*/,
 			if (!last_ip.is_null())
 				last_ip.to_string(tmpData->last_ip);
 
-			boost::asio::post(service, boost::bind(&ServerDBCallback::PlayerLoginSuccess, &cb, GetId(), tmpData));
+			boost::asio::post(service, [&cb, id = GetId(), tmpData]() { cb.PlayerLoginSuccess(id, tmpData); });
 		}
 	}
 }
@@ -87,5 +86,5 @@ AsyncDBAuth::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManager*
 void
 AsyncDBAuth::HandleError(boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	boost::asio::post(service, boost::bind(&ServerDBCallback::PlayerLoginFailed, &cb, GetId()));
+	boost::asio::post(service, [&cb, id = GetId()]() { cb.PlayerLoginFailed(id); });
 }

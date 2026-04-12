@@ -52,7 +52,6 @@
 #include <limits>
 #include <QDebug>
 #include <QFile>
-#include <boost/bind/bind.hpp>
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/zlib.hpp>
@@ -151,11 +150,9 @@ ClientStateStartResolve::Enter(boost::shared_ptr<ClientThread> client)
 	context.GetResolver()->async_resolve(
 		context.GetServerAddr(),
 		portStr.str(),
-		boost::bind(&ClientStateStartResolve::HandleResolve,
-					this,
-					boost::asio::placeholders::error,
-					boost::asio::placeholders::iterator,
-					client));
+		[this, client](const boost::system::error_code& ec, boost::asio::ip::tcp::resolver::results_type results) {
+			HandleResolve(ec, results, client);
+		});
 }
 
 void
@@ -260,8 +257,7 @@ ClientStateDownloadingServerList::Enter(boost::shared_ptr<ClientThread> client)
 {
 	client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
 	client->GetStateTimer().async_wait(
-		boost::bind(
-			&ClientStateDownloadingServerList::TimerLoop, this, boost::asio::placeholders::error, client));
+		[this, client](const boost::system::error_code& ec) { TimerLoop(ec, client); });
 }
 
 void
@@ -286,8 +282,7 @@ ClientStateDownloadingServerList::TimerLoop(const boost::system::error_code& ec,
 		} else {
 			client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
 			client->GetStateTimer().async_wait(
-				boost::bind(
-					&ClientStateDownloadingServerList::TimerLoop, this, boost::asio::placeholders::error, client));
+				[this, client](const boost::system::error_code& ec) { TimerLoop(ec, client); });
 		}
 	}
 }
@@ -432,8 +427,7 @@ ClientStateWaitChooseServer::Enter(boost::shared_ptr<ClientThread> client)
 {
 	client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
 	client->GetStateTimer().async_wait(
-		boost::bind(
-			&ClientStateWaitChooseServer::TimerLoop, this, boost::asio::placeholders::error, client));
+		[this, client](const boost::system::error_code& ec) { TimerLoop(ec, client); });
 }
 
 void
@@ -454,8 +448,7 @@ ClientStateWaitChooseServer::TimerLoop(const boost::system::error_code& ec, boos
 		} else {
 			client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
 			client->GetStateTimer().async_wait(
-				boost::bind(
-					&ClientStateWaitChooseServer::TimerLoop, this, boost::asio::placeholders::error, client));
+				[this, client](const boost::system::error_code& ec) { TimerLoop(ec, client); });
 		}
 	}
 }
@@ -482,8 +475,7 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
 {
     client->GetStateTimer().expires_after(seconds(CLIENT_CONNECT_TIMEOUT_SEC));
     client->GetStateTimer().async_wait(
-        boost::bind(
-            &ClientStateStartConnect::TimerTimeout, this, boost::asio::placeholders::error, client));
+        [this, client](const boost::system::error_code& ec) { TimerTimeout(ec, client); });
 
     if (m_remoteEndpointIterator == m_remoteEndpoint.end()) {
         throw ClientException(__FILE__, __LINE__, ERR_SOCK_CONNECT_FAILED, 0);
@@ -495,19 +487,15 @@ ClientStateStartConnect::Enter(boost::shared_ptr<ClientThread> client)
     if (client->GetContext().GetSessionData()->IsSsl()) {
         client->GetContext().GetSessionData()->GetSslStream()->lowest_layer().async_connect(
             endpoint,
-            boost::bind(&ClientStateStartConnect::HandleConnect,
-                        this,
-                        boost::asio::placeholders::error,
-                        nextIterator,
-                        client));
+            [this, nextIterator, client](const boost::system::error_code& ec) {
+                HandleConnect(ec, nextIterator, client);
+            });
     } else {
         client->GetContext().GetSessionData()->GetAsioSocket()->async_connect(
             endpoint,
-            boost::bind(&ClientStateStartConnect::HandleConnect,
-                        this,
-                        boost::asio::placeholders::error,
-                        nextIterator,
-                        client));
+            [this, nextIterator, client](const boost::system::error_code& ec) {
+                HandleConnect(ec, nextIterator, client);
+            });
     }
 }
 
@@ -533,10 +521,9 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
             if (client->GetContext().GetSessionData()->IsSsl()) {
                 client->GetContext().GetSessionData()->GetSslStream()->async_handshake(
                     boost::asio::ssl::stream_base::client,
-                    boost::bind(&ClientStateStartConnect::HandleSslHandshake,
-                                this,
-                                boost::asio::placeholders::error,
-                                client));
+                    [this, client](const boost::system::error_code& ec) {
+                        HandleSslHandshake(ec, client);
+                    });
             } else {
                 client->GetCallback().SignalNetClientConnect(MSG_SOCK_CONNECT_DONE);
                 client->SetState(ClientStateStartSession::Instance());
@@ -553,20 +540,16 @@ ClientStateStartConnect::HandleConnect(const boost::system::error_code& ec, boos
                 context.GetSessionData()->GetSslStream()->lowest_layer().close(closeEc);
                 context.GetSessionData()->GetSslStream()->lowest_layer().async_connect(
                     endpoint,
-                    boost::bind(&ClientStateStartConnect::HandleConnect,
-                                this,
-                                boost::asio::placeholders::error,
-                                nextIterator,
-                                client));
+                    [this, nextIterator, client](const boost::system::error_code& ec) {
+                        HandleConnect(ec, nextIterator, client);
+                    });
             } else {
                 context.GetSessionData()->GetAsioSocket()->close(closeEc);
                 context.GetSessionData()->GetAsioSocket()->async_connect(
                     endpoint,
-                    boost::bind(&ClientStateStartConnect::HandleConnect,
-                                this,
-                                boost::asio::placeholders::error,
-                                nextIterator,
-                                client));
+                    [this, nextIterator, client](const boost::system::error_code& ec) {
+                        HandleConnect(ec, nextIterator, client);
+                    });
             }
         } else {
             if (ec != boost::asio::error::operation_aborted) {
@@ -1011,8 +994,7 @@ ClientStateWaitEnterLogin::Enter(boost::shared_ptr<ClientThread> client)
 {
 	client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
 	client->GetStateTimer().async_wait(
-		boost::bind(
-			&ClientStateWaitEnterLogin::TimerLoop, this, boost::asio::placeholders::error, client));
+		[this, client](const boost::system::error_code& ec) { TimerLoop(ec, client); });
 }
 
 void
@@ -1063,8 +1045,7 @@ ClientStateWaitEnterLogin::TimerLoop(const boost::system::error_code& ec, boost:
         } else {
             client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
             client->GetStateTimer().async_wait(
-                boost::bind(
-                    &ClientStateWaitEnterLogin::TimerLoop, this, boost::asio::placeholders::error, client));
+                [this, client](const boost::system::error_code& ec) { TimerLoop(ec, client); });
         }
     }
 }
@@ -1390,8 +1371,7 @@ ClientStateSynchronizeStart::Enter(boost::shared_ptr<ClientThread> client)
 {
 	client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
 	client->GetStateTimer().async_wait(
-		boost::bind(
-			&ClientStateSynchronizeStart::TimerLoop, this, boost::asio::placeholders::error, client));
+		[this, client](const boost::system::error_code& ec) { TimerLoop(ec, client); });
 }
 
 void
@@ -1419,8 +1399,7 @@ ClientStateSynchronizeStart::TimerLoop(const boost::system::error_code& ec, boos
 		} else {
 			client->GetStateTimer().expires_after(milliseconds(CLIENT_WAIT_TIMEOUT_MSEC));
 			client->GetStateTimer().async_wait(
-				boost::bind(
-					&ClientStateSynchronizeStart::TimerLoop, this, boost::asio::placeholders::error, client));
+				[this, client](const boost::system::error_code& ec) { TimerLoop(ec, client); });
 		}
 	}
 }

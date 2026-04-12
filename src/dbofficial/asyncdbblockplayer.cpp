@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 
-#include <boost/bind/bind.hpp>
 #include <dbofficial/asyncdbblockplayer.h>
 #include <dbofficial/dbidmanager.h>
 
@@ -61,11 +60,11 @@ AsyncDBBlockPlayer::HandleResult(mysqlpp::Query &query, DBIdManager &idManager, 
 void
 AsyncDBBlockPlayer::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager &/*idManager*/, boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	boost::asio::post(service, boost::bind(&ServerDBCallback::BlockPlayerSuccess, &cb, GetId(), m_replyId));
+	boost::asio::post(service, [&cb, id = GetId(), replyId = m_replyId]() { cb.BlockPlayerSuccess(id, replyId); });
 }
 
 void
 AsyncDBBlockPlayer::HandleError(boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	boost::asio::post(service, boost::bind(&ServerDBCallback::BlockPlayerFailed, &cb, GetId(), m_replyId));
+	boost::asio::post(service, [&cb, id = GetId(), replyId = m_replyId]() { cb.BlockPlayerFailed(id, replyId); });
 }

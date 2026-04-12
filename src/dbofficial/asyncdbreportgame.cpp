@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 
-#include <boost/bind/bind.hpp>
 #include <dbofficial/asyncdbreportgame.h>
 #include <dbofficial/dbidmanager.h>
 
@@ -73,11 +72,11 @@ AsyncDBReportGame::HandleResult(mysqlpp::Query &query, DBIdManager& idManager, m
 void
 AsyncDBReportGame::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManager*/, boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	boost::asio::post(service, boost::bind(&ServerDBCallback::ReportGameSuccess, &cb, GetId(), m_replyId));
+	boost::asio::post(service, [&cb, id = GetId(), replyId = m_replyId]() { cb.ReportGameSuccess(id, replyId); });
 }
 
 void
 AsyncDBReportGame::HandleError(boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	boost::asio::post(service, boost::bind(&ServerDBCallback::ReportGameFailed, &cb, GetId(), m_replyId));
+	boost::asio::post(service, [&cb, id = GetId(), replyId = m_replyId]() { cb.ReportGameFailed(id, replyId); });
 }

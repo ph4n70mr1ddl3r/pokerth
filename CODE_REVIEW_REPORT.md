@@ -1,6 +1,7 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-04-12  
+**Revision:** 10  
 **Reviewer:** AI Code Reviewer  
 **Scope:** Full codebase (`src/` — 367 files, ~76K LOC)
 
@@ -142,6 +143,26 @@ Modernizes the zero-check loop.
 ### Fix 4: Add `[[nodiscard]]` to `Tools::ConstantTimeStringCompare`
 
 Ensures callers don't accidentally discard the result.
+
+---
+
+## Issues Found and Fixed (Revision 10)
+
+### 16. Replace All `boost::bind` with C++ Lambdas (Code Quality / Modernization)
+
+**Files:** `src/net/sessiondata.cpp`, `src/net/asioreceivebuffer.cpp`, `src/net/asiosendbuffer.cpp`, `src/net/chatcleanermanager.cpp`, `src/net/clientstate.cpp`, `src/net/clientthread.cpp`, `src/net/serveraccepthelper.h`, `src/net/serveracceptwebhelper.cpp`, `src/net/serveradminbot.cpp`, `src/net/serverbanmanager.cpp`, `src/db/common/serverdbgeneric.cpp`, `src/dbofficial/asyncdbauth.cpp`, `src/dbofficial/asyncdbadminplayers.cpp`, `src/dbofficial/asyncdbavatarblacklist.cpp`, `src/dbofficial/asyncdbblockplayer.cpp`, `src/dbofficial/asyncdbcreategame.cpp`, `src/dbofficial/asyncdbgameplace.cpp`, `src/dbofficial/asyncdblogin.cpp`, `src/dbofficial/asyncdbreportavatar.cpp`, `src/dbofficial/asyncdbreportgame.cpp`, `src/dbofficial/serverdbthread.cpp`
+**Severity:** Medium (Code Quality)
+**Issue:** 87 instances of `boost::bind` remained across the codebase despite C++23 being the target standard. `boost::bind` is a legacy pre-C++11 pattern that is less readable, harder to debug, and produces longer compile times than native lambdas.
+
+**Fix:** Replaced all 87 `boost::bind` instances with modern C++ lambdas, and removed 8 now-unnecessary `#include <boost/bind/bind.hpp>` includes.
+
+### 17. Remove Obsolete `#ifdef __GXX_EXPERIMENTAL_CXX0X__` Guard (Code Quality)
+
+**File:** `src/net/sessiondata.cpp`
+**Severity:** Trivial
+**Issue:** The WebSocket close handler had a `#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)` preprocessor guard choosing between `std::error_code` and `boost::system::error_code` overloads. Since the project targets C++23, the C++11 check is always true and the `#else` branch (using `boost::system::error_code`) was dead code.
+
+**Fix:** Removed the `#ifdef`/`#else`/`#endif` guard, keeping only the `std::error_code` path.
 
 ---
 

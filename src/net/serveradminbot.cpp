@@ -40,7 +40,6 @@
 
 #include <filesystem>
 #include <algorithm>
-#include <boost/bind/bind.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
 #define SERVER_RESTART_IRC_BOT_INTERVAL_SEC			86400	// 1 day
@@ -285,16 +284,13 @@ ServerAdminBot::Run()
 		// Initialise the timers.
 		m_reconnectTimer.expires_after(seconds(SERVER_RESTART_IRC_BOT_INTERVAL_SEC));
 		m_reconnectTimer.async_wait(
-			boost::bind(
-				&ServerAdminBot::ReconnectHandler, shared_from_this(), boost::asio::placeholders::error));
+			[self = shared_from_this()](const boost::system::error_code& ec) { self->ReconnectHandler(ec); });
 		m_notifyLoopTimer.expires_after(seconds(SERVER_NOTIFY_IRC_BOT_INTERVAL_SEC));
 		m_notifyLoopTimer.async_wait(
-			boost::bind(
-				&ServerAdminBot::NotifyLoop, shared_from_this(), boost::asio::placeholders::error));
+			[self = shared_from_this()](const boost::system::error_code& ec) { self->NotifyLoop(ec); });
 		m_checkFileTimer.expires_after(seconds(SERVER_CHECK_IRC_BOT_INTERVAL_SEC));
 		m_checkFileTimer.async_wait(
-			boost::bind(
-				&ServerAdminBot::CheckFileHandler, shared_from_this(), boost::asio::placeholders::error));
+			[self = shared_from_this()](const boost::system::error_code& ec) { self->CheckFileHandler(ec); });
 
 		m_ircAdminThread->Run();
 	}
@@ -315,8 +311,7 @@ ServerAdminBot::ReconnectHandler(const boost::system::error_code& ec)
 
 	m_reconnectTimer.expires_after(seconds(SERVER_RESTART_IRC_BOT_INTERVAL_SEC));
 	m_reconnectTimer.async_wait(
-		boost::bind(
-			&ServerAdminBot::ReconnectHandler, shared_from_this(), boost::asio::placeholders::error));
+		[self = shared_from_this()](const boost::system::error_code& ec) { self->ReconnectHandler(ec); });
 }
 
 void
@@ -357,8 +352,7 @@ ServerAdminBot::CheckFileHandler(const boost::system::error_code& ec)
 	}
 	m_checkFileTimer.expires_after(seconds(SERVER_CHECK_IRC_BOT_INTERVAL_SEC));
 	m_checkFileTimer.async_wait(
-		boost::bind(
-			&ServerAdminBot::CheckFileHandler, shared_from_this(), boost::asio::placeholders::error));
+		[self = shared_from_this()](const boost::system::error_code& ec) { self->CheckFileHandler(ec); });
 }
 
 void
@@ -418,8 +412,7 @@ ServerAdminBot::NotifyLoop(const boost::system::error_code& ec)
 	}
 	m_notifyLoopTimer.expires_after(seconds(SERVER_NOTIFY_IRC_BOT_INTERVAL_SEC));
 	m_notifyLoopTimer.async_wait(
-		boost::bind(
-			&ServerAdminBot::NotifyLoop, shared_from_this(), boost::asio::placeholders::error));
+		[self = shared_from_this()](const boost::system::error_code& ec) { self->NotifyLoop(ec); });
 }
 
 void

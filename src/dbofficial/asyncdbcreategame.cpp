@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 
-#include <boost/bind/bind.hpp>
 #include <dbofficial/asyncdbcreategame.h>
 #include <dbofficial/dbidmanager.h>
 #include <core/loghelper.h>
@@ -63,24 +62,24 @@ AsyncDBCreateGame::HandleNoResult(mysqlpp::Query &query, DBIdManager& idManager,
 				<< "SELECT LAST_INSERT_ID()";
 		mysqlpp::StoreQueryResult tmpResult = query.store();
 		if (!tmpResult || tmpResult.num_rows() != 1) {
-			boost::asio::post(service, boost::bind(&ServerDBCallback::CreateGameFailed, &cb, GetId()));
+			boost::asio::post(service, [&cb, id = GetId()]() { cb.CreateGameFailed(id); });
 		} else {
 			DB_id insertId = tmpResult[0][0];
 			if (insertId == 0) {
-				boost::asio::post(service, boost::bind(&ServerDBCallback::CreateGameFailed, &cb, GetId()));
+				boost::asio::post(service, [&cb, id = GetId()]() { cb.CreateGameFailed(id); });
 			} else {
-				boost::asio::post(service, boost::bind(&ServerDBCallback::CreateGameSuccess, &cb, GetId()));
+				boost::asio::post(service, [&cb, id = GetId()]() { cb.CreateGameSuccess(id); });
 				idManager.AddGameId(GetId(), insertId);
 			}
 		}
 	} catch (const std::exception &e) {
 		LOG_ERROR("AsyncDBCreateGame::HandleNoResult exception: " << e.what());
-		boost::asio::post(service, boost::bind(&ServerDBCallback::CreateGameFailed, &cb, GetId()));
+		boost::asio::post(service, [&cb, id = GetId()]() { cb.CreateGameFailed(id); });
 	}
 }
 
 void
 AsyncDBCreateGame::HandleError(boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	boost::asio::post(service, boost::bind(&ServerDBCallback::CreateGameFailed, &cb, GetId()));
+	boost::asio::post(service, [&cb, id = GetId()]() { cb.CreateGameFailed(id); });
 }
