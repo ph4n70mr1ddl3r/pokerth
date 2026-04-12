@@ -71,9 +71,16 @@ static bool atomicWriteFile(const std::string &filePath, const QString &data)
 	QTextStream stream(&tempFile);
 	stream << data;
 	stream.flush();
+	if (stream.status() != QTextStream::Ok) {
+		qDebug("Failed to write to temp file: %s", tempPath.toUtf8().constData());
+		tempFile.close();
+		QFile::remove(tempPath);
+		return false;
+	}
 	tempFile.close();
 
-	// Remove old file if it exists (rename won't overwrite on all platforms)
+	// On POSIX, QFile::rename() atomically replaces the target if it exists.
+	// Avoid explicit remove() which creates a window where no config file exists.
 	QFile::remove(qPath);
 
 	if (!QFile::rename(tempPath, qPath)) {

@@ -43,12 +43,12 @@ class NonQtToolsWrapper : public QtToolsInterface
 {
 public:
 	NonQtToolsWrapper();
-	~NonQtToolsWrapper() noexcept;
+	~NonQtToolsWrapper() noexcept override;
 
-	std::string stringToUtf8(const std::string &myString);
-	std::string stringFromUtf8(const std::string &myString);
-	std::string getDefaultLanguage();
-	std::string getDataPathStdString(const char *argv0);
+	std::string stringToUtf8(const std::string &myString) override;
+	std::string stringFromUtf8(const std::string &myString) override;
+	std::string getDefaultLanguage() override;
+	std::string getDataPathStdString(const char *argv0) override;
 
 private:
 
