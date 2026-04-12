@@ -30,6 +30,7 @@
  *****************************************************************************/
 #include "textfloodcheck.h"
 #include <QtCore>
+#include <algorithm>
 
 TextFloodCheck::TextFloodCheck()
 {
@@ -65,7 +66,7 @@ bool TextFloodCheck::run(unsigned playerId)
 		if(timer.elapsed().total_seconds()-i.value().timeStamp <= 1) {
 			if(i.value().floodLevel == textFloodLevelToTrigger) {
 				TextFloodInfos tmpInfos3;
-				tmpInfos3.floodLevel = i.value().floodLevel-1;
+				tmpInfos3.floodLevel = 0;
 				tmpInfos3.timeStamp = timer.elapsed().total_seconds();
 				qDebug () << "Trigger: set player floodlevel to " << tmpInfos3.floodLevel;
 				msgTimesList.insert(playerId, tmpInfos3);
@@ -89,21 +90,22 @@ void TextFloodCheck::cleanMsgTimesList()
 {
 	QMutexLocker locker(&m_mutex);
 
-	QMapIterator<unsigned, TextFloodInfos> it(msgTimesList);
-	while (it.hasNext()) {
-		it.next();
-		if(timer.elapsed().total_seconds()-it.value().timeStamp > 3) {
-
+	QMap<unsigned, TextFloodInfos>::iterator it = msgTimesList.begin();
+	while (it != msgTimesList.end()) {
+		if(timer.elapsed().total_seconds() - it.value().timeStamp > 3) {
 			if(it.value().floodLevel == 0) {
-				msgTimesList.remove(it.key());
+				it = msgTimesList.erase(it);
 				qDebug () << "Refresh: player removed from List";
 			} else {
 				TextFloodInfos tmpInfos;
-				tmpInfos.floodLevel = it.value().floodLevel-1;
+				tmpInfos.floodLevel = std::max(0, it.value().floodLevel - 1);
 				tmpInfos.timeStamp = it.value().timeStamp;
 				qDebug () << "Refresh: player floodlevel to " << tmpInfos.floodLevel;
-				msgTimesList.insert(it.key(), tmpInfos);
+				*it = tmpInfos;
+				++it;
 			}
+		} else {
+			++it;
 		}
 //		qDebug() << msgTimesList.count() << it.key() << ": " << it.value().floodLevel << it.value().timeStamp << endl;
 	}
