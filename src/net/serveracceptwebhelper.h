@@ -49,11 +49,7 @@ public:
 	virtual void Close() override;
 
 protected:
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L) // c++11
 	using SessionMap = std::map<websocketpp::connection_hdl, boost::weak_ptr<SessionData>, std::owner_less<websocketpp::connection_hdl>>;
-#else
-	using SessionMap = std::map<websocketpp::connection_hdl, boost::weak_ptr<SessionData>>;
-#endif
 	bool validate(websocketpp::connection_hdl hdl);
 	void on_open(websocketpp::connection_hdl hdl);
 	void on_close(websocketpp::connection_hdl hdl);
