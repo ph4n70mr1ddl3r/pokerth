@@ -41,20 +41,20 @@ class LocalBeRoPostRiver : public LocalBeRo
 {
 public:
 	LocalBeRoPostRiver(HandInterface*, unsigned, int);
-	~LocalBeRoPostRiver() noexcept;
+	~LocalBeRoPostRiver() noexcept override;
 
-	void setHighestCardsValue(int theValue)
+	void setHighestCardsValue(int theValue) override
 	{
 		highestCardsValue = theValue;
 	}
-	int getHighestCardsValue() const
+	int getHighestCardsValue() const override
 	{
 		return highestCardsValue;
 	}
 
 	void run() override;
 
-	void postRiverRun();
+	void postRiverRun() override;
 
 private:
 

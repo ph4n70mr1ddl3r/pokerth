@@ -42,7 +42,7 @@ class LocalBeRoRiver : public LocalBeRo
 {
 public:
 	LocalBeRoRiver(HandInterface*, unsigned, int);
-	~LocalBeRoRiver() noexcept;
+	~LocalBeRoRiver() noexcept override;
 };
 
 #endif
