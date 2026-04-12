@@ -195,7 +195,7 @@ ServerAcceptWebHelper::on_message(websocketpp::connection_hdl hdl, server::messa
 }
 
 context_ptr ServerAcceptWebHelper::on_tls_init(websocketpp::connection_hdl hdl) {
-    context_ptr ctx(new boost::asio::ssl::context(boost::asio::ssl::context::tlsv12));
+    context_ptr ctx(boost::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv12));
 
     try {
         ctx->set_options(boost::asio::ssl::context::default_workarounds |
