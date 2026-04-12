@@ -2043,11 +2043,11 @@ void LocalPlayer::turnEngine()
 			}
 			myAction = PLAYER_ACTION_BET;
 
-			// Test cBluff --> call instead of raise
+			// Test cBluff --> check instead of bet
 			if(cBluff > 90) myAction = PLAYER_ACTION_CHECK;
-			if(cBluff > 80 && myOdds >= myNiveau[2] + 5) myAction = PLAYER_ACTION_CHECK;
-			if(cBluff > 70 && myOdds >= myNiveau[2] + 10) myAction = PLAYER_ACTION_CHECK;
-			if(cBluff > 60 && myOdds >= myNiveau[2] + 15) myAction = PLAYER_ACTION_CHECK;
+			if(cBluff > 80 && myOdds >= myNiveau[1] + 5) myAction = PLAYER_ACTION_CHECK;
+			if(cBluff > 70 && myOdds >= myNiveau[1] + 10) myAction = PLAYER_ACTION_CHECK;
+			if(cBluff > 60 && myOdds >= myNiveau[1] + 15) myAction = PLAYER_ACTION_CHECK;
 		}
 		// check
 		else {
