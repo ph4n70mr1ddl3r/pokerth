@@ -374,12 +374,12 @@ private:
 
 	// Laufvariablen
 	int myCardsValueInt;
-	std::array<int, 5> myBestHandPosition;
+	std::array<int, 5> myBestHandPosition = {};
 	double myOdds;
-	std::array<int, 3> myNiveau;
+	std::array<int, 3> myNiveau = {};
 	bool logHoleCardsDone;
 
-	std::array<int, 2> myCards;
+	std::array<int, 2> myCards = {};
 	int myCash;
 	int mySet;
 	int myLastRelativeSet;
@@ -392,9 +392,9 @@ private:
 	int myRoundStartCash;
 	int myLastMoneyWon;
 
-	std::array<int, 4> myAverageSets;
+	std::array<int, 4> myAverageSets = {};
 	int myAverageSetsCount = 0;
-	std::array<bool, 7> myAggressive;
+	std::array<bool, 7> myAggressive = {};
 
 	int mySBluff;
 	bool mySBluffStatus;

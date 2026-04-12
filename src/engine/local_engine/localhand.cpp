@@ -85,7 +85,6 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 	for(it=activePlayerList->begin(); it!=activePlayerList->end(); ++it, k++) {
 
 		// Bounds check: 2*k+1+5 must be < NumCards (52)
-		// With MAX_NUMBER_OF_PLAYERS=10, max index is 2*9+1+5=24 which is safe.
 		assert(k < static_cast<int>(activePlayerList->size()));
 		assert(2*k+1+5 < NumCards);
 
