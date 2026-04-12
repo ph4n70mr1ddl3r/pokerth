@@ -38,7 +38,7 @@
 #include <list>
 #include <vector>
 
-typedef std::list<DB_id> db_list;
+using db_list = std::list<DB_id>;
 
 class ServerDBInterface
 {

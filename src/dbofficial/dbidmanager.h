@@ -46,7 +46,7 @@ public:
 	DB_id GetGameDBId(unsigned gameId) const;
 
 protected:
-	typedef std::map<unsigned, DB_id> DBMap;
+	using DBMap = std::map<unsigned, DB_id>;
 
 private:
 	DBMap					m_gameIdMap;

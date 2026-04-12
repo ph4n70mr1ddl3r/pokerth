@@ -180,7 +180,7 @@ private:
 	unsigned myPlayerId;
 	bool isGameAdministrator;
 	bool inGame;
-	typedef std::map<QString, QString> CountryStringMap;
+	using CountryStringMap = std::map<QString, QString>;
 	CountryStringMap countryStringMap;
 
 	QString myAppDataPath;

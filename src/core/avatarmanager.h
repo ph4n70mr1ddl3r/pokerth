@@ -78,9 +78,9 @@ public:
 	void RemoveOldAvatarCacheEntries();
 
 protected:
-	typedef std::map<MD5Buf, std::string> AvatarMap;
-	typedef std::list<MD5Buf> AvatarList;
-	typedef std::multimap<std::time_t, MD5Buf> TimeAvatarMap;
+	using AvatarMap = std::map<MD5Buf, std::string>;
+	using AvatarList = std::list<MD5Buf>;
+	using TimeAvatarMap = std::multimap<std::time_t, MD5Buf>;
 
 	bool InternalReadDirectory(const std::string &dir, AvatarMap &avatars);
 

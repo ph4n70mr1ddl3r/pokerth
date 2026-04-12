@@ -65,7 +65,7 @@ protected:
 		std::string httpPost;
 	};
 
-	typedef std::queue<UploadData> UploadDataQueue;
+	using UploadDataQueue = std::queue<UploadData>;
 
 	// Main function of thread.
 	virtual void Main() override;

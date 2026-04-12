@@ -127,8 +127,8 @@ protected:
 
 	static bool ValidateGameInfo(const NetGameInfo &gameInfo);
 
-	typedef bool (*ValidateFunctor)(const NetPacket &);
-	typedef std::map<int, ValidateFunctor> ValidateFunctorMap;
+	using ValidateFunctor = bool (*)(const NetPacket &);
+	using ValidateFunctorMap = std::map<int, ValidateFunctor>;
 private:
 
 	ValidateFunctorMap m_validationMap;

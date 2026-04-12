@@ -133,7 +133,7 @@ protected:
 		int place;
 	};
 
-	typedef std::map<unsigned, RankingData> RankingMap;
+	using RankingMap = std::map<unsigned, RankingData>;
 
 	void TimerVoteKick(const boost::system::error_code &ec);
 
@@ -192,7 +192,7 @@ protected:
 	[[nodiscard]] SessionManager &GetSessionManager();
 	[[nodiscard]] ServerDBInterface &GetDatabase();
 
-	typedef std::map<std::string, int> NumJoinsPerPlayerMap;
+	using NumJoinsPerPlayerMap = std::map<std::string, int>;
 
 private:
 	ServerGame(const ServerGame &other) = delete;

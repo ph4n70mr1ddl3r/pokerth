@@ -37,7 +37,7 @@
 #include <ctime>
 #include <vector>
 
-typedef unsigned DB_id;
+using DB_id = unsigned;
 #define DB_ID_INVALID 0
 
 struct DBPlayerData {

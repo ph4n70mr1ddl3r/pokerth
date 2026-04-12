@@ -72,8 +72,8 @@ protected:
 		std::vector<unsigned char> data;
 	};
 
-	typedef std::queue<DownloadData> DownloadDataQueue;
-	typedef std::queue<ResultData> DownloadDoneQueue;
+	using DownloadDataQueue = std::queue<DownloadData>;
+	using DownloadDoneQueue = std::queue<ResultData>;
 
 	// Main function of the thread.
 	virtual void Main() override;

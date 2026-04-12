@@ -36,9 +36,9 @@
 #include <websocketpp/config/asio.hpp>
 #include <websocketpp/server.hpp>
 
-typedef websocketpp::server<websocketpp::config::asio> server;
-typedef websocketpp::server<websocketpp::config::asio_tls> tls_server;
-typedef websocketpp::lib::shared_ptr<boost::asio::ssl::context> context_ptr;
+using server = websocketpp::server<websocketpp::config::asio>;
+using tls_server = websocketpp::server<websocketpp::config::asio_tls>;
+using context_ptr = websocketpp::lib::shared_ptr<boost::asio::ssl::context>;
 
 enum tls_mode {
     MOZILLA_INTERMEDIATE = 1,

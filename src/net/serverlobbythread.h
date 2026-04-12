@@ -130,23 +130,23 @@ public:
 
 protected:
 
-	typedef std::deque<boost::shared_ptr<boost::asio::ip::tcp::socket> > ConnectQueue;
-	typedef std::list<boost::shared_ptr<SessionData> > SessionList;
-	typedef std::list<SessionId> SessionIdList;
-	typedef std::map<SessionId, boost::timers::portable::microsec_timer> TimerSessionMap;
-	typedef std::map<std::string, boost::timers::portable::microsec_timer> TimerClientAddressMap;
+	using ConnectQueue = std::deque<boost::shared_ptr<boost::asio::ip::tcp::socket>>;
+	using SessionList = std::list<boost::shared_ptr<SessionData>>;
+	using SessionIdList = std::list<SessionId>;
+	using TimerSessionMap = std::map<SessionId, boost::timers::portable::microsec_timer>;
+	using TimerClientAddressMap = std::map<std::string, boost::timers::portable::microsec_timer>;
 	struct FailedLoginEntry {
 		unsigned count;
 		boost::posix_time::ptime firstFailTime;
 		FailedLoginEntry() : count(0), firstFailTime(boost::posix_time::not_a_date_time) {}
 	};
-	typedef std::map<std::string, FailedLoginEntry> FailedLoginMap;
+	using FailedLoginMap = std::map<std::string, FailedLoginEntry>;
 	struct ChatRateEntry {
 		std::vector<boost::posix_time::ptime> messageTimes;
 	};
-	typedef std::map<unsigned, ChatRateEntry> ChatRateMap;
-	typedef std::list<unsigned> RemoveGameList;
-	typedef std::map<unsigned, boost::shared_ptr<ServerGame> > GameMap;
+	using ChatRateMap = std::map<unsigned, ChatRateEntry>;
+	using RemoveGameList = std::list<unsigned>;
+	using GameMap = std::map<unsigned, boost::shared_ptr<ServerGame>>;
 
 protected:
 

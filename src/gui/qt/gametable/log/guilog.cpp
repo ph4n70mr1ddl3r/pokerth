@@ -895,7 +895,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 	bool data_found = false;
 	int nRow_Session=0, nRow_Game=0, nRow_Player=0, nRow_Hand=0, nRow_Hand_ID=0, nRow_Action=0;
 	int nCol_Session=0, nCol_Game=0, nCol_Player=0, nCol_Hand=0, nCol_Action=0;
-	char *errmsg = 0;
+	char *errmsg = nullptr;
 	int game_ctr = 0, hand_ctr = 0, round_ctr = 0, action_ctr = 0;
 	int i = 0, j = 0;
 	int gameID = 0;
@@ -1701,7 +1701,7 @@ QList<int> guiLog::getGameList(QString fileStringPdb)
 
 	int nRow_Game=0;
 	int nCol_Game=0;
-	char *errmsg = 0;
+	char *errmsg = nullptr;
 	int game_ctr = 0;
 	int i = 0;
 

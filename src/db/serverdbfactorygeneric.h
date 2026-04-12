@@ -48,6 +48,6 @@ public:
 		ServerDBCallback &cb, boost::shared_ptr<boost::asio::io_context> ioService);
 };
 
-typedef ServerDBFactoryGeneric DBFactory;
+using DBFactory = ServerDBFactoryGeneric;
 
 #endif

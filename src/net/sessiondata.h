@@ -33,7 +33,7 @@
 #ifndef _SESSIONDATA_H_
 #define _SESSIONDATA_H_
 
-typedef unsigned SessionId;
+using SessionId = unsigned;
 
 #include <boost/asio.hpp>
 #include <boost/asio/steady_timer.hpp>

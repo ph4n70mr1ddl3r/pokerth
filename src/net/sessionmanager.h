@@ -82,7 +82,7 @@ public:
 
 protected:
 
-	typedef std::map<SessionId, boost::shared_ptr<SessionData> > SessionMap;
+	using SessionMap = std::map<SessionId, boost::shared_ptr<SessionData>>;
 
 private:
 

@@ -64,7 +64,7 @@ public:
 	virtual bool JoinAll(bool wait);
 
 protected:
-	typedef std::list<boost::shared_ptr<ServerAcceptInterface> > AcceptHelperList;
+	using AcceptHelperList = std::list<boost::shared_ptr<ServerAcceptInterface>>;
 
 	ServerLobbyThread &GetLobbyThread();
 	ConfigFile &GetConfig()

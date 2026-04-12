@@ -37,8 +37,8 @@
 
 class PlayerInterface;
 
-typedef boost::shared_ptr<std::list<boost::shared_ptr<PlayerInterface> > > PlayerList;
-typedef std::list<boost::shared_ptr<PlayerInterface> >::iterator PlayerListIterator;
-typedef std::list<boost::shared_ptr<PlayerInterface> >::const_iterator PlayerListConstIterator;
+using PlayerList = boost::shared_ptr<std::list<boost::shared_ptr<PlayerInterface>>>;
+using PlayerListIterator = std::list<boost::shared_ptr<PlayerInterface>>::iterator;
+using PlayerListConstIterator = std::list<boost::shared_ptr<PlayerInterface>>::const_iterator;
 
 #endif

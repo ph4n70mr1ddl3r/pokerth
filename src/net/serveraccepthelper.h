@@ -53,9 +53,9 @@ template <typename P>
 class ServerAcceptHelper : public ServerAcceptInterface
 {
 public:
-    typedef typename P::acceptor P_acceptor;
-    typedef typename P::endpoint P_endpoint;
-    typedef typename P::socket P_socket;
+    using P_acceptor = typename P::acceptor;
+    using P_endpoint = typename P::endpoint;
+    using P_socket = typename P::socket;
 
     ServerAcceptHelper(ServerCallback &serverCallback, boost::shared_ptr<boost::asio::io_context> ioService, bool tls)
         : m_ioService(ioService), m_serverCallback(serverCallback)
@@ -165,7 +165,7 @@ protected:
             acceptedSocket->set_option(boost::asio::socket_base::keep_alive(true));
 
             if (m_tls) {
-                typedef boost::asio::ssl::stream<P_socket> ssl_stream_t;
+                using ssl_stream_t = boost::asio::ssl::stream<P_socket>;
                 auto sslStream = boost::make_shared<ssl_stream_t>(*m_ioService, *m_sslContext);
                 sslStream->next_layer() = std::move(*acceptedSocket);
 

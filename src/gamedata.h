@@ -39,7 +39,7 @@
 #include <third_party/boost/timers.hpp>
 #endif
 
-typedef std::list<unsigned> PlayerIdList;
+using PlayerIdList = std::list<unsigned>;
 
 enum GameMode {
 	GAME_MODE_CREATED = 1,

@@ -77,10 +77,10 @@ protected:
 		std::string ipAddress;
 	};
 
-	typedef std::map<unsigned, TimedPlayerBan> RegexMap;
-	typedef std::map<unsigned, TimedIPBan> IPAddressMap;
-	typedef std::list<boost::regex> RegexList;
-	typedef std::vector<DB_id> DBPlayerIdList;
+	using RegexMap = std::map<unsigned, TimedPlayerBan>;
+	using IPAddressMap = std::map<unsigned, TimedIPBan>;
+	using RegexList = std::list<boost::regex>;
+	using DBPlayerIdList = std::vector<DB_id>;
 
 	boost::shared_ptr<boost::asio::steady_timer> InternalRegisterTimedBan(unsigned timerId, unsigned durationHours);
 	void TimerRemoveBan(const boost::system::error_code &ec, unsigned banId, boost::shared_ptr<boost::asio::steady_timer> timer);
