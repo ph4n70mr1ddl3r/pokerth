@@ -347,7 +347,7 @@ private:
 	AvatarFileMap m_tempAvatarMap;
 	mutable boost::mutex m_tempAvatarMapMutex;
 
-	unsigned m_curGameNum = 1;
+	std::atomic<unsigned> m_curGameNum{1};
 	unsigned m_guiPlayerId = 0;
 	mutable boost::mutex m_guiPlayerIdMutex;
 	int m_origGuiPlayerNum = 0;

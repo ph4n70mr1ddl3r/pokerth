@@ -58,7 +58,7 @@ public slots:
 
 private:
 	std::vector<char> mBuffer;
-	off_t mLength = 0;
+	qint32 mLength = 0;
 
 	QString mPath;
 

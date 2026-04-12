@@ -60,7 +60,11 @@ bool AndroidSoundEffect::load()
 //    qDebug() << "    reading header:";
 
 	char id[4];
-	lSoundFile.read(id, 4);
+	if (lSoundFile.read(id, 4) != 4) {
+		qDebug() << "WAV read error - truncated header";
+		lSoundFile.close();
+		return false;
+	}
 	if( strncmp(id, "RIFF", 4) != 0 ) {
 		qDebug() << "not a WAV file - header not RIFF";
 		lSoundFile.close();
@@ -71,7 +75,11 @@ bool AndroidSoundEffect::load()
 	lSoundFile.read(reinterpret_cast<char *>(&size), 4);
 //    qDebug() << "    size:" << size;
 
-	lSoundFile.read(id, 4);
+	if (lSoundFile.read(id, 4) != 4) {
+		qDebug() << "WAV read error - truncated WAVE header";
+		lSoundFile.close();
+		return false;
+	}
 	if( strncmp(id, "WAVE", 4) != 0 ) {
 		qDebug() << "not a WAV file - header not WAVE";
 		lSoundFile.close();
@@ -106,14 +114,21 @@ bool AndroidSoundEffect::load()
 	lSoundFile.read(reinterpret_cast<char *>(&bits_per_sample), 2);
 //    qDebug() << "    bits_per_sample:" << bits_per_sample;
 
-	lSoundFile.read(id, 4);
-	if( strncmp(id, "data", 4) != 0 ) {
+	if (lSoundFile.read(id, 4) != 4 || strncmp(id, "data", 4) != 0) {
 		qDebug() << "not a WAV file - didn't find data";
 		lSoundFile.close();
 		return false;
 	}
 
-	lSoundFile.read(reinterpret_cast<char *>(&mLength), 4);
+	{
+		qint32 dataLength = 0;
+		if (lSoundFile.read(reinterpret_cast<char *>(&dataLength), 4) != 4 || dataLength < 0) {
+			qDebug() << "WAV read error - invalid data length";
+			lSoundFile.close();
+			return false;
+		}
+		mLength = dataLength;
+	}
 
 //    qDebug() << "    reading data:" << mLength;
 

@@ -194,7 +194,11 @@ main(int argc, char *argv[])
 	}
 
 	if (!pidFile.empty()) {
-		fs::remove(pidFile);
+		boost::system::error_code ec;
+		fs::remove(pidFile, ec);
+		if (ec) {
+			LOG_ERROR("Failed to remove PID file: " << pidFile << " - " << ec.message());
+		}
 	}
 
 	session.reset();
