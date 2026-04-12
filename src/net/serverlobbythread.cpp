@@ -2330,9 +2330,9 @@ ServerLobbyThread::InternalRemovePlayer(unsigned playerId, unsigned errorCode)
 		SessionError(session, errorCode);
 	else {
 		// Remove player from game.
-		boost::shared_ptr<SessionData> session = m_gameSessionManager.GetSessionByUniquePlayerId(playerId);
-		if (session) {
-			boost::shared_ptr<ServerGame> tmpGame = session->GetGame();
+		boost::shared_ptr<SessionData> gameSession = m_gameSessionManager.GetSessionByUniquePlayerId(playerId);
+		if (gameSession) {
+			boost::shared_ptr<ServerGame> tmpGame = gameSession->GetGame();
 			if (tmpGame) {
 				tmpGame->RemovePlayer(playerId, errorCode);
 			}

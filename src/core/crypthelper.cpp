@@ -37,6 +37,7 @@
 #include <cstdio>
 #include <memory>
 #include <functional>
+#include <algorithm>
 
 using namespace std;
 
@@ -110,20 +111,24 @@ HashBuf::FromString(const std::string &text)
 bool
 HashBuf::IsZero() const
 {
-	int dataSize = GetDataSize();
 	const unsigned char *tmpData = GetData();
-	int i = 0;
-	for (i = 0; i < dataSize; i++) {
-		if (tmpData[i] != 0)
-			break;
-	}
-	return i == dataSize;
+	int dataSize = GetDataSize();
+	return std::all_of(tmpData, tmpData + dataSize, [](unsigned char c) { return c == 0; });
 }
 
 bool
 HashBuf::operator==(const HashBuf &other) const
 {
-	return GetDataSize() == other.GetDataSize() && memcmp(GetData(), other.GetData(), GetDataSize()) == 0;
+	if (GetDataSize() != other.GetDataSize())
+		return false;
+	// Constant-time comparison to prevent timing side-channel attacks.
+	volatile unsigned char result = 0;
+	const unsigned char *a = GetData();
+	const unsigned char *b = other.GetData();
+	for (int i = 0; i < GetDataSize(); ++i) {
+		result |= a[i] ^ b[i];
+	}
+	return result == 0;
 }
 
 bool
