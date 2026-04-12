@@ -128,7 +128,13 @@ ServerLobbyBot::Run()
 void
 ServerLobbyBot::Reconnect(const boost::system::error_code& ec)
 {
-	if (!ec) {
+	if (ec) {
+		if (ec == boost::asio::error::operation_aborted) {
+			return;
+		}
+		LOG_ERROR("Lobby bot Reconnect error: " << ec.message());
+		// Fall through to reschedule even on transient errors.
+	} else {
 		if (m_ircLobbyThread) {
 			m_ircLobbyThread->SignalTermination();
 			if (m_ircLobbyThread->Join(NET_ADMIN_IRC_TERMINATE_TIMEOUT_MSEC)) {
@@ -137,12 +143,12 @@ ServerLobbyBot::Reconnect(const boost::system::error_code& ec)
 				m_ircLobbyThread = tmpIrcThread;
 			}
 		}
-		m_reconnectTimer.expires_after(seconds(SERVER_RESTART_IRC_BOT_INTERVAL_SEC));
-		m_reconnectTimer.async_wait(
-			[self = shared_from_this()](const boost::system::error_code& ec) {
-				Reconnect(ec);
-			});
 	}
+	m_reconnectTimer.expires_after(seconds(SERVER_RESTART_IRC_BOT_INTERVAL_SEC));
+	m_reconnectTimer.async_wait(
+		[self = shared_from_this()](const boost::system::error_code& ec) {
+			Reconnect(ec);
+		});
 }
 
 void

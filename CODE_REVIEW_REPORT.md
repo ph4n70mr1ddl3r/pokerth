@@ -1,7 +1,7 @@
 # PokerTH Comprehensive Code Review Report
 **Date:** 2026-04-12
 **Reviewer:** AI Assistant
-**Revision:** 6
+**Revision:** 7
 
 ---
 
@@ -338,5 +338,34 @@ Missing `override` means the compiler cannot detect signature mismatches if a ba
 ## Conclusion
 
 This review pass focused on code correctness and maintainability improvements: adding `override` to 20 virtual destructors in derived classes to enable compiler-enforced signature checking, fixing 7 double-semicolon typos, replacing non-idiomatic container/QString empty checks with idiomatic `isEmpty()` patterns, translating 4 remaining German comments to English, and normalizing conditional formatting style. The codebase continues to show strong engineering quality across all prior review passes.
+
+**Overall Code Quality:** ⭐⭐⭐⭐⭐ (4.8/5)
+
+## Issues Fixed (This Review — Revision 7)
+
+### 1. Admin Bot Timer Resilience — FIXED
+
+**Files:** `src/net/serveradminbot.cpp`, `src/net/serverlobbybot.cpp`
+
+**Issue:** Three periodic timers in the IRC admin/lobby bots (`ReconnectHandler`, `CheckFileHandler`, `NotifyLoop` in `ServerAdminBot`, and `Reconnect` in `ServerLobbyBot`) used an `if (!ec) { ... reschedule ... }` pattern that fails to reschedule on transient async errors. This meant any non-abort error (e.g., OS resource exhaustion, timer implementation errors) would permanently stop that timer's functionality without any notification:
+
+- `ReconnectHandler` — periodic IRC admin bot reconnection would stop
+- `CheckFileHandler` — signal file monitoring for admin reconnect would stop
+- `NotifyLoop` — server restart notification broadcasts would stop
+- `ServerLobbyBot::Reconnect` — lobby bot daily reconnection would stop
+
+**Fix:** Restructured all four timer handlers to match the established pattern in `TimerRemoveGame`, `TimerUpdateClientLoginLock`, `TimerCleanupRateMaps`, and `TimerSaveStatisticsFile`:
+1. Check for `operation_aborted` → return immediately (clean shutdown)
+2. Log non-abort errors
+3. Execute work only on success (`!ec`)
+4. Always reschedule the timer regardless of error type
+
+This ensures that transient errors cause a logged warning and a retry on the next interval rather than permanently disabling the timer's functionality.
+
+---
+
+## Conclusion
+
+This review pass focused on timer resilience in the IRC admin/lobby bot subsystem. Four periodic timers that would silently stop on transient async errors now properly log the error and reschedule, matching the established error-handling pattern used by all other server timers. The codebase continues to show strong engineering quality across all prior review passes.
 
 **Overall Code Quality:** ⭐⭐⭐⭐⭐ (4.8/5)
