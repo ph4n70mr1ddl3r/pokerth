@@ -1,7 +1,7 @@
 # PokerTH Comprehensive Code Review Report
 **Date:** 2026-04-12
 **Reviewer:** AI Assistant
-**Revision:** 4
+**Revision:** 5
 
 ---
 
@@ -236,5 +236,29 @@ Missing `override` can silently create bugs when base class signatures change �
 ## Conclusion
 
 The PokerTH codebase continues to improve with each review pass. This revision addressed SQL injection defense-in-depth for the log export system, eliminated potential use-of-uninitialized-pointer bugs through default member initialization, added missing `override` specifiers to prevent silent virtual dispatch bugs, removed dead code duplication in the server accept handler, and improved const correctness. The codebase maintains strong security practices, modern C++ patterns, and clean code organization.
+
+## Issues Fixed (This Review — Revision 5)
+
+### 1. Missing `override` on `ServerAcceptHelper` Methods — FIXED
+
+**File:** `src/net/serveraccepthelper.h`
+
+**Issue:** `ServerAcceptHelper::Listen()` and `ServerAcceptHelper::Close()` override virtual methods from `ServerAcceptInterface` but were missing the `override` specifier. The destructor already had `override`, but these two critical methods did not. If the base class signatures change, the derived methods would silently become new virtual functions instead of overriding the base, with no compiler warning.
+
+**Fix:** Added `override` to both `Listen()` and `Close()`. Also removed redundant `virtual` keyword (a method with `override` is implicitly virtual).
+
+### 2. Deprecated `boost::this_thread::sleep` in Load Test — FIXED
+
+**File:** `src/load.cpp`
+
+**Issue:** The load test program used the deprecated `boost::this_thread::sleep(boost::posix_time::milliseconds(100))` API instead of the standard C++ `std::this_thread::sleep_for(std::chrono::milliseconds(100))`. The project targets C++23 and should use standard library facilities.
+
+**Fix:** Replaced with `std::this_thread::sleep_for(std::chrono::milliseconds(100))`, added `<chrono>` and `<thread>` includes, and removed the now-unused `#include <boost/thread.hpp>`.
+
+---
+
+## Conclusion
+
+The PokerTH codebase continues to maintain strong engineering quality. This revision addressed missing `override` specifiers on the server accept helper methods which could silently break if base class signatures change, and modernized the load test utility to use C++23 standard library facilities instead of deprecated Boost thread APIs. The codebase shows thorough attention to thread safety, memory management, security, and code organization across all prior review passes.
 
 **Overall Code Quality:** ⭐⭐⭐⭐⭐ (4.7/5)

@@ -101,8 +101,8 @@ public:
     }
 
     // Set the parameters.
-    virtual void Listen(unsigned serverPort, bool ipv6, const std::string &/*logDir*/,
-                        boost::shared_ptr<ServerLobbyThread> lobbyThread)
+    void Listen(unsigned serverPort, bool ipv6, const std::string &/*logDir*/,
+                        boost::shared_ptr<ServerLobbyThread> lobbyThread) override
     {
         m_lobbyThread = lobbyThread;
 
@@ -117,7 +117,7 @@ public:
         }
     }
 
-    virtual void Close() noexcept
+    void Close() noexcept override
     {
         boost::system::error_code ec;
         m_acceptor->close(ec);

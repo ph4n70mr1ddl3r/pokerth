@@ -34,12 +34,13 @@
 #include <third_party/asn1/PokerTHMessage.h>
 #include <boost/program_options.hpp>
 #include <boost/asio.hpp>
-#include <boost/thread.hpp>
 #include <gsasl.h>
 
 #include <iostream>
 #include <sstream>
 #include <memory>
+#include <chrono>
+#include <thread>
 
 #define STL_STRING_FROM_OCTET_STRING(_a) (string(static_cast<const char*>((_a).buf), (_a).size))
 
@@ -450,7 +451,7 @@ main(int argc, char *argv[])
 					bytes_readable = session->socket.available();
 				}
 			}
-			boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 		gsasl_done(authContext);
 
