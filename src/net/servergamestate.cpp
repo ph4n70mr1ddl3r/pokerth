@@ -922,7 +922,10 @@ ServerGameStateHand::TimerLoop(const boost::system::error_code &ec, boost::share
 void
 ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 {
-	Game &curGame = *server->GetGame();
+	boost::shared_ptr<Game> gamePtr = server->GetGame();
+	if (!gamePtr)
+		return;
+	Game &curGame = *gamePtr;
 
 	auto currentHand = curGame.getCurrentHand();
 	if (!currentHand)
@@ -1218,7 +1221,10 @@ ServerGameStateHand::GetDealCardsDelaySec(ServerGame &server)
 void
 ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 {
-	Game &curGame = *server->GetGame();
+	boost::shared_ptr<Game> gamePtr = server->GetGame();
+	if (!gamePtr)
+		return;
+	Game &curGame = *gamePtr;
 
 	// Reactivate players which were previously inactive.
 	ReactivatePlayers(server);

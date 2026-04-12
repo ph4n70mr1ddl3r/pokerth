@@ -1541,9 +1541,6 @@ ServerLobbyThread::HandleNetPacketRejoinGame(boost::shared_ptr<SessionData> sess
 			&& !game->IsPlayerInvited(session->GetPlayerData()->GetUniqueId())) {
 			SendJoinGameFailed(session, rejoinGame.gameid(), NTF_NET_JOIN_NOT_INVITED);
 			blocked = true;
-		} else if (game->IsPasswordProtected()) {
-			SendJoinGameFailed(session, rejoinGame.gameid(), NTF_NET_JOIN_INVALID_PASSWORD);
-			blocked = true;
 		} else if (tmpData.gameType == GAME_TYPE_RANKING && !session->GetPlayerData()->IsPlayerAllowedToJoinCreateLimitRank(m_serverConfig.readConfigString("ServerLimitRankNum"), m_serverConfig.readConfigString("ServerLimitRankPeriod"))) {
 			SendJoinGameFailed(session, rejoinGame.gameid(), NTF_NET_JOIN_IP_BLOCKED);
 			blocked = true;
@@ -1573,6 +1570,10 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 			return;
 		}
 		if (chatMsg.size() >= MAX_CHAT_TEXT_SIZE) {
+			auto rejectPkt = boost::make_shared<NetPacket>();
+			rejectPkt->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatRejectMessage);
+			rejectPkt->GetMsg()->mutable_chatrejectmessage()->set_chattext(chatMsg);
+			GetSender().Send(session, rejectPkt);
 			return;
 		}
 		constexpr size_t MAX_CHAT_RATE_MESSAGES = 10;
@@ -1637,9 +1638,6 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 				boost::shared_ptr<ServerGame> tmpGame = targetSession->GetGame();
 				if (!tmpGame || !tmpGame->IsRunning()) {
 					const string &chatText = chatRequest.chattext();
-					if (chatText.empty() || chatText.size() >= MAX_CHAT_TEXT_SIZE) {
-						return;
-					}
 					if (GetBanManager().IsAdminPlayer(session->GetPlayerData()->GetDBId())
 						&& chatText.size() >= 4 && chatText.substr(0, 3) == "gn ") {
 						std::string noticeText = chatText.substr(3);

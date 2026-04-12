@@ -1227,15 +1227,12 @@ ServerGame::SetState(ServerGameState &newState)
 	try {
 		newState.Enter(shared_from_this());
 	} catch (...) {
-		// Roll back on Enter failure - restore previous state and re-enter it
+		// Roll back on Enter failure - transition to Final state.
+		// Do NOT re-enter oldState since it was already Exit()ed above.
+		LOG_ERROR("SetState: Enter() failed, transitioning to Final state");
 		{
 			boost::mutex::scoped_lock lock(m_curStateMutex);
-			m_curState = oldState;
-		}
-		if (oldState) {
-			try { oldState->Enter(shared_from_this()); } catch (...) {
-				LOG_ERROR("SetState: rollback to previous state failed, game may be in inconsistent state");
-			}
+			m_curState = &ServerGameStateFinal::Instance();
 		}
 	}
 }
