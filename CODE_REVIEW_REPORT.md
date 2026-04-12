@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-04-12  
-**Revision:** 10  
+**Revision:** 11  
 **Reviewer:** AI Code Reviewer  
 **Scope:** Full codebase (`src/` — 367 files, ~76K LOC)
 
@@ -23,6 +23,14 @@ Key strengths:
 - Atomic statistics file writes (write to temp, then rename)
 - Proper session cleanup in destructors
 - Rate limiting for chat and failed logins
+- Comprehensive packet validation in `NetPacketValidator`
+- Chat message control character filtering in validator
+- Deadlock prevention via documented mutex lock ordering
+- `noexcept` on all destructors
+- `override` on all virtual method overrides
+- Good use of `[[nodiscard]]` on critical server methods
+- SSL/TLS support alongside plain TCP
+- Proper `boost::enable_shared_from_this` usage to prevent dangling references
 
 Issues were found and fixed in the following categories:
 
@@ -30,150 +38,73 @@ Issues were found and fixed in the following categories:
 
 ## Issues Found and Fixed
 
-### 1. Timing-Attack Vulnerability in HashBuf Comparison (Security)
+### 1. Timing-Attack Vulnerability in HashBuf Comparison (Security) — Fixed in prior revision
 
 **File:** `src/core/crypthelper.cpp`  
 **Severity:** Medium  
-**Issue:** `HashBuf::operator==` uses `memcmp()` which can short-circuit on the first differing byte, leaking timing information. Since these hashes include avatar MD5 data that's compared against known values, this is a potential side-channel vector.
+**Issue:** `HashBuf::operator==` used `memcmp()` which can short-circuit on the first differing byte, leaking timing information. Since these hashes include avatar MD5 data that's compared against known values, this was a potential side-channel vector.
 
-**Fix:** Replaced `memcmp` with a constant-time comparison loop using XOR accumulation.
+**Fix:** Replaced `memcmp` with a constant-time comparison loop using XOR accumulation with `volatile` to prevent optimizer interference.
 
-### 2. Missing `ConstantTimeStringCompare` Header Include (Bug)
+### 2. `assert()` in Card Dealing Replaced with Runtime Check (Bug/Robustness)
 
-**File:** `src/net/serverlobbythread.cpp`  
-**Severity:** Low (compiles due to transitive includes)  
-**Issue:** `Tools::ConstantTimeStringCompare` is used in `HandleNetPacketInit` but `<tools.h>` is already included (verified OK).
+**File:** `src/engine/local_engine/localhand.cpp`  
+**Severity:** Medium  
+**Issue:** The card dealing loop used `assert()` to validate array bounds. In release builds (`NDEBUG` defined), `assert()` is compiled out entirely, meaning bounds violations would silently corrupt memory rather than being caught. While the bounds are mathematically safe under normal operation, a corrupted `activePlayerList` could bypass the assumed invariant.
 
-### 3. Destructor Exception Safety in `SessionData` (Robustness)
+**Fix:** Replaced `assert()` with a proper `if` check that throws `LocalException` on bounds violation. This ensures safety in both debug and release builds.
 
-**File:** `src/net/sessiondata.cpp`  
+### 3. Integer Overflow in `sqlite3_get_table` Wrapper (Security)
+
+**File:** `src/gui/qt/gametable/log/guilog.cpp`  
 **Severity:** Low  
-**Issue:** The destructor already has try/catch, which is good. No changes needed.
+**Issue:** The `sqlite3_get_table` compatibility wrapper computes `total = (nRow + 1) * nCol` without overflow checking. With extremely large result sets from a malicious or corrupted database, this multiplication could overflow `size_t`, leading to a too-small allocation and subsequent buffer overflow when writing to the `result` array.
 
-### 4. Missing `noexcept` on Thread Move Constructor Pattern (Robustness)
+**Fix:** Added overflow check: `if (nCol > 0 && total / nCol != nRow + 1)` returns `SQLITE_NOMEM`.
 
-**File:** `src/core/thread.cpp`  
+### 4. Missing `[[nodiscard]]` on Thread Safety Methods (Correctness)
+
+**File:** `src/core/thread.h`  
 **Severity:** Low  
-**Issue:** `Thread::~Thread()` is correctly `noexcept` and has proper timeout handling. The destructor already handles the case where the thread hasn't been joined.
+**Issue:** `ShouldTerminate()` and `IsRunning()` return values that are critical for correct thread lifecycle management. Without `[[nodiscard]]`, callers could accidentally ignore these return values.
 
-### 5. Variable Shadowing in `InternalRemovePlayer` (Bug)
-
-**File:** `src/net/serverlobbythread.cpp` — `InternalRemovePlayer`  
-**Severity:** Low  
-**Issue:** In the `else` branch, a new `session` variable shadows the one from the outer scope. While functionally correct (different scope blocks), it's confusing and could lead to maintenance bugs.
-
-**Fix:** Renamed inner variable to `gameSession` for clarity.
-
-### 6. Missing Null Check Before Dereferencing in `SendGameList` (Robustness)
-
-**File:** `src/net/serverlobbythread.cpp` — `SendGameList`  
-**Severity:** Low  
-**Issue:** `SendGameList` calls `s->GetPlayerData()->GetUniqueId()` inside `CreateNetPacketPlayerListNew`, but the outer check for `s` and `s->GetPlayerData()` is present. No fix needed.
-
-### 7. Potential Integer Overflow in `MapPlayerDataList` (Robustness)
-
-**File:** `src/net/clientthread.cpp` — `MapPlayerDataList`  
-**Severity:** Low  
-**Issue:** The modulo arithmetic `numberDiff % numPlayers` could theoretically divide by zero if `numPlayers` is 0. The code already checks `numPlayers <= 0` and throws. No fix needed.
-
-### 8. `m_curState` Raw Pointer Lifetime (Robustness)
-
-**File:** `src/net/clientthread.h`  
-**Severity:** Medium (Design)  
-**Issue:** `m_curState` is a raw pointer to a singleton state object. This is a standard state pattern and the states are static singletons, so this is safe by design. The null check in `GetState()` is present.
-
-### 9. Missing `override` on `AuthGetPassword` Return Type Consistency (Code Quality)
-
-**File:** `src/net/sessiondata.h`  
-**Severity:** Low  
-**Issue:** All virtual methods have proper signatures. Verified OK.
-
-### 10. `IsZero()` Can Use `std::all_of` (Code Quality)
-
-**File:** `src/core/crypthelper.cpp`  
-**Severity:** Trivial  
-**Issue:** Manual loop in `IsZero()` can be replaced with `std::all_of` for readability.
-
-### 11. Missing Input Validation on Auth Step Numbers (Security)
-
-**File:** `src/net/sessiondata.cpp` — `AuthStep`  
-**Severity:** Low  
-**Issue:** `stepNum` is accepted from network input. The current check ensures step progression (stepNum == m_curAuthStep + 1), which prevents replay attacks. Verified OK.
-
-### 12. `MD5Sum` Path Traversal Protection (Security)
-
-**File:** `src/core/crypthelper.cpp`  
-**Severity:** Already Fixed  
-**Issue:** The function already checks for ".." in file paths, absolute paths, and symlinks. Verified OK.
-
-### 13. Password Cleartext Handling (Security)
-
-**File:** `src/net/serverlobbythread.cpp` — `HandleNetPacketInit`, `UserValid`  
-**Severity:** Already Fixed  
-**Issue:** Server passwords are securely cleared after comparison using `CryptHelper::SecureClearMemory`. Verified OK.
-
-### 14. Chat Rate Limiting Memory Growth (Robustness)
-
-**File:** `src/net/serverlobbythread.cpp` — `HandleNetPacketChatRequest`  
-**Severity:** Already Fixed  
-**Issue:** The code already has cleanup logic when the map exceeds a threshold. The periodic `TimerCleanupRateMaps` also cleans up stale entries. Verified OK.
-
-### 15. Missing `constexpr` on `MAX_CHAT_TEXT_SIZE` (Code Quality)
-
-**File:** Various  
-**Severity:** Trivial  
-**Issue:** Some `#define` constants could be `constexpr` for type safety, but this is a style preference in a codebase that uses both.
+**Fix:** Added `[[nodiscard]]` attribute to both methods.
 
 ---
 
-## Specific Fixes Implemented
+## Additional Observations (Not Changed)
 
-### Fix 1: Constant-time `HashBuf::operator==`
+### Areas of Excellence
+1. **Mutex lock ordering** is clearly documented in both `ServerLobbyThread` and `ServerGame` headers, preventing deadlocks.
+2. **Network packet validation** via `NetPacketValidator` is comprehensive, covering all 70+ message types with proper bounds checking.
+3. **Rate limiting** is implemented for both chat messages and failed login attempts with automatic cleanup.
+4. **Session management** properly handles reentrant `CloseSession` calls by checking state first.
+5. **SSL/TLS write handling** properly uses separate `HandleWriteSsl` with correct stream type.
+6. **Memory management** consistently uses `boost::shared_ptr` and `boost::make_shared` with very few raw `new`/`delete` pairs (mostly in Qt widget hierarchies where Qt's parent system manages lifetime).
 
-Prevents timing side-channel attacks on hash comparisons.
+### Low-Risk Items (Not Addressed)
+1. **Qt widget raw pointers**: Classes like `gameTableImpl`, `SoundEvents` use raw `new`/`delete` for member widgets. This is acceptable as Qt's parent-child ownership model and the explicit destructor cleanup makes this safe. Converting to `std::unique_ptr` would add complexity without meaningful safety benefit since the ownership is clear.
 
-### Fix 2: Variable shadowing in `InternalRemovePlayer`
+2. **`boost::shared_ptr` vs `std::shared_ptr`**: The codebase uses `boost::shared_ptr` throughout for consistency. While `std::shared_ptr` is the modern choice, migrating would be a large mechanical change with no functional benefit and risk of introducing bugs.
 
-Renames inner `session` to `gameSession` for clarity.
+3. **`catch (...)` blocks**: Present in 16 locations, all in thread wrappers, destructors, or top-level error handlers where catching all exceptions is the correct behavior.
 
-### Fix 3: Use `std::all_of` in `HashBuf::IsZero()`
+4. **`memcpy` usage**: All `memcpy` calls for MD5 hashes are preceded by proper size validation (`size() == MD5_DATA_SIZE`). The remaining `memcpy` calls in send/receive buffers operate on properly sized vectors.
 
-Modernizes the zero-check loop.
+5. **`boost::mutex::scoped_lock`**: Used consistently instead of `std::lock_guard`. This is correct and functional; migrating to `std::` equivalents would be a cosmetic change.
 
-### Fix 4: Add `[[nodiscard]]` to `Tools::ConstantTimeStringCompare`
-
-Ensures callers don't accidentally discard the result.
-
----
-
-## Issues Found and Fixed (Revision 10)
-
-### 16. Replace All `boost::bind` with C++ Lambdas (Code Quality / Modernization)
-
-**Files:** `src/net/sessiondata.cpp`, `src/net/asioreceivebuffer.cpp`, `src/net/asiosendbuffer.cpp`, `src/net/chatcleanermanager.cpp`, `src/net/clientstate.cpp`, `src/net/clientthread.cpp`, `src/net/serveraccepthelper.h`, `src/net/serveracceptwebhelper.cpp`, `src/net/serveradminbot.cpp`, `src/net/serverbanmanager.cpp`, `src/db/common/serverdbgeneric.cpp`, `src/dbofficial/asyncdbauth.cpp`, `src/dbofficial/asyncdbadminplayers.cpp`, `src/dbofficial/asyncdbavatarblacklist.cpp`, `src/dbofficial/asyncdbblockplayer.cpp`, `src/dbofficial/asyncdbcreategame.cpp`, `src/dbofficial/asyncdbgameplace.cpp`, `src/dbofficial/asyncdblogin.cpp`, `src/dbofficial/asyncdbreportavatar.cpp`, `src/dbofficial/asyncdbreportgame.cpp`, `src/dbofficial/serverdbthread.cpp`
-**Severity:** Medium (Code Quality)
-**Issue:** 87 instances of `boost::bind` remained across the codebase despite C++23 being the target standard. `boost::bind` is a legacy pre-C++11 pattern that is less readable, harder to debug, and produces longer compile times than native lambdas.
-
-**Fix:** Replaced all 87 `boost::bind` instances with modern C++ lambdas, and removed 8 now-unnecessary `#include <boost/bind/bind.hpp>` includes.
-
-### 17. Remove Obsolete `#ifdef __GXX_EXPERIMENTAL_CXX0X__` Guard (Code Quality)
-
-**File:** `src/net/sessiondata.cpp`
-**Severity:** Trivial
-**Issue:** The WebSocket close handler had a `#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)` preprocessor guard choosing between `std::error_code` and `boost::system::error_code` overloads. Since the project targets C++23, the C++11 check is always true and the `#else` branch (using `boost::system::error_code`) was dead code.
-
-**Fix:** Removed the `#ifdef`/`#else`/`#endif` guard, keeping only the `std::error_code` path.
+### Architectural Notes
+1. **State pattern** is used for both client (`ClientState` hierarchy) and server game (`ServerGameState` hierarchy) state machines — clean design.
+2. **Factory pattern** (`EngineFactory`) abstracts local vs network engine creation.
+3. **Observer pattern** via callbacks (`ServerDBCallback`, `SessionDataCallback`, `ClientCallback`) decouples components well.
+4. **Protocol buffers** provide well-defined wire format with backward compatibility.
 
 ---
 
-## Recommendations Not Implemented (Future Work)
+## Files Modified
 
-1. **Replace `boost::shared_ptr` with `std::shared_ptr`** throughout for modernization
-2. **Replace `boost::mutex` with `std::mutex`** for standard library alignment
-3. **Replace `boost::make_shared` with `std::make_shared`** 
-4. **Consider `std::jthread`** instead of custom Thread base class (C++20)
-5. **Add `-Wall -Wextra -Wpedantic`** to CMakeLists.txt for stricter compilation
-6. **Consider using `std::span`** (C++20) for buffer views instead of raw pointers
-7. **Add clang-tidy configuration** for automated code quality checks
-8. **Consider `std::expected`** (C++23) instead of bool return codes
-9. **Replace ASN.1-based load test** (`load.cpp`) with protobuf-based version
+| File | Change |
+|------|--------|
+| `src/engine/local_engine/localhand.cpp` | Replace `assert()` with runtime bounds check |
+| `src/gui/qt/gametable/log/guilog.cpp` | Add integer overflow check in `sqlite3_get_table` |
+| `src/core/thread.h` | Add `[[nodiscard]]` to `ShouldTerminate()` and `IsRunning()` |

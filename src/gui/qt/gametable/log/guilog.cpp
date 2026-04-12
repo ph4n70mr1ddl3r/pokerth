@@ -111,6 +111,13 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 
 	int nRow = rows.size();
 	size_t total = static_cast<size_t>(nRow + 1) * static_cast<size_t>(nCol);
+	if (nCol > 0 && total / static_cast<size_t>(nCol) != static_cast<size_t>(nRow + 1)) {
+		// Overflow check for the multiplication.
+		*pazResult = nullptr;
+		*pnRow = 0;
+		*pnColumn = 0;
+		return SQLITE_NOMEM;
+	}
 
 	struct FreeDeleter {
 		void operator()(char** p) const { if(p) { for(char **ptr = p; *ptr; ++ptr) free(*ptr); free(p); } }

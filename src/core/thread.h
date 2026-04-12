@@ -74,10 +74,10 @@ protected:
 	virtual void Main() = 0;
 
 	// Checks whether termination has been requested.
-	bool ShouldTerminate() const;
+	[[nodiscard]] bool ShouldTerminate() const;
 
 	// Checks whether the thread is running.
-	bool IsRunning() const;
+	[[nodiscard]] bool IsRunning() const;
 
 private:
 

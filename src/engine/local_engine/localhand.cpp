@@ -87,8 +87,9 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 		// Bounds check: ensure card array indices are in range.
 		// k is bounded by activePlayerList->size() (max MAX_NUMBER_OF_PLAYERS=10),
 		// so max card index is 2*(size-1)+1+5 = 24, well within NumCards (52).
-		assert(k < static_cast<int>(activePlayerList->size()));
-		assert(2*k+1+5 < NumCards);
+		if (k >= static_cast<int>(activePlayerList->size()) || 2*k+1+5 >= NumCards) {
+			throw LocalException(__FILE__, __LINE__, ERR_SEAT_NOT_FOUND);
+		}
 
 		bestHandPos = {-1, -1, -1, -1, -1};
 
