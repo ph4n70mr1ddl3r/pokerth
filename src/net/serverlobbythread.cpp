@@ -2370,7 +2370,7 @@ ServerLobbyThread::HandleReAddedSession(boost::shared_ptr<SessionData> session)
 	// does not re-enter the game's RemoveSession for this session.
 	session->SetGame(boost::shared_ptr<ServerGame>());
 
-	if (m_sessionManager.GetRawSessionCount() <= SERVER_MAX_NUM_LOBBY_SESSIONS) {
+	if (m_sessionManager.GetRawSessionCount() < SERVER_MAX_NUM_LOBBY_SESSIONS) {
 		// Set state (back) to established.
 		session->SetState(SessionData::Established);
 		// Add session to lobby list.
