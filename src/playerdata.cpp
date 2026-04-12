@@ -293,12 +293,9 @@ PlayerData::IsPlayerAllowedToJoinCreateLimitRank(const std::string &num, const s
 
 	long long then = static_cast<long long>(time(nullptr)) - static_cast<long long>(periodMinutes) * 60LL;
 
-	m_last_games.erase(
-		std::remove_if(m_last_games.begin(), m_last_games.end(),
-			[then](long ts) { return static_cast<long>(ts) <= then; }),
-		m_last_games.end());
-
-	int count = static_cast<int>(m_last_games.size());
+	// Count recent games on a copy to avoid mutating m_last_games in a const method.
+	int count = static_cast<int>(std::count_if(m_last_games.begin(), m_last_games.end(),
+		[then](long ts) { return static_cast<long>(ts) > then; }));
 
 	if(count < maxGames)
 		retVal = true;

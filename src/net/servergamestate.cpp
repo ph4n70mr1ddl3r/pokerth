@@ -1234,9 +1234,14 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 	curGame.initHand();
 
 	// HACK: Skip GUI notification run
-	curGame.getCurrentHand()->getFlop()->skipFirstRunGui();
-	curGame.getCurrentHand()->getTurn()->skipFirstRunGui();
-	curGame.getCurrentHand()->getRiver()->skipFirstRunGui();
+	if (HandInterface *curHand = curGame.getCurrentHand()) {
+		if (auto flop = curHand->getFlop())
+			flop->skipFirstRunGui();
+		if (auto turn = curHand->getTurn())
+			turn->skipFirstRunGui();
+		if (auto river = curHand->getRiver())
+			river->skipFirstRunGui();
+	}
 
 	// Consider all players, even inactive.
 	PlayerListIterator i = curGame.getSeatsList()->begin();

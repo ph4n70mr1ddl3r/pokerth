@@ -68,7 +68,7 @@ ServerDBGeneric::AsyncPlayerLogin(unsigned requestId, const string &/*playerName
 void
 ServerDBGeneric::AsyncCheckAvatarBlacklist(unsigned requestId, const std::string &/*avatarHash*/)
 {
-	boost::asio::post(*m_ioService, [this, requestId]() { m_callback.AvatarIsBlacklisted(requestId); });
+	boost::asio::post(*m_ioService, [this, requestId]() { m_callback.AvatarIsOK(requestId); });
 }
 
 void
