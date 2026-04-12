@@ -146,10 +146,13 @@ void
 ServerAcceptWebHelper::on_open(websocketpp::connection_hdl hdl)
 {
 	auto webData = boost::make_shared<WebSocketData>();
-	webData->webSocketServer = m_webSocketServer;
-	webData->webSocketTlsServer = m_webSocketTlsServer;
 	webData->webHandle = hdl;
 	webData->isTls = m_tls;
+	if (m_tls) {
+		webData->webSocketTlsServer = m_webSocketTlsServer;
+	} else {
+		webData->webSocketServer = m_webSocketServer;
+	}
 	auto sessionData = boost::make_shared<SessionData>(webData, m_lobbyThread->GetNextSessionId(), m_lobbyThread->GetSessionDataCallback(), *m_ioService, 0);
 	{
 		boost::mutex::scoped_lock lock(m_sessionMapMutex);

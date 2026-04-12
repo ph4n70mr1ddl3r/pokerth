@@ -114,6 +114,10 @@ TransferHelper::Process()
 		curl_multi_fdset(m_data->curlMultiHandle, &readSet, &writeSet, &exceptSet, &maxfd);
 
 		if (maxfd >= 0) {
+			if (maxfd >= FD_SETSIZE) {
+				// select() corrupts the stack if maxfd >= FD_SETSIZE.
+				throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_SELECT_FAILED, 0);
+			}
 			int selectResult = select(maxfd+1, &readSet, &writeSet, &exceptSet, &timeout);
 			if (selectResult == -1)
 				throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_SELECT_FAILED, 0);

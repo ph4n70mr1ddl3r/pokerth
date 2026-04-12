@@ -153,7 +153,7 @@ ServerDBThread::AsyncPlayerLogin(unsigned requestId, const string &playerName)
 		m_semaphore.post();
 	} else {
 		// If not connected to database, login fails.
-		boost::asio::post(*m_ioService, [this, requestId]() { m_callback.PlayerLoginFailed(requestId); });
+		boost::asio::post(*m_ioService, [self = shared_from_this(), requestId]() { self->m_callback.PlayerLoginFailed(requestId); });
 	}
 }
 
@@ -175,7 +175,7 @@ ServerDBThread::AsyncCheckAvatarBlacklist(unsigned requestId, const std::string 
 		m_semaphore.post();
 	} else {
 		// If not connected to database, all avatars are blacklisted.
-		boost::asio::post(*m_ioService, [this, requestId]() { m_callback.AvatarIsBlacklisted(requestId); });
+		boost::asio::post(*m_ioService, [self = shared_from_this(), requestId]() { self->m_callback.AvatarIsBlacklisted(requestId); });
 	}
 }
 
@@ -526,13 +526,13 @@ ServerDBThread::Main()
 			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
 			m_connData->conn.disconnect();
 			SetConnected(false);
-			boost::asio::post(*m_ioService, [this, errorMsg]() { m_callback.ConnectFailed(errorMsg); });
+			boost::asio::post(*m_ioService, [self = shared_from_this(), errorMsg]() { self->m_callback.ConnectFailed(errorMsg); });
 		} catch (const std::exception &e) {
 			string errorMsg = string("Standard exception: ") + e.what();
 			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
 			m_connData->conn.disconnect();
 			SetConnected(false);
-			boost::asio::post(*m_ioService, [this, errorMsg]() { m_callback.ConnectFailed(errorMsg); });
+			boost::asio::post(*m_ioService, [self = shared_from_this(), errorMsg]() { self->m_callback.ConnectFailed(errorMsg); });
 		} catch (...) {
 			string errorMsg = "Unknown exception in database thread";
 			LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
@@ -545,7 +545,7 @@ ServerDBThread::Main()
 			}
 			m_connData->conn.disconnect();
 			SetConnected(false);
-			boost::asio::post(*m_ioService, [this, errorMsg]() { m_callback.ConnectFailed(errorMsg); });
+			boost::asio::post(*m_ioService, [self = shared_from_this(), errorMsg]() { self->m_callback.ConnectFailed(errorMsg); });
 		}
 	}
 	m_connData->conn.disconnect();
@@ -568,7 +568,7 @@ ServerDBThread::EstablishDBConnection()
 {
 	if (!m_connData->conn.connect(
 				m_connData->database.c_str(), m_connData->host.c_str(), m_connData->user.c_str(), m_connData->pwd.c_str())) {
-		boost::asio::post(*m_ioService, [this]() { m_callback.ConnectFailed(m_connData->conn.error()); });
+		boost::asio::post(*m_ioService, [self = shared_from_this()]() { self->m_callback.ConnectFailed(self->m_connData->conn.error()); });
 		if (!m_previouslyConnected)
 			m_permanentError = true;
 	} else {
@@ -654,10 +654,10 @@ ServerDBThread::EstablishDBConnection()
 							  prepareEndGame.error() + prepareRelation.error() + prepareScore.error() + prepareReportAvatar.error() +
 							  prepareReportGame.error() + prepareAdminPlayer.error() + prepareBlockPlayer.error() + preparePlayerLastGames.error();
 			m_connData->conn.disconnect();
-			boost::asio::post(*m_ioService, [this, tmpError]() { m_callback.ConnectFailed(tmpError); });
+			boost::asio::post(*m_ioService, [self = shared_from_this(), tmpError]() { self->m_callback.ConnectFailed(tmpError); });
 			m_permanentError = true;
 		} else {
-			boost::asio::post(*m_ioService, [this]() { m_callback.ConnectSuccess(); });
+			boost::asio::post(*m_ioService, [self = shared_from_this()]() { self->m_callback.ConnectSuccess(); });
 			m_previouslyConnected = true;
 		}
 	}
@@ -718,7 +718,7 @@ ServerDBThread::HandleNextQuery()
 						string tmpError = paramQuery.error();
 						m_connData->conn.disconnect();
 						SetConnected(false);
-						boost::asio::post(*m_ioService, [this, tmpError]() { m_callback.QueryError(tmpError); });
+						boost::asio::post(*m_ioService, [self = shared_from_this(), tmpError]() { self->m_callback.QueryError(tmpError); });
 						nextQuery->HandleError(*m_ioService, m_callback);
 						m_dbIdManager.RemoveGameId(nextQuery->GetId());
 						break;

@@ -40,6 +40,8 @@ Log::Log(ConfigFile *c) : mySqliteLogDb(), myConnectionName(), mySqliteLogFileNa
 
 Log::~Log() noexcept
 {
+    // Acquire mutex to prevent data race with concurrent log operations
+    std::lock_guard<std::recursive_mutex> lock(m_logMutex);
     // close Qt SQL database and remove connection
     if (mySqliteLogDb.isValid() && mySqliteLogDb.isOpen()) {
         mySqliteLogDb.close();
