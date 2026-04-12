@@ -446,14 +446,10 @@ SessionData::GetRemoteIPAddressFromSocket() const
 {
     boost::mutex::scoped_lock lock(m_dataMutex);
     boost::system::error_code ec;
-    auto sslStream = m_sslStream;
-    auto socket = m_socket;
 
-    lock.unlock();
-
-    if (sslStream) {
+    if (m_sslStream) {
         try {
-            auto &lowest = sslStream->lowest_layer();
+            auto &lowest = m_sslStream->lowest_layer();
             auto ep = lowest.remote_endpoint(ec);
             if (!ec) return ep.address().to_string();
         } catch (const std::exception& e) {
@@ -461,9 +457,9 @@ SessionData::GetRemoteIPAddressFromSocket() const
         }
     }
 
-    if (socket) {
+    if (m_socket) {
         try {
-            auto ep = socket->remote_endpoint(ec);
+            auto ep = m_socket->remote_endpoint(ec);
             if (!ec) return ep.address().to_string();
         } catch (const std::exception& e) {
             LOG_ERROR("Exception while getting socket remote endpoint: " << e.what());
