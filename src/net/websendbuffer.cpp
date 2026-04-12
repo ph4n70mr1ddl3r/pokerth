@@ -108,15 +108,5 @@ WebSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> session, boost
 			SetCloseAfterSend();
 		}
 		}
-	} else {
-		if (webData->webSocketServer)
-			webData->webSocketServer->send(webData->webHandle, string((const char *)buf.get(), packetSize), websocketpp::frame::opcode::BINARY, ec);
-		else
-			ec = boost::system::errc::make_error_code(boost::system::errc::not_connected);
-		if (ec) {
-			SetCloseAfterSend();
-		}
-	}
-#endif
 }
 

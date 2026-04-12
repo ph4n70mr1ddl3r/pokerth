@@ -1178,15 +1178,12 @@ ClientThread::SetState(ClientState &newState)
 	try {
 		newStatePtr->Enter(shared_from_this());
 	} catch (...) {
-		// Roll back on Enter failure - restore previous state
+		// Roll back on Enter failure - transition to Final state.
+		// Do NOT re-enter oldState since it was already Exit()ed above.
+		LOG_ERROR("ClientThread SetState: Enter() failed, transitioning to Final state");
 		{
 			boost::mutex::scoped_lock lock(m_curStateMutex);
-			m_curState = oldState;
-		}
-		if (oldState) {
-			try { oldState->Enter(shared_from_this()); } catch (...) {
-				LOG_ERROR("ClientThread SetState: rollback to previous state failed");
-			}
+			m_curState = &ClientStateFinal::Instance();
 		}
 	}
 }

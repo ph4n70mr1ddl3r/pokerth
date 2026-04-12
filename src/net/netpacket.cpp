@@ -64,7 +64,11 @@ NetPacket::Create(const char *data, size_t dataSize)
 
 	std::unique_ptr<PokerTHMessage> msg(PokerTHMessage::default_instance().New());
 	if (msg->ParseFromArray(data, static_cast<int>(dataSize))) {
-		tmpPacket = boost::make_shared<NetPacket>(msg.release());
+		if (msg->IsInitialized()) {
+			tmpPacket = boost::make_shared<NetPacket>(msg.release());
+		} else {
+			LOG_ERROR("NetPacket::Create - Parsed message is missing required fields");
+		}
 	} else {
 		LOG_ERROR("NetPacket::Create - Failed to parse message from " << dataSize << " bytes");
 	}

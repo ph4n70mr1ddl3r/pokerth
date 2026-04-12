@@ -448,7 +448,7 @@ ServerGame::UpdateRankingMap()
 	boost::mutex::scoped_lock lock(m_rankingMapMutex);
 	int currentRank = static_cast<int>(removedPlayers.size() + stillActive.size());
 	if (!removedPlayers.empty()) {
-		std::sort(removedPlayers.begin(), removedPlayers.end(),
+		std::stable_sort(removedPlayers.begin(), removedPlayers.end(),
 			[](const PlayerRankingInfo& a, const PlayerRankingInfo& b) {
 				return a.roundStartCash < b.roundStartCash;
 			});
@@ -1326,7 +1326,7 @@ ServerGame::CheckSettings(const GameData &data, const string &password, ServerMo
 	if (data.raiseIntervalMode == RAISE_ON_HANDNUMBER && data.raiseSmallBlindEveryHandsValue < 1) {
 		retVal = false;
 	}
-	if (data.raiseIntervalMode == RAISE_ON_TIME && data.raiseSmallBlindEveryMinutesValue < 1) {
+	if (data.raiseIntervalMode == RAISE_ON_MINUTES && data.raiseSmallBlindEveryMinutesValue < 1) {
 		retVal = false;
 	}
 	if (data.raiseMode == MANUAL_BLINDS_ORDER && data.manualBlindsList.empty()) {

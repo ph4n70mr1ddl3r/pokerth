@@ -196,7 +196,10 @@ ChatCleanerManager::HandleRead(const boost::system::error_code &ec, size_t bytes
 				uint32_t nativeVal;
 				memcpy(&nativeVal, &m_recvBuf[0], sizeof(uint32_t));
 				size_t packetSize = ntohl(nativeVal);
-				if (packetSize > MAX_CLEANER_PACKET_SIZE) {
+				if (packetSize == 0) {
+					m_recvBufUsed = 0;
+					LOG_ERROR("Invalid packet size: 0");
+				} else if (packetSize > MAX_CLEANER_PACKET_SIZE) {
 					m_recvBufUsed = 0;
 					LOG_ERROR("Invalid packet size: " << packetSize);
 				} else if (m_recvBufUsed >= packetSize + CLEANER_NET_HEADER_SIZE) {
