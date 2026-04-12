@@ -71,9 +71,10 @@ AsyncDBEndGame::HandleResult(mysqlpp::Query &query, DBIdManager& idManager, mysq
 }
 
 void
-AsyncDBEndGame::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& idManager, boost::asio::io_context &/*service*/, ServerDBCallback &/*cb*/)
+AsyncDBEndGame::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManager*/, boost::asio::io_context &/*service*/, ServerDBCallback &/*cb*/)
 {
-	idManager.RemoveGameId(GetId());
+	// Do NOT remove game ID here - AsyncDBUpdateScore runs after this query
+	// and needs the ID for its Init(). Cleanup is done by AsyncDBUpdateScore::HandleNoResult.
 }
 
 void

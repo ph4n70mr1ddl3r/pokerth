@@ -159,6 +159,8 @@ AsioReceiveBuffer::ScanPackets(boost::shared_ptr<SessionData> session)
 				receivedPackets.push_back(tmpPacket);
 			} else {
 				LOG_ERROR(session->GetClientAddr() << "Session " << session->GetId() << " - Invalid packet: " << tmpPacket->GetMsg()->messagetype());
+				session->Close();
+				return;
 			}
 		} else {
 			dataAvailable = false;
