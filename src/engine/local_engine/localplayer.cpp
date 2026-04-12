@@ -4307,19 +4307,22 @@ void LocalPlayer::flopEngine3()
 		int countAll = 0;
 		int countMy = 0;
 
+	// Enumerate all opponent hole card and future board card combinations
+	// independently to avoid the bias from constraining i<j<k<l which
+	// systematically assigns lower-indexed cards to the opponent.
 	for(i=0; i<52; i++) {
 		if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2]) {
 			for(j=i+1; j<52; j++) {
 				if(j != myCards[0] && j != myCards[1] && j != tempBoardCardsArray[0] && j != tempBoardCardsArray[1] && j != tempBoardCardsArray[2]) {
-					for(k=j+1; k<52; k++) {
-						if(k != myCards[0] && k != myCards[1] && k != tempBoardCardsArray[0] && k != tempBoardCardsArray[1] && k != tempBoardCardsArray[2]) {
+					tempOpponentCardsArray[0] = i;
+					tempOpponentCardsArray[1] = j;
+					for(k=0; k<52; k++) {
+						if(k != myCards[0] && k != myCards[1] && k != tempBoardCardsArray[0] && k != tempBoardCardsArray[1] && k != tempBoardCardsArray[2] && k != i && k != j) {
 							for(l=k+1; l<52; l++) {
-								if(l != myCards[0] && l != myCards[1] && l != tempBoardCardsArray[0] && l != tempBoardCardsArray[1] && l != tempBoardCardsArray[2]) {
+								if(l != myCards[0] && l != myCards[1] && l != tempBoardCardsArray[0] && l != tempBoardCardsArray[1] && l != tempBoardCardsArray[2] && l != i && l != j) {
 
 									countAll++;
 
-									tempOpponentCardsArray[0] = i;
-									tempOpponentCardsArray[1] = j;
 									tempOpponentCardsArray[5] = k;
 									tempOpponentCardsArray[6] = l;
 									tempMyCardsArray[5] = k;
@@ -4488,17 +4491,20 @@ void LocalPlayer::turnEngine3()
 	int countAll = 0;
 	int countMy = 0;
 
+	// Enumerate opponent hole cards and future river card independently
+	// to avoid the bias from constraining i<j<k which systematically
+	// assigns lower-indexed cards to the opponent.
 	for(i=0; i<52; i++) {
 		if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2] && i != tempBoardCardsArray[3]) {
 			for(j=i+1; j<52; j++) {
 				if(j != myCards[0] && j != myCards[1] && j != tempBoardCardsArray[0] && j != tempBoardCardsArray[1] && j != tempBoardCardsArray[2] && j != tempBoardCardsArray[3]) {
-					for(k=j+1; k<52; k++) {
-						if(k != myCards[0] && k != myCards[1] && k != tempBoardCardsArray[0] && k != tempBoardCardsArray[1] && k != tempBoardCardsArray[2] && k != tempBoardCardsArray[3]) {
+					tempOpponentCardsArray[0] = i;
+					tempOpponentCardsArray[1] = j;
+					for(k=0; k<52; k++) {
+						if(k != myCards[0] && k != myCards[1] && k != tempBoardCardsArray[0] && k != tempBoardCardsArray[1] && k != tempBoardCardsArray[2] && k != tempBoardCardsArray[3] && k != i && k != j) {
 
 							countAll++;
 
-							tempOpponentCardsArray[0] = i;
-							tempOpponentCardsArray[1] = j;
 							tempOpponentCardsArray[6] = k;
 							tempMyCardsArray[6] = k;
 							tempMyCardsValue = CardsValue::cardsValue(tempMyCardsArray,0);
