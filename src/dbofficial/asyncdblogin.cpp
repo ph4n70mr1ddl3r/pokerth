@@ -30,6 +30,7 @@
  *****************************************************************************/
 
 #include <dbofficial/asyncdblogin.h>
+#include <string>
 
 
 using namespace std;
@@ -60,5 +61,5 @@ AsyncDBLogin::HandleNoResult(mysqlpp::Query &/*query*/, DBIdManager& /*idManager
 void
 AsyncDBLogin::HandleError(boost::asio::io_context &service, ServerDBCallback &cb)
 {
-	boost::asio::post(service, [&cb]() { cb.QueryError("AsyncDBLogin: Failure."); });
+	boost::asio::post(service, [&cb, id = GetId()]() { cb.QueryError("AsyncDBLogin: Failure for request " + std::to_string(id) + "."); });
 }

@@ -324,6 +324,8 @@ ClientStateReadingServerList::Enter(boost::shared_ptr<ClientThread> client)
 			in.push(inFile);
 			boost::iostreams::copy(in, outFile);
 		} catch (const std::exception&) {
+			std::error_code ec;
+			fs::remove(xmlServerListPath, ec);
 			throw ClientException(__FILE__, __LINE__, ERR_SOCK_UNZIP_FAILED, 0);
 		}
 	} else
