@@ -45,7 +45,6 @@
 #include <third_party/boost/timers.hpp>
 
 #include <boost/asio.hpp>
-#include <boost/bind/bind.hpp>
 #include <algorithm>
 
 #include <random>
@@ -68,7 +67,7 @@ static bool LessThanPlayerHandStartMoney(const boost::shared_ptr<PlayerInterface
 }
 
 
-ServerGame::ServerGame(boost::shared_ptr<ServerLobbyThread> lobbyThread, u_int32_t id, const string &name, const string &pwd, const GameData &gameData,
+ServerGame::ServerGame(boost::shared_ptr<ServerLobbyThread> lobbyThread, uint32_t id, const string &name, const string &pwd, const GameData &gameData,
 					   unsigned adminPlayerId, unsigned creatorPlayerDBId, GuiInterface &gui, ConfigFile &playerConfig)
 	: m_adminPlayerId(adminPlayerId), m_lobbyThread(lobbyThread), m_gui(gui),
 	  m_gameData(gameData), m_curState(nullptr), m_id(id), m_name(name),
@@ -106,7 +105,7 @@ ServerGame::Exit()
 	SetState(ServerGameStateFinal::Instance());
 }
 
-u_int32_t
+uint32_t
 ServerGame::GetId() const
 {
 	return m_id;
@@ -311,9 +310,9 @@ ServerGame::TimerVoteKick(const boost::system::error_code &ec)
 				m_voteKickData.reset();
 			} else {
 				m_voteKickTimer.expires_after(milliseconds(SERVER_CHECK_VOTE_KICK_INTERVAL_MSEC));
+				auto self = shared_from_this();
 				m_voteKickTimer.async_wait(
-					boost::bind(
-						&ServerGame::TimerVoteKick, shared_from_this(), boost::asio::placeholders::error));
+					[self](const boost::system::error_code& ec) { self->TimerVoteKick(ec); });
 			}
 		}
 	}
@@ -630,9 +629,9 @@ ServerGame::InternalAskVoteKick(boost::shared_ptr<SessionData> byWhom, unsigned 
 						numVotesNeeded = m_voteKickData->numVotesToKick;
 
 						m_voteKickTimer.expires_after(milliseconds(SERVER_CHECK_VOTE_KICK_INTERVAL_MSEC));
+						auto self = shared_from_this();
 						m_voteKickTimer.async_wait(
-							boost::bind(
-								&ServerGame::TimerVoteKick, shared_from_this(), boost::asio::placeholders::error));
+							[self](const boost::system::error_code& ec) { self->TimerVoteKick(ec); });
 
 						petitionStarted = true;
 					} else {

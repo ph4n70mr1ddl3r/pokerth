@@ -1,7 +1,7 @@
 # PokerTH Comprehensive Code Review Report
 **Date:** 2026-04-12
 **Reviewer:** AI Assistant
-**Revision:** 7
+**Revision:** 9
 
 ---
 
@@ -424,3 +424,60 @@ This review pass focused on timer resilience in the IRC admin/lobby bot subsyste
 This review pass focused on shutdown reliability, configuration consistency, and code quality. The server accept loop now handles shutdown cleanly by checking for `operation_aborted` before restarting, preventing error cascades during server shutdown. TLS certificate paths were standardized between TCP and WebSocket accept helpers. Five spelling errors across user-facing strings and code comments were corrected. The codebase continues to show strong engineering quality across all prior review passes.
 
 **Overall Code Quality:** ⭐⭐⭐⭐⭐ (4.8/5)
+
+## Issues Fixed (This Review — Revision 9)
+
+### 1. Replace Non-Standard `u_int32_t` with Standard `uint32_t` — FIXED
+
+**Files:** `src/net/servergame.h`, `src/net/servergame.cpp`, `src/net/serverlobbythread.h`, `src/net/serverlobbythread.cpp`
+
+**Issue:** The codebase used the BSD-style `u_int32_t` type (defined via a compatibility typedef in `socket_helper.h` for Windows) for game IDs, session IDs, player IDs, and petition IDs. This is a non-standard type that requires platform-specific compatibility shims. C++23 provides `uint32_t` from `<cstdint>` as a standard fixed-width integer type.
+
+**Fix:** Replaced all `u_int32_t` usages with standard `uint32_t` across `ServerGame` (constructor parameter, `GetId()` return type, `m_id` member) and `ServerLobbyThread` (`GetNextSessionId()`, `GetNextUniquePlayerId()`, `GetNextGameId()`, `GetRejoinGameIdForPlayer()`, and all related member variables and local variables).
+
+### 2. Replace Raw `new` with `std::make_unique` in DBConnectionData — FIXED
+
+**File:** `src/dbofficial/serverdbthread.cpp`
+
+**Issue:** `DBConnectionData` constructor used `new mysqlpp::SetCharsetNameOption("utf8")` to initialize a `std::unique_ptr` member. If the `SetCharsetNameOption` constructor throws, the raw allocation would leak.
+
+**Fix:** Replaced with `std::make_unique<mysqlpp::SetCharsetNameOption>("utf8")` for exception safety.
+
+### 3. Add `[[nodiscard]]` to Protected Getter Methods — FIXED
+
+**File:** `src/net/serverlobbythread.h`
+
+**Issue:** `IsGameNameInUse()` and `InternalGetGameFromId()` are protected getter methods whose return values should not be discarded. Without `[[nodiscard]]`, callers could accidentally ignore the result.
+
+**Fix:** Added `[[nodiscard]]` attribute to both methods.
+
+### 4. Modernize Timer Re-Registration from `boost::bind` to Lambdas — FIXED
+
+**Files:** `src/net/serverlobbythread.cpp`, `src/net/servergame.cpp`, `src/net/servergamestate.cpp`
+
+**Issue:** 20+ timer re-registration calls used `boost::bind(&Class::Method, this/shared_from_this(), boost::asio::placeholders::error)` instead of modern C++23 lambda captures. This is verbose, harder to read, and requires `<boost/bind/bind.hpp>`. The initial timer registration in `RegisterTimers()` already used lambdas, but the timer handlers that reschedule themselves still used the older pattern.
+
+**Fix:** Replaced all timer-related `boost::bind` calls with lambda captures:
+- `serverlobbythread.cpp`: `TimerRemoveGame`, `TimerUpdateClientLoginLock`, `TimerSaveStatisticsFile`, `TimerCleanupRateMaps` (4 timers)
+- `servergame.cpp`: `TimerVoteKick` (2 calls, one for initial start and one for reschedule)
+- `servergamestate.cpp`: `ServerGameStateInit::RegisterAdminTimer`, `RegisterAutoStartTimer`, `TimerAdminWarning`, `ServerGameStateStartGame::Enter`, `ServerGameStateHand::Enter`, `TimerShowCards`, `TimerComputerAction`, `TimerNextGame`, `ServerGameStateWaitPlayerAction::Enter`, `ServerGameStateWaitNextHand::Enter` (14 calls across 6 state classes)
+
+Also removed `#include <boost/bind/bind.hpp>` from all three files since it is no longer needed.
+
+### 5. Modernize `remove_if` Predicates from `boost::bind` to Lambdas — FIXED
+
+**File:** `src/net/servergamestate.cpp`
+
+**Issue:** Three `remove_if` calls on player lists used `boost::bind(&PlayerInterface::getMyAction, boost::placeholders::_1) == PLAYER_ACTION_FOLD` and `boost::bind(&PlayerInterface::getMyCash, boost::placeholders::_1) < 1`. These are less readable than modern lambda predicates and kept the `boost/bind` dependency alive.
+
+**Fix:** Replaced with clear lambda predicates:
+- `[](const boost::shared_ptr<PlayerInterface>& p) { return p->getMyAction() == PLAYER_ACTION_FOLD; }`
+- `[](const boost::shared_ptr<PlayerInterface>& p) { return p->getMyCash() < 1; }`
+
+---
+
+## Conclusion (Revision 9)
+
+This review pass focused on C++23 modernization and code quality improvements across the server networking layer. The non-standard `u_int32_t` type was replaced with standard `uint32_t` throughout the server game and lobby thread. A raw `new` in the database connection data was replaced with `std::make_unique` for exception safety. `[[nodiscard]]` was added to protected getter methods to prevent accidental result discarding. All timer re-registrations across the server (20+ calls in 3 files) were modernized from `boost::bind` to C++23 lambda captures, and the `boost/bind/bind.hpp>` include was removed from all affected files. The codebase continues to show strong engineering quality across all prior review passes.
+
+**Overall Code Quality:** ⭐⭐⭐⭐⭐ (4.9/5)

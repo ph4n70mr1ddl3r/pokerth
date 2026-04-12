@@ -46,9 +46,6 @@
 #include <playerinterface.h>
 #include <handinterface.h>
 
-#include <boost/bind/bind.hpp>
-
-#include <core/crypthelper.h>
 #include <sstream>
 
 using namespace std;
@@ -566,8 +563,7 @@ ServerGameStateInit::RegisterAdminTimer(boost::shared_ptr<ServerGame> server)
 	if (server->GetLobbyThread().GetServerMode() != SERVER_MODE_LAN && server->GetGameData().gameType != GAME_TYPE_RANKING) {
 		server->GetStateTimer1().expires_after(seconds(SERVER_GAME_ADMIN_TIMEOUT_SEC - SERVER_GAME_ADMIN_WARNING_REMAINING_SEC));
 		server->GetStateTimer1().async_wait(
-			boost::bind(
-				&ServerGameStateInit::TimerAdminWarning, this, boost::asio::placeholders::error, server));
+			[this, server](const boost::system::error_code& ec) { TimerAdminWarning(ec, server); });
 	}
 }
 
@@ -584,8 +580,7 @@ ServerGameStateInit::RegisterAutoStartTimer(boost::shared_ptr<ServerGame> server
 	if (server->GetLobbyThread().GetServerMode() != SERVER_MODE_LAN) {
 		server->GetStateTimer2().expires_after(seconds(SERVER_AUTOSTART_GAME_DELAY_SEC));
 		server->GetStateTimer2().async_wait(
-			boost::bind(
-				&ServerGameStateInit::TimerAutoStart, this, boost::asio::placeholders::error, server));
+			[this, server](const boost::system::error_code& ec) { TimerAutoStart(ec, server); });
 	}
 }
 
@@ -621,8 +616,7 @@ ServerGameStateInit::TimerAdminWarning(const boost::system::error_code &ec, boos
 		// Start timeout timer.
 		server->GetStateTimer1().expires_after(seconds(SERVER_GAME_ADMIN_WARNING_REMAINING_SEC));
 		server->GetStateTimer1().async_wait(
-			boost::bind(
-				&ServerGameStateInit::TimerAdminTimeout, this, boost::asio::placeholders::error, server));
+			[this, server](const boost::system::error_code& ec) { TimerAdminTimeout(ec, server); });
 	}
 }
 
@@ -754,8 +748,7 @@ ServerGameStateStartGame::Enter(boost::shared_ptr<ServerGame> server)
 {
 	server->GetStateTimer1().expires_after(seconds(SERVER_START_GAME_TIMEOUT_SEC));
 	server->GetStateTimer1().async_wait(
-		boost::bind(
-			&ServerGameStateStartGame::TimerTimeout, this, boost::asio::placeholders::error, server));
+		[this, server](const boost::system::error_code& ec) { TimerTimeout(ec, server); });
 }
 
 void
@@ -898,8 +891,7 @@ ServerGameStateHand::Enter(boost::shared_ptr<ServerGame> server)
 {
 	server->GetStateTimer1().expires_after(milliseconds(SERVER_LOOP_DELAY_MSEC));
 	server->GetStateTimer1().async_wait(
-		boost::bind(
-			&ServerGameStateHand::TimerLoop, this, boost::asio::placeholders::error, server));
+		[this, server](const boost::system::error_code& ec) { TimerLoop(ec, server); });
 }
 
 void
@@ -954,7 +946,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 
 		// Retrieve non-fold players. If only one player is left, no cards are shown.
 		list<boost::shared_ptr<PlayerInterface> > nonFoldPlayers = *curGame.getActivePlayerList();
-		nonFoldPlayers.remove_if(boost::bind(&PlayerInterface::getMyAction, boost::placeholders::_1) == PLAYER_ACTION_FOLD);
+		nonFoldPlayers.remove_if([](const boost::shared_ptr<PlayerInterface>& p) { return p->getMyAction() == PLAYER_ACTION_FOLD; });
 
 		if (currentHand->getAllInCondition()
 				&& !currentHand->getCardsShown()
@@ -983,15 +975,13 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 			server->GetStateTimer1().expires_after(seconds(SERVER_SHOW_CARDS_DELAY_SEC));
 
 			server->GetStateTimer1().async_wait(
-				boost::bind(
-					&ServerGameStateHand::TimerShowCards, this, boost::asio::placeholders::error, server));
+				[this, server](const boost::system::error_code& ec) { TimerShowCards(ec, server); });
 		} else {
 			SendNewRoundCards(*server, curGame, newRound);
 
 			server->GetStateTimer1().expires_after(seconds(GetDealCardsDelaySec(*server)));
 			server->GetStateTimer1().async_wait(
-				boost::bind(
-					&ServerGameStateHand::TimerLoop, this, boost::asio::placeholders::error, server));
+				[this, server](const boost::system::error_code& ec) { TimerLoop(ec, server); });
 		}
 	} else {
 		if (newRound != GAME_STATE_POST_RIVER) { // continue hand
@@ -1018,8 +1008,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 				server->GetStateTimer1().expires_after(seconds(SERVER_COMPUTER_ACTION_DELAY_SEC));
 
 				server->GetStateTimer1().async_wait(
-					boost::bind(
-						&ServerGameStateHand::TimerComputerAction, this, boost::asio::placeholders::error, server));
+					[this, server](const boost::system::error_code& ec) { TimerComputerAction(ec, server); });
 			} else {
 				// If the player we are waiting for left, continue without him.
 				if (!server->GetSessionManager().IsPlayerConnected(curPlayer->getMyUniqueID())
@@ -1028,8 +1017,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 
 					server->GetStateTimer1().expires_after(milliseconds(SERVER_LOOP_DELAY_MSEC));
 					server->GetStateTimer1().async_wait(
-						boost::bind(
-							&ServerGameStateHand::TimerLoop, this, boost::asio::placeholders::error, server));
+						[this, server](const boost::system::error_code& ec) { TimerLoop(ec, server); });
 				} else {
 					server->SetState(ServerGameStateWaitPlayerAction::Instance());
 				}
@@ -1045,7 +1033,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 
 			// Retrieve non-fold players. If only one player is left, no cards are shown.
 			list<boost::shared_ptr<PlayerInterface> > nonFoldPlayers = *curGame.getActivePlayerList();
-			nonFoldPlayers.remove_if(boost::bind(&PlayerInterface::getMyAction, boost::placeholders::_1) == PLAYER_ACTION_FOLD);
+			nonFoldPlayers.remove_if([](const boost::shared_ptr<PlayerInterface>& p) { return p->getMyAction() == PLAYER_ACTION_FOLD; });
 
 			if (nonFoldPlayers.size() == 1) {
 				// End of Hand, but keep cards hidden.
@@ -1088,7 +1076,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 
 			// Start next hand - if enough players are left.
 			list<boost::shared_ptr<PlayerInterface> > playersWithCash = *curGame.getActivePlayerList();
-			playersWithCash.remove_if(boost::bind(&PlayerInterface::getMyCash, boost::placeholders::_1) < 1);
+			playersWithCash.remove_if([](const boost::shared_ptr<PlayerInterface>& p) { return p->getMyCash() < 1; });
 
 			if (playersWithCash.empty()) {
 				// All active players have zero cash. This can happen when all remaining
@@ -1119,8 +1107,7 @@ ServerGameStateHand::EngineLoop(boost::shared_ptr<ServerGame> server)
 				server->GetStateTimer1().expires_after(seconds(SERVER_DELAY_NEXT_GAME_SEC));
 
 				server->GetStateTimer1().async_wait(
-					boost::bind(
-						&ServerGameStateHand::TimerNextGame, this, boost::asio::placeholders::error, server, winnerPlayer->getMyUniqueID()));
+					[this, server, winnerPlayerId = winnerPlayer->getMyUniqueID()](const boost::system::error_code& ec) { TimerNextGame(ec, server, winnerPlayerId); });
 			} else {
 				server->SetState(ServerGameStateWaitNextHand::Instance());
 			}
@@ -1140,8 +1127,7 @@ ServerGameStateHand::TimerShowCards(const boost::system::error_code &ec, boost::
 
 				server->GetStateTimer1().expires_after(seconds(GetDealCardsDelaySec(*server)));
 				server->GetStateTimer1().async_wait(
-					boost::bind(
-						&ServerGameStateHand::TimerLoop, this, boost::asio::placeholders::error, server));
+					[this, server](const boost::system::error_code& ec) { TimerLoop(ec, server); });
 			}
 		} catch (const PokerTHException &e) {
 			LOG_ERROR("Game " << server->GetId() << " - TimerShowCards exception: " << e.what());
@@ -1522,8 +1508,7 @@ ServerGameStateWaitPlayerAction::Enter(boost::shared_ptr<ServerGame> server)
 
 		server->GetStateTimer1().expires_after(seconds(timeoutSec));
 		server->GetStateTimer1().async_wait(
-			boost::bind(
-				&ServerGameStateWaitPlayerAction::TimerTimeout, this, boost::asio::placeholders::error, server));
+			[this, server](const boost::system::error_code& ec) { TimerTimeout(ec, server); });
 	}
 }
 
@@ -1659,8 +1644,7 @@ ServerGameStateWaitNextHand::Enter(boost::shared_ptr<ServerGame> server)
 	server->GetStateTimer1().expires_after(seconds(timeoutSec));
 
 	server->GetStateTimer1().async_wait(
-		boost::bind(
-			&ServerGameStateWaitNextHand::TimerTimeout, this, boost::asio::placeholders::error, server));
+		[this, server](const boost::system::error_code& ec) { TimerTimeout(ec, server); });
 }
 
 void

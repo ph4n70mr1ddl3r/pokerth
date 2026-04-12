@@ -109,9 +109,9 @@ public:
 
 	[[nodiscard]] bool SendToLobbyPlayer(unsigned playerId, boost::shared_ptr<NetPacket> packet);
 
-	[[nodiscard]] u_int32_t GetNextSessionId();
-	[[nodiscard]] u_int32_t GetNextUniquePlayerId();
-	[[nodiscard]] u_int32_t GetNextGameId();
+	[[nodiscard]] uint32_t GetNextSessionId();
+	[[nodiscard]] uint32_t GetNextUniquePlayerId();
+	[[nodiscard]] uint32_t GetNextGameId();
 	[[nodiscard]] ServerCallback &GetCallback();
 
 	[[nodiscard]] AvatarManager &GetAvatarManager();
@@ -195,8 +195,8 @@ protected:
 	void TimerUpdateClientLoginLock(const boost::system::error_code &ec);
 	void TimerCleanupRateMaps(const boost::system::error_code &ec);
 
-	bool IsGameNameInUse(const std::string &gameName) const;
-	boost::shared_ptr<ServerGame> InternalGetGameFromId(unsigned gameId);
+	[[nodiscard]] bool IsGameNameInUse(const std::string &gameName) const;
+	[[nodiscard]] boost::shared_ptr<ServerGame> InternalGetGameFromId(unsigned gameId);
 	void InternalAddGame(boost::shared_ptr<ServerGame> game);
 	void InternalRemoveGame(boost::shared_ptr<ServerGame> game);
 	void InternalRemovePlayer(unsigned playerId, unsigned errorCode);
@@ -228,7 +228,7 @@ protected:
 	static boost::shared_ptr<NetPacket> CreateNetPacketGameListNew(const ServerGame &game);
 	static boost::shared_ptr<NetPacket> CreateNetPacketGameListUpdate(unsigned gameId, GameMode mode);
 
-	u_int32_t GetRejoinGameIdForPlayer(const std::string &playerName, const std::string &guid, unsigned &outPlayerUniqueId);
+	uint32_t GetRejoinGameIdForPlayer(const std::string &playerName, const std::string &guid, unsigned &outPlayerUniqueId);
 
 private:
 
@@ -281,11 +281,11 @@ private:
 	const ServerMode m_mode;
 	std::string m_statisticsFileName;
 	ConfigFile &m_serverConfig;
-	u_int32_t m_curGameId;
+	uint32_t m_curGameId;
 	mutable boost::mutex m_curGameIdMutex;
 
-	u_int32_t m_curUniquePlayerId;
-	u_int32_t m_curSessionId;
+	uint32_t m_curUniquePlayerId;
+	uint32_t m_curSessionId;
 	mutable boost::mutex m_curUniquePlayerIdMutex;
 	mutable boost::mutex m_curSessionIdMutex;
 

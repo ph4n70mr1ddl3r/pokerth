@@ -54,7 +54,6 @@
 #include <tools.h>
 
 #include <filesystem>
-#include <boost/bind/bind.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -819,11 +818,11 @@ ServerLobbyThread::GetSessionDataCallback()
 	return *m_internalServerCallback;
 }
 
-u_int32_t
+uint32_t
 ServerLobbyThread::GetNextSessionId()
 {
 	boost::mutex::scoped_lock lock(m_curSessionIdMutex);
-	constexpr u_int32_t MAX_SAFE_SESSION_ID = std::numeric_limits<u_int32_t>::max() - 1000;
+	constexpr uint32_t MAX_SAFE_SESSION_ID = std::numeric_limits<uint32_t>::max() - 1000;
 	if (m_curSessionId >= MAX_SAFE_SESSION_ID) {
 		LOG_ERROR("Session ID counter near overflow - server capacity exhausted");
 		throw ServerException(__FILE__, __LINE__, ERR_NET_SERVER_FULL, 0);
@@ -831,11 +830,11 @@ ServerLobbyThread::GetNextSessionId()
 	return m_curSessionId++;
 }
 
-u_int32_t
+uint32_t
 ServerLobbyThread::GetNextUniquePlayerId()
 {
 	boost::mutex::scoped_lock lock(m_curUniquePlayerIdMutex);
-	constexpr u_int32_t MAX_SAFE_PLAYER_ID = std::numeric_limits<u_int32_t>::max() - 1000;
+	constexpr uint32_t MAX_SAFE_PLAYER_ID = std::numeric_limits<uint32_t>::max() - 1000;
 	if (m_curUniquePlayerId >= MAX_SAFE_PLAYER_ID) {
 		LOG_ERROR("Unique player ID counter near overflow - server capacity exhausted");
 		throw ServerException(__FILE__, __LINE__, ERR_NET_SERVER_FULL, 0);
@@ -843,11 +842,11 @@ ServerLobbyThread::GetNextUniquePlayerId()
 	return ++m_curUniquePlayerId;
 }
 
-u_int32_t
+uint32_t
 ServerLobbyThread::GetNextGameId()
 {
 	boost::mutex::scoped_lock lock(m_curGameIdMutex);
-	constexpr u_int32_t MAX_SAFE_GAME_ID = std::numeric_limits<u_int32_t>::max() - 100;
+	constexpr uint32_t MAX_SAFE_GAME_ID = std::numeric_limits<uint32_t>::max() - 100;
 	if (m_curGameId >= MAX_SAFE_GAME_ID) {
 		LOG_ERROR("Game ID counter near overflow - cannot create new games");
 		throw ServerException(__FILE__, __LINE__, ERR_NET_SERVER_FULL, 0);
@@ -1888,7 +1887,7 @@ ServerLobbyThread::EstablishSession(boost::shared_ptr<SessionData> session)
 	}
 
 	unsigned rejoinPlayerId = 0;
-	u_int32_t rejoinGameId = GetRejoinGameIdForPlayer(session->GetPlayerData()->GetName(), session->GetPlayerData()->GetOldGuid(), rejoinPlayerId);
+	uint32_t rejoinGameId = GetRejoinGameIdForPlayer(session->GetPlayerData()->GetName(), session->GetPlayerData()->GetOldGuid(), rejoinPlayerId);
 	if (rejoinGameId != 0) {
 		// Offer rejoin, and disconnect current player with the same name.
 		InternalRemovePlayer(rejoinPlayerId, ERR_NET_PLAYER_NAME_IN_USE);
@@ -2209,9 +2208,9 @@ ServerLobbyThread::TimerRemoveGame(const boost::system::error_code &ec)
 		}
 	}
 	m_removeGameTimer.expires_after(milliseconds(SERVER_REMOVE_GAME_INTERVAL_MSEC));
+	auto self = shared_from_this();
 	m_removeGameTimer.async_wait(
-		boost::bind(
-			&ServerLobbyThread::TimerRemoveGame, shared_from_this(), boost::asio::placeholders::error));
+		[self](const boost::system::error_code& ec) { self->TimerRemoveGame(ec); });
 }
 
 void
@@ -2239,9 +2238,9 @@ ServerLobbyThread::TimerUpdateClientLoginLock(const boost::system::error_code &e
 	}
 	// Restart timer
 	m_loginLockTimer.expires_after(milliseconds(SERVER_UPDATE_LOGIN_LOCK_INTERVAL_MSEC));
+	auto self = shared_from_this();
 	m_loginLockTimer.async_wait(
-		boost::bind(
-			&ServerLobbyThread::TimerUpdateClientLoginLock, shared_from_this(), boost::asio::placeholders::error));
+		[self](const boost::system::error_code& ec) { self->TimerUpdateClientLoginLock(ec); });
 }
 
 bool
@@ -2611,9 +2610,9 @@ ServerLobbyThread::TimerSaveStatisticsFile(const boost::system::error_code &ec)
 	}
 	// Restart timer
 	m_saveStatisticsTimer.expires_after(seconds(SERVER_SAVE_STATISTICS_INTERVAL_SEC));
+	auto self = shared_from_this();
 	m_saveStatisticsTimer.async_wait(
-		boost::bind(
-			&ServerLobbyThread::TimerSaveStatisticsFile, shared_from_this(), boost::asio::placeholders::error));
+		[self](const boost::system::error_code& ec) { self->TimerSaveStatisticsFile(ec); });
 }
 
 ServerCallback &
@@ -2709,10 +2708,10 @@ ServerLobbyThread::CreateNetPacketGameListUpdate(unsigned gameId, GameMode mode)
 	return packet;
 }
 
-u_int32_t
+uint32_t
 ServerLobbyThread::GetRejoinGameIdForPlayer(const std::string &playerName, const std::string &guid, unsigned &outPlayerUniqueId)
 {
-	u_int32_t retGameId = 0;
+	uint32_t retGameId = 0;
 	if (!guid.empty()) {
 		boost::mutex::scoped_lock lock(m_gameMapMutex);
 		GameMap::iterator i = m_gameMap.begin();
@@ -2787,6 +2786,7 @@ ServerLobbyThread::TimerCleanupRateMaps(const boost::system::error_code &ec)
 		}
 	}
 	m_cleanupRateMapsTimer.expires_after(milliseconds(SERVER_CLEANUP_RATE_MAPS_INTERVAL_MSEC));
+	auto self = shared_from_this();
 	m_cleanupRateMapsTimer.async_wait(
-		boost::bind(&ServerLobbyThread::TimerCleanupRateMaps, shared_from_this(), boost::asio::placeholders::error));
+		[self](const boost::system::error_code& ec) { self->TimerCleanupRateMaps(ec); });
 }

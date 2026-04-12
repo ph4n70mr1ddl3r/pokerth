@@ -57,14 +57,14 @@ class ServerGame : public boost::enable_shared_from_this<ServerGame>
 {
 public:
 	ServerGame(
-		boost::shared_ptr<ServerLobbyThread> lobbyThread, u_int32_t id, const std::string &name, const std::string &pwd, const GameData &gameData,
+		boost::shared_ptr<ServerLobbyThread> lobbyThread, uint32_t id, const std::string &name, const std::string &pwd, const GameData &gameData,
 		unsigned adminPlayerId, unsigned creatorPlayerDBId, GuiInterface &gui, ConfigFile &playerConfig);
 	virtual ~ServerGame() noexcept;
 
 	void Init();
 	void Exit();
 
-	[[nodiscard]] u_int32_t GetId() const;
+	[[nodiscard]] uint32_t GetId() const;
 	[[nodiscard]] const std::string &GetName() const;
 	[[nodiscard]] unsigned GetCreatorDBId() const;
 
@@ -255,7 +255,7 @@ private:
 	ServerGameState			*m_curState;
 	mutable boost::mutex m_curStateMutex;
 
-	const u_int32_t		m_id;
+	const uint32_t		m_id;
 	const std::string	m_name;
 	const std::string	m_password;
 	const unsigned		m_creatorPlayerDBId;

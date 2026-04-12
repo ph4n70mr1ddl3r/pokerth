@@ -68,7 +68,7 @@
 using namespace std;
 
 struct DBConnectionData {
-	DBConnectionData() : conn(false), charsetOption(new mysqlpp::SetCharsetNameOption("utf8")) {}
+	DBConnectionData() : conn(false), charsetOption(std::make_unique<mysqlpp::SetCharsetNameOption>("utf8")) {}
 	string host;
 	string user;
 	string pwd;
