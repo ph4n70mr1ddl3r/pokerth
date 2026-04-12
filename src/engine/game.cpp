@@ -267,6 +267,8 @@ boost::shared_ptr<PlayerInterface> Game::getCurrentPlayer()
 
 boost::shared_ptr<PlayerInterface> Game::getPlayerByName(const std::string &name)
 {
+	if (name.empty())
+		return boost::shared_ptr<PlayerInterface>();
 	boost::shared_ptr<PlayerInterface> tmpPlayer;
 	PlayerList tmpList = getSeatsList();
 	PlayerListIterator i = tmpList->begin();
@@ -320,8 +322,9 @@ void Game::raiseBlinds()
 					}
 				} else {
 					if(myGameData.afterManualBlindsMode == AFTERMB_RAISE_ABOUT) {
-						if (currentSmallBlind <= maxBlind - myGameData.afterMBAlwaysRaiseValue) {
-							currentSmallBlind += myGameData.afterMBAlwaysRaiseValue;
+						long long newBlind = static_cast<long long>(currentSmallBlind) + myGameData.afterMBAlwaysRaiseValue;
+						if (newBlind <= maxBlind) {
+							currentSmallBlind = static_cast<int>(newBlind);
 						} else {
 							currentSmallBlind = static_cast<int>(maxBlind);
 						}

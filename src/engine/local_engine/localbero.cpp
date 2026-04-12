@@ -212,7 +212,11 @@ void LocalBeRo::run()
 			// switchRounds uses current round's BeRo for all-in detection,
 			// so advance the round AFTER switchRounds to use the correct highestSet.
 			myHand->switchRounds();
-			myHand->setCurrentRound(GameState(myBeRoID+1));
+			// Only advance the round if switchRounds() hasn't already set POST_RIVER
+			// (e.g. when all but one player folded, switchRounds sets POST_RIVER).
+			if (myHand->getCurrentRound() < GAME_STATE_POST_RIVER) {
+				myHand->setCurrentRound(GameState(myBeRoID+1));
+			}
 		} else {
 			// Current betting round is active.
 

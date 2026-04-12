@@ -641,8 +641,10 @@ void LocalHand::switchRounds()
 			if(myLog) myLog->logHoleCardsHandName(activePlayerList);
 		}
 
-		if (currentRound < GAME_STATE_POST_RIVER) { // do not increment past 4
-			currentRound = GameState(currentRound + 1);
+		if (currentRound < GAME_STATE_POST_RIVER) { // do not increment past POST_RIVER (4)
+			GameState nextRound = GameState(currentRound + 1);
+			if (nextRound > GAME_STATE_POST_RIVER) nextRound = GAME_STATE_POST_RIVER;
+			currentRound = nextRound;
 			if(myLog) myLog->setCurrentRound(currentRound);
 		}
 

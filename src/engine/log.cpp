@@ -509,33 +509,52 @@ Log::logBoardCards(std::array<int, 5> boardCards)
             //if write logfiles is enabled
 
             if( mySqliteLogDb.isValid() && mySqliteLogDb.isOpen() ) {
-                // sqlite-db is open
-
+                // sqlite-db is open - use parameterized query to prevent SQL injection
+                QString updateSql;
                 switch(currentRound) {
-                case GAME_STATE_FLOP: {
-                    sql += "UPDATE Hand SET ";
-                    sql += "BoardCard_1=" + std::to_string(boardCards[0]) + ",";
-                    sql += "BoardCard_2=" + std::to_string(boardCards[1]) + ",";
-                    sql += "BoardCard_3=" + std::to_string(boardCards[2]);
-                }
-                break;
-                case GAME_STATE_TURN: {
-                    sql += "UPDATE Hand SET ";
-                    sql += "BoardCard_4=" + std::to_string(boardCards[3]);
-                }
-                break;
-                case GAME_STATE_RIVER: {
-                    sql += "UPDATE Hand SET ";
-                    sql += "BoardCard_5=" + std::to_string(boardCards[4]);
-                }
-                break;
+                case GAME_STATE_FLOP:
+                    updateSql = "UPDATE Hand SET BoardCard_1=?, BoardCard_2=?, BoardCard_3=? "
+                                "WHERE UniqueGameID=? AND HandID=?";
+                    break;
+                case GAME_STATE_TURN:
+                    updateSql = "UPDATE Hand SET BoardCard_4=? "
+                                "WHERE UniqueGameID=? AND HandID=?";
+                    break;
+                case GAME_STATE_RIVER:
+                    updateSql = "UPDATE Hand SET BoardCard_5=? "
+                                "WHERE UniqueGameID=? AND HandID=?";
+                    break;
                 default:
                     return;
                 }
-                sql += " WHERE ";
-                sql += "UniqueGameID=" + std::to_string(uniqueGameID) + " AND ";
-                sql += "HandID=" + std::to_string(currentHandID);
-                sql += ";";
+
+                QSqlQuery boardQuery(mySqliteLogDb);
+                boardQuery.prepare(updateSql);
+                switch(currentRound) {
+                case GAME_STATE_FLOP:
+                    boardQuery.addBindValue(boardCards[0]);
+                    boardQuery.addBindValue(boardCards[1]);
+                    boardQuery.addBindValue(boardCards[2]);
+                    boardQuery.addBindValue(static_cast<qulonglong>(uniqueGameID));
+                    boardQuery.addBindValue(currentHandID);
+                    break;
+                case GAME_STATE_TURN:
+                    boardQuery.addBindValue(boardCards[3]);
+                    boardQuery.addBindValue(static_cast<qulonglong>(uniqueGameID));
+                    boardQuery.addBindValue(currentHandID);
+                    break;
+                case GAME_STATE_RIVER:
+                    boardQuery.addBindValue(boardCards[4]);
+                    boardQuery.addBindValue(static_cast<qulonglong>(uniqueGameID));
+                    boardQuery.addBindValue(currentHandID);
+                    break;
+                default:
+                    return;
+                }
+                if (!boardQuery.exec()) {
+                    QSqlError err = boardQuery.lastError();
+                    LOG_ERROR("Failed to update board cards: " << err.text().toStdString());
+                }
                 if(myConfig->readConfigInt("LogInterval") == 0) {
                     exec_transaction();
                 }
@@ -572,32 +591,52 @@ Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerI
 			//if write logfiles is enabled
 
 			if( mySqliteLogDb.isValid() && mySqliteLogDb.isOpen() ) {
-                // sqlite-db (Qt) is open
+                // sqlite-db (Qt) is open - use parameterized query to prevent SQL injection
 
 				std::array<int, 2> myCards;
 				player->getMyCards(myCards);
-				sql += "UPDATE Hand SET ";
+				int seatId = player->getMyID() + 1;
+
+				QString setClause;
+				QStringList bindValues;
+
 				if(currentRound==GAME_STATE_POST_RIVER && player->getMyCardsValueInt()>0) {
 					std::string handName = CardsValue::determineHandName(player->getMyCardsValueInt(),activePlayerList);
+					// Sanitize hand name for SQL safety
 					handName.erase(std::remove(handName.begin(), handName.end(), '"'), handName.end());
 					handName.erase(std::remove(handName.begin(), handName.end(), '\''), handName.end());
 					handName.erase(std::remove(handName.begin(), handName.end(), ';'), handName.end());
-					sql += "Seat_" + std::to_string(player->getMyID()+1) + "_Hand_text=\"" + handName + "\"";
-					sql += ",Seat_" + std::to_string(player->getMyID()+1) + "_Hand_int=" + std::to_string(player->getMyCardsValueInt());
+					setClause += QString("Seat_%1_Hand_text=?, Seat_%1_Hand_int=?")
+						.arg(seatId);
+					bindValues << QString::fromStdString(handName)
+						<< player->getMyCardsValueInt();
 				}
-				if(currentRound==GAME_STATE_POST_RIVER && player->getMyCardsValueInt()>0 && !player->getLogHoleCardsDone()) {
-					sql+= ",";
-				}
+
 				if(!player->getLogHoleCardsDone()) {
-					sql += "Seat_" + std::to_string(player->getMyID()+1) + "_Card_1=" + std::to_string(myCards[0]);
-					sql += ",Seat_" + std::to_string(player->getMyID()+1) + "_Card_2=" + std::to_string(myCards[1]);
+					if(!setClause.isEmpty()) setClause += ", ";
+					setClause += QString("Seat_%1_Card_1=?, Seat_%1_Card_2=?")
+						.arg(seatId);
+					bindValues << myCards[0] << myCards[1];
 				}
-				sql += " WHERE ";
-				sql += "UniqueGameID=" + std::to_string(uniqueGameID) + " AND ";
-				sql += "HandID=" + std::to_string(currentHandID);
-				sql += ";";
-				if(myConfig->readConfigInt("LogInterval") == 0 || forceExecLog) {
-					if(sql.find("SET  WHERE") == std::string::npos) {
+
+				if(setClause.isEmpty()) {
+					// Nothing to update
+				} else {
+					QString updateSql = QString("UPDATE Hand SET %1 WHERE UniqueGameID=? AND HandID=?")
+						.arg(setClause);
+					bindValues << static_cast<qulonglong>(uniqueGameID)
+						<< currentHandID;
+
+					QSqlQuery holeCardsQuery(mySqliteLogDb);
+					holeCardsQuery.prepare(updateSql);
+					for (const auto& val : bindValues) {
+						holeCardsQuery.addBindValue(val);
+					}
+					if (!holeCardsQuery.exec()) {
+						QSqlError err = holeCardsQuery.lastError();
+						LOG_ERROR("Failed to update hole cards: " << err.text().toStdString());
+					}
+					if(myConfig->readConfigInt("LogInterval") == 0 || forceExecLog) {
 						exec_transaction();
 					}
 				}

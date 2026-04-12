@@ -40,6 +40,10 @@ public:
 	Replay();
 	~Replay() noexcept;
 
+	// Non-copyable
+	Replay(const Replay&) = delete;
+	Replay& operator=(const Replay&) = delete;
+
 private:
 	QSqlDatabase *replaySqliteLogDb;
 
