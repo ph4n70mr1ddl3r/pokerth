@@ -188,9 +188,13 @@ protected:
                 );
             }
         } else {
-            LOG_ERROR("In boost::asio handler: Accept failed.");
+            if (error == boost::asio::error::operation_aborted) {
+                // Acceptor was closed during shutdown - do not restart.
+                return;
+            }
+            LOG_ERROR("In boost::asio handler: Accept failed: " << error.message());
             GetCallback().SignalNetServerError(ERR_SOCK_ACCEPT_FAILED, 0);
-            // Restart accept even on error so server continues accepting connections.
+            // Restart accept on transient errors so server continues accepting connections.
             auto newSocket = boost::make_shared<P_socket>(*m_ioService);
             m_acceptor->async_accept(
                 *newSocket,

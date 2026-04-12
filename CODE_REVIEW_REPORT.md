@@ -369,3 +369,58 @@ This ensures that transient errors cause a logged warning and a retry on the nex
 This review pass focused on timer resilience in the IRC admin/lobby bot subsystem. Four periodic timers that would silently stop on transient async errors now properly log the error and reschedule, matching the established error-handling pattern used by all other server timers. The codebase continues to show strong engineering quality across all prior review passes.
 
 **Overall Code Quality:** ⭐⭐⭐⭐⭐ (4.8/5)
+
+## Issues Fixed (This Review — Revision 8)
+
+### 1. Server Accept Loop Crash on Shutdown — FIXED
+
+**File:** `src/net/serveraccepthelper.h`
+
+**Issue:** `ServerAcceptHelper::HandleAccept` did not check for `boost::asio::error::operation_aborted` before attempting to restart the accept loop. When the server shuts down, `Close()` cancels the acceptor, which triggers `HandleAccept` with `operation_aborted`. The error handler would then try to start a new `async_accept` on the closed acceptor, causing a cascade of errors and potential crashes during shutdown.
+
+**Fix:** Added an `operation_aborted` check at the top of the error branch. On abort, the handler returns immediately without restarting the accept loop, allowing clean shutdown. On transient errors, the accept loop still restarts as before, and the error message now includes the error description for better diagnostics.
+
+### 2. Inconsistent TLS Certificate Path for WebSocket Server — FIXED
+
+**File:** `src/net/serveracceptwebhelper.cpp`
+
+**Issue:** The WebSocket TLS accept helper defaulted to `../tls/server.crt` and `../tls/server.key` for certificate/key paths, while the TCP accept helper used `tls/server.crt` and `tls/server.key`. Both paths work because the build copies `tls/` to the `build/` directory, but the inconsistency is confusing and would break if the working directory changes.
+
+**Fix:** Standardized the WebSocket TLS helper to use `tls/server.crt` and `tls/server.key`, matching the TCP accept helper.
+
+### 3. Spelling Errors in User-Facing Strings — FIXED
+
+**Files:** `src/gui/qt/startwindow/startwindowimpl.cpp`
+
+**Issue:** Two user-facing error messages used "occured" (missing a second 'r'):
+- `"An internal avatar error occured."` 
+- `"An internal error occured."`
+
+**Fix:** Corrected to "occurred".
+
+### 4. Spelling Errors in Code Comments — FIXED
+
+**Files:** `src/gui/qt/settingsdialog/settingsdialogimpl.cpp`, `src/net/transferhelper.cpp`
+
+**Issue:** Multiple misspelled words in comments:
+- "defaullt" → "default" (2 occurrences in `settingsdialogimpl.cpp`)
+- "swith" → "switch" (2 occurrences in `settingsdialogimpl.cpp`)
+- "occured" → "occurred" (1 occurrence in `transferhelper.cpp`)
+
+**Fix:** Corrected all misspellings.
+
+### 5. Stale TODO Comment Updated — FIXED
+
+**File:** `src/net/servergamestate.cpp`
+
+**Issue:** A `// TODO: Some limitation needed.` comment on game chat forwarding was misleading. The chat is already validated by `NetPacketValidator` (max 128 chars, no control characters) and limited to at most `MAX_NUMBER_OF_PLAYERS` participants.
+
+**Fix:** Replaced the TODO with an explanatory comment documenting the existing validation layers.
+
+---
+
+## Conclusion (Revision 8)
+
+This review pass focused on shutdown reliability, configuration consistency, and code quality. The server accept loop now handles shutdown cleanly by checking for `operation_aborted` before restarting, preventing error cascades during server shutdown. TLS certificate paths were standardized between TCP and WebSocket accept helpers. Five spelling errors across user-facing strings and code comments were corrected. The codebase continues to show strong engineering quality across all prior review passes.
+
+**Overall Code Quality:** ⭐⭐⭐⭐⭐ (4.8/5)

@@ -689,7 +689,7 @@ void startWindowImpl::networkError(int errorID, int /*osErrorID*/)
 	break;
 	case ERR_NET_INVALID_REQUEST_ID: {
 		MyMessageBox::warning(this, tr("Network Error"),
-							  tr("An internal avatar error occured. Please report this to an admin in the lobby chat."),
+							  tr("An internal avatar error occurred. Please report this to an admin in the lobby chat."),
 							  QMessageBox::Close);
 	}
 	break;
@@ -707,7 +707,7 @@ void startWindowImpl::networkError(int errorID, int /*osErrorID*/)
 	break;
 	default:  {
 		MyMessageBox::warning(this, tr("Network Error"),
-							  tr("An internal error occured."),
+							  tr("An internal error occurred."),
 							  QMessageBox::Close);
 	}
 	}

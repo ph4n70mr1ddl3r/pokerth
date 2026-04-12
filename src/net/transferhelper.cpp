@@ -132,7 +132,7 @@ TransferHelper::Process()
 		// Clean up the curl handles.
 		Cleanup();
 
-		// Throw exception if an error occured.
+		// Throw exception if an error occurred.
 		if (code != CURLE_OK) {
 			if (code == CURLE_URL_MALFORMAT)
 				throw NetException(__FILE__, __LINE__, ERR_SOCK_TRANSFER_INVALID_URL, 0);

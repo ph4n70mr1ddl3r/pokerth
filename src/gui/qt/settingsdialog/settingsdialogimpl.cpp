@@ -1052,9 +1052,9 @@ void settingsDialogImpl::addGameTableStyle()
 void settingsDialogImpl::removeGameTableStyle()
 {
 	QTreeWidgetItem* selectedItem = treeWidget_gameTableStyles->currentItem();
-	//never delete PokerTH defaullt Styles
+	//never delete PokerTH default Styles
 	if(selectedItem && selectedItem->data(0, 16).toInt() == ADDITIONAL_STYLE) {
-		// if selected is activated --> swith activation to first default
+		// if selected is activated --> switch activation to first default
 		if(!selectedItem->icon(0).isNull()) {
 			QTreeWidgetItem* firstItem = treeWidget_gameTableStyles->topLevelItem(0);
 			firstItem->setIcon(0, QIcon(QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str())+"/gfx/gui/misc/rating.png"));
@@ -1179,9 +1179,9 @@ void settingsDialogImpl::addCardDeckStyle()
 void settingsDialogImpl::removeCardDeckStyle()
 {
 	QTreeWidgetItem* selectedItem = treeWidget_cardDeckStyles->currentItem();
-	//never delete PokerTH defaullt Styles
+	//never delete PokerTH default Styles
 	if(selectedItem && selectedItem->data(0, 16).toInt() == ADDITIONAL_STYLE) {
-		// if selected is activated --> swith activation to first default
+		// if selected is activated --> switch activation to first default
 		if(!selectedItem->icon(0).isNull()) {
 			QTreeWidgetItem* firstItem = treeWidget_cardDeckStyles->topLevelItem(0);
 			firstItem->setIcon(0, QIcon(QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str())+"/gfx/gui/misc/rating.png"));

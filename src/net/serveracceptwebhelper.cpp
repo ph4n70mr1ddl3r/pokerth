@@ -204,12 +204,12 @@ context_ptr ServerAcceptWebHelper::on_tls_init(websocketpp::connection_hdl hdl) 
                          boost::asio::ssl::context::single_dh_use);
 
         // TLS certificate and key paths can be configured via environment variables
-        // POKERTH_TLS_CERT and POKERTH_TLS_KEY, otherwise defaults to ../tls/server.crt and ../tls/server.key
+        // POKERTH_TLS_CERT and POKERTH_TLS_KEY, otherwise defaults to tls/server.crt and tls/server.key
         const char* certPath = std::getenv("POKERTH_TLS_CERT");
         const char* keyPath = std::getenv("POKERTH_TLS_KEY");
         
-        std::string certFile = certPath ? certPath : "../tls/server.crt";
-        std::string keyFile = keyPath ? keyPath : "../tls/server.key";
+        std::string certFile = certPath ? certPath : "tls/server.crt";
+        std::string keyFile = keyPath ? keyPath : "tls/server.key";
         
         ctx->use_certificate_chain_file(certFile);
         ctx->use_private_key_file(keyFile, boost::asio::ssl::context::pem);

@@ -295,7 +295,9 @@ AbstractServerGameStateReceiving::ProcessPacket(boost::shared_ptr<ServerGame> se
 		bool chatSent = false;
 		const ChatRequestMessage &netChatRequest = packet->GetMsg()->chatrequestmessage();
 		// Forward chat text to all players.
-		// TODO: Some limitation needed.
+		// Note: Rate limiting is enforced by the lobby's HandleChatRequest for lobby chat.
+		// Game chat is already bounded by NetPacketValidator (max 128 chars) and limited
+		// to at most MAX_NUMBER_OF_PLAYERS participants.
 		if (!netChatRequest.has_targetgameid()) {
 				if (!server->IsRunning()) {
 					server->GetLobbyThread().HandleChatRequest(session, netChatRequest);
