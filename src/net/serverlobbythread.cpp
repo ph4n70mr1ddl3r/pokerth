@@ -1014,7 +1014,7 @@ ServerLobbyThread::HandlePacket(boost::shared_ptr<SessionData> session, boost::s
 				const SubscriptionRequestMessage &subscriptionRequest = packet->GetMsg()->subscriptionrequestmessage();
 				if (subscriptionRequest.subscriptionaction() == SubscriptionRequestMessage::resubscribeGameList)
 					InternalResubscribeMsg(session);
-				else
+				else if (subscriptionRequest.subscriptionaction() == SubscriptionRequestMessage::unsubscribeGameList)
 					session->ResetWantsLobbyMsg();
 			} else if (packet->GetMsg()->messagetype() == PokerTHMessage::Type_JoinNewGameMessage) {
 				HandleNetPacketCreateGame(session, packet->GetMsg()->joinnewgamemessage());
@@ -1978,12 +1978,17 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
     }
 
 	std::string providedPassword = tmpSession->AuthGetPassword();
-	if (providedPassword.empty()) {
-		LOG_MSG("Empty password rejected for player " << playerId);
-		SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
-		return;
+	// When dbPlayerData.id is DB_ID_INVALID, this is a generic server with no
+	// database backend -- skip password validation and accept the login.
+	bool passwordMatch = (dbPlayerData.id == DB_ID_INVALID);
+	if (!passwordMatch) {
+		if (providedPassword.empty()) {
+			LOG_MSG("Empty password rejected for player " << playerId);
+			SessionError(tmpSession, ERR_NET_INVALID_PASSWORD);
+			return;
+		}
+		passwordMatch = Tools::ConstantTimeStringCompare(providedPassword, dbPlayerData.secret);
 	}
-	bool passwordMatch = Tools::ConstantTimeStringCompare(providedPassword, dbPlayerData.secret);
 	// Securely clear the password from memory after comparison to prevent lingering cleartext.
 	if (!providedPassword.empty()) {
 		CryptHelper::SecureClearMemory(&providedPassword[0], providedPassword.size());

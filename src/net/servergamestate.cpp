@@ -339,7 +339,7 @@ AbstractServerGameStateReceiving::ProcessPacket(boost::shared_ptr<ServerGame> se
 		if (netSubscription.subscriptionaction() == SubscriptionRequestMessage::resubscribeGameList) {
 			if (!session->WantsLobbyMsg())
 				server->GetLobbyThread().ResubscribeLobbyMsg(session);
-		} else
+		} else if (netSubscription.subscriptionaction() == SubscriptionRequestMessage::unsubscribeGameList)
 			session->ResetWantsLobbyMsg();
 	} else if (packet->GetMsg()->messagetype() == PokerTHMessage::Type_ReportAvatarMessage) {
 		const ReportAvatarMessage &netReport = packet->GetMsg()->reportavatarmessage();

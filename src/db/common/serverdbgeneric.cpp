@@ -62,7 +62,10 @@ ServerDBGeneric::Stop()
 void
 ServerDBGeneric::AsyncPlayerLogin(unsigned requestId, const string &/*playerName*/)
 {
-	boost::asio::post(*m_ioService, [this, requestId]() { m_callback.PlayerLoginFailed(requestId); });
+	// No database backend -- accept all logins unconditionally.
+	auto dbData = boost::make_shared<DBPlayerData>();
+	dbData->id = DB_ID_INVALID; // Signals "no DB lookup" to UserValid
+	boost::asio::post(*m_ioService, [this, requestId, dbData]() { m_callback.PlayerLoginSuccess(requestId, dbData); });
 }
 
 void
