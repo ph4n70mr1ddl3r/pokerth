@@ -684,7 +684,7 @@ ServerDBThread::HandleNextQuery()
 					// Skip this query without disconnecting.
 					LOG_ERROR("Query Init failed (logic error): " << e.what());
 					nextQuery->HandleError(*m_ioService, m_callback);
-					m_dbIdManager.RemoveGameId(nextQuery->GetId());
+					if (nextQuery->IsGameQuery()) m_dbIdManager.RemoveGameId(nextQuery->GetId());
 					break;
 				}
 				mysqlpp::Query executeQuery = m_connData->conn.query();
@@ -720,7 +720,7 @@ ServerDBThread::HandleNextQuery()
 						SetConnected(false);
 						boost::asio::post(*m_ioService, [self = shared_from_this(), tmpError]() { self->m_callback.QueryError(tmpError); });
 						nextQuery->HandleError(*m_ioService, m_callback);
-						m_dbIdManager.RemoveGameId(nextQuery->GetId());
+						if (nextQuery->IsGameQuery()) m_dbIdManager.RemoveGameId(nextQuery->GetId());
 						break;
 					}
 				}
@@ -730,14 +730,14 @@ ServerDBThread::HandleNextQuery()
 						nextQuery->HandleResult(executeQuery, m_dbIdManager, res, *m_ioService, m_callback);
 					else {
 						nextQuery->HandleError(*m_ioService, m_callback);
-						m_dbIdManager.RemoveGameId(nextQuery->GetId());
+						if (nextQuery->IsGameQuery()) m_dbIdManager.RemoveGameId(nextQuery->GetId());
 					}
 				} else {
 					if (executeQuery.exec())
 						nextQuery->HandleNoResult(executeQuery, m_dbIdManager, *m_ioService, m_callback);
 					else {
 						nextQuery->HandleError(*m_ioService, m_callback);
-						m_dbIdManager.RemoveGameId(nextQuery->GetId());
+						if (nextQuery->IsGameQuery()) m_dbIdManager.RemoveGameId(nextQuery->GetId());
 					}
 				}
 			} catch (const mysqlpp::Exception &e) {
@@ -746,14 +746,14 @@ ServerDBThread::HandleNextQuery()
 				m_connData->conn.disconnect();
 				SetConnected(false);
 				nextQuery->HandleError(*m_ioService, m_callback);
-				m_dbIdManager.RemoveGameId(nextQuery->GetId());
+				if (nextQuery->IsGameQuery()) m_dbIdManager.RemoveGameId(nextQuery->GetId());
 			} catch (const std::exception &e) {
 				string errorMsg = string("Exception during query handling: ") + e.what();
 				LOG_ERROR(__FILE__ << " [" << __LINE__ << "] " << errorMsg);
 				m_connData->conn.disconnect();
 				SetConnected(false);
 				nextQuery->HandleError(*m_ioService, m_callback);
-				m_dbIdManager.RemoveGameId(nextQuery->GetId());
+				if (nextQuery->IsGameQuery()) m_dbIdManager.RemoveGameId(nextQuery->GetId());
 			}
 		} while (nextQuery->Next()); // Consider composite queries.
 	}

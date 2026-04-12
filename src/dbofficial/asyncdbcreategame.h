@@ -52,6 +52,8 @@ public:
 	{
 		return false;
 	}
+
+	bool IsGameQuery() const override { return true; }
 };
 
 #endif

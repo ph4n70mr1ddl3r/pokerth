@@ -68,8 +68,10 @@ AsyncDBCreateGame::HandleNoResult(mysqlpp::Query &query, DBIdManager& idManager,
 			if (insertId == 0) {
 				boost::asio::post(service, [&cb, id = GetId()]() { cb.CreateGameFailed(id); });
 			} else {
-				boost::asio::post(service, [&cb, id = GetId()]() { cb.CreateGameSuccess(id); });
+			// Register game ID before posting success callback to prevent
+			// race where callback executes on io_service thread before ID is available.
 				idManager.AddGameId(GetId(), insertId);
+				boost::asio::post(service, [&cb, id = GetId()]() { cb.CreateGameSuccess(id); });
 			}
 		}
 	} catch (const std::exception &e) {

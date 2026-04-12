@@ -57,6 +57,7 @@ public:
 	virtual bool RequiresResultSet() const = 0;
 	virtual bool Next() = 0;
 	virtual unsigned GetId() const = 0;
+	virtual bool IsGameQuery() const { return false; }
 };
 
 #endif
