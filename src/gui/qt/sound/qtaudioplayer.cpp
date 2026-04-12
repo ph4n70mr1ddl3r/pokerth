@@ -47,7 +47,7 @@ QtAudioPlayer::~QtAudioPlayer() noexcept
 void QtAudioPlayer::initAudio()
 {
     if (!audioEnabled && myConfig->readConfigInt("PlaySoundEffects")) {
-        // QSoundEffect benötigt Qt Multimedia im Build-System.
+        // QSoundEffect requires Qt Multimedia in the build system.
         audioEnabled = true;
     }
 }

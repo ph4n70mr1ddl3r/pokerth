@@ -30,7 +30,7 @@
  *****************************************************************************/
 #include "soundevents.h"
 
-// Verwende QtAudioPlayer für alle Plattformen (Desktop und Android)
+// Use QtAudioPlayer for all platforms (Desktop and Android)
 #include "qtaudioplayer.h"
 
 #include "configfile.h"

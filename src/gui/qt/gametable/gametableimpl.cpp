@@ -69,7 +69,7 @@
 
 #ifdef ANDROID
 #ifndef ANDROID_TEST
-// Qt6: Verwende QJniEnvironment statt direktem JNI-Zugriff
+// Qt6: Use QJniEnvironment instead of direct JNI access
 #include <QJniEnvironment>
 #include <QJniObject>
 #endif
@@ -400,7 +400,7 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	connect(enableCallCheckPushButtonTimer, SIGNAL(timeout()), this, SLOT(enableCallCheckPushButton()));
 
 #ifdef ANDROID
-    // tabs ist nur für GUI_800x480 definiert
+    // tabs is only defined for GUI_800x480
     #ifdef GUI_800x480
 	connect( tabs.pushButton_settings, SIGNAL( clicked() ), this, SLOT( callSettingsDialog() ) );
     #endif
@@ -508,7 +508,7 @@ void gameTableImpl::applySettings(settingsDialogImpl* mySettingsDialog)
 	//Add avatar (if set)
 	myStartWindow->getSession()->addOwnAvatar(QString::fromUtf8(myConfig->readConfigString("MyAvatar").c_str()).toLocal8Bit().constData());
 
-	//Falls Spielernamen geändert wurden --> neu zeichnen --> erst beim nächsten Neustart neu ausgelesen
+	//If player names changed --> redraw --> re-read on next restart
 	if (mySettingsDialog->getPlayerNickIsChanged() && myStartWindow->getSession()->getCurrentGame() && !myStartWindow->getSession()->isNetworkClientRunning()) {
 
 		boost::shared_ptr<Game> currentGame = myStartWindow->getSession()->getCurrentGame();
@@ -1834,7 +1834,7 @@ void gameTableImpl::myFold()
 
 		// 		statusBar()->clearMessage();
 
-		//Spiel läuft weiter
+		//Game continues
 		myActionDone();
 	}
 }
@@ -1854,7 +1854,7 @@ void gameTableImpl::myCheck()
 
 	// 	statusBar()->clearMessage();
 
-	//Spiel läuft weiter
+	//Game continues
 	myActionDone();
 }
 
@@ -1929,7 +1929,7 @@ void gameTableImpl::myCall()
 
 	// 	statusBar()->clearMessage();
 
-	//Spiel läuft weiter
+	//Game continues
 	myActionDone();
 }
 
@@ -1995,10 +1995,10 @@ void gameTableImpl::mySet()
 		//set that i was the last active player. need this for unhighlighting groupbox
 		currentHand->setPreviousPlayerID(0);
 
-		// lastPlayerAction für Karten umblättern reihenfolge setzrn
+		// lastPlayerAction for card flip order
 		currentHand->setLastActionPlayerID(humanPlayer->getMyUniqueID());
 
-		//Spiel läuft weiter
+		//Game continues
 		myActionDone();
 	}
 }
@@ -2027,7 +2027,7 @@ void gameTableImpl::myAllIn()
 
 			currentHand->getCurrentBeRo()->setHighestSet(humanPlayer->getMySet());
 
-			// lastPlayerAction für Karten umblättern reihenfolge setzrn
+			// lastPlayerAction for card flip order
 			currentHand->setLastActionPlayerID(humanPlayer->getMyUniqueID());
 
 		}
@@ -2040,7 +2040,7 @@ void gameTableImpl::myAllIn()
 		//set that i was the last active player. need this for unhighlighting groupbox
 		currentHand->setPreviousPlayerID(0);
 
-		//Spiel läuft weiter
+		//Game continues
 		myActionDone();
 	}
 }
@@ -2734,7 +2734,7 @@ void gameTableImpl::flipHolecardsAllIn()
 	if (!currentGame || !currentGame->getCurrentHand()) return;
 
 	if(!flipHolecardsAllInAlreadyDone && currentGame->getCurrentHand()->getCurrentRound() < GAME_STATE_RIVER) {
-		//Aktive Spieler zählen --> wenn nur noch einer nicht-folded dann keine Karten umdrehen
+		//Count active players --> if only one non-folded player remains, do not reveal cards
 		int nonfoldPlayersCounter = 0;
 		PlayerListConstIterator it_c;
 		PlayerList activePlayerList = currentGame->getActivePlayerList();
@@ -2832,7 +2832,7 @@ void gameTableImpl::nextRoundCleanGui()
 
 	flipHolecardsAllInAlreadyDone = false;
 
-	//Wenn Pause zwischen den Hands in der Konfiguration steht den Stop Button drücken!
+	//If pause between hands is configured, press the stop button!
 	if (myConfig->readConfigInt("PauseBetweenHands") /*&& blinkingStartButtonAnimationTimer->isActive() == false*/ && myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_LOCAL) {
 #ifdef GUI_800x480
 //		tabs.pushButton_break->click();
@@ -3825,7 +3825,7 @@ int gameTableImpl::getAndroidApiVersion() const
     int api = -1;
 #ifdef ANDROID
 #ifndef ANDROID_TEST
-    // Qt6: Verwende QJniEnvironment für Android API-Zugriff
+    // Qt6: Use QJniEnvironment for Android API access
     QJniEnvironment env;
     if (env.isValid()) {
         api = QJniObject::getStaticField<jint>("android/os/Build$VERSION", "SDK_INT");

@@ -62,7 +62,7 @@ settingsDialogImpl::settingsDialogImpl(QWidget *parent, ConfigFile *c, selectAva
     if (styleSPageIndex >= 0 && styleSPageIndex < listWidget->count()) {
         QListWidgetItem* item = listWidget->item(styleSPageIndex);
         if (item) {
-            item->setHidden(true); // Verstecken statt löschen
+            item->setHidden(true); // Hide instead of delete
         }
     }
     

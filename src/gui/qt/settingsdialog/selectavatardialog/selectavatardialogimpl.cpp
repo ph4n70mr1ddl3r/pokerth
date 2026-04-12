@@ -285,7 +285,7 @@ void selectAvatarDialogImpl::isAccepted()
 		}
 	}
 
-	//Wenn alles richtig eingegeben wurde --> Dialog schließen
+	//If everything was entered correctly --> close dialog
 	if(settingsCorrect) {
 		this->hide();
 	}

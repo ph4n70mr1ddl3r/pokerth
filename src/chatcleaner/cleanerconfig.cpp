@@ -211,7 +211,7 @@ CleanerConfig::CleanerConfig()
 
 	configFileName += "cleanerconfig.xml";
 
-	// Prüfen ob Configfile existiert --> sonst anlegen
+	// Check if config file exists --> otherwise create it
 	QDomDocument xmlDoc;
 	QFile file(QString::fromStdString(configFileName));
 	if (!file.open(QIODevice::ReadOnly) || !xmlDoc.setContent(&file))
@@ -234,7 +234,7 @@ CleanerConfig::CleanerConfig()
 		}
 
 		if (tempRevision < configRev)
-		{ /*löschen()*/
+		{ /*delete()*/
 			myConfigState = OLD;
 			updateConfig(myConfigState);
 		}

@@ -288,7 +288,7 @@ Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned
 					exec_transaction();
 				}
 
-				// !! TODO !! Hack, weil Button-Regel noch falsch und dealerPosition noch teilweise falsche ID enthält (HeadsUp: dealerPosition=bigBlindPosition <-- falsch)
+				// !! TODO !! Hack, because button rule is still wrong and dealerPosition sometimes has wrong ID (HeadsUp: dealerPosition=bigBlindPosition <-- wrong)
 				bool dealerButtonOnTable = false;
 				int countActivePlayer = 0;
 				for(it_c = seatsList->begin(); it_c!=seatsList->end(); ++it_c) {

@@ -35,7 +35,7 @@
 
 #ifdef ANDROID
 #ifndef ANDROID_TEST
-// Qt6: Verwende QJniEnvironment statt direktem JNI-Zugriff
+// Qt6: Use QJniEnvironment instead of direct JNI access
 #include <QJniEnvironment>
 #include <QJniObject>
 #endif
@@ -74,7 +74,7 @@ aboutPokerthImpl::aboutPokerthImpl(QWidget *parent, ConfigFile *c)
     int api = -2;
     this->setWindowState(Qt::WindowFullScreen);
 #ifndef ANDROID_TEST
-    // Qt6: Verwende QJniEnvironment für Android API-Zugriff
+    // Qt6: Use QJniEnvironment for Android API access
     QJniEnvironment env;
     if (env.isValid()) {
         QJniObject versionClass = QJniObject::fromString("android.os.Build$VERSION");

@@ -99,7 +99,7 @@ std::string QtHelper::getDataPathStdString(const char * /*argv0*/)
 	return (QDir::cleanPath(path) + "/").toStdString();
 }
 // [01:09] <Zhenech> doitux|mob, mach den pfad als define, und nur wenns nich gesetzt is wildes raten
-// [01:10] <Zhenech> dann compilieren die distries mit -DDATAPTH="/usr/share/games/pokerth" o.ä.
+// [01:10] <Zhenech> then the distros compile with -DDATAPTH="/usr/share/games/pokerth" or similar
 // [01:10] <Zhenech> und du suchst eine liste ab:
 // [01:10] <Zhenech> ist es in [/usr/share/pokerth, /usr/share/games/pokerth/, /usr/local/..., $PWD/data]
 

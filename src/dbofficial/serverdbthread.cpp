@@ -141,11 +141,10 @@ ServerDBThread::AsyncPlayerLogin(unsigned requestId, const string &playerName)
 		list<string> params;
 		params.push_back(m_connData->encryptionKey);
 		params.push_back(playerName);
-		boost::shared_ptr<AsyncDBQuery> asyncQuery(
-			new AsyncDBAuth(
+		auto asyncQuery = boost::make_shared<AsyncDBAuth>(
 				requestId,
 				QUERY_NICK_PREPARE,
-				params));
+				params);
 
 		{
 			boost::mutex::scoped_lock lock(m_asyncQueueMutex);
@@ -164,11 +163,10 @@ ServerDBThread::AsyncCheckAvatarBlacklist(unsigned requestId, const std::string 
 	if (IsConnected()) {
 		list<string> params;
 		params.push_back(avatarHash);
-		boost::shared_ptr<AsyncDBQuery> asyncQuery(
-			new AsyncDBAvatarBlacklist(
+		auto asyncQuery = boost::make_shared<AsyncDBAvatarBlacklist>(
 				requestId,
 				QUERY_AVATAR_BLACKLIST_PREPARE,
-				params));
+				params);
 
 		{
 			boost::mutex::scoped_lock lock(m_asyncQueueMutex);
@@ -192,11 +190,10 @@ ServerDBThread::PlayerPostLogin(DB_id playerId, const std::string &avatarHash, c
 		ostringstream paramStream;
 		paramStream << playerId;
 		params.push_back(paramStream.str());
-		boost::shared_ptr<AsyncDBQuery> asyncQuery(
-			new AsyncDBLogin(
+		auto asyncQuery = boost::make_shared<AsyncDBLogin>(
 				playerId,
 				QUERY_LOGIN_PREPARE,
-				params));
+				params);
 
 		{
 			boost::mutex::scoped_lock lock(m_asyncQueueMutex);
@@ -218,11 +215,10 @@ ServerDBThread::AsyncCreateGame(unsigned requestId, const string &gameName)
 	list<string> params;
 	params.push_back(gameName);
 	params.push_back(mysqlpp::DateTime(time(nullptr)));
-	boost::shared_ptr<AsyncDBQuery> asyncQuery(
-		new AsyncDBCreateGame(
+	auto asyncQuery = boost::make_shared<AsyncDBCreateGame>(
 			requestId,
 			QUERY_CREATE_GAME_PREPARE,
-			params));
+			params);
 
 	{
 		boost::mutex::scoped_lock lock(m_asyncQueueMutex);
@@ -244,11 +240,10 @@ ServerDBThread::SetGamePlayerPlace(unsigned requestId, DB_id playerId, unsigned 
 	paramStream.str("");
 	paramStream << place;
 	params.push_back(paramStream.str());
-	boost::shared_ptr<AsyncDBQuery> asyncQuery(
-		new AsyncDBGamePlace(
+	auto asyncQuery = boost::make_shared<AsyncDBGamePlace>(
 			requestId,
 			QUERY_GAME_PLAYER_PREPARE,
-			params));
+			params);
 
 	{
 		boost::mutex::scoped_lock lock(m_asyncQueueMutex);
@@ -335,11 +330,10 @@ ServerDBThread::SetPlayerLastGames(unsigned requestId, DB_id playerId, const std
 	params.push_back(safePlayerIp);
 	paramStream << playerId;
 	params.push_back(paramStream.str());
-	boost::shared_ptr<AsyncDBQuery> asyncQuery(
-		new AsyncDBPlayerLastGames(
+	auto asyncQuery = boost::make_shared<AsyncDBPlayerLastGames>(
 			requestId,
 			QUERY_PLAYER_LASTGAMES_PREPARE,
-			params));
+			params);
 	{
 		boost::mutex::scoped_lock lock(m_asyncQueueMutex);
 		m_asyncQueue.push(asyncQuery);
@@ -358,22 +352,20 @@ ServerDBThread::EndGame(unsigned requestId)
 	{
 		list<string> params;
 		params.push_back(mysqlpp::DateTime(time(nullptr)));
-		boost::shared_ptr<AsyncDBQuery> asyncQuery(
-			new AsyncDBEndGame(
+		auto asyncQuery = boost::make_shared<AsyncDBEndGame>(
 				requestId,
 				QUERY_END_GAME_PREPARE,
-				params));
+				params);
 
 		m_asyncQueue.push(asyncQuery);
 	}
 	// Update the player scores.
 	{
 		list<string> params;
-		boost::shared_ptr<AsyncDBQuery> asyncQuery(
-			new AsyncDBUpdateScore(
+		auto asyncQuery = boost::make_shared<AsyncDBUpdateScore>(
 				requestId,
 				QUERY_UPDATE_SCORE_PREPARE,
-				params));
+				params);
 
 		m_asyncQueue.push(asyncQuery);
 	}
@@ -402,12 +394,11 @@ ServerDBThread::AsyncReportAvatar(unsigned requestId, unsigned replyId, DB_id re
 	}
 	params.push_back(mysqlpp::DateTime(time(nullptr)));
 
-	boost::shared_ptr<AsyncDBQuery> asyncQuery(
-		new AsyncDBReportAvatar(
+	auto asyncQuery = boost::make_shared<AsyncDBReportAvatar>(
 			requestId,
 			replyId,
 			QUERY_REPORT_AVATAR_PREPARE,
-			params));
+			params);
 
 	{
 		boost::mutex::scoped_lock lock(m_asyncQueueMutex);
@@ -439,13 +430,12 @@ ServerDBThread::AsyncReportGame(unsigned requestId, unsigned replyId, DB_id *cre
 	}
 	params.push_back(mysqlpp::DateTime(time(nullptr)));
 
-	boost::shared_ptr<AsyncDBQuery> asyncQuery(
-		new AsyncDBReportGame(
+	auto asyncQuery = boost::make_shared<AsyncDBReportGame>(
 			requestId,
 			replyId,
 			gameId,
 			QUERY_REPORT_GAME_PREPARE,
-			params));
+			params);
 
 	{
 		boost::mutex::scoped_lock lock(m_asyncQueueMutex);
@@ -460,10 +450,9 @@ void
 ServerDBThread::AsyncQueryAdminPlayers(unsigned requestId)
 {
 	if (!IsConnected()) return;
-	boost::shared_ptr<AsyncDBQuery> asyncQuery(
-		new AsyncDBAdminPlayers(
+	auto asyncQuery = boost::make_shared<AsyncDBAdminPlayers>(
 			requestId,
-			QUERY_ADMIN_PLAYER_PREPARE));
+			QUERY_ADMIN_PLAYER_PREPARE);
 	{
 		boost::mutex::scoped_lock lock(m_asyncQueueMutex);
 		m_asyncQueue.push(asyncQuery);
@@ -487,12 +476,11 @@ ServerDBThread::AsyncBlockPlayer(unsigned requestId, unsigned replyId, DB_id pla
 	paramStream.str("");
 	paramStream << playerId;
 	params.push_back(paramStream.str());
-	boost::shared_ptr<AsyncDBQuery> asyncQuery(
-		new AsyncDBBlockPlayer(
+	auto asyncQuery = boost::make_shared<AsyncDBBlockPlayer>(
 			requestId,
 			replyId,
 			QUERY_BLOCK_PLAYER_PREPARE,
-			params));
+			params);
 
 	{
 		boost::mutex::scoped_lock lock(m_asyncQueueMutex);

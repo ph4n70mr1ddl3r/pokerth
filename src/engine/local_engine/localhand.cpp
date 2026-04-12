@@ -84,7 +84,9 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 	myBoard->setMyCards(tempBoardArray);
 	for(it=activePlayerList->begin(); it!=activePlayerList->end(); ++it, k++) {
 
-		// Bounds check: 2*k+1+5 must be < NumCards (52)
+		// Bounds check: ensure card array indices are in range.
+		// k is bounded by activePlayerList->size() (max MAX_NUMBER_OF_PLAYERS=10),
+		// so max card index is 2*(size-1)+1+5 = 24, well within NumCards (52).
 		assert(k < static_cast<int>(activePlayerList->size()));
 		assert(2*k+1+5 < NumCards);
 

@@ -923,11 +923,11 @@ LocalPlayer::LocalPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType ty
 
 	int i = 0;
 
-	// Dude zuweisen
+	// Assign Dude
 	Tools::GetRand(3, 5, 1, &myDude);
-	// 	cout << "Spieler: " << myID << " Dude: " << myDude << " Cash: " << myCash << " ActiveStatus: " << myActiveStatus << " Button: " << myButton << endl;
+	// 	cout << "Player: " << myID << " Dude: " << myDude << " Cash: " << myCash << " ActiveStatus: " << myActiveStatus << " Button: " << myButton << endl;
 
-	// Dude4 zuweisen
+	// Assign Dude4
 	const int interval = 7;
 	const int count = 4;
 
@@ -1931,7 +1931,7 @@ void LocalPlayer::turnEngine()
 	}
 
 
-	// Aggresivität des humanPlayers auslesen -> nur wenn er aktiv ist !
+	// Read aggressiveness of human player -> only if active!
 	// 	it_c = currentHand->getActivePlayerIt(0);
 	// 	if( it_c != currentHand->getActivePlayerList()->end() ) {
 	// 		if( (*it_c)->getMyAction() != PLAYER_ACTION_FOLD ) {
@@ -1945,10 +1945,10 @@ void LocalPlayer::turnEngine()
 
 
 
-	//	cout << "Spieler " << myID << ": Dude " << myDude4 << "\t Wert " <<  myHoleCardsValue << "\t Niveau " << myNiveau[0] << " " << myNiveau[1] << " " << myNiveau[2] << "\t Agg " << aggValue << " " << endl;
+	//	cout << "Player " << myID << ": Dude " << myDude4 << "\t Value " <<  myHoleCardsValue << "\t Level " << myNiveau[0] << " " << myNiveau[1] << " " << myNiveau[2] << "\t Agg " << aggValue << " " << endl;
 
 
-	// eigenes mögliches highestSet
+	// Determine own possible highestSet
 	int individualHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 	if(individualHighestSet > myCash) individualHighestSet = myCash;
 
@@ -1958,19 +1958,19 @@ void LocalPlayer::turnEngine()
 	// Active or passive?
 	if(currentHand->getCurrentBeRo()->getHighestSet() > 0 && individualHighestSet > 0) {
 
-		//		Verhaeltnis Set / Cash
+		//		Ratio of set / cash
 		if(myCash/individualHighestSet >= 25) {
 			myNiveau[0] += (25-myCash/individualHighestSet)/10;
 		} else {
 			myNiveau[0] += (25-myCash/individualHighestSet)/2;
 		}
 
-		// Verhaeltnis Set / Cash für raise
+		// Ratio of set / cash for raise
 		if(myCash/individualHighestSet < 11) {
 			myNiveau[2] += (21-myCash/individualHighestSet)/2;
 		}
 
-		// raise (bei hohem Niveau)
+		// raise (at high level)
 		if(myOdds >= myNiveau[2]) {
 
 			// raise-loop unterbinden -> d.h. entweder call oder bei superblatt all in
@@ -2457,7 +2457,7 @@ void LocalPlayer::riverEngine()
 		}
 	}
 
-	// Aggresivität des humanPlayers auslesen -> nur wenn er aktiv ist !
+	// Read aggressiveness of human player -> only if active!
 	// 	it_c = currentHand->getActivePlayerIt(0);
 	// 	if( it_c != currentHand->getActivePlayerList()->end() ) {
 	// 		if( (*it_c)->getMyAction() != PLAYER_ACTION_FOLD ) {
@@ -2471,28 +2471,28 @@ void LocalPlayer::riverEngine()
 
 
 
-	//	cout << "Spieler " << myID << ": Dude " << myDude4 << "\t Wert " <<  myHoleCardsValue << "\t Niveau " << myNiveau[0] << " " << myNiveau[1] << " " << myNiveau[2] << "\t Agg " << aggValue << " " << endl;
+	//	cout << "Player " << myID << ": Dude " << myDude4 << "\t Value " <<  myHoleCardsValue << "\t Level " << myNiveau[0] << " " << myNiveau[1] << " " << myNiveau[2] << "\t Agg " << aggValue << " " << endl;
 
-	// eigenes mögliches highestSet
+	// Determine own possible highestSet
 	int individualHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 	if(individualHighestSet > myCash) individualHighestSet = myCash;
 
 	// Active or passive?
 	if(currentHand->getCurrentBeRo()->getHighestSet() > 0 && individualHighestSet > 0) {
 
-		// Verhaeltnis Set / Cash
+		// Ratio of set / cash
 		if(myCash/individualHighestSet >= 25) {
 			myNiveau[0] += (25-myCash/individualHighestSet)/10;
 		} else {
 			myNiveau[0] += (25-myCash/individualHighestSet)/2;
 		}
 
-		// Verhaeltnis Set / Cash für raise
+		// Ratio of set / cash for raise
 		if(myCash/individualHighestSet < 11) {
 			myNiveau[2] += (21-myCash/individualHighestSet)/2;
 		}
 
-		// raise (bei hohem Niveau)
+		// raise (at high level)
 		if(myOdds >= myNiveau[2]) {
 			// raise-loop unterbinden -> d.h. entweder call oder bei superblatt all in
 			if(currentHand->getCurrentBeRo()->getHighestSet() >= 12*currentHand->getSmallBlind()) {
@@ -2583,7 +2583,7 @@ raise = ((static_cast<int>(myOdds)-myNiveau[2])/2)*2*currentHand->getSmallBlind(
 			}
 		}
 
-//        // lastPlayerAction für Karten umblättern reihenfolge setzrn
+//        // lastPlayerAction for card flip order
 //        currentHand->getCurrentBeRo()->setLastActionPlayer(myUniqueID);
 
 	}
@@ -2945,7 +2945,7 @@ void LocalPlayer::evaluation(int bet, int raise)
 			highestSet = mySet;
 
 		}
-		// lastPlayerAction für Karten umblättern reihenfolge setzrn
+		// lastPlayerAction for card flip order
 		currentHand->setLastActionPlayerID(myUniqueID);
 	}
 	break;
@@ -2977,7 +2977,7 @@ void LocalPlayer::evaluation(int bet, int raise)
 					} else {
 						// raise, but not enough --> full bet rule
 						currentHand->getCurrentBeRo()->setFullBetRule(true);
-						// lastPlayerAction für Karten umblättern reihenfolge setzrn
+						// lastPlayerAction for card flip order
 						currentHand->setLastActionPlayerID(myUniqueID);
 
 						setMySet(myCash);
@@ -2986,7 +2986,7 @@ void LocalPlayer::evaluation(int bet, int raise)
 						highestSet = mySet;
 					}
 				} else {
-					// lastPlayerAction für Karten umblättern reihenfolge setzrn
+					// lastPlayerAction for card flip order
 					currentHand->setLastActionPlayerID(myUniqueID);
 
 					setMySet(myCash);
@@ -3000,7 +3000,7 @@ void LocalPlayer::evaluation(int bet, int raise)
 				currentHand->getCurrentBeRo()->setMinimumRaise(raise);
 				setMySet(highestSet+raise-mySet);
 				highestSet = mySet;
-				// lastPlayerAction für Karten umblättern reihenfolge setzrn
+				// lastPlayerAction for card flip order
 				currentHand->setLastActionPlayerID(myUniqueID);
 			}
 		}
@@ -3097,9 +3097,9 @@ int LocalPlayer::flopCardsValue(int* cards)
 	for(j1=0; j1<2 && !breakLoop; j1++) {
 		// 4 Karten gleiche Farbe ?
 		if(array[j1][0] == array[j1+1][0] && array[j1][0] == array[j1+2][0] && array[j1][0] == array[j1+3][0]) {
-			// zusammenhaengender Strassenansatz ?
+			// Connected straight draw?
 			if(array[j1][1]-3 == array[j1+3][1]) {
-				// Strassenansatz am Rand?
+				// Straight draw at the edge?
 				if(array[j1][1] == 12) {
 					//                        		cout << "zusammenhaengender Straight-Flush-Draw mit Ass high";
 					for(j2=0; j2<4; j2++) {
@@ -3107,7 +3107,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 					}
 					return (70012 + temp*100);
 				}
-				// Strassenansatz in der Mitte
+				// Straight draw in the middle
 				else {
 					//                        		cout << "zusammenhaengender Straight-Flush-Draw in der Mitte";
 					for(j2=0; j2<4; j2++) {
@@ -3218,14 +3218,14 @@ int LocalPlayer::flopCardsValue(int* cards)
 	}
 
 
-	// auf Straßenansatz testen
+	// Test for straight draw
 	for(j1=0; j1<5 && !breakLoop; j1++) {
 		for(j2=j1+1; j2<5 && !breakLoop; j2++) {
 			for(j3=j2+1; j3<5 && !breakLoop; j3++) {
 				for(j4=j3+1; j4<5 && !breakLoop; j4++) {
-					// zusammenhaengender Strassenansatz ?
+					// Connected straight draw?
 					if((array[j1][1]-1 == array[j2][1] || (array[j1][1]-9 == array[j2][1] && array[j1][1] == 12)) && array[j2][1]-1 == array[j3][1] && array[j3][1]-1 == array[j4][1]) {
-						// Strassenansatz am Rand?
+						// Straight draw at the edge?
 						if(array[j1][1] == 12) {
 							// 							cout << "zusammenhaengender Straight-Draw mit Ass high";
 
@@ -3289,7 +3289,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 							}
 							breakLoop = 1;
 						}
-						// Strassenansatz in der Mitte
+						// Straight draw in the middle
 						else {
 							//                        				cout << "zusammenhaengender Straight-Draw in der Mitte";
 
@@ -3440,7 +3440,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 							}
 							breakLoop = 1;
 						} else {
-							// Test auf Straßenansatz-Ausnahme 5-4-3-2-A
+							// Test for straight draw exception 5-4-3-2-A
 							if(array[j1][1] == 12 && ((array[j1][1]-9 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-1 == array[j4][1]) || (array[j1][1]-9 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-2 == array[j4][1]) || (array[j1][1]-9 == array[j2][1] && array[j2][1]-2 == array[j3][1] && array[j3][1]-1 == array[j4][1]) || (array[j1][1]-10 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-1 == array[j4][1]))) {
 								//                              				cout << "Straight-Draw Ass unten";
 
@@ -3664,7 +3664,7 @@ void LocalPlayer::calcMyOdds()
 
 		handCode = CardsValue::holeCardsToIntCode(myCards.data());
 
-		// übergang solange preflopValue und flopValue noch nicht bereinigt
+		// Transition while preflopValue and flopValue are not yet adjusted
 		int players = currentHand->getActivePlayerList()->size();
 		if(players > 5) players = 5;
 		// paranoia
@@ -3700,7 +3700,7 @@ void LocalPlayer::calcMyOdds()
 
 		// 		cout << "\t" << handCode << endl;
 
-		// übergang solange preflopValue und flopValue noch nicht bereinigt
+		// Transition while preflopValue and flopValue are not yet adjusted
 		int players = currentHand->getActivePlayerList()->size();
 		if(players > 5) players = 5;
 		// paranoia
@@ -3947,14 +3947,14 @@ int LocalPlayer::turnCardsValue(int* cards)
 	for(j1=0; j1<3; j1++) {
 		// 4 Karten gleiche Farbe ?
 		if(array[j1][0] == array[j1+1][0] && array[j1][0] == array[j1+2][0] && array[j1][0] == array[j1+3][0]) {
-			// zusammenhaengender Strassenansatz ?
+			// Connected straight draw?
 			if(array[j1][1]-3 == array[j1+3][1]) {
-				// Strassenansatz am Rand?
+				// Straight draw at the edge?
 				if(array[j1][1] == 12) {
 					//                        cout << "zusammenhaengender Straight-Flush-Draw mit Ass high   ";
 					break;
 				}
-				// Strassenansatz in der Mitte
+				// Straight draw in the middle
 				else {
 					//                        cout << "zusammenhaengender Straight-Flush-Draw in der Mitte   ";
 					break;
@@ -4032,19 +4032,19 @@ int LocalPlayer::turnCardsValue(int* cards)
 		}
 	}
 
-	// auf Straßenansatz testen
+	// Test for straight draw
 	for(j1=0; j1<6; j1++) {
 		for(j2=j1+1; j2<6; j2++) {
 			for(j3=j2+1; j3<6; j3++) {
 				for(j4=j3+1; j4<6; j4++) {
-					// zusammenhaengender Strassenansatz ?
+					// Connected straight draw?
 					if(array[j1][1]-1 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-1 == array[j4][1]) {
-						// Strassenansatz am Rand?
+						// Straight draw at the edge?
 						if(array[j1][1] == 12) {
 							// 							cout << "zusammenhaengender Straight-Draw mit Ass high   ";
 							return 30;
 						}
-						// Strassenansatz in der Mitte
+						// Straight draw in the middle
 						else {
 							//                        					cout << "zusammenhaengender Straight-Draw in der Mitte   ";
 							return 30;
@@ -4055,7 +4055,7 @@ int LocalPlayer::turnCardsValue(int* cards)
 							//                         				cout << "Straight-Bauchschuss   ";
 							return 30;
 						} else {
-							// Test auf Straßenansatz-Ausnahme 5-4-3-2-A
+							// Test for straight draw exception 5-4-3-2-A
 							if((array[j1][1]-9 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-1 == array[j4][1]) || (array[j1][1]-9 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-2 == array[j4][1]) || (array[j1][1]-9 == array[j2][1] && array[j2][1]-2 == array[j3][1] && array[j3][1]-1 == array[j4][1]) || (array[j1][1]-10 == array[j2][1] && array[j2][1]-1 == array[j3][1] && array[j3][1]-1 == array[j4][1])) {
 								//                              					cout << "Straight-Draw Ass unten   ";
 								return 30;
@@ -4184,7 +4184,7 @@ void LocalPlayer::preflopEngine3()
 					}
 				}
 			}
-			// hohes Potential --> gemäßigter Raise
+			// High potential --> moderate raise
 			else {
 				// bluff - raise
 				if(bluff <= 6 && 4 * currentHand->getSmallBlind() > currentHand->getCurrentBeRo()->getHighestSet()) {
@@ -4381,7 +4381,7 @@ void LocalPlayer::flopEngine3()
 				if(bluff <= 5) mySet = (bluff+1) * currentHand->getSmallBlind();
 				else {
 					if(bluff <=15 ) mySet = 4 * currentHand->getSmallBlind();
-					// je höher das Potential, desto höher der Einsatz (zur Basis SmallBlind)
+					// Higher potential means higher bet (based on small blind)
 					else { mySet = std::max(0, (potential-1) * 2 * currentHand->getSmallBlind()); }
 				}
 

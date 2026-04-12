@@ -1170,7 +1170,7 @@ std::list<std::string> CardsValue::translateCardsValueCode(int cardsValueCode)
 	int firstPart = cardsValueCode/100000000;
 	//zweite und dritte Ziffer : Kicker, highest Card, usw.
 	int secondPart = cardsValueCode/1000000 - firstPart*100;
-	//vierte und fünfte Ziffer
+	//Fourth and fifth digit
 	int thirdPart = cardsValueCode/10000 - firstPart*10000 - secondPart*100;
 	// usw
 	int fourthPart = cardsValueCode/100 - firstPart*1000000 - secondPart*10000 - thirdPart*100;
@@ -1362,7 +1362,7 @@ std::list<std::string> CardsValue::translateCardsValueCode(int cardsValueCode)
 		default:
 			cardString.push_back("ERROR");
 		}
-		//Pärchen
+		//Pair
 		switch(thirdPart) {
 		case 12:
 			cardString.push_back("Aces");

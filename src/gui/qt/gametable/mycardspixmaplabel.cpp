@@ -168,7 +168,7 @@ void MyCardsPixmapLabel::nextFlipCardsFrame()
 			flipCardsAction1 = false;
 			flipCardsAction2 = true;
 		} else {
-			//dann front vergrößern
+			//then enlarge front
 			if (frameFlipCardsAction2Size < 0.95 ) {
 				frameFlipCardsAction2Size += flipCardsScaleIntervall;
 				update();
