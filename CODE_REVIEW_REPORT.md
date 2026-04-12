@@ -1,7 +1,7 @@
 # PokerTH Comprehensive Code Review Report
 **Date:** 2026-04-12
 **Reviewer:** AI Assistant
-**Revision:** 2
+**Revision:** 3
 
 ---
 
@@ -152,8 +152,39 @@ All previously identified security issues have been resolved.
 
 ---
 
+## Issues Fixed (This Review — Revision 3)
+
+### 1. Chat Cleaner Server Timing Side-Channel — FIXED
+
+**File:** `src/chatcleaner/cleanerserver.cpp`
+
+**Issue:** The constant-time comparison for the chat cleaner client secret had two weaknesses:
+1. `volatile char result` should be `volatile unsigned char` to match the XOR operation type and prevent sign-extension issues.
+2. Intermediate values `eb` and `rb` were not `volatile`, allowing the compiler to potentially optimize the XOR operation.
+3. Used `&&` (logical AND) for the final comparison which can short-circuit, leaking timing information. The main `Tools::ConstantTimeStringCompare` in `tools.cpp` was already fixed to use bitwise `&` in a prior review, but this separate implementation in the chat cleaner server was not.
+
+**Fix:** Made all intermediate values `volatile`, changed result type to `unsigned char`, and replaced `&&` with bitwise `&` using separate `volatile bool` variables matching the pattern in `tools.cpp`.
+
+### 2. UserValid Password Not Cleared After Comparison — FIXED
+
+**File:** `src/net/serverlobbythread.cpp`
+
+**Issue:** In `UserValid()`, `providedPassword` was retrieved from the session and compared against the database secret, but was never securely cleared from memory after use. This left the cleartext password in stack/process memory until the string was naturally destructed at scope exit.
+
+**Fix:** Added `CryptHelper::SecureClearMemory` call for `providedPassword` immediately after the comparison, matching the pattern used for `serverPassword` in `HandleNetPacketInit`.
+
+### 3. WebReceiveBuffer: Use `!empty()` instead of `size() > 0` — FIXED
+
+**File:** `src/net/webreceivebuffer.cpp`
+
+**Issue:** Used `msg.size() > 0` to check for non-empty WebSocket messages. While functionally equivalent, `!msg.empty()` is the idiomatic C++ pattern and is consistently used elsewhere in the codebase.
+
+**Fix:** Changed to `!msg.empty()` for consistency.
+
+---
+
 ## Conclusion
 
-The PokerTH codebase is well-maintained with modern C++ practices, strong security measures, and good memory management. All raw `new` in `shared_ptr` constructors has been replaced with `boost::make_shared`, all German comments have been translated to English, and the bounds check documentation has been clarified. The remaining items are primarily cosmetic (variable names) and feature TODOs.
+The PokerTH codebase is well-maintained with modern C++ practices, strong security measures, and good memory management. All raw `new` in `shared_ptr` constructors has been replaced with `boost::make_shared`, all German comments have been translated to English, timing side-channels have been eliminated in both the main server and chat cleaner, passwords are securely cleared from memory after use, and bounds check documentation has been clarified. The remaining items are primarily cosmetic (variable names like `myNiveau`) and feature TODOs.
 
 **Overall Code Quality:** ⭐⭐⭐⭐½ (4.5/5)

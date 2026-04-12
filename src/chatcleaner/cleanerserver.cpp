@@ -187,14 +187,18 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 			QString receivedSecret = QString::fromStdString(netInit.clientsecret());
 			QByteArray expectedBytes = clientSecret.toUtf8();
 			QByteArray receivedBytes = receivedSecret.toUtf8();
-			volatile char result = 0;
+			volatile unsigned char result = 0;
 			const int maxLen = std::max(expectedBytes.size(), receivedBytes.size());
 			for (int i = 0; i < maxLen; ++i) {
-				unsigned char eb = (i < expectedBytes.size()) ? static_cast<unsigned char>(expectedBytes[i]) : 0;
-				unsigned char rb = (i < receivedBytes.size()) ? static_cast<unsigned char>(receivedBytes[i]) : 0;
+				volatile unsigned char eb = (i < expectedBytes.size()) ? static_cast<unsigned char>(expectedBytes[i]) : 0;
+				volatile unsigned char rb = (i < receivedBytes.size()) ? static_cast<unsigned char>(receivedBytes[i]) : 0;
 				result |= eb ^ rb;
 			}
-			bool secretMatch = (result == 0) && (expectedBytes.size() == receivedBytes.size());
+			// Use bitwise & instead of logical && to prevent short-circuit evaluation,
+			// ensuring truly constant-time comparison resistant to timing side-channel attacks.
+			volatile bool sizeMatch = (expectedBytes.size() == receivedBytes.size());
+			volatile bool contentMatch = (result == 0);
+			bool secretMatch = contentMatch & sizeMatch;
 			if (secretMatch) {
 				error = false;
 				m_authenticated = true;

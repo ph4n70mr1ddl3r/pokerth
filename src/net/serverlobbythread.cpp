@@ -1987,6 +1987,11 @@ ServerLobbyThread::UserValid(unsigned playerId, const DBPlayerData &dbPlayerData
 		return;
 	}
 	bool passwordMatch = Tools::ConstantTimeStringCompare(providedPassword, dbPlayerData.secret);
+	// Securely clear the password from memory after comparison to prevent lingering cleartext.
+	if (!providedPassword.empty()) {
+		CryptHelper::SecureClearMemory(&providedPassword[0], providedPassword.size());
+		providedPassword.clear();
+	}
 	if (passwordMatch) {
 		bool shouldEstablish = true;
 		std::string clientAddr = tmpSession->GetClientAddr();
