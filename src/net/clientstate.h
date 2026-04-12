@@ -50,7 +50,7 @@ class DownloadHelper;
 class ClientState
 {
 public:
-	virtual ~ClientState() noexcept;
+	virtual ~ClientState() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) = 0;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) = 0;
@@ -62,7 +62,7 @@ class ClientStateInit : public ClientState
 {
 public:
 	static ClientStateInit &Instance();
-	virtual ~ClientStateInit() noexcept;
+	virtual ~ClientStateInit() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -77,7 +77,7 @@ class ClientStateStartResolve : public ClientState
 {
 public:
 	static ClientStateStartResolve &Instance();
-	virtual ~ClientStateStartResolve() noexcept;
+	virtual ~ClientStateStartResolve() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -97,7 +97,7 @@ class ClientStateStartServerListDownload : public ClientState
 {
 public:
 	static ClientStateStartServerListDownload &Instance();
-	virtual ~ClientStateStartServerListDownload() noexcept;
+	virtual ~ClientStateStartServerListDownload() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -113,7 +113,7 @@ class ClientStateDownloadingServerList : public ClientState
 {
 public:
 	static ClientStateDownloadingServerList &Instance();
-	virtual ~ClientStateDownloadingServerList() noexcept;
+	virtual ~ClientStateDownloadingServerList() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -137,7 +137,7 @@ class ClientStateReadingServerList : public ClientState
 {
 public:
 	static ClientStateReadingServerList &Instance();
-	virtual ~ClientStateReadingServerList() noexcept;
+	virtual ~ClientStateReadingServerList() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -153,7 +153,7 @@ class ClientStateWaitChooseServer : public ClientState
 {
 public:
 	static ClientStateWaitChooseServer &Instance();
-	virtual ~ClientStateWaitChooseServer() noexcept;
+	virtual ~ClientStateWaitChooseServer() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -171,7 +171,7 @@ class ClientStateStartConnect : public ClientState
 {
 public:
 	static ClientStateStartConnect &Instance();
-	virtual ~ClientStateStartConnect() noexcept;
+	virtual ~ClientStateStartConnect() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -200,7 +200,7 @@ private:
 class AbstractClientStateReceiving : public ClientState
 {
 public:
-	virtual ~AbstractClientStateReceiving() noexcept;
+	virtual ~AbstractClientStateReceiving() noexcept override;
 
 	virtual void HandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket) override;
 
@@ -214,7 +214,7 @@ class ClientStateStartSession : public AbstractClientStateReceiving
 {
 public:
 	static ClientStateStartSession &Instance();
-	virtual ~ClientStateStartSession() noexcept;
+	virtual ~ClientStateStartSession() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -230,7 +230,7 @@ class ClientStateWaitEnterLogin : public ClientState
 {
 public:
 	static ClientStateWaitEnterLogin &Instance();
-	virtual ~ClientStateWaitEnterLogin() noexcept;
+	virtual ~ClientStateWaitEnterLogin() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -248,7 +248,7 @@ class ClientStateWaitAuthChallenge : public AbstractClientStateReceiving
 {
 public:
 	static ClientStateWaitAuthChallenge &Instance();
-	virtual ~ClientStateWaitAuthChallenge() noexcept;
+	virtual ~ClientStateWaitAuthChallenge() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -264,7 +264,7 @@ class ClientStateWaitAuthVerify : public AbstractClientStateReceiving
 {
 public:
 	static ClientStateWaitAuthVerify &Instance();
-	virtual ~ClientStateWaitAuthVerify() noexcept;
+	virtual ~ClientStateWaitAuthVerify() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -280,7 +280,7 @@ class ClientStateWaitSession : public AbstractClientStateReceiving
 {
 public:
 	static ClientStateWaitSession &Instance();
-	virtual ~ClientStateWaitSession() noexcept;
+	virtual ~ClientStateWaitSession() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -296,7 +296,7 @@ class ClientStateWaitJoin : public AbstractClientStateReceiving
 {
 public:
 	static ClientStateWaitJoin &Instance();
-	virtual ~ClientStateWaitJoin() noexcept;
+	virtual ~ClientStateWaitJoin() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -312,7 +312,7 @@ class ClientStateWaitGame : public AbstractClientStateReceiving
 {
 public:
 	static ClientStateWaitGame &Instance();
-	virtual ~ClientStateWaitGame() noexcept;
+	virtual ~ClientStateWaitGame() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -328,7 +328,7 @@ class ClientStateSynchronizeStart : public AbstractClientStateReceiving
 {
 public:
 	static ClientStateSynchronizeStart &Instance();
-	virtual ~ClientStateSynchronizeStart() noexcept;
+	virtual ~ClientStateSynchronizeStart() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -345,7 +345,7 @@ class ClientStateWaitStart : public AbstractClientStateReceiving
 {
 public:
 	static ClientStateWaitStart &Instance();
-	virtual ~ClientStateWaitStart() noexcept;
+	virtual ~ClientStateWaitStart() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -361,7 +361,7 @@ class ClientStateWaitHand : public AbstractClientStateReceiving
 {
 public:
 	static ClientStateWaitHand &Instance();
-	virtual ~ClientStateWaitHand() noexcept;
+	virtual ~ClientStateWaitHand() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;
@@ -377,7 +377,7 @@ class ClientStateRunHand : public AbstractClientStateReceiving
 {
 public:
 	static ClientStateRunHand &Instance();
-	virtual ~ClientStateRunHand() noexcept;
+	virtual ~ClientStateRunHand() noexcept override;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) override;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) override;

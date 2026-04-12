@@ -43,7 +43,7 @@ class DBIdManager;
 class AsyncDBQuery
 {
 public:
-	virtual ~AsyncDBQuery() noexcept;
+	virtual ~AsyncDBQuery() noexcept override;
 
 	virtual void Init(DBIdManager& idManager) = 0;
 

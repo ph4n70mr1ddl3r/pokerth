@@ -42,7 +42,7 @@ public:
 
 	LocalException(const char *sourcefile, int sourceline, int errorId)
 		: PokerTHException(sourcefile, sourceline, errorId, 0) {}
-	virtual ~LocalException() noexcept;
+	virtual ~LocalException() noexcept override;
 };
 
 #endif

@@ -40,7 +40,7 @@ class AsyncDBEndGame : public SingleAsyncDBQuery
 {
 public:
 	AsyncDBEndGame(unsigned queryId, const std::string &preparedName, const std::list<std::string> &params);
-	virtual ~AsyncDBEndGame() noexcept;
+	virtual ~AsyncDBEndGame() noexcept override;
 
 	virtual void Init(DBIdManager& idManager) override;
 

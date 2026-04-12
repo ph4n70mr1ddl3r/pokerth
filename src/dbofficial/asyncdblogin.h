@@ -40,7 +40,7 @@ class AsyncDBLogin : public SingleAsyncDBQuery
 {
 public:
 	AsyncDBLogin(unsigned queryId, const std::string &preparedName, const std::list<std::string> &params);
-	virtual ~AsyncDBLogin() noexcept;
+	virtual ~AsyncDBLogin() noexcept override;
 
 	virtual void Init(DBIdManager& /*idManager*/) override {}
 

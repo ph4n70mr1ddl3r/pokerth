@@ -40,7 +40,7 @@ class AsyncDBAvatarBlacklist : public SingleAsyncDBQuery
 {
 public:
 	AsyncDBAvatarBlacklist(unsigned queryId, const std::string &preparedName, const std::list<std::string> &params);
-	virtual ~AsyncDBAvatarBlacklist() noexcept;
+	virtual ~AsyncDBAvatarBlacklist() noexcept override;
 
 	virtual void Init(DBIdManager& /*idManager*/) override {}
 

@@ -44,7 +44,7 @@ class gameTableImpl;
 class GuiInterface : public ClientCallback, public ServerCallback
 {
 public:
-	virtual ~GuiInterface() noexcept;
+	virtual ~GuiInterface() noexcept override;
 
 	virtual void initGui(int speed) =0;
 

@@ -97,7 +97,7 @@ protected:
 	{
 		currentPlayersTurnId = theValue;
 	}
-	unsigned getCurrentPlayersTurnId() const
+	unsigned getCurrentPlayersTurnId() const override
 	{
 		return currentPlayersTurnId;
 	}
@@ -115,7 +115,7 @@ protected:
 	{
 		currentPlayersTurnIt = theValue;
 	}
-	PlayerListIterator getCurrentPlayersTurnIt() const
+	PlayerListIterator getCurrentPlayersTurnIt() const override
 	{
 		return currentPlayersTurnIt;
 	}
@@ -133,7 +133,7 @@ protected:
 	{
 		highestSet = theValue;
 	}
-	int getHighestSet() const
+	int getHighestSet() const override
 	{
 		return highestSet;
 	}
@@ -160,7 +160,7 @@ protected:
 	{
 		smallBlindPositionId = theValue;
 	}
-	unsigned getSmallBlindPositionId() const
+	unsigned getSmallBlindPositionId() const override
 	{
 		return smallBlindPositionId;
 	}
@@ -169,7 +169,7 @@ protected:
 	{
 		bigBlindPositionId = theValue;
 	}
-	unsigned getBigBlindPositionId() const
+	unsigned getBigBlindPositionId() const override
 	{
 		return bigBlindPositionId;
 	}
