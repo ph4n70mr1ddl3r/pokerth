@@ -40,7 +40,7 @@ class DownloadHelper : public TransferHelper
 {
 public:
 	DownloadHelper();
-	virtual ~DownloadHelper() noexcept;
+	virtual ~DownloadHelper() noexcept override;
 
 protected:
 	virtual void InternalInit(const std::string &url, const std::string &targetFileName,

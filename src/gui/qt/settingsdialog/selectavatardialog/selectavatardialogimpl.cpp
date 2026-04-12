@@ -251,12 +251,12 @@ void selectAvatarDialogImpl::isAccepted()
 	settingsCorrect = true;
 
 	if(groupBox->isChecked()) {
-		if(myItemList.size() == 0) {
+		if(myItemList.isEmpty()) {
 			MyMessageBox::warning(this, tr("Avatar File Error"),
 								  tr("Please select an avatar from the list!"),
 								  QMessageBox::Ok);
 			settingsCorrect = false;
-		} else settingsCorrect = true;;
+		} else settingsCorrect = true;
 	}
 
 	if(groupBox_2->isChecked()) {

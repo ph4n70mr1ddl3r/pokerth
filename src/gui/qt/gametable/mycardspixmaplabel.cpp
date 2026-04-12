@@ -123,8 +123,8 @@ void MyCardsPixmapLabel::startFlipCards(int speed, const QPixmap &frontPix, cons
 	frameFlipCardsAction1Size = 1.0;
 	frameFlipCardsAction2Size = 0.0;
 
-	front = frontPix.scaled(width(), height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);;
-	flipside = flipsidePix.scaled(width(), height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);;
+	front = frontPix.scaled(width(), height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+	flipside = flipsidePix.scaled(width(), height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
 	if(speed <= 4) {
 		flipCardsScaleIntervall = 0.1;
@@ -191,7 +191,7 @@ void MyCardsPixmapLabel::setPixmap(const QPixmap &pic, const bool flipsideIs)
 void MyCardsPixmapLabel::setHiddenFrontPixmap ( const QPixmap &pic )
 {
 
-	myHiddenFront = pic.scaled(width(), height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);;
+	myHiddenFront = pic.scaled(width(), height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 }
 
 void MyCardsPixmapLabel::paintEvent(QPaintEvent * event)
@@ -277,7 +277,7 @@ void MyCardsPixmapLabel::mouseReleaseEvent(QMouseEvent * event)
 void MyCardsPixmapLabel::setFront ( const QPixmap& theValue )
 {
 #ifdef GUI_800x480
-	front = theValue.scaled(width(), height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);;
+	front = theValue.scaled(width(), height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 #else
 	front = theValue;
 #endif

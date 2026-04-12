@@ -55,7 +55,7 @@ class ServerAdminBot : public IrcCallback, public boost::enable_shared_from_this
 {
 public:
 	ServerAdminBot(boost::shared_ptr<boost::asio::io_context> ioService);
-	virtual ~ServerAdminBot() noexcept;
+	virtual ~ServerAdminBot() noexcept override;
 
 	void Init(boost::shared_ptr<ServerLobbyThread> lobbyThread, boost::shared_ptr<IrcThread> ircAdminThread, const std::string &cacheDir);
 

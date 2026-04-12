@@ -526,7 +526,7 @@ ServerGame::StoreLastGames(const PlayerDataList &playerDataList)
 		if(!last_games.empty()) {
 			LOG_VERBOSE("TimeStamp stored: " << last_games.back());
 			LOG_VERBOSE("Ready for storing vector for player " << tmpPlayer->GetDBId() << " - lastGameTs " << last_games.back());
-			if(tmpPlayer->GetDBId() != DB_ID_INVALID){
+			if(tmpPlayer->GetDBId() != DB_ID_INVALID) {
 				boost::shared_ptr<SessionData> session = GetSessionManager().GetSessionByUniquePlayerId(tmpPlayer->GetUniqueId());
 				if (session) {
 					GetDatabase().SetPlayerLastGames(GetId(), tmpPlayer->GetDBId(), last_games, session->GetClientAddr());

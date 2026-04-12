@@ -44,9 +44,9 @@ ServerAcceptWebHelper::ServerAcceptWebHelper(ServerCallback &serverCallback, boo
 	  m_webSocketResource(webSocketResource), m_webSocketOrigin(webSocketOrigin)
 {
 	m_tls = websocketTls;
-	if(m_tls){
+	if(m_tls) {
 		m_webSocketTlsServer = boost::make_shared<tls_server>();
-	}else{
+	} else {
 		m_webSocketServer = boost::make_shared<server>();
 	}
 	
@@ -58,7 +58,7 @@ ServerAcceptWebHelper::Listen(unsigned serverPort, bool /*ipv6*/, const std::str
 	m_lobbyThread = lobbyThread;
 
 
-	if(m_tls){
+	if(m_tls) {
 		// Set logging settings
 #ifdef QT_NO_DEBUG
 		m_webSocketTlsServer->clear_access_channels(websocketpp::log::alevel::all);

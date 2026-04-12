@@ -1257,12 +1257,12 @@ void GameTableStyleReader::readStyleFile(QString file)
 
 			//set loadedSuccessfull true if everything works
 			//            qDebug() << "leftitem is empty: " << leftItems.isEmpty() << "pics left is empty: " << itemPicsLeft.isEmpty() << "stylefileversion is: " << PokerTHStyleFileVersion;
-			if(leftItems.isEmpty() && itemPicsLeft.isEmpty() && PokerTHStyleFileVersion != "" && PokerTHStyleFileVersion.toInt() == POKERTH_GT_STYLE_FILE_VERSION) {
+			if(leftItems.isEmpty() && itemPicsLeft.isEmpty() && !PokerTHStyleFileVersion.isEmpty() && PokerTHStyleFileVersion.toInt() == POKERTH_GT_STYLE_FILE_VERSION) {
 				myState = GT_STYLE_OK;
 				//                qDebug() << "myState of: " << StyleDescription << "is now: " << myState;
 			} else {
 				//check for style file version
-				if(PokerTHStyleFileVersion != "" && PokerTHStyleFileVersion.toInt() != POKERTH_GT_STYLE_FILE_VERSION) {
+				if(!PokerTHStyleFileVersion.isEmpty() && PokerTHStyleFileVersion.toInt() != POKERTH_GT_STYLE_FILE_VERSION) {
 					myState = GT_STYLE_OUTDATED;
 				} else {
 					//if one or more items are left

@@ -87,7 +87,7 @@ void CardDeckStyleReader::readStyleFile(QString file)
 	xmlDoc.setResolveExternals(false);
 	xmlDoc.setContent(fileContent);
 
-	if(!xmlDoc.documentElement().isNull()){
+	if(!xmlDoc.documentElement().isNull()) {
 		QDomElement GameTableElement = xmlDoc.documentElement().firstChildElement( "TableStyle" );
 		if(!GameTableElement.isNull()) {
 			MyMessageBox::warning(myW, tr("Card Deck Style Error"),
@@ -158,11 +158,11 @@ void CardDeckStyleReader::readStyleFile(QString file)
 			}
 
 			// set loadedSuccessfull true if everything works
-			if(leftItems.isEmpty() && cardsLeft.isEmpty() && PokerTHStyleFileVersion != "" && PokerTHStyleFileVersion.toInt() == POKERTH_CD_STYLE_FILE_VERSION) {
+			if(leftItems.isEmpty() && cardsLeft.isEmpty() && !PokerTHStyleFileVersion.isEmpty() && PokerTHStyleFileVersion.toInt() == POKERTH_CD_STYLE_FILE_VERSION) {
 				myState = CD_STYLE_OK;
 			} else {
 				//check for style file version
-				if(PokerTHStyleFileVersion != "" && PokerTHStyleFileVersion.toInt() != POKERTH_CD_STYLE_FILE_VERSION) {
+				if(!PokerTHStyleFileVersion.isEmpty() && PokerTHStyleFileVersion.toInt() != POKERTH_CD_STYLE_FILE_VERSION) {
 					myState = CD_STYLE_OUTDATED;
 				} else {
 					//if one or more items are left

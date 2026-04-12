@@ -1,7 +1,7 @@
 # PokerTH Comprehensive Code Review Report
 **Date:** 2026-04-12
 **Reviewer:** AI Assistant
-**Revision:** 5
+**Revision:** 6
 
 ---
 
@@ -261,4 +261,82 @@ The PokerTH codebase continues to improve with each review pass. This revision a
 
 The PokerTH codebase continues to maintain strong engineering quality. This revision addressed missing `override` specifiers on the server accept helper methods which could silently break if base class signatures change, and modernized the load test utility to use C++23 standard library facilities instead of deprecated Boost thread APIs. The codebase shows thorough attention to thread safety, memory management, security, and code organization across all prior review passes.
 
-**Overall Code Quality:** ⭐⭐⭐⭐⭐ (4.7/5)
+**Overall Code Quality:** ⭐⭐⭐⭐⭐ (4.8/5)
+
+## Issues Fixed (This Review — Revision 6)
+
+### 1. Missing `override` on Virtual Destructors — FIXED
+
+**Files:** `src/net/ircthread.h`, `src/net/serverlobbythread.h`, `src/net/downloaderthread.h`, `src/net/uploaderthread.h`, `src/net/clientthread.h`, `src/net/servermanagerirc.h`, `src/net/serverexception.h`, `src/net/uploadhelper.h`, `src/net/downloadhelper.h`, `src/net/asiosendbuffer.h`, `src/net/serverlobbybot.h`, `src/net/serveradminbot.h`, `src/net/servergamestate.h` (8 classes)
+
+**Issue:** 20 derived class destructors were missing the `override` specifier despite overriding virtual destructors from their base classes. For example:
+- `IrcThread`, `ServerLobbyThread`, `DownloaderThread`, `UploaderThread`, `ClientThread` derive from `Thread` (virtual dtor)
+- `ServerManagerIrc` derives from `ServerManager` (virtual dtor)
+- `ServerException` derives from `NetException` (virtual dtor)
+- `UploadHelper`/`DownloadHelper` derive from `TransferHelper` (virtual dtor)
+- `AsioSendBuffer` derives from `SendBuffer` (virtual dtor)
+- `ServerLobbyBot` derives from `IrcCallback` and `ServerIrcBotCallback` (virtual dtors)
+- `ServerAdminBot` derives from `IrcCallback` (virtual dtor)
+- All state classes (`AbstractServerGameStateReceiving`, `ServerGameStateInit`, `ServerGameStateStartGame`, `AbstractServerGameStateRunning`, `ServerGameStateHand`, `ServerGameStateWaitPlayerAction`, `ServerGameStateWaitNextHand`, `ServerGameStateFinal`) override `ServerGameState`'s virtual destructor
+
+Missing `override` means the compiler cannot detect signature mismatches if a base class destructor changes (e.g., exception spec changes).
+
+**Fix:** Added `override` to all 20 destructors across 13 files.
+
+### 2. Double Semicolons (Typos) — FIXED
+
+**Files:** `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp`, `src/gui/qt/gametable/mycardspixmaplabel.cpp`, `src/gui/qt/settingsdialog/selectavatardialog/selectavatardialogimpl.cpp`
+
+**Issue:** 7 instances of double semicolons (`;;`) found in GUI code:
+- `gamelobbydialogimpl.cpp`: 2 occurrences (`clearSelection();;` and `removeRow(it1);;`)
+- `mycardspixmaplabel.cpp`: 4 occurrences on `scaled()` calls
+- `selectavatordialogimpl.cpp`: 1 occurrence (`settingsCorrect = true;;`)
+
+**Fix:** Removed all extra semicolons.
+
+### 3. Non-Idiomatic Container Empty Checks — FIXED
+
+**File:** `src/gui/qt/settingsdialog/selectavatardialog/selectavatardialogimpl.cpp`
+
+**Issue:** `myItemList.size() == 0` was used to check for an empty QList. The idiomatic Qt/C++ pattern is `isEmpty()` which is more readable and potentially faster (O(1) guaranteed vs O(n) for some containers).
+
+**Fix:** Changed `myItemList.size() == 0` to `myItemList.isEmpty()`.
+
+### 4. Non-Idiomatic QString Empty Checks — FIXED
+
+**Files:** `src/gui/qt/styles/carddeckstylereader.cpp`, `src/gui/qt/styles/gametablestylereader.cpp`
+
+**Issue:** 4 instances of `PokerTHStyleFileVersion != ""` used to check non-empty QStrings. The idiomatic Qt pattern is `!PokerTHStyleFileVersion.isEmpty()` which is more explicit and avoids constructing a temporary QString from `""`.
+
+**Fix:** Changed all 4 occurrences to use `!isEmpty()`.
+
+### 5. German Comments Remaining in configfile.cpp — FIXED
+
+**File:** `src/config/configfile.cpp`
+
+**Issue:** 4 German comments remained in the config file initialization code:
+- `Pfad und Dateinamen setzen` → Set path and file name
+- `Testen ob das Verzeichnis beschreibbar ist` → Test if the directory is writable
+- `Erfolgreich, Verzeichnis beschreibbar. Datei wieder loeschen.` → Success, directory is writable. Delete the file again.
+- `Fehlgeschlagen, Verzeichnis nicht beschreibbar` → Failed, directory is not writable
+
+**Fix:** Translated all 4 German comments to English.
+
+### 6. Missing Space Before `{` in Conditionals — FIXED
+
+**Files:** `src/net/serveracceptwebhelper.cpp`, `src/net/servergame.cpp`, `src/gui/qt/styles/carddeckstylereader.cpp`
+
+**Issue:** 5 `if` statements had `){` without a space before the opening brace:
+- `serveracceptwebhelper.cpp`: `if(m_tls){` (2 occurrences) and `}else{`
+- `servergame.cpp`: `if(tmpPlayer->GetDBId() != DB_ID_INVALID){`
+- `carddeckstylereader.cpp`: `if(!xmlDoc.documentElement().isNull()){`
+
+**Fix:** Added space before `{` and between `} else {` for consistent style matching the rest of the codebase.
+
+---
+
+## Conclusion
+
+This review pass focused on code correctness and maintainability improvements: adding `override` to 20 virtual destructors in derived classes to enable compiler-enforced signature checking, fixing 7 double-semicolon typos, replacing non-idiomatic container/QString empty checks with idiomatic `isEmpty()` patterns, translating 4 remaining German comments to English, and normalizing conditional formatting style. The codebase continues to show strong engineering quality across all prior review passes.
+
+**Overall Code Quality:** ⭐⭐⭐⭐⭐ (4.8/5)

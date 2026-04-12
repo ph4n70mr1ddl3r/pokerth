@@ -111,7 +111,7 @@ class ClientThread : public Thread, public boost::enable_shared_from_this<Client
 {
 public:
 	ClientThread(GuiInterface &gui, AvatarManager &avatarManager, Log *myLog);
-	virtual ~ClientThread() noexcept;
+	virtual ~ClientThread() noexcept override;
 
 	// Set the parameters. Does not do any error checking.
 	// Error checking will be done during connect

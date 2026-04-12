@@ -100,7 +100,7 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 	// standard defaults
 	logOnOffDefault = "1";
 
-	// Pfad und Dateinamen setzen
+	// Set path and file name
 #ifdef _WIN32
 	const char *appDataPath = getenv("AppData");
 	if (appDataPath && appDataPath[0] != 0)
@@ -115,20 +115,20 @@ ConfigFile::ConfigFile(char *argv0, bool readonly) : noWriteAccess(readonly)
 		_getcwd(curDir, MaxPathSize);
 		curDir[MaxPathSize] = 0;
 		configFileName = curDir;
-		// Testen ob das Verzeichnis beschreibbar ist
+		// Test if the directory is writable
 		ofstream tmpFile;
 		const char *tmpFileName = "pokerth_test.tmp";
 		tmpFile.open((configFileName + "\\" + tmpFileName).c_str());
 		if (tmpFile)
 		{
-			// Erfolgreich, Verzeichnis beschreibbar.
-			// Datei wieder loeschen.
+			// Success, directory is writable.
+			// Delete the file again.
 			tmpFile.close();
 			remove((configFileName + "\\" + tmpFileName).c_str());
 		}
 		else
 		{
-			// Fehlgeschlagen, Verzeichnis nicht beschreibbar
+			// Failed, directory is not writable
 			curDir[0] = 0;
 			GetTempPathA(MaxPathSize, curDir);
 			curDir[MaxPathSize] = 0;

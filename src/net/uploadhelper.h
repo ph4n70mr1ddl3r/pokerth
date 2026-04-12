@@ -40,7 +40,7 @@ class UploadHelper : public TransferHelper
 {
 public:
 	UploadHelper();
-	virtual ~UploadHelper() noexcept;
+	virtual ~UploadHelper() noexcept override;
 
 protected:
 	virtual void InternalInit(const std::string &url, const std::string &targetFileName,

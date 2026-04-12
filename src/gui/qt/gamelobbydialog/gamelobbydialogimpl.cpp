@@ -870,7 +870,7 @@ void gameLobbyDialogImpl::clearDialog()
 
 	myNickListModel->clear();
 	myNickListSelectionModel->clear();
-	myNickListSelectionModel->clearSelection();;
+	myNickListSelectionModel->clearSelection();
 	QStringList headerList2;
 	headerList2 << tr("Available Players");
 	myNickListModel->setHorizontalHeaderLabels(headerList2);
@@ -1083,7 +1083,7 @@ void gameLobbyDialogImpl::playerLeftLobby(unsigned playerId)
 	int it1 = 0;
 	while (myNickListModel->item(it1)) {
 		if (myNickListModel->item(it1, 0)->data(Qt::UserRole) == playerId) {
-			myNickListModel->removeRow(it1);;
+			myNickListModel->removeRow(it1);
 			break;
 		}
 		++it1;
