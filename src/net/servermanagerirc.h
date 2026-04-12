@@ -45,8 +45,8 @@ public:
 	virtual ~ServerManagerIrc() noexcept;
 
 	// Set the parameters.
-	virtual void Init(unsigned serverPort, unsigned websocketPort, bool ipv6, bool serverTls, bool websocketTls, int proto, const std::string &logDir,
-					  const std::string &webSocketResource, const std::string &webSocketOrigin);
+	void Init(unsigned serverPort, unsigned websocketPort, bool ipv6, bool serverTls, bool websocketTls, int proto, const std::string &logDir,
+					  const std::string &webSocketResource, const std::string &webSocketOrigin) override;
 
 	// Main start function.
 	virtual void RunAll() override;

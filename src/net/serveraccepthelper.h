@@ -146,22 +146,13 @@ protected:
         m_acceptor->bind(*m_endpoint);
         m_acceptor->listen();
 
-        if(m_tls){
-            auto newSocket = boost::make_shared<P_socket>(*m_ioService);
-            m_acceptor->async_accept(
-                *newSocket,
-                boost::bind(&ServerAcceptHelper::HandleAccept, this, newSocket,
-                            boost::asio::placeholders::error)
-            );
-        }else{
-            // Start first asynchronous Accept.
-            auto newSocket = boost::make_shared<P_socket>(*m_ioService);
-            m_acceptor->async_accept(
-                *newSocket,
-                boost::bind(&ServerAcceptHelper::HandleAccept, this, newSocket,
-                            boost::asio::placeholders::error)
-            );
-        }
+        // Start first asynchronous Accept.
+        auto newSocket = boost::make_shared<P_socket>(*m_ioService);
+        m_acceptor->async_accept(
+            *newSocket,
+            boost::bind(&ServerAcceptHelper::HandleAccept, this, newSocket,
+                        boost::asio::placeholders::error)
+        );
     }
 
     void HandleAccept(boost::shared_ptr<P_socket> acceptedSocket,

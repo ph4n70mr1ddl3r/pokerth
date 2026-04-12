@@ -44,12 +44,12 @@
 #include <QtWidgets>
 
 struct result_struct {
-	char **result_Session;
-	char **result_Game;
-	char **result_Player;
-	char **result_Hand;
-	char **result_Hand_ID;
-	char **result_Action;
+	char **result_Session = nullptr;
+	char **result_Game = nullptr;
+	char **result_Player = nullptr;
+	char **result_Hand = nullptr;
+	char **result_Hand_ID = nullptr;
+	char **result_Action = nullptr;
 };
 
 // forward declare sqlite3 opaque type used by legacy code in guilog.cpp
@@ -97,7 +97,7 @@ public:
 	{
 		mySqliteLogFileName = theValue;
 	}
-	std::string getMySqliteLogFileName()
+	std::string getMySqliteLogFileName() const
 	{
 		return mySqliteLogFileName;
 	}

@@ -45,7 +45,7 @@ public:
 protected:
 	virtual void InternalInit(const std::string &url, const std::string &targetFileName,
 							  const std::string &user, const std::string &password,
-							  size_t filesize, const std::string &httpPost);
+							  size_t filesize, const std::string &httpPost) override;
 };
 
 #endif

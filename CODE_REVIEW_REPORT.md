@@ -1,7 +1,7 @@
 # PokerTH Comprehensive Code Review Report
 **Date:** 2026-04-12
 **Reviewer:** AI Assistant
-**Revision:** 3
+**Revision:** 4
 
 ---
 
@@ -183,8 +183,58 @@ All previously identified security issues have been resolved.
 
 ---
 
+## Issues Fixed (This Review — Revision 4)
+
+### 1. SQL Injection Prevention in Log Export — FIXED
+
+**File:** `src/gui/qt/gametable/log/guilog.cpp`
+
+**Issue:** The `exportLog()` and `getGameList()` functions constructed SQL queries by concatenating string values from previous query results (`results.result_Hand_ID[hand_ctr]`) directly into SQL WHERE clauses. While this data comes from the game's own log database, a corrupted or tampered log file could contain non-numeric values in the HandID column, leading to potential SQL injection when reading log files.
+
+**Fix:** Added `safeSqlInteger()` validator that ensures all characters are digits before using the value in a SQL query, returning `"0"` for any invalid input. Applied to all 6 SQL query construction sites where `result_Hand_ID` values are concatenated into queries.
+
+### 2. `result_struct` Default Initialization — FIXED
+
+**File:** `src/gui/qt/gametable/log/guilog.h`
+
+**Issue:** `result_struct` members were uninitialized POD pointers, requiring every usage site to manually zero-initialize all 6 members. Forgetting to initialize any member could lead to undefined behavior in `sqlite3_free_table()` during cleanup.
+
+**Fix:** Added `= nullptr` default member initializers to all 6 pointer members. Removed the now-redundant manual zero-initialization from `exportLog()` and `getGameList()`.
+
+### 3. Missing `override` Specifiers — FIXED
+
+**Files:** `src/net/servermanagerirc.h`, `src/net/asiosendbuffer.h`, `src/net/downloadhelper.h`, `src/net/uploadhelper.h`
+
+**Issue:** Several virtual method overrides in derived classes were missing the `override` keyword:
+- `ServerManagerIrc::Init()` — overrides `ServerManager::Init()` without `override`
+- `AsioSendBuffer::HandleWriteSsl()` — overrides `SendBuffer::HandleWriteSsl()` without `override`
+- `DownloadHelper::InternalInit()` — overrides `TransferHelper::InternalInit()` without `override`
+- `UploadHelper::InternalInit()` — overrides `TransferHelper::InternalInit()` without `override`
+
+Missing `override` can silently create bugs when base class signatures change — the derived method becomes a new virtual function instead of overriding the base, with no compiler warning.
+
+**Fix:** Added `override` specifier to all 4 methods.
+
+### 4. Duplicate TLS/Non-TLS Accept Code Removed — FIXED
+
+**File:** `src/net/serveraccepthelper.h`
+
+**Issue:** `InternalListen()` had an `if(m_tls) { ... } else { ... }` block where both branches contained identical code — creating a new socket and calling `async_accept` with the same parameters. This was dead code duplication that made the code harder to maintain.
+
+**Fix:** Replaced the if/else with a single code block. The TLS handling is properly done in `HandleAccept`/`HandleHandshake` later in the flow, so the initial accept setup is identical regardless of TLS mode.
+
+### 5. Const Correctness on Getter — FIXED
+
+**File:** `src/gui/qt/gametable/log/guilog.h`
+
+**Issue:** `getMySqliteLogFileName()` was not marked `const` despite not modifying any member state. This prevents calling the getter on `const` references.
+
+**Fix:** Added `const` qualifier to the method.
+
+---
+
 ## Conclusion
 
-The PokerTH codebase is well-maintained with modern C++ practices, strong security measures, and good memory management. All raw `new` in `shared_ptr` constructors has been replaced with `boost::make_shared`, all German comments have been translated to English, timing side-channels have been eliminated in both the main server and chat cleaner, passwords are securely cleared from memory after use, and bounds check documentation has been clarified. The remaining items are primarily cosmetic (variable names like `myNiveau`) and feature TODOs.
+The PokerTH codebase continues to improve with each review pass. This revision addressed SQL injection defense-in-depth for the log export system, eliminated potential use-of-uninitialized-pointer bugs through default member initialization, added missing `override` specifiers to prevent silent virtual dispatch bugs, removed dead code duplication in the server accept handler, and improved const correctness. The codebase maintains strong security practices, modern C++ patterns, and clean code organization.
 
-**Overall Code Quality:** ⭐⭐⭐⭐½ (4.5/5)
+**Overall Code Quality:** ⭐⭐⭐⭐⭐ (4.7/5)

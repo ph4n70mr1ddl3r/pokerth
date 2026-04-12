@@ -854,6 +854,19 @@ static int safeGetPlayerIndex(const char* str, int maxPlayers) {
 	}
 }
 
+// Validate that a string from the database is a valid non-negative integer.
+// Returns the validated integer string, or "0" if invalid.
+static string safeSqlInteger(const char* str) {
+	if (!str || !*str) return "0";
+	// Check every character is a digit
+	for (const char* p = str; *p; ++p) {
+		if (*p < '0' || *p > '9') return "0";
+	}
+	// Skip leading zeros but keep at least one digit
+	while (*str == '0' && *(str + 1)) ++str;
+	return str;
+}
+
 static string safeGetPlayerName(const char* str, string* playerArray, int maxPlayers) {
 	int idx = safeGetPlayerIndex(str, maxPlayers);
 	if (idx < 0) return "Unknown";
@@ -874,12 +887,6 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 	bool neu = false;
 
 	result_struct results;
-	results.result_Session = 0;
-	results.result_Game = 0;
-	results.result_Player = 0;
-	results.result_Hand = 0;
-	results.result_Hand_ID = 0;
-	results.result_Action = 0;
 
 	string sql = "";
 	string log_string = "";
@@ -1104,7 +1111,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				sql = "SELECT * FROM Hand WHERE UniqueGameID=";
 				sql+= std::to_string(uniqueGameID);
 				sql+= " AND HandID=";
-				sql+= results.result_Hand_ID[hand_ctr] ? results.result_Hand_ID[hand_ctr] : "0";
+				sql+= safeSqlInteger(results.result_Hand_ID[hand_ctr]);
 				if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand,&nRow_Hand,&nCol_Hand,&errmsg) != SQLITE_OK) {
 					cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
 					sqlite3_free(errmsg);
@@ -1219,7 +1226,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			 sql = "SELECT Player,Action,Amount FROM Action WHERE UniqueGameID=";
 			 sql += std::to_string(uniqueGameID);
                 sql += " AND HandID=";
-                sql += results.result_Hand_ID[hand_ctr] ? results.result_Hand_ID[hand_ctr] : "0";
+                sql += safeSqlInteger(results.result_Hand_ID[hand_ctr]);
                 sql += " AND BeRo=";
                 sql += std::to_string(GAME_STATE_PREFLOP);
                 sql += " AND (Action='posts small blind' OR Action='posts big blind' OR Action='starts as dealer')";
@@ -1272,7 +1279,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					sql = "SELECT Player,Amount FROM Action WHERE UniqueGameID=";
 					sql += std::to_string(uniqueGameID);
 					sql += " AND HandID=";
-					sql += (results.result_Hand_ID[hand_ctr] ? std::string(results.result_Hand_ID[hand_ctr]) : "0");
+					sql += safeSqlInteger(results.result_Hand_ID[hand_ctr]);
 					sql += " AND BeRo=0 AND Action='posts small blind'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
@@ -1297,7 +1304,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					sql = "SELECT Player,Amount FROM Action WHERE UniqueGameID=";
 					sql += std::to_string(uniqueGameID);
 					sql += " AND HandID=";
-					sql += (results.result_Hand_ID[hand_ctr] ? std::string(results.result_Hand_ID[hand_ctr]) : "0");
+					sql += safeSqlInteger(results.result_Hand_ID[hand_ctr]);
 					sql += " AND BeRo=0 AND Action='posts big blind'";
 
 					if (results.result_Action) { sqlite3_free_table(results.result_Action); results.result_Action = nullptr; }
@@ -1323,7 +1330,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					sql = "SELECT Player,Amount FROM Action WHERE UniqueGameID=";
 					sql += std::to_string(uniqueGameID);
 					sql += " AND HandID=";
-					sql += (results.result_Hand_ID[hand_ctr] ? std::string(results.result_Hand_ID[hand_ctr]) : "0");
+					sql += safeSqlInteger(results.result_Hand_ID[hand_ctr]);
 					sql += " AND BeRo=0 AND Action='starts as dealer'";
 
 					if (results.result_Action) { sqlite3_free_table(results.result_Action); results.result_Action = nullptr; }
@@ -1453,7 +1460,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				 sql = "SELECT Player,Action,Amount FROM Action WHERE UniqueGameID=";
                     sql += std::to_string(uniqueGameID);
                     sql += " AND HandID=";
-                    sql += results.result_Hand_ID[hand_ctr] ? results.result_Hand_ID[hand_ctr] : "0";
+                    sql += safeSqlInteger(results.result_Hand_ID[hand_ctr]);
                     sql += " AND BeRo=";
                     sql += std::to_string(round_ctr);
                     sql += " AND Action<>'starts as dealer' AND Action<>'posts big blind' AND Action<>'posts small blind'";
@@ -1691,12 +1698,6 @@ QList<int> guiLog::getGameList(QString fileStringPdb)
 {
 
 	result_struct results;
-	results.result_Session = 0;
-	results.result_Game = 0;
-	results.result_Player = 0;
-	results.result_Hand = 0;
-	results.result_Hand_ID = 0;
-	results.result_Action = 0;
 
 	int nRow_Game=0;
 	int nCol_Game=0;
