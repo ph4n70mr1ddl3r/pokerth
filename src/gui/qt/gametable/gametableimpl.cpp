@@ -95,14 +95,14 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	setupUi(this);
 
 	//Sound
-	mySoundEventHandler = new SoundEvents(myConfig);
+	mySoundEventHandler = std::make_unique<SoundEvents>(myConfig);
 
 	// 	Init game table style
-	myGameTableStyle = new GameTableStyleReader(myConfig, this);
+	myGameTableStyle = std::make_unique<GameTableStyleReader>(myConfig, this);
 	myGameTableStyle->readStyleFile(QString::fromUtf8(myConfig->readConfigString("CurrentGameTableStyle").c_str()));
 
 	// 	Init card deck style
-	myCardDeckStyle = new CardDeckStyleReader(myConfig, this);
+	myCardDeckStyle = std::make_unique<CardDeckStyleReader>(myConfig, this);
 	myCardDeckStyle->readStyleFile(QString::fromUtf8(myConfig->readConfigString("CurrentCardDeckStyle").c_str()));
 
 	//Player0 pixmapCardsLabel needs Myw
@@ -339,8 +339,8 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 	this->setWindowIcon(QIcon(myAppDataPath+"gfx/gui/misc/windowicon.png"));
 
 	// 	Dialogs
-	myChat = new ChatTools(nullptr, myConfig, INGAME_CHAT, nullptr);
-	myChat->setMyStyle(myGameTableStyle);
+	myChat = std::make_unique<ChatTools>(nullptr, myConfig, INGAME_CHAT, nullptr);
+	myChat->setMyStyle(myGameTableStyle.get());
 //	lineEdit_ChatInput->installEventFilter(this);
 
 	this->installEventFilter(this);
@@ -481,10 +481,6 @@ gameTableImpl::gameTableImpl(ConfigFile *c, QMainWindow *parent)
 gameTableImpl::~gameTableImpl() noexcept
 {
 	stopTimer();
-	delete myChat;
-	delete mySoundEventHandler;
-	delete myGameTableStyle;
-	delete myCardDeckStyle;
 }
 
 void gameTableImpl::callSettingsDialog()

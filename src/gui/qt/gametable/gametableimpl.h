@@ -39,6 +39,7 @@
 #endif
 #include "game_defs.h"
 
+#include <memory>
 #include <string>
 
 #ifndef Q_MOC_RUN
@@ -87,11 +88,11 @@ public:
 
 	SoundEvents* getMySoundEventHandler() const
 	{
-		return mySoundEventHandler;
+		return mySoundEventHandler.get();
 	}
 	ChatTools* getMyChat() const
 	{
-		return myChat;
+		return myChat.get();
 	}
 	ConfigFile* getMyConfig() const
 	{
@@ -99,7 +100,7 @@ public:
 	}
 	GameTableStyleReader* getMyGameTableStyle() const
 	{
-		return myGameTableStyle;
+		return myGameTableStyle.get();
 	}
 
 	void setStartWindow(startWindowImpl* s)
@@ -379,7 +380,7 @@ private:
 
 	boost::shared_ptr<GuiInterface> myServerGuiInterface;
 	guiLog *myGuiLog;
-	ChatTools *myChat;
+	std::unique_ptr<ChatTools> myChat;
 	ConfigFile *myConfig;
 
 	//Timer
@@ -446,7 +447,7 @@ private:
 	myMessageDialogImpl *myUniversalMessageDialog;
 
 	//Sound
-	SoundEvents *mySoundEventHandler;
+	std::unique_ptr<SoundEvents> mySoundEventHandler;
 	QString myAppDataPath;
 
 	int distributePotAnimCounter = 0;
@@ -494,8 +495,8 @@ private:
 	int voteOnKickTimeoutSecs = 0;
 	unsigned playerAboutToBeKickedId;
 
-	GameTableStyleReader *myGameTableStyle;
-	CardDeckStyleReader *myCardDeckStyle;
+	std::unique_ptr<GameTableStyleReader> myGameTableStyle;
+	std::unique_ptr<CardDeckStyleReader> myCardDeckStyle;
 
 	QString AllInString;
 	QString RaiseString;

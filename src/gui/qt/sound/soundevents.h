@@ -31,6 +31,7 @@
 #ifndef SOUNDEVENTS_H
 #define SOUNDEVENTS_H
 
+#include <memory>
 #include <string>
 
 #ifdef ANDROID_API8
@@ -61,12 +62,12 @@ protected:
 private:
 #ifdef ANDROID
 #ifdef ANDROID_API8
-    AndroidApi8Dummy *myPlayer;
+    std::unique_ptr<AndroidApi8Dummy> myPlayer;
 #else
-    QtAudioPlayer *myPlayer;
+    std::unique_ptr<QtAudioPlayer> myPlayer;
 #endif
 #else
-    QtAudioPlayer *myPlayer;
+    std::unique_ptr<QtAudioPlayer> myPlayer;
 #endif
 
 	ConfigFile *myConfig;

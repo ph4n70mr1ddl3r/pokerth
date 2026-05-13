@@ -54,8 +54,6 @@
 #include <sstream>
 #include <fstream>
 #include <memory>
-#include <cassert>
-#include <typeinfo>
 #include <openssl/ssl.h>
 
 #define TEMP_AVATAR_FILENAME	"avatar.tmp"

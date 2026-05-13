@@ -37,7 +37,6 @@
 #include <core/loghelper.h>
 #include <QDebug>
 #include <cstring>
-#include <cassert>
 
 using namespace std;
 

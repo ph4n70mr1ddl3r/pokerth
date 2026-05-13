@@ -43,13 +43,13 @@
 SoundEvents::SoundEvents(ConfigFile *c): myConfig(c), lastSBValue(0), lastSBLevel(0), newGameNow(false)
 {
     // Qt Multimedia funktioniert auf Android genauso wie auf Desktop
-    myPlayer = new QtAudioPlayer(myConfig);
+    myPlayer = std::make_unique<QtAudioPlayer>(myConfig);
 }
 
 SoundEvents::~SoundEvents() noexcept
 {
-    myPlayer->closeAudio();
-    delete myPlayer;
+    if (myPlayer)
+        myPlayer->closeAudio();
 }
 
 void SoundEvents::reInitSoundEngine()
