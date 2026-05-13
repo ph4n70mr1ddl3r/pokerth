@@ -35,10 +35,4 @@ Replay::Replay() : replaySqliteLogDb(nullptr)
 {
 }
 
-Replay::~Replay() noexcept
-{
-	if (replaySqliteLogDb) {
-		delete replaySqliteLogDb;
-		replaySqliteLogDb = nullptr;
-	}
-}
+Replay::~Replay() noexcept = default;

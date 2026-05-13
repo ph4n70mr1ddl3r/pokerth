@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
-**Date:** 2026-04-12  
-**Revision:** 11  
+**Date:** 2026-05-13  
+**Revision:** 12  
 **Reviewer:** AI Code Reviewer  
 **Scope:** Full codebase (`src/` — 367 files, ~76K LOC)
 
@@ -46,7 +46,7 @@ Issues were found and fixed in the following categories:
 
 **Fix:** Replaced `memcmp` with a constant-time comparison loop using XOR accumulation with `volatile` to prevent optimizer interference.
 
-### 2. `assert()` in Card Dealing Replaced with Runtime Check (Bug/Robustness)
+### 2. `assert()` in Card Dealing Replaced with Runtime Check (Bug/Robustness) — Fixed in prior revision
 
 **File:** `src/engine/local_engine/localhand.cpp`  
 **Severity:** Medium  
@@ -54,7 +54,7 @@ Issues were found and fixed in the following categories:
 
 **Fix:** Replaced `assert()` with a proper `if` check that throws `LocalException` on bounds violation. This ensures safety in both debug and release builds.
 
-### 3. Integer Overflow in `sqlite3_get_table` Wrapper (Security)
+### 3. Integer Overflow in `sqlite3_get_table` Wrapper (Security) — Fixed in prior revision
 
 **File:** `src/gui/qt/gametable/log/guilog.cpp`  
 **Severity:** Low  
@@ -62,13 +62,37 @@ Issues were found and fixed in the following categories:
 
 **Fix:** Added overflow check: `if (nCol > 0 && total / nCol != nRow + 1)` returns `SQLITE_NOMEM`.
 
-### 4. Missing `[[nodiscard]]` on Thread Safety Methods (Correctness)
+### 4. Missing `[[nodiscard]]` on Thread Safety Methods (Correctness) — Fixed in prior revision
 
 **File:** `src/core/thread.h`  
 **Severity:** Low  
 **Issue:** `ShouldTerminate()` and `IsRunning()` return values that are critical for correct thread lifecycle management. Without `[[nodiscard]]`, callers could accidentally ignore these return values.
 
 **Fix:** Added `[[nodiscard]]` attribute to both methods.
+
+### 5. `assert()` in `getCurrentBeRo()` Replaced with Runtime Check (Bug/Robustness) — NEW
+
+**File:** `src/engine/local_engine/localhand.h`  
+**Severity:** Medium  
+**Issue:** `getCurrentBeRo()` used `assert(currentRound < myBeRo.size())` to guard against out-of-bounds vector access. In release builds (`NDEBUG` defined), `assert()` is compiled out entirely, meaning an invalid `currentRound` value would cause undefined behavior via out-of-bounds vector indexing. This is the same class of issue as #2 above (card dealing assert) but in a more frequently-used accessor method that is called throughout the engine loop.
+
+**Fix:** Replaced `assert()` with a proper runtime bounds check that throws `LocalException(ERR_BERO_NOT_FOUND)`. Also removed the now-unnecessary `#include <cassert>` from both `localhand.h` and `localhand.cpp`.
+
+### 6. Raw `new`/`delete` in `Replay` Class Replaced with `unique_ptr` (Code Quality) — NEW
+
+**File:** `src/engine/local_engine/replay.h`, `src/engine/local_engine/replay.cpp`  
+**Severity:** Low  
+**Issue:** The `Replay` class managed a `QSqlDatabase*` member with manual `new`/`delete` in the destructor. Per the project's coding guidelines (AGENTS.md: "Avoid raw `new`/`delete`; use smart pointers"), this should use `std::unique_ptr` for exception safety and clarity. While the current code is technically correct, manual resource management is error-prone during future modifications.
+
+**Fix:** Changed `QSqlDatabase *replaySqliteLogDb` to `std::unique_ptr<QSqlDatabase> replaySqliteLogDb`, replaced manual destructor with `= default`, and added `#include <memory>`.
+
+### 7. Missing Explicit `#include <cstring>` in `crypthelper.cpp` (Correctness) — NEW
+
+**File:** `src/core/crypthelper.cpp`  
+**Severity:** Low  
+**Issue:** `crypthelper.cpp` uses `memcmp()` (in `HashBuf::operator<`) and relies on `<cstring>` being transitively included via OpenSSL headers. While this works with current builds, it's fragile — if the OpenSSL headers ever stop including `<cstring>`, or if building with a different SSL backend (gcrypt path), the `memcmp` call would fail to compile.
+
+**Fix:** Added explicit `#include <cstring>` to the includes.
 
 ---
 
@@ -103,8 +127,13 @@ Issues were found and fixed in the following categories:
 
 ## Files Modified
 
-| File | Change |
-|------|--------|
-| `src/engine/local_engine/localhand.cpp` | Replace `assert()` with runtime bounds check |
-| `src/gui/qt/gametable/log/guilog.cpp` | Add integer overflow check in `sqlite3_get_table` |
-| `src/core/thread.h` | Add `[[nodiscard]]` to `ShouldTerminate()` and `IsRunning()` |
+| File | Change | Revision |
+|------|--------|----------|
+| `src/engine/local_engine/localhand.cpp` | Replace `assert()` with runtime bounds check | Prior |
+| `src/gui/qt/gametable/log/guilog.cpp` | Add integer overflow check in `sqlite3_get_table` | Prior |
+| `src/core/thread.h` | Add `[[nodiscard]]` to `ShouldTerminate()` and `IsRunning()` | Prior |
+| `src/engine/local_engine/localhand.h` | Replace `assert()` in `getCurrentBeRo()` with runtime check; remove `#include <cassert>` | **NEW** |
+| `src/engine/local_engine/localhand.cpp` | Remove unused `#include <cassert>` | **NEW** |
+| `src/engine/local_engine/replay.h` | Replace raw `QSqlDatabase*` with `std::unique_ptr<QSqlDatabase>` | **NEW** |
+| `src/engine/local_engine/replay.cpp` | Simplify destructor to `= default` | **NEW** |
+| `src/core/crypthelper.cpp` | Add explicit `#include <cstring>` for `memcmp` | **NEW** |

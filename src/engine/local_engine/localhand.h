@@ -38,8 +38,9 @@
 #include <playerinterface.h>
 #include <handinterface.h>
 #include <berointerface.h>
+#include "localexception.h"
+#include "engine_msg.h"
 
-#include <cassert>
 #include <vector>
 
 class Log;
@@ -91,7 +92,9 @@ public:
 	}
 	boost::shared_ptr<BeRoInterface> getCurrentBeRo() const override
 	{
-		assert(currentRound < myBeRo.size());
+		if (currentRound >= myBeRo.size()) {
+			throw LocalException(__FILE__, __LINE__, ERR_BERO_NOT_FOUND);
+		}
 		return myBeRo[currentRound];
 	}
 

@@ -40,7 +40,6 @@
 
 #include <iostream>
 #include <array>
-#include <cassert>
 #include <climits>
 
 using namespace std;

@@ -35,6 +35,7 @@
 #include <core/openssl_wrapper.h>
 #include <filesystem>
 #include <cstdio>
+#include <cstring>
 #include <memory>
 #include <functional>
 #include <algorithm>

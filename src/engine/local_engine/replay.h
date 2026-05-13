@@ -33,6 +33,7 @@
 #define REPLAY_H
 
 #include <QtSql>
+#include <memory>
 
 class Replay
 {
@@ -45,7 +46,7 @@ public:
 	Replay& operator=(const Replay&) = delete;
 
 private:
-	QSqlDatabase *replaySqliteLogDb;
+	std::unique_ptr<QSqlDatabase> replaySqliteLogDb;
 
 };
 
