@@ -136,7 +136,7 @@ void LogFileDialog::deleteLogFile()
 										QMessageBox::Yes | QMessageBox::No);
 
 		if(ret == QMessageBox::Yes) {
-			for (int i = 0; i < selectedItemsList.size(); ++i) {
+			for (int i = 0; i < static_cast<int>(selectedItemsList.size()); ++i) {
 				if(selectedItemsList.at(i)->data(0, Qt::UserRole+1).toString() != "current") {
 
 					if(!QFile::remove(selectedItemsList.at(i)->data(0, Qt::UserRole).toString())) {

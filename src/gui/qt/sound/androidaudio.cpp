@@ -49,7 +49,9 @@ void AndroidAudio::initAudio()
 {
 	if (!audioEnabled && myConfig->readConfigInt("PlaySoundEffects")) {
 		createEngine();
+		if (!mEngineObject) return; // createEngine failed
 		startSoundPlayer();
+		if (!mPlayerObject) return; // startSoundPlayer failed
 		audioEnabled = true;
 	}
 }
@@ -78,25 +80,56 @@ void AndroidAudio::createEngine()
 
 	// create engine
 	result = slCreateEngine(&mEngineObject, 0, nullptr, 0, nullptr, nullptr);
-	Q_ASSERT(SL_RESULT_SUCCESS == result);
+	if (SL_RESULT_SUCCESS != result) {
+		qWarning() << "Failed to create OpenSL engine:" << result;
+		mEngineObject = nullptr;
+		return;
+	}
 
 	// realize the engine
 	result = (*mEngineObject)->Realize(mEngineObject, SL_BOOLEAN_FALSE);
-	Q_ASSERT(SL_RESULT_SUCCESS == result);
+	if (SL_RESULT_SUCCESS != result) {
+		qWarning() << "Failed to realize OpenSL engine:" << result;
+		(*mEngineObject)->Destroy(mEngineObject);
+		mEngineObject = nullptr;
+		mEngineEngine = nullptr;
+		return;
+	}
 
 	// get the engine interface, which is needed in order to create other objects
 	result = (*mEngineObject)->GetInterface(mEngineObject, SL_IID_ENGINE, &mEngineEngine);
-	Q_ASSERT(SL_RESULT_SUCCESS == result);
+	if (SL_RESULT_SUCCESS != result) {
+		qWarning() << "Failed to get OpenSL engine interface:" << result;
+		(*mEngineObject)->Destroy(mEngineObject);
+		mEngineObject = nullptr;
+		mEngineEngine = nullptr;
+		return;
+	}
 
 	// create output mix
 	const SLInterfaceID ids[] = {};
 	const SLboolean req[] = {};
 	result = (*mEngineEngine)->CreateOutputMix(mEngineEngine, &mOutputMixObject, 0, ids, req);
-	Q_ASSERT(SL_RESULT_SUCCESS == result);
+	if (SL_RESULT_SUCCESS != result) {
+		qWarning() << "Failed to create OpenSL output mix:" << result;
+		(*mEngineObject)->Destroy(mEngineObject);
+		mEngineObject = nullptr;
+		mEngineEngine = nullptr;
+		mOutputMixObject = nullptr;
+		return;
+	}
 
 	// realize the output mix
 	result = (*mOutputMixObject)->Realize(mOutputMixObject, SL_BOOLEAN_FALSE);
-	Q_ASSERT(SL_RESULT_SUCCESS == result);
+	if (SL_RESULT_SUCCESS != result) {
+		qWarning() << "Failed to realize OpenSL output mix:" << result;
+		(*mOutputMixObject)->Destroy(mOutputMixObject);
+		mOutputMixObject = nullptr;
+		(*mEngineObject)->Destroy(mEngineObject);
+		mEngineObject = nullptr;
+		mEngineEngine = nullptr;
+		return;
+	}
 
 	qDebug() << "Created Android Audio Engine";
 }
@@ -185,22 +218,52 @@ void AndroidAudio::startSoundPlayer()
 //    qDebug() << "Configured Sound Player";
 
 	lRes = (*mEngineEngine)->CreateAudioPlayer(mEngineEngine, &mPlayerObject, &lDataSource, &lDataSink, lSoundPlayerIIDCount, lSoundPlayerIIDs, lSoundPlayerReqs);
-	Q_ASSERT(SL_RESULT_SUCCESS == lRes);
+	if (SL_RESULT_SUCCESS != lRes) {
+		qWarning() << "Failed to create OpenSL audio player:" << lRes;
+		mPlayerObject = nullptr;
+		return;
+	}
 
 //    qDebug() << "Created Sound Player";
 
 	lRes = (*mPlayerObject)->Realize(mPlayerObject, SL_BOOLEAN_FALSE);
-	Q_ASSERT(SL_RESULT_SUCCESS == lRes);
+	if (SL_RESULT_SUCCESS != lRes) {
+		qWarning() << "Failed to realize OpenSL audio player:" << lRes;
+		(*mPlayerObject)->Destroy(mPlayerObject);
+		mPlayerObject = nullptr;
+		return;
+	}
 
 	qDebug() << "Realised Sound Player";
 	lRes = (*mPlayerObject)->GetInterface(mPlayerObject, SL_IID_PLAY, &mPlayerPlay);
-	Q_ASSERT(SL_RESULT_SUCCESS == lRes);
+	if (SL_RESULT_SUCCESS != lRes) {
+		qWarning() << "Failed to get OpenSL play interface:" << lRes;
+		(*mPlayerObject)->Destroy(mPlayerObject);
+		mPlayerObject = nullptr;
+		mPlayerPlay = nullptr;
+		mPlayerQueue = nullptr;
+		return;
+	}
 
 	lRes = (*mPlayerObject)->GetInterface(mPlayerObject, SL_IID_BUFFERQUEUE, &mPlayerQueue);
-	Q_ASSERT(SL_RESULT_SUCCESS == lRes);
+	if (SL_RESULT_SUCCESS != lRes) {
+		qWarning() << "Failed to get OpenSL buffer queue interface:" << lRes;
+		(*mPlayerObject)->Destroy(mPlayerObject);
+		mPlayerObject = nullptr;
+		mPlayerPlay = nullptr;
+		mPlayerQueue = nullptr;
+		return;
+	}
 
 	lRes = (*mPlayerPlay)->SetPlayState(mPlayerPlay, SL_PLAYSTATE_PLAYING);
-	Q_ASSERT(SL_RESULT_SUCCESS == lRes);
+	if (SL_RESULT_SUCCESS != lRes) {
+		qWarning() << "Failed to set OpenSL play state:" << lRes;
+		(*mPlayerObject)->Destroy(mPlayerObject);
+		mPlayerObject = nullptr;
+		mPlayerPlay = nullptr;
+		mPlayerQueue = nullptr;
+		return;
+	}
 
 //    qDebug() << "Created Buffer Player";
 }
@@ -239,10 +302,15 @@ void AndroidAudio::reallyPlaySound(const QString& name)
 
 		//Remove any sound from the queue
 		lRes = (*mPlayerQueue)->Clear(mPlayerQueue);
-		Q_ASSERT(SL_RESULT_SUCCESS == lRes);
+		if (SL_RESULT_SUCCESS != lRes) {
+			qWarning() << "Failed to clear OpenSL buffer queue:" << lRes;
+			return;
+		}
 
 		//Play the new sound
-		(*mPlayerQueue)->Enqueue(mPlayerQueue, lBuffer, lLength);
-		Q_ASSERT(SL_RESULT_SUCCESS == lRes);
+		lRes = (*mPlayerQueue)->Enqueue(mPlayerQueue, lBuffer, lLength);
+		if (SL_RESULT_SUCCESS != lRes) {
+			qWarning() << "Failed to enqueue sound buffer:" << lRes;
+		}
 	}
 }

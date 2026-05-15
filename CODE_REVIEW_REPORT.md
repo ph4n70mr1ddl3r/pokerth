@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-15
-**Revision:** 16
+**Revision:** 17
 **Reviewer:** AI Code Reviewer
 **Scope:** Full codebase (`src/` - 367 files, ~83K LOC)
 
@@ -226,6 +226,9 @@ Issues were found and fixed in the following categories:
 | `src/engine/log.cpp` | Replace `cout`/`endl` with `LOG_ERROR`; fix narrowing `int i = seatsList->size()` | **NEW** |
 | `src/engine/local_engine/localhand.cpp` | Fix signed/unsigned comparison; fix stale comment | **NEW** |
 | `src/gui/qt/gametable/mynamelabel.cpp` | Fix narrowing conversion in nickname truncation | **NEW** |
+| `src/gui/qt/sound/androidaudio.cpp` | Replace 13 `Q_ASSERT` with proper error checks; add initAudio() failure guards | **NEW** |
+| `src/gui/qt/gametable/log/guilog.cpp` | Replace 35 `cout`/`endl` with `LOG_ERROR`; add `#include <core/loghelper.h>` | **NEW** |
+| `src/gui/qt/logfiledialog/logfiledialog.cpp` | Fix signed/unsigned comparison in log file deletion loop | **NEW** |
 
 ### 18. `cout`/`endl` Replaced with `LOG_ERROR` in Log SQL Error Paths (Code Quality) - NEW
 
@@ -266,3 +269,29 @@ Issues were found and fixed in the following categories:
 **Issue:** Comment in card dealing bounds check referenced `max MAX_NUMBER_OF_PLAYERS=10` and computed `2*(size-1)+1+5 = 24`. The constant was changed to `2` (heads-up variant), making the specific value "24" incorrect and the "=10" misleading.
 
 **Fix:** Removed the stale specific values from the comment, keeping the general statement about bounds.
+
+### 23. `Q_ASSERT` in OpenSL ES Audio Engine Compiles Out in Release (Robustness) - NEW
+
+**File:** `src/gui/qt/sound/androidaudio.cpp`
+**Severity:** Medium
+**Issue:** The Android audio engine used 13 instances of `Q_ASSERT()` to validate OpenSL ES API return values. `Q_ASSERT` is a debug-only macro that compiles to nothing when `QT_NO_DEBUG` is defined (standard for release builds). In a release build, any OpenSL ES initialization failure would silently continue with null or invalid object/interface pointers, leading to undefined behavior or crashes when the audio subsystem is later used. This is the same class of issue as #2 (card dealing assert) and #5 (getCurrentBeRo assert), but in an audio subsystem where the risk is higher because OpenSL ES errors can occur in production due to device-specific issues.
+
+Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `createEngine()` or `startSoundPlayer()` failed, allowing subsequent code to attempt audio operations on invalid objects.
+
+**Fix:** Replaced all 13 `Q_ASSERT` calls with proper `if` error checks that log via `qWarning()`, clean up partially-created objects, and return early. Added null checks in `initAudio()` to prevent setting `audioEnabled = true` if initialization fails.
+
+### 24. `cout`/`endl` in GUI Log Module Bypasses Logging Infrastructure (Code Quality) - NEW
+
+**File:** `src/gui/qt/gametable/log/guilog.cpp`
+**Severity:** Low
+**Issue:** The GUI log module (`guilog.cpp`) used 35 instances of `std::cout << ... << std::endl` for error reporting (SQL errors, missing data, invalid log entries). This bypasses the project's logging infrastructure (`LOG_ERROR` macro), meaning these errors only appear on stdout and are never captured by the server's or client's log file. The same class of issue was already identified and fixed in `src/engine/log.cpp` (issue #18), but the GUI log module was not similarly updated.
+
+**Fix:** Replaced all 35 `cout << ... << endl` calls with `LOG_ERROR(...)`, matching the pattern used throughout the rest of the codebase. Added `#include <core/loghelper.h>`.
+
+### 25. Signed/Unsigned Comparison in Log File Dialog (Correctness) - NEW
+
+**File:** `src/gui/qt/logfiledialog/logfiledialog.cpp`
+**Severity:** Low
+**Issue:** The log file deletion loop used `int i` compared with `selectedItemsList.size()` which returns `qsizetype`. While safe in practice (the list will never be large enough to overflow `int`), this triggers compiler warnings with `-Wsign-compare`.
+
+**Fix:** Changed `i < selectedItemsList.size()` to `i < static_cast<int>(selectedItemsList.size())`.

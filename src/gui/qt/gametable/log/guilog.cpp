@@ -38,6 +38,7 @@
 #include <game_defs.h>
 #include "gametablestylereader.h"
 
+#include <core/loghelper.h>
 #include <cstring>
 #include <memory>
 
@@ -309,7 +310,7 @@ guiLog::guiLog(gameTableImpl* w, ConfigFile *c) : myW(w), myConfig(c), myLogDir(
 			}
 
 		} else {
-			cout << "Log directory doesn't exist. Cannot create log files";
+			LOG_ERROR("Log directory doesn't exist. Cannot create log files");
 		}
 	}
 }
@@ -724,10 +725,10 @@ void guiLog::writeLogFileStream(QString streamString)
 			stream_old << streamString;
 			myHtmlLogFile_old->close();
 		} else {
-			cout << "Could not open log-file to write log-messages!" << endl;
+			LOG_ERROR("Could not open log-file to write log-messages!");
 		}
 	} else {
-		cout << "Could not find log-file to write log-messages!" << endl;
+		LOG_ERROR("Could not find log-file to write log-messages!");
 	}
 }
 
@@ -901,13 +902,13 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 		// read session
 		sql = "SELECT * FROM Session";
 		if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Session,&nRow_Session,&nCol_Session,&errmsg) != SQLITE_OK) {
-			cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
+			LOG_ERROR("Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "].");
 			sqlite3_free(errmsg);
 			cleanUp(results, mySqliteLogDb);
 			return 1;
 		}
 		if(nRow_Session != 1) {
-			cout << "Number of Sessions implausible!" << endl;
+			LOG_ERROR("Number of Sessions implausible!");
 			cleanUp(results, mySqliteLogDb);
 			return 1;
 		}
@@ -923,7 +924,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			}
 		}
 		if(!data_found) {
-			cout << "Missing PokerTH version information!" << endl;
+			LOG_ERROR("Missing PokerTH version information!");
 			cleanUp(results, mySqliteLogDb);
 			return 1;
 		}
@@ -939,7 +940,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			}
 		}
 		if(!data_found) {
-			cout << "Missing date information!" << endl;
+			LOG_ERROR("Missing date information!");
 			cleanUp(results, mySqliteLogDb);
 			return 1;
 		}
@@ -955,7 +956,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			}
 		}
 		if(!data_found) {
-			cout << "Missing time information!" << endl;
+			LOG_ERROR("Missing time information!");
 			cleanUp(results, mySqliteLogDb);
 			return 1;
 		}
@@ -984,7 +985,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			sql = "SELECT * FROM Game";
 		}
 		if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Game,&nRow_Game,&nCol_Game,&errmsg) != SQLITE_OK) {
-			cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
+			LOG_ERROR("Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "].");
 			sqlite3_free(errmsg);
 			cleanUp(results, mySqliteLogDb);
 			return 1;
@@ -1040,13 +1041,13 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			sql += std::to_string(uniqueGameID);
 			sql += " ORDER BY Seat;";
 			if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Player,&nRow_Player,&nCol_Player,&errmsg) != SQLITE_OK) {
-				cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
+				LOG_ERROR("Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "].");
 				sqlite3_free(errmsg);
 				cleanUp(results, mySqliteLogDb);
 				return 1;
 			}
 			if(nRow_Player > MAX_NUMBER_OF_PLAYERS) {
-				cout << "Too many players in log database: " << nRow_Player << endl;
+				LOG_ERROR("Too many players in log database: " << nRow_Player);
 				cleanUp(results, mySqliteLogDb);
 				return 1;
 			}
@@ -1060,7 +1061,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 			sqlite3_free_table(results.result_Hand_ID);
 			results.result_Hand_ID = nullptr;
 			if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand_ID,&nRow_Hand_ID,&nCol_Hand,&errmsg) != SQLITE_OK) {
-				cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
+				LOG_ERROR("Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "].");
 				sqlite3_free(errmsg);
 				cleanUp(results, mySqliteLogDb);
 				return 1;
@@ -1100,7 +1101,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 				sql+= " AND HandID=";
 				sql+= safeSqlInteger(results.result_Hand_ID[hand_ctr]);
 				if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Hand,&nRow_Hand,&nCol_Hand,&errmsg) != SQLITE_OK) {
-					cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
+					LOG_ERROR("Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "].");
 					sqlite3_free(errmsg);
 				sqlite3_free_table(results.result_Hand);
 				results.result_Hand = nullptr;
@@ -1121,7 +1122,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					}
 				}
 				if(!data_found) {
-					cout << "Missing small blind information!" << endl;
+					LOG_ERROR("Missing small blind information!");
 					cleanUp(results, mySqliteLogDb);
 					return 1;
 				}
@@ -1137,7 +1138,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					}
 				}
 				if(!data_found) {
-					cout << "Missing big blind information!" << endl;
+					LOG_ERROR("Missing big blind information!");
 					cleanUp(results, mySqliteLogDb);
 					return 1;
 				}
@@ -1199,7 +1200,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						}
 					}
 					if(!data_found) {
-						cout << "Missing seat information in uniqueGame " << uniqueGameID << " and hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
+						LOG_ERROR("Missing seat information in uniqueGame " << uniqueGameID << " and hand " << results.result_Hand_ID[hand_ctr] << "!");
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
@@ -1220,7 +1221,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					if (results.result_Action) { sqlite3_free_table(results.result_Action); results.result_Action = nullptr; }
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
-						cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
+						LOG_ERROR("Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "].");
 						sqlite3_free(errmsg);
 					sqlite3_free_table(results.result_Action);
 					results.result_Action = nullptr;
@@ -1228,7 +1229,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 						return 1;
 					}
 					if(nRow_Action<1) {
-						cout << "Missing information about dealer and blinds in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
+						LOG_ERROR("Missing information about dealer and blinds in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!");
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
@@ -1270,13 +1271,13 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 					sql += " AND BeRo=0 AND Action='posts small blind'";
 
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
-						cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
+						LOG_ERROR("Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "].");
 						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
 					if(nRow_Action<1 || nRow_Action>1) {
-						cout << "Wrong information about small blind in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
+						LOG_ERROR("Wrong information about small blind in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!");
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
@@ -1296,13 +1297,13 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					if (results.result_Action) { sqlite3_free_table(results.result_Action); results.result_Action = nullptr; }
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
-						cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
+						LOG_ERROR("Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "].");
 						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
 					if(nRow_Action<1 || nRow_Action>1) {
-						cout << "Wrong information about big blind in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
+						LOG_ERROR("Wrong information about big blind in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!");
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
@@ -1322,13 +1323,13 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					if (results.result_Action) { sqlite3_free_table(results.result_Action); results.result_Action = nullptr; }
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
-						cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
+						LOG_ERROR("Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "].");
 						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
 					if(nRow_Action>1) {
-						cout << "Implausible information about dealer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
+						LOG_ERROR("Implausible information about dealer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!");
 						cleanUp(results, mySqliteLogDb);
 						return 1;
 					}
@@ -1414,13 +1415,13 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 											try {
 												cardInt = std::stoi(results.result_Hand[j+nCol_Hand]);
 											} catch (const std::exception&) {
-												cout << "Invalid board card integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
+												LOG_ERROR("Invalid board card integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr]);
 												cleanUp(results, mySqliteLogDb);
 												return 1;
 											}
 											string_tmp = convertCardIntToString(cardInt,modus);
 											if(string_tmp == "") {
-												cout << "Implausible board card in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
+												LOG_ERROR("Implausible board card in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!");
 												cleanUp(results, mySqliteLogDb);
 												return 1;
 											}
@@ -1454,7 +1455,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 
 					if (results.result_Action) { sqlite3_free_table(results.result_Action); results.result_Action = nullptr; }
 					if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Action,&nRow_Action,&nCol_Action,&errmsg) != SQLITE_OK) {
-						cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
+						LOG_ERROR("Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "].");
 						sqlite3_free(errmsg);
 						cleanUp(results, mySqliteLogDb);
 						return 1;
@@ -1581,13 +1582,13 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 									try {
 										cardInt = std::stoi(results.result_Hand[i+nCol_Hand]);
 									} catch (const std::exception&) {
-										cout << "Invalid hole card integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
+										LOG_ERROR("Invalid hole card integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr]);
 										cleanUp(results, mySqliteLogDb);
 										return 1;
 									}
 									string_tmp = convertCardIntToString(cardInt,modus);
 									if(string_tmp == "") {
-										cout << "Hole card information implausible in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
+										LOG_ERROR("Hole card information implausible in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!");
 										cleanUp(results, mySqliteLogDb);
 										return 1;
 									}
@@ -1600,7 +1601,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 								}
 							}
 							if(!data_found) {
-								cout << "Missing hole card information in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
+								LOG_ERROR("Missing hole card information in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!");
 								cleanUp(results, mySqliteLogDb);
 								return 1;
 							}
@@ -1616,13 +1617,13 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 									try {
 										cardInt = std::stoi(results.result_Hand[i+nCol_Hand]);
 									} catch (const std::exception&) {
-										cout << "Invalid hole card 2 integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << endl;
+										LOG_ERROR("Invalid hole card 2 integer in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr]);
 										cleanUp(results, mySqliteLogDb);
 										return 1;
 									}
 									string_tmp = convertCardIntToString(cardInt,modus);
 									if(string_tmp == "") {
-										cout << "Hole card information implausible in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
+										LOG_ERROR("Hole card information implausible in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!");
 										cleanUp(results, mySqliteLogDb);
 										return 1;
 									}
@@ -1634,7 +1635,7 @@ int guiLog::exportLog(QString fileStringPdb,int modus,int uniqueGameID_req)
 								}
 							}
 							if(!data_found) {
-								cout << "Missing hole card information in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!" << endl;
+								LOG_ERROR("Missing hole card information in uniqueGame " << uniqueGameID << " hand " << results.result_Hand_ID[hand_ctr] << "!");
 								cleanUp(results, mySqliteLogDb);
 								return 1;
 							}
@@ -1704,7 +1705,7 @@ QList<int> guiLog::getGameList(QString fileStringPdb)
 
 	string sql = "SELECT * FROM Game";
 	if(sqlite3_get_table(mySqliteLogDb,sql.c_str(),&results.result_Game,&nRow_Game,&nCol_Game,&errmsg) != SQLITE_OK) {
-		cout << "Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "]." << endl;
+		LOG_ERROR("Error in statement: " << sql.c_str() << "[" << (errmsg ? errmsg : "(unknown)") << "].");
 		sqlite3_free(errmsg);
 	} else {
 		for(game_ctr=1; game_ctr<=nRow_Game; game_ctr++) {
@@ -1713,7 +1714,7 @@ QList<int> guiLog::getGameList(QString fileStringPdb)
 					try {
 						gameList.append(std::stoi(results.result_Game[i+nCol_Game*game_ctr]));
 					} catch (const std::exception&) {
-						cout << "Invalid UniqueGameID in log database" << endl;
+						LOG_ERROR("Invalid UniqueGameID in log database");
 					}
 				}
 			}
