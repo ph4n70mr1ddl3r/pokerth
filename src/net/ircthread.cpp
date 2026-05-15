@@ -520,6 +520,12 @@ IrcThread::IrcMain()
 
 			irc_add_select_descriptors(s, &readSet, &writeSet, &maxfd);
 
+			if (maxfd >= FD_SETSIZE) {
+				// select() corrupts the stack if maxfd >= FD_SETSIZE.
+				GetCallback().SignalIrcError(ERR_IRC_SELECT_FAILED);
+				break;
+			}
+
 			int selectResult = select(maxfd + 1, &readSet, &writeSet, 0, &timeout);
 			if (selectResult == -1) {
 				GetCallback().SignalIrcError(ERR_IRC_SELECT_FAILED);

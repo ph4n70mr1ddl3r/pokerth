@@ -1,9 +1,9 @@
 # PokerTH Code Review Report
 
-**Date:** 2026-05-13
-**Revision:** 13
+**Date:** 2026-05-15
+**Revision:** 14
 **Reviewer:** AI Code Reviewer
-**Scope:** Full codebase (`src/` - 367 files, ~76K LOC)
+**Scope:** Full codebase (`src/` - 367 files, ~83K LOC)
 
 ---
 
@@ -104,7 +104,7 @@ Issues were found and fixed in the following categories:
 
 **Fix:** Changed `myPlayer` from raw pointer to `std::unique_ptr`, replaced `new` with `std::make_unique`, added null check before `closeAudio()` in destructor, added `#include <memory>`.
 
-### 10. Unused `#include <cassert>` and `#include <typeinfo>` in `clientthread.cpp` (Code Quality) - NEW
+### 10. Unused `#include <cassert>` and `#include <typeinfo>` in `clientthread.cpp` (Code Quality) - Prior
 
 **File:** `src/net/clientthread.cpp`
 **Severity:** Low
@@ -112,7 +112,7 @@ Issues were found and fixed in the following categories:
 
 **Fix:** Removed both unused includes.
 
-### 11. Unused `#include <cassert>` in `senderhelper.cpp` (Code Quality) - NEW
+### 11. Unused `#include <cassert>` in `senderhelper.cpp` (Code Quality) - Prior
 
 **File:** `src/net/senderhelper.cpp`
 **Severity:** Low
@@ -120,11 +120,21 @@ Issues were found and fixed in the following categories:
 
 **Fix:** Removed unused include.
 
-**File:** `src/core/crypthelper.cpp`
-**Severity:** Low
-**Issue:** `crypthelper.cpp` uses `memcmp()` (in `HashBuf::operator<`) and relies on `<cstring>` being transitively included via OpenSSL headers. While this works with current builds, it's fragile - if the OpenSSL headers ever stop including `<cstring>`, or if building with a different SSL backend (gcrypt path), the `memcmp` call would fail to compile.
+### 12. IRC Thread `select()` Missing `FD_SETSIZE` Guard (Security/Robustness) - NEW
 
-**Fix:** Added explicit `#include <cstring>` to the includes.
+**File:** `src/net/ircthread.cpp`
+**Severity:** Medium
+**Issue:** The IRC thread's `select()` call did not guard against `maxfd >= FD_SETSIZE`. If `irc_add_select_descriptors()` returns a file descriptor at or above `FD_SETSIZE`, `select()` will write outside the `fd_set` arrays, corrupting the stack. The same class of bug was already identified and fixed in `src/net/transferhelper.cpp`, but the IRC thread code path was not similarly protected.
+
+**Fix:** Added an `FD_SETSIZE` guard before the `select()` call, matching the pattern used in `transferhelper.cpp`. If the guard triggers, the IRC session is terminated gracefully via `SignalIrcError(ERR_IRC_SELECT_FAILED)`.
+
+### 13. Dead `SqliteDbRaii` Class in `guilog.cpp` (Dead Code) - NEW
+
+**File:** `src/gui/qt/gametable/log/guilog.cpp`
+**Severity:** Low
+**Issue:** A `SqliteDbRaii` RAII wrapper class was defined in `guilog.cpp` but never used anywhere. The `exportLog()` and `getGameList()` functions instead use manual `cleanUp()` calls for `sqlite3*` resource management. While the manual pattern works, the presence of an unused RAII class creates confusion about the intended approach and adds dead code.
+
+**Fix:** Removed the unused `SqliteDbRaii` class.
 
 ---
 
@@ -139,7 +149,7 @@ Issues were found and fixed in the following categories:
 6. **Memory management** consistently uses `boost::shared_ptr` and `boost::make_shared` with very few raw `new`/`delete` pairs (mostly in Qt widget hierarchies where Qt's parent system manages lifetime).
 
 ### Low-Risk Items (Not Addressed)
-1. **Qt widget raw pointers**: Classes like `gameTableImpl`, `SoundEvents` use raw `new`/`delete` for member widgets. This is acceptable as Qt's parent-child ownership model and the explicit destructor cleanup makes this safe. Converting to `std::unique_ptr` would add complexity without meaningful safety benefit since the ownership is clear.
+1. **Qt widget raw pointers with parent ownership**: Some Qt classes (e.g., `gameLobbyDialogImpl::myCreateInternetGameDialog`) use a create-on-demand pattern with `delete` before `new`. Since the widget is created with `this` as parent, Qt's parent-child ownership model handles cleanup. Converting to `std::unique_ptr` would add complexity without meaningful safety benefit.
 
 2. **`boost::shared_ptr` vs `std::shared_ptr`**: The codebase uses `boost::shared_ptr` throughout for consistency. While `std::shared_ptr` is the modern choice, migrating would be a large mechanical change with no functional benefit and risk of introducing bugs.
 
@@ -173,5 +183,7 @@ Issues were found and fixed in the following categories:
 | `src/gui/qt/gametable/gametableimpl.cpp` | Replace `new`/`delete` with `std::make_unique`; remove manual `delete` from destructor | **NEW** |
 | `src/gui/qt/sound/soundevents.h` | Replace raw pointer with `std::unique_ptr` for `myPlayer` | **NEW** |
 | `src/gui/qt/sound/soundevents.cpp` | Replace `new`/`delete` with `std::make_unique`; add null check | **NEW** |
-| `src/net/clientthread.cpp` | Remove unused `#include <cassert>` and `#include <typeinfo>` | **NEW** |
+| `src/net/clientthread.cpp` | Remove unused `#include <cassert>` and `#include <typeinfo>` | Prior |
 | `src/net/senderhelper.cpp` | Remove unused `#include <cassert>` | Prior |
+| `src/net/ircthread.cpp` | Add `FD_SETSIZE` guard before `select()` call | **NEW** |
+| `src/gui/qt/gametable/log/guilog.cpp` | Remove unused `SqliteDbRaii` class | **NEW** |
