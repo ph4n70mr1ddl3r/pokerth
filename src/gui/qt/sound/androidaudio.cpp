@@ -105,14 +105,20 @@ void AndroidAudio::destroyEngine()
 {
 	if (mOutputMixObject != nullptr) {
 		(*mOutputMixObject)->Destroy(mOutputMixObject);
+		mOutputMixObject = nullptr;
 	}
 
 	if (mEngineObject != nullptr) {
 		(*mEngineObject)->Destroy(mEngineObject);
+		mEngineObject = nullptr;
+		mEngineEngine = nullptr;
 	}
 
 	if (mPlayerObject != nullptr) {
 		(*mPlayerObject)->Destroy(mPlayerObject);
+		mPlayerObject = nullptr;
+		mPlayerPlay = nullptr;
+		mPlayerQueue = nullptr;
 	}
 
 	for (auto* sound : mSounds) {

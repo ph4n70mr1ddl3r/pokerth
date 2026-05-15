@@ -35,6 +35,7 @@
 #include <QtEndian>
 #include <QCryptographicHash>
 #include <cstdlib>
+#include <limits>
 #include <string>
 #include <vector>
 #include <third_party/protobuf/chatcleaner.pb.h>
@@ -301,7 +302,12 @@ void CleanerServer::sendMessageToClient(ChatCleanerMessage &msg)
 		qDebug() << "Cannot send message: socket not connected";
 		return;
 	}
-	uint32_t packetSize = static_cast<uint32_t>(msg.ByteSizeLong());
+	size_t rawSize = msg.ByteSizeLong();
+	if (rawSize > MAX_CLEANER_PACKET_SIZE || rawSize > std::numeric_limits<uint32_t>::max()) {
+		qDebug() << "Chat cleaner send packet too large:" << rawSize;
+		return;
+	}
+	uint32_t packetSize = static_cast<uint32_t>(rawSize);
 	std::vector<google::protobuf::uint8> buf(packetSize + CLEANER_NET_HEADER_SIZE);
 	uint32_t beSize = qToBigEndian(packetSize);
 	memcpy(buf.data(), &beSize, sizeof(uint32_t));

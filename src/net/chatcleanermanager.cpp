@@ -35,6 +35,7 @@
 #include <third_party/protobuf/chatcleaner.pb.h>
 #include <tools.h>
 
+#include <limits>
 #include <sstream>
 
 using namespace std;
@@ -293,11 +294,12 @@ ChatCleanerManager::HandleMessage(ChatCleanerMessage &msg)
 void
 ChatCleanerManager::SendMessageToServer(ChatCleanerMessage &msg)
 {
-	uint32_t packetSize = msg.ByteSizeLong();
-	if (packetSize > MAX_CLEANER_PACKET_SIZE) {
-		LOG_ERROR("Chat cleaner send packet too large: " << packetSize);
+	size_t rawSize = msg.ByteSizeLong();
+	if (rawSize > MAX_CLEANER_PACKET_SIZE || rawSize > std::numeric_limits<uint32_t>::max()) {
+		LOG_ERROR("Chat cleaner send packet too large: " << rawSize);
 		return;
 	}
+	uint32_t packetSize = static_cast<uint32_t>(rawSize);
 	std::vector<google::protobuf::uint8> buf(packetSize + CLEANER_NET_HEADER_SIZE);
 	uint32_t netSize = htonl(packetSize);
 	std::memcpy(buf.data(), &netSize, sizeof(netSize));

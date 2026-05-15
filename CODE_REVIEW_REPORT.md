@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-15
-**Revision:** 14
+**Revision:** 15
 **Reviewer:** AI Code Reviewer
 **Scope:** Full codebase (`src/` - 367 files, ~83K LOC)
 
@@ -136,6 +136,38 @@ Issues were found and fixed in the following categories:
 
 **Fix:** Removed the unused `SqliteDbRaii` class.
 
+### 14. External Linkage Free Functions in `uploadhelper.cpp` (Code Quality) - NEW
+
+**File:** `src/net/uploadhelper.cpp`
+**Severity:** Low
+**Issue:** `readFunction` and `writeFunction` are free functions defined at file scope without `static` or anonymous namespace linkage. These have external linkage and could cause ODR (One Definition Rule) violations if another translation unit defines functions with the same name. The companion file `downloadhelper.cpp` correctly wraps its `downloadWriteCallback` in an anonymous namespace.
+
+**Fix:** Wrapped both functions in an anonymous namespace, matching the pattern in `downloadhelper.cpp`.
+
+### 15. Implicit Truncation of `ByteSizeLong()` in `chatcleanermanager.cpp` (Correctness) - NEW
+
+**File:** `src/net/chatcleanermanager.cpp`
+**Severity:** Medium
+**Issue:** `SendMessageToServer()` assigned `msg.ByteSizeLong()` (which returns `size_t`) directly to a `uint32_t` variable: `uint32_t packetSize = msg.ByteSizeLong()`. On 64-bit systems, if a protobuf message somehow exceeded 4GB, the silent truncation would produce a too-small `packetSize`, leading to a buffer underallocation in the subsequent `std::vector<>` constructor. The size check against `MAX_CLEANER_PACKET_SIZE` would pass for the truncated value. The same class of bug was already fixed in `asiosendbuffer.cpp` and `websendbuffer.cpp`, which both check against `std::numeric_limits<uint32_t>::max()` before casting.
+
+**Fix:** Added explicit overflow check: verify `rawSize > std::numeric_limits<uint32_t>::max()` before casting, matching the pattern in `asiosendbuffer.cpp` and `websendbuffer.cpp`. Added `#include <limits>`.
+
+### 16. Implicit Truncation of `ByteSizeLong()` in `cleanerserver.cpp` (Correctness) - NEW
+
+**File:** `src/chatcleaner/cleanerserver.cpp`
+**Severity:** Medium
+**Issue:** Same issue as #15. `static_cast<uint32_t>(msg.ByteSizeLong())` silently truncates the result. The `MAX_CLEANER_PACKET_SIZE` check passes for the truncated value.
+
+**Fix:** Added explicit overflow check before casting, matching the pattern in `asiosendbuffer.cpp`. Added `#include <limits>`.
+
+### 17. Dangling OpenSL Object Pointers in `AndroidAudio::destroyEngine()` (Robustness) - NEW
+
+**File:** `src/gui/qt/sound/androidaudio.cpp`
+**Severity:** Medium
+**Issue:** After calling `Destroy()` on OpenSL ES objects in `destroyEngine()`, the object handles (`mEngineObject`, `mOutputMixObject`, `mPlayerObject`) and their associated interface pointers (`mEngineEngine`, `mPlayerPlay`, `mPlayerQueue`) were not set to `nullptr`. Per the OpenSL ES specification, destroyed objects are no longer valid and any use of their handles or interfaces is undefined behavior. While the current `audioEnabled` flag guards prevent use after destroy in normal flows, the dangling pointers create a risk if the audio subsystem is re-entered unexpectedly (e.g., during error recovery).
+
+**Fix:** Set all object handles and interface pointers to `nullptr` immediately after destroying each OpenSL object.
+
 ---
 
 ## Additional Observations (Not Changed)
@@ -185,5 +217,9 @@ Issues were found and fixed in the following categories:
 | `src/gui/qt/sound/soundevents.cpp` | Replace `new`/`delete` with `std::make_unique`; add null check | **NEW** |
 | `src/net/clientthread.cpp` | Remove unused `#include <cassert>` and `#include <typeinfo>` | Prior |
 | `src/net/senderhelper.cpp` | Remove unused `#include <cassert>` | Prior |
-| `src/net/ircthread.cpp` | Add `FD_SETSIZE` guard before `select()` call | **NEW** |
-| `src/gui/qt/gametable/log/guilog.cpp` | Remove unused `SqliteDbRaii` class | **NEW** |
+| `src/net/ircthread.cpp` | Add `FD_SETSIZE` guard before `select()` call | Prior |
+| `src/gui/qt/gametable/log/guilog.cpp` | Remove unused `SqliteDbRaii` class | Prior |
+| `src/net/uploadhelper.cpp` | Wrap `readFunction`/`writeFunction` in anonymous namespace | **NEW** |
+| `src/net/chatcleanermanager.cpp` | Fix implicit `ByteSizeLong()` truncation; add `#include <limits>` | **NEW** |
+| `src/chatcleaner/cleanerserver.cpp` | Fix implicit `ByteSizeLong()` truncation; add `#include <limits>` | **NEW** |
+| `src/gui/qt/sound/androidaudio.cpp` | Null out OpenSL object/interface pointers after `Destroy()` | **NEW** |

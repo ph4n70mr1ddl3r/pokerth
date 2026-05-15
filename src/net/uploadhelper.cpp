@@ -41,6 +41,7 @@
 using namespace std;
 
 
+namespace {
 size_t
 readFunction(char *bufptr, size_t size, size_t nitems, void *userp)
 {
@@ -54,6 +55,7 @@ writeFunction(char *bufptr, size_t size, size_t nitems, void *userp)
 	static_cast<string*>(userp)->append(msgPart);
 	return size * nitems;
 }
+} // namespace
 
 UploadHelper::UploadHelper()
 {
