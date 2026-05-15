@@ -278,7 +278,7 @@ Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned
 						handQuery.addBindValue(QVariant(QVariant::LongLong));
 					}
 				}
-				for(int i = seatsList->size(); i < MAX_NUMBER_OF_PLAYERS; i++) {
+				for(int i = static_cast<int>(seatsList->size()); i < MAX_NUMBER_OF_PLAYERS; i++) {
 					handQuery.addBindValue(QVariant(QVariant::LongLong));
 				}
 				if (!handQuery.exec()) {
@@ -362,13 +362,13 @@ Log::logPlayerActionUnlocked(string playerName, PlayerActionLog action, int amou
                 q.addBindValue(QString::fromStdString(playerName));
                 if(!q.exec()) {
                     QSqlError err = q.lastError();
-                    cout << "Error in statement: SELECT Seat ... [" << err.text().toStdString() << "]." << endl;
+                    LOG_ERROR("Error in statement: SELECT Seat ... [" << err.text().toStdString() << "]");
                 } else {
                     if(q.next()) {
                         int seat = q.value(0).toInt();
                         logPlayerActionUnlocked(seat, action, amount);
                     } else {
-                        cout << "Implausible information about player " << playerName << " in log-db!" << endl;
+                        LOG_ERROR("Implausible information about player " << playerName << " in log-db!");
                     }
                 }
             }
@@ -749,7 +749,7 @@ Log::exec_transaction()
     QSqlError err;
     if(!mySqliteLogDb.transaction()) {
         err = mySqliteLogDb.lastError();
-        cout << "Failed to begin transaction: " << err.text().toStdString() << endl;
+        LOG_ERROR("Failed to begin transaction: " << err.text().toStdString());
         // Try to execute without transaction fallback
     }
 
@@ -774,7 +774,7 @@ Log::exec_transaction()
             QSqlQuery q(mySqliteLogDb);
             if(!q.exec(QString::fromStdString(stmt))) {
                 QSqlError qe = q.lastError();
-                cout << "Error in statement: " << stmt << " [" << qe.text().toStdString() << "]." << endl;
+                LOG_ERROR("Error in statement: " << stmt << " [" << qe.text().toStdString() << "]");
             }
         }
         if(pos == std::string::npos) break;
@@ -783,7 +783,7 @@ Log::exec_transaction()
 
     if(!mySqliteLogDb.commit()) {
         err = mySqliteLogDb.lastError();
-        cout << "Failed to commit transaction: " << err.text().toStdString() << endl;
+        LOG_ERROR("Failed to commit transaction: " << err.text().toStdString());
     }
 }
 

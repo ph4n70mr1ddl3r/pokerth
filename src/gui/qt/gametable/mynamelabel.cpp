@@ -102,7 +102,7 @@ void MyNameLabel::setText ( const QString &t, bool trans, bool computerplayer)
 			// truncate nicknames longer than 13 characters
 			QString t2 = t;
 			if(t2.size() > 13) {
-				int chop = t.size() - 13 + 3;
+				int chop = static_cast<int>(t.size()) - 13 + 3;
 				t2.chop(chop);
 				t2.append("...");
 			}

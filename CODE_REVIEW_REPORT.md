@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-15
-**Revision:** 15
+**Revision:** 16
 **Reviewer:** AI Code Reviewer
 **Scope:** Full codebase (`src/` - 367 files, ~83K LOC)
 
@@ -222,4 +222,47 @@ Issues were found and fixed in the following categories:
 | `src/net/uploadhelper.cpp` | Wrap `readFunction`/`writeFunction` in anonymous namespace | **NEW** |
 | `src/net/chatcleanermanager.cpp` | Fix implicit `ByteSizeLong()` truncation; add `#include <limits>` | **NEW** |
 | `src/chatcleaner/cleanerserver.cpp` | Fix implicit `ByteSizeLong()` truncation; add `#include <limits>` | **NEW** |
-| `src/gui/qt/sound/androidaudio.cpp` | Null out OpenSL object/interface pointers after `Destroy()` | **NEW** |
+| `src/gui/qt/sound/androidaudio.cpp` | Null out OpenSL object/interface pointers after `Destroy()` | Prior |
+| `src/engine/log.cpp` | Replace `cout`/`endl` with `LOG_ERROR`; fix narrowing `int i = seatsList->size()` | **NEW** |
+| `src/engine/local_engine/localhand.cpp` | Fix signed/unsigned comparison; fix stale comment | **NEW** |
+| `src/gui/qt/gametable/mynamelabel.cpp` | Fix narrowing conversion in nickname truncation | **NEW** |
+
+### 18. `cout`/`endl` Replaced with `LOG_ERROR` in Log SQL Error Paths (Code Quality) - NEW
+
+**File:** `src/engine/log.cpp`
+**Severity:** Low
+**Issue:** Five error paths in the log module used `std::cout`/`std::endl` to report SQL errors (failed queries, failed transactions, implausible data). This bypasses the project's logging infrastructure (`LOG_ERROR` macro), meaning these errors would not be captured by the server's log file and would only appear on stdout. Additionally, the code relied on `<iostream>` being transitively included rather than explicitly imported.
+
+**Fix:** Replaced all five `cout << ... << endl` calls with `LOG_ERROR(...)`, matching the pattern used throughout the rest of the codebase.
+
+### 19. Signed/Unsigned Comparison in `LocalHand::assignButtons()` (Correctness) - NEW
+
+**File:** `src/engine/local_engine/localhand.cpp`
+**Severity:** Low
+**Issue:** `assignButtons()` loop used `int i` compared directly with `seatsList->size()` (returns `size_t`). This is a signed/unsigned comparison which some compilers warn about. While safe in practice (the list never exceeds `MAX_NUMBER_OF_PLAYERS`), adding the explicit cast eliminates the warning and makes the intent clear.
+
+**Fix:** Changed `i<seatsList->size()` to `i<static_cast<int>(seatsList->size())`.
+
+### 20. Narrowing Conversion in Log Padding Loop (Correctness) - NEW
+
+**File:** `src/engine/log.cpp`
+**Severity:** Low
+**Issue:** `logNewHandMsg()` used `int i = seatsList->size()` to initialize a loop counter from `size_t`. This is a narrowing conversion. While safe (the list size is always small), explicit casting avoids compiler warnings.
+
+**Fix:** Changed to `int i = static_cast<int>(seatsList->size())`.
+
+### 21. Narrowing Conversion in Nickname Truncation (Correctness) - NEW
+
+**File:** `src/gui/qt/gametable/mynamelabel.cpp`
+**Severity:** Low
+**Issue:** Nickname truncation computed `int chop = t.size() - 13 + 3` where `t.size()` returns `qsizetype`. The implicit narrowing from `qsizetype` to `int` could trigger compiler warnings.
+
+**Fix:** Changed to `int chop = static_cast<int>(t.size()) - 13 + 3`.
+
+### 22. Stale Comment Referencing `MAX_NUMBER_OF_PLAYERS=10` (Documentation) - NEW
+
+**File:** `src/engine/local_engine/localhand.cpp`
+**Severity:** Low
+**Issue:** Comment in card dealing bounds check referenced `max MAX_NUMBER_OF_PLAYERS=10` and computed `2*(size-1)+1+5 = 24`. The constant was changed to `2` (heads-up variant), making the specific value "24" incorrect and the "=10" misleading.
+
+**Fix:** Removed the stale specific values from the comment, keeping the general statement about bounds.
