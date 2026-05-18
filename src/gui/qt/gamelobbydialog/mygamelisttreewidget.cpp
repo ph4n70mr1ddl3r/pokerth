@@ -30,7 +30,6 @@
  *****************************************************************************/
 #include "mygamelisttreewidget.h"
 #include <QDebug>
-#include <iostream>
 
 using namespace std;
 

@@ -1269,7 +1269,7 @@ void gameTableImpl::dealBeRoCards(int myBeRoID)
 	}
 	break;
 	default: {
-		cout << "dealBeRoCards() Error" << endl;
+		LOG_ERROR("dealBeRoCards() Error: invalid myBeRoID");
 	}
 	}
 }
@@ -2233,7 +2233,7 @@ void gameTableImpl::beRoAnimation2(int myBeRoID)
 	}
 	break;
 	default: {
-		cout << "beRoAnimation2() Error" << endl;
+		LOG_ERROR("beRoAnimation2() Error: invalid myBeRoID");
 	}
 	}
 }

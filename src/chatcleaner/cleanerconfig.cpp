@@ -40,7 +40,6 @@
 #include <direct.h>
 #endif
 
-#include <iostream>
 #include <sstream>
 #include <cstdlib>
 #include <fstream>

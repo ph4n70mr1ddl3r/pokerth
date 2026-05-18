@@ -32,7 +32,6 @@
 #ifndef LOCALBERORIVER_H
 #define LOCALBERORIVER_H
 
-#include <iostream>
 #include <localbero.h>
 
 class HandInterface;

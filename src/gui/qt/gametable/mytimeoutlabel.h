@@ -31,7 +31,6 @@
 #ifndef MYTIMEOUTLABEL_H
 #define MYTIMEOUTLABEL_H
 
-#include <iostream>
 
 #include <QtGui>
 #include <QtCore>

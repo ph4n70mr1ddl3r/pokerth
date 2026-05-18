@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 #include "carddeckstylereader.h"
-#include <iostream>
 #include <sstream>
 #include <cstdlib>
 #include <fstream>

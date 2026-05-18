@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
-**Date:** 2026-05-15
-**Revision:** 17
+**Date:** 2026-05-18
+**Revision:** 18
 **Reviewer:** AI Code Reviewer
 **Scope:** Full codebase (`src/` - 367 files, ~83K LOC)
 
@@ -229,6 +229,8 @@ Issues were found and fixed in the following categories:
 | `src/gui/qt/sound/androidaudio.cpp` | Replace 13 `Q_ASSERT` with proper error checks; add initAudio() failure guards | **NEW** |
 | `src/gui/qt/gametable/log/guilog.cpp` | Replace 35 `cout`/`endl` with `LOG_ERROR`; add `#include <core/loghelper.h>` | **NEW** |
 | `src/gui/qt/logfiledialog/logfiledialog.cpp` | Fix signed/unsigned comparison in log file deletion loop | **NEW** |
+| 24 files (see list below) | Remove unused `#include <iostream>` | Rev 18 |
+| `src/gui/qt/gametable/gametableimpl.cpp` | Replace `cout`/`endl` with `LOG_ERROR` in switch defaults | Rev 18 |
 
 ### 18. `cout`/`endl` Replaced with `LOG_ERROR` in Log SQL Error Paths (Code Quality) - NEW
 
@@ -295,3 +297,43 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 **Issue:** The log file deletion loop used `int i` compared with `selectedItemsList.size()` which returns `qsizetype`. While safe in practice (the list will never be large enough to overflow `int`), this triggers compiler warnings with `-Wsign-compare`.
 
 **Fix:** Changed `i < selectedItemsList.size()` to `i < static_cast<int>(selectedItemsList.size())`.
+
+### 26. Unused `#include <iostream>` in 24 Files (Code Quality) - NEW
+
+**Files:** 24 files across `src/net/`, `src/engine/`, `src/gui/qt/`, `src/chatcleaner/`, `src/pokerth.cpp`
+**Severity:** Low
+**Issue:** 24 source and header files included `<iostream>` but used none of its facilities (`std::cout`, `std::cerr`, `std::cin`, `std::endl`). These dead includes increase compilation time (by pulling in the heavy `<iostream>` header transitively) and create a false impression of dependencies. Many of these files are headers that propagate the unnecessary include to every translation unit that includes them.
+
+**Fix:** Removed the unused `#include <iostream>` from all 24 files:
+- `src/net/clientstate.cpp` (uses `boost::iostreams`, not `std::iostream`)
+- `src/chatcleaner/cleanerconfig.cpp`
+- `src/engine/game.cpp`
+- `src/engine/local_engine/localberopostriver.cpp`
+- `src/engine/local_engine/cardsvalue.h`
+- `src/engine/local_engine/localberoriver.h`
+- `src/engine/local_engine/localberoturn.h`
+- `src/engine/local_engine/localberoflop.h`
+- `src/pokerth.cpp`
+- `src/gui/qt/qttools/qthelper/qthelper.cpp`
+- `src/gui/qt/settingsdialog/settingsdialogimpl.h`
+- `src/gui/qt/settingsdialog/selectavatardialog/selectavatardialogimpl.cpp`
+- `src/gui/qt/gamelobbydialog/mygamelisttreewidget.cpp`
+- `src/gui/qt/mymessagedialog/mymessagedialogimpl.cpp`
+- `src/gui/qt/gametable/log/guilog.h`
+- `src/gui/qt/gametable/myrighttabwidget.cpp`
+- `src/gui/qt/gametable/mysetlabel.h`
+- `src/gui/qt/gametable/mycashlabel.h`
+- `src/gui/qt/gametable/mycardspixmaplabel.h`
+- `src/gui/qt/gametable/myavatarlabel.h`
+- `src/gui/qt/gametable/mystatuslabel.h`
+- `src/gui/qt/gametable/mytimeoutlabel.h`
+- `src/gui/qt/gametable/mynamelabel.h`
+- `src/gui/qt/styles/carddeckstylereader.cpp`
+
+### 27. `cout`/`endl` in `gameTableImpl` Switch Defaults Bypasses Logging Infrastructure (Code Quality) - NEW
+
+**File:** `src/gui/qt/gametable/gametableimpl.cpp`
+**Severity:** Low
+**Issue:** Two switch statement default branches used `cout << "..." << endl` to report errors (`dealBeRoCards()` and `beRoAnimation2()`). This bypasses the project's logging infrastructure (`LOG_ERROR` macro), meaning these errors only appear on stdout and are never captured by the client's log file. The same class of issue was already identified and fixed in `src/engine/log.cpp` (issue #18) and `src/gui/qt/gametable/log/guilog.cpp` (issue #24), but these two switch defaults in the game table UI were not similarly updated.
+
+**Fix:** Replaced both `cout << ... << endl` calls with `LOG_ERROR(...)`, matching the pattern used throughout the rest of the codebase. The file already includes `<core/loghelper.h>`.

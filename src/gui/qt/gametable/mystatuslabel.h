@@ -31,7 +31,6 @@
 #ifndef MYSTATUSLABEL_H
 #define MYSTATUSLABEL_H
 
-#include <iostream>
 
 #include <QtGui>
 #include <QtCore>

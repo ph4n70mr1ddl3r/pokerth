@@ -31,7 +31,6 @@
 #ifndef MYCARDSPIXMAPLABEL_H
 #define MYCARDSPIXMAPLABEL_H
 
-#include <iostream>
 
 #include <QtGui>
 #include <QtCore>

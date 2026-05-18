@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 #include "myrighttabwidget.h"
-#include <iostream>
 
 using namespace std;
 

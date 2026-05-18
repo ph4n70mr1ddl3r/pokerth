@@ -31,7 +31,6 @@
 #ifndef MYNAMELABEL_H
 #define MYNAMELABEL_H
 
-#include <iostream>
 
 #include <QtGui>
 #include <QtCore>

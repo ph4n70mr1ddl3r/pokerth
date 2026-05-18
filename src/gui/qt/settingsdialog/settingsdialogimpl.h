@@ -45,7 +45,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include <vector>
-#include <iostream>
 
 class ConfigFile;
 class selectAvatarDialogImpl;

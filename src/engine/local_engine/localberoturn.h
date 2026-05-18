@@ -33,7 +33,6 @@
 #define LOCALBEROTURN_H
 
 #include <localbero.h>
-#include <iostream>
 
 class HandInterface;
 

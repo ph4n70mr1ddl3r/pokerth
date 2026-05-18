@@ -31,7 +31,6 @@
 #include "mymessagedialogimpl.h"
 #include <QtCore>
 #include "configfile.h"
-#include <iostream>
 #include <sstream>
 #include <cstdlib>
 #include <fstream>

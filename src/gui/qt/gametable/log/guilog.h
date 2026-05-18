@@ -32,7 +32,6 @@
 #define GUILOG_H
 
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <memory>
 

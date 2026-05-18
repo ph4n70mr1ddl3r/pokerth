@@ -33,7 +33,6 @@
 #include <handinterface.h>
 #include <game_defs.h>
 
-#include <iostream>
 
 using namespace std;
 

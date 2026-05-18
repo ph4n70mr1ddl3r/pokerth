@@ -31,7 +31,6 @@
 #ifndef MYSETLABEL_H
 #define MYSETLABEL_H
 
-#include <iostream>
 
 #include <QtGui>
 #include <QtCore>

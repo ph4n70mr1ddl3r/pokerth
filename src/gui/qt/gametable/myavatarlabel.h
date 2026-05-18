@@ -31,7 +31,6 @@
 #ifndef MYAVATARLABEL_H
 #define MYAVATARLABEL_H
 
-#include <iostream>
 #include "startwindowimpl.h"
 #include <QtGui>
 #include <QtCore>

@@ -35,7 +35,6 @@
 #include "game_defs.h"
 #include "engine_defs.h"
 
-#include <iostream>
 #include <vector>
 
 class CardsValue

@@ -57,7 +57,6 @@
 #include <boost/iostreams/filter/zlib.hpp>
 #include <filesystem>
 
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <array>

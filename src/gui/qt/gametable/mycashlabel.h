@@ -31,7 +31,6 @@
 #ifndef MYCASHLABEL_H
 #define MYCASHLABEL_H
 
-#include <iostream>
 
 #include <QtGui>
 #include <QtCore>

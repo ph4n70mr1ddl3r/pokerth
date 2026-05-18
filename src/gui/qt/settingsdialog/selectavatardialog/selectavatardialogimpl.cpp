@@ -32,7 +32,6 @@
 #include "myavatarlistitem.h"
 #include "mymessagebox.h"
 #include "configfile.h"
-#include <iostream>
 
 
 selectAvatarDialogImpl::selectAvatarDialogImpl(QWidget *parent, ConfigFile *c)
