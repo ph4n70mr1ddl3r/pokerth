@@ -45,7 +45,7 @@ static bool
 ValidateListIntRange(const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > &l, ::google::protobuf::uint32 minval, ::google::protobuf::uint32 maxval)
 {
 	bool retVal = true;
-	for (int i = 0; i < l.size(); i++) {
+	for (int i = 0; i < static_cast<int>(l.size()); i++) {
 		if (!VALIDATE_UINT_RANGE(l.Get(i), minval, maxval)) {
 			retVal = false;
 			break;

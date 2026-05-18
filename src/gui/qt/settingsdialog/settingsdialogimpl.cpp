@@ -351,7 +351,7 @@ void settingsDialogImpl::prepareDialog()
 			} else item->setIcon(0, QIcon());
 		}
 		if(!currentGameTableFound) {
-			qDebug() << "Config ERROR: current game table style file not found in List. Try to mark default as selected.";
+			qWarning() << "Config ERROR: current game table style file not found in List. Try to mark default as selected.";
 			QTreeWidgetItem *item = treeWidget_gameTableStyles->topLevelItem(0);
 			if(item) {
 				item->setIcon(0, QIcon(QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str())+"/gfx/gui/misc/rating.png"));
@@ -359,7 +359,7 @@ void settingsDialogImpl::prepareDialog()
 			}
 		}
 	} else {
-		qDebug() << "Config ERROR: current game table style file could not be loaded. Try to mark default as selected.";
+		qWarning() << "Config ERROR: current game table style file could not be loaded. Try to mark default as selected.";
 		QTreeWidgetItem *item = treeWidget_gameTableStyles->topLevelItem(0);
 		if(item) {
 			item->setIcon(0, QIcon(QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str())+"/gfx/gui/misc/rating.png"));
@@ -451,7 +451,7 @@ void settingsDialogImpl::prepareDialog()
 			} else item->setIcon(0, QIcon());
 		}
 		if(!currentCardDeckFound) {
-			qDebug() << "Config ERROR: current card deck style file not found in List. Try to mark default as selected.";
+			qWarning() << "Config ERROR: current card deck style file not found in List. Try to mark default as selected.";
 			QTreeWidgetItem *item = treeWidget_cardDeckStyles->topLevelItem(0);
 			if(item) {
 				item->setIcon(0, QIcon(QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str())+"/gfx/gui/misc/rating.png"));
@@ -459,7 +459,7 @@ void settingsDialogImpl::prepareDialog()
 			}
 		}
 	} else {
-		qDebug() << "Config ERROR: current card deck style file could not be loaded. Try to mark default as selected.";
+		qWarning() << "Config ERROR: current card deck style file could not be loaded. Try to mark default as selected.";
 		QTreeWidgetItem *item = treeWidget_cardDeckStyles->topLevelItem(0);
 		if(item) {
 			item->setIcon(0, QIcon(QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str())+"/gfx/gui/misc/rating.png"));

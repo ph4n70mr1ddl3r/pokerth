@@ -1104,7 +1104,7 @@ void LocalPlayer::preflopEngine()
 	PlayerListConstIterator it_c;
 
 	// Temporary: preflopValue and flopValue not yet adjusted for six and seven players
-	int players = currentHand->getActivePlayerList()->size();
+	int players = static_cast<int>(currentHand->getActivePlayerList()->size());
 	if(players > 5) players = 5;
 	// paranoia - ensure valid bounds for array access
 	if(players < 2) players = 2;
@@ -1447,7 +1447,7 @@ void LocalPlayer::flopEngine()
 	PlayerListConstIterator it_c;
 
 	// Temporary: preflopValue and flopValue not yet adjusted
-	int players = currentHand->getActivePlayerList()->size();
+	int players = static_cast<int>(currentHand->getActivePlayerList()->size());
 	if(players > 5) players = 5;
 	// paranoia - ensure valid bounds for array access
 	if(players < 2) players = 2;
@@ -3666,7 +3666,7 @@ void LocalPlayer::calcMyOdds()
 		handCode = CardsValue::holeCardsToIntCode(myCards.data());
 
 		// Transition while preflopValue and flopValue are not yet adjusted
-		int players = currentHand->getActivePlayerList()->size();
+		int players = static_cast<int>(currentHand->getActivePlayerList()->size());
 		if(players > 5) players = 5;
 		// paranoia
 		if(players < 2) players = 2;
@@ -3702,7 +3702,7 @@ void LocalPlayer::calcMyOdds()
 		// 		cout << "\t" << handCode << endl;
 
 		// Transition while preflopValue and flopValue are not yet adjusted
-		int players = currentHand->getActivePlayerList()->size();
+		int players = static_cast<int>(currentHand->getActivePlayerList()->size());
 		if(players > 5) players = 5;
 		// paranoia
 		if(players < 2) players = 2;

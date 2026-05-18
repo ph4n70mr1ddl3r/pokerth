@@ -574,7 +574,7 @@ ClientStateStartConnect::HandleSslHandshake(const boost::system::error_code& ec,
             client->SetState(ClientStateStartSession::Instance());
         } else {
             if (ec != boost::asio::error::operation_aborted) {
-                qDebug() << "[TLS-CONNECT] SSL Handshake FAILED:" << ec.message().c_str() 
+                qWarning() << "[TLS-CONNECT] SSL Handshake FAILED:" << ec.message().c_str() 
                          << "(code:" << ec.value() << ")";
                 throw ClientException(__FILE__, __LINE__, ERR_SOCK_CONNECT_FAILED, ec.value());
             }

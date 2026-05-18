@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-18
-**Revision:** 21
+**Revision:** 22
 **Reviewer:** AI Code Reviewer
 **Scope:** Full codebase (`src/` - 367 files, ~83K LOC)
 
@@ -233,6 +233,11 @@ Issues were found and fixed in the following categories:
 | `src/gui/qt/gametable/gametableimpl.cpp` | Replace `cout`/`endl` with `LOG_ERROR` in switch defaults | Rev 18 |
 | 5 files (see below) | Remove unused `#include <iostream>` | **NEW (Rev 20)** |
 | `src/gui/qt/chattools/chattools.cpp` | Replace redundant `== true` with direct boolean | **NEW (Rev 20)** |
+| `src/gui/qt/settingsdialog/settingsdialogimpl.cpp` | Replace 4 error-path `qDebug()` with `qWarning()` | **NEW (Rev 22)** |
+| `src/net/clientstate.cpp` | Replace error-path `qDebug()` with `qWarning()` for TLS handshake failure | **NEW (Rev 22)** |
+| `src/gui/qt/logfiledialog/logfiledialog.cpp` | Replace error-path `qDebug()` with `qWarning()` for log upload failure | **NEW (Rev 22)** |
+| `src/net/netpacketvalidator.cpp` | Fix signed/unsigned comparison in `ValidateListIntRange()` | **NEW (Rev 22)** |
+| `src/engine/local_engine/localplayer.cpp` | Fix 4 narrowing `size_t` to `int` conversions | **NEW (Rev 22)** |
 | `src/gui/qt/gametable/myavatarlabel.cpp` | Replace 2 redundant `== true` with direct boolean | **NEW (Rev 20)** |
 
 ### 18. `cout`/`endl` Replaced with `LOG_ERROR` in Log SQL Error Paths (Code Quality) - NEW
@@ -452,3 +457,47 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 **Issue:** `sqlite3_get_table()` wrapper assigned `rows.size()` (returns `qsizetype`, 64-bit on 64-bit platforms) directly to `int nRow`. This is a narrowing conversion. While safe in practice (log files never have millions of rows), the explicit cast avoids compiler warnings and is consistent with the type safety standards applied in prior reviews.
 
 **Fix:** Changed `int nRow = rows.size()` to `int nRow = static_cast<int>(rows.size())`.
+
+---
+
+## Revision 22 Changes
+
+### 34. `qDebug()` Used for Config Error Paths in Settings Dialog (Code Quality) - NEW
+
+**File:** `src/gui/qt/settingsdialog/settingsdialogimpl.cpp`
+**Severity:** Low
+**Issue:** The settings dialog used `qDebug()` for 4 config error conditions (game table style not found in list, game table style could not be loaded, card deck style not found in list, card deck style could not be loaded). The messages themselves contain `"Config ERROR"` in their text, clearly indicating they are error conditions, yet they are logged at debug level. `qWarning()` is the appropriate Qt log level for error conditions. This is the same class of issue as #31 (androidsoundeffect.cpp qDebug→qWarning) and #32 (cleanerserver.cpp qDebug→qWarning).
+
+**Fix:** Replaced all 4 config error `qDebug()` calls with `qWarning()`.
+
+### 35. `qDebug()` Used for TLS Handshake Failure in Client State (Code Quality) - NEW
+
+**File:** `src/net/clientstate.cpp`
+**Severity:** Low
+**Issue:** `ClientStateStartConnect::HandleSslHandshake()` used `qDebug()` to report SSL handshake failure with error code and message. This is an error condition that leads to a `ClientException` being thrown. `qWarning()` is the appropriate Qt log level for error conditions. The successful handshake message was correctly left as `qDebug()` since it is informational.
+
+**Fix:** Replaced the error-path `qDebug()` with `qWarning()`.
+
+### 36. `qDebug()` Used for Log Upload Failure in Log File Dialog (Code Quality) - NEW
+
+**File:** `src/gui/qt/logfiledialog/logfiledialog.cpp`
+**Severity:** Low
+**Issue:** The log file upload handler used `qDebug()` to output the server's error response message when log file processing failed on the server side. This is an error condition (the else branch of a success check). `qWarning()` is the appropriate Qt log level. The success-path `qDebug()` for the hash was correctly left as-is.
+
+**Fix:** Replaced the error-path `qDebug()` with `qWarning()`.
+
+### 37. Signed/Unsigned Comparison in `ValidateListIntRange()` (Correctness) - NEW
+
+**File:** `src/net/netpacketvalidator.cpp`
+**Severity:** Low
+**Issue:** `ValidateListIntRange()` used `int i` compared directly with `l.size()` which returns `int` for protobuf's `RepeatedField`, but the pattern is inconsistent with the signed/unsigned fixes applied throughout the codebase. The comparison `int i < l.size()` is technically a signed/unsigned comparison if `size()` returns an unsigned type on any platform. Adding the explicit cast ensures consistency and eliminates any potential warning.
+
+**Fix:** Changed `i < l.size()` to `i < static_cast<int>(l.size())`.
+
+### 38. Narrowing Conversion of `size()` to `int` in AI Player (Correctness) - NEW
+
+**File:** `src/engine/local_engine/localplayer.cpp`
+**Severity:** Low
+**Issue:** Four places in the AI player engine assigned `currentHand->getActivePlayerList()->size()` (returns `size_t`) directly to `int players`. This is a narrowing conversion from unsigned to signed. While safe in practice (the active player list never exceeds `MAX_NUMBER_OF_PLAYERS` which fits in `int`), the explicit cast avoids compiler warnings and is consistent with the type safety standards applied throughout the codebase (e.g., issue #19, #20, #21, #25, #33).
+
+**Fix:** Changed all 4 instances to use `static_cast<int>(currentHand->getActivePlayerList()->size())`.
