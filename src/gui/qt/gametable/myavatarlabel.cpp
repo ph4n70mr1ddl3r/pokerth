@@ -215,7 +215,7 @@ void MyAvatarLabel::refreshStars()
 		for(int i=1; i<=5; i++)myW->playerStarsArray[i][seatPlace]->setText("");
 		if(!myW || !myW->myStartWindow || !myW->myStartWindow->getSession()) return;
 		if(myW->myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_INTERNET && (*it_c)->getMyType() != PLAYER_TYPE_COMPUTER) {
-			if((*it_c)->getMyStayOnTableStatus() == true && (*it_c)->getMyName()!="" && seatPlace!=0) {
+			if((*it_c)->getMyStayOnTableStatus() && (*it_c)->getMyName()!="" && seatPlace!=0) {
 
 				// Bug #319: https://github.com/pokerth/pokerth/issues/319
 				QString playerName = QString::fromUtf8((*it_c)->getMyName().c_str());
@@ -244,7 +244,7 @@ void MyAvatarLabel::refreshTooltips()
 	int seatPlace = 0;
 	PlayerList seatsList = currentGame->getSeatsList();
 	for (seatPlace=0,it_c=seatsList->begin(); it_c!=seatsList->end(); ++it_c, seatPlace++) {
-		if((*it_c)->getMyStayOnTableStatus() == true || (*it_c)->getMyActiveStatus()) {
+		if((*it_c)->getMyStayOnTableStatus() || (*it_c)->getMyActiveStatus()) {
 			bool computerPlayer = false;
 			if((*it_c)->getMyType() == PLAYER_TYPE_COMPUTER) {
 				computerPlayer = true;

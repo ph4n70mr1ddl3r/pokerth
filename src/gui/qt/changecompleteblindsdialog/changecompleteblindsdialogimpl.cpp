@@ -31,7 +31,6 @@
 #include "changecompleteblindsdialogimpl.h"
 #include "mymessagebox.h"
 #include "configfile.h"
-#include <iostream>
 
 
 changeCompleteBlindsDialogImpl::changeCompleteBlindsDialogImpl(QWidget *parent, ConfigFile *c)

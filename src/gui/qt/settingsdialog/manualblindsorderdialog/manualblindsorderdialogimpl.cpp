@@ -31,7 +31,6 @@
 #include "manualblindsorderdialogimpl.h"
 #include "configfile.h"
 #include "mymessagebox.h"
-#include <iostream>
 
 
 manualBlindsOrderDialogImpl::manualBlindsOrderDialogImpl(QWidget *parent, ConfigFile *c)

@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-18
-**Revision:** 19
+**Revision:** 20
 **Reviewer:** AI Code Reviewer
 **Scope:** Full codebase (`src/` - 367 files, ~83K LOC)
 
@@ -231,6 +231,9 @@ Issues were found and fixed in the following categories:
 | `src/gui/qt/logfiledialog/logfiledialog.cpp` | Fix signed/unsigned comparison in log file deletion loop | **NEW** |
 | 24 files (see list below) | Remove unused `#include <iostream>` | Rev 18 |
 | `src/gui/qt/gametable/gametableimpl.cpp` | Replace `cout`/`endl` with `LOG_ERROR` in switch defaults | Rev 18 |
+| 5 files (see below) | Remove unused `#include <iostream>` | **NEW (Rev 20)** |
+| `src/gui/qt/chattools/chattools.cpp` | Replace redundant `== true` with direct boolean | **NEW (Rev 20)** |
+| `src/gui/qt/gametable/myavatarlabel.cpp` | Replace 2 redundant `== true` with direct boolean | **NEW (Rev 20)** |
 
 ### 18. `cout`/`endl` Replaced with `LOG_ERROR` in Log SQL Error Paths (Code Quality) - NEW
 
@@ -393,3 +396,23 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 
 **File:** `src/net/netpacketvalidator.cpp`
 **Observation:** Comprehensive validation of all packet types with proper bounds checking. Chat messages filter control characters. Avatar sizes are bounded. Game parameters validated against sane ranges. No issues found.
+
+---
+
+## Revision 20 Changes
+
+### 28. Unused `#include <iostream>` in 5 Files (Code Quality) - NEW
+
+**Files:** `src/config/configfile.cpp`, `src/engine/local_engine/localhand.cpp`, `src/gui/qt/changecompleteblindsdialog/changecompleteblindsdialogimpl.cpp`, `src/gui/qt/chattools/chattools.cpp`, `src/gui/qt/settingsdialog/manualblindsorderdialog/manualblindsorderdialogimpl.cpp`
+**Severity:** Low
+**Issue:** These 5 source files included `<iostream>` but used none of its facilities (`std::cout`, `std::cerr`, `std::cin`, `std::endl`). These dead includes increase compilation time by pulling in the heavy `<iostream>` header transitively and create a false impression of dependencies. This is the same class of issue as #26 (rev 18), which cleaned up 24 other files.
+
+**Fix:** Removed the unused `#include <iostream>` from all 5 files.
+
+### 29. Redundant `== true` Boolean Comparisons (Code Quality) - NEW
+
+**Files:** `src/gui/qt/chattools/chattools.cpp`, `src/gui/qt/gametable/myavatarlabel.cpp`
+**Severity:** Low
+**Issue:** Three comparisons used `== true` on boolean values, e.g., `pm == true` and `getMyStayOnTableStatus() == true`. Comparing a `bool` to `true` is redundant and inconsistent with the rest of the codebase, which uses direct boolean expressions. While not a bug, it reduces readability.
+
+**Fix:** Replaced all three `== true` with direct boolean usage (e.g., `if(pm)` instead of `if(pm == true)`).

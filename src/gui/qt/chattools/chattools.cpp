@@ -34,7 +34,6 @@
 #include "gametablestylereader.h"
 #include "gamelobbydialogimpl.h"
 #include "soundevents.h"
-#include <iostream>
 
 
 using namespace std;
@@ -185,7 +184,7 @@ void ChatTools::receiveMessage(QString playerName, QString message, bool pm)
 
 			if(message.indexOf(QString("/me "))==0) {
 				myTextBrowser->append(tempMsg.replace("/me ","<i>*"+playerName+" ")+"</i>");
-			} else if(pm == true) {
+			} else if(pm) {
 				myTextBrowser->append("<i>"+playerName+"(pm): " + tempMsg+"</i>");
 			} else {
 				myTextBrowser->append(playerName + ": " + tempMsg);
