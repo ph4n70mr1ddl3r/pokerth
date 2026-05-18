@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-18
-**Revision:** 18
+**Revision:** 19
 **Reviewer:** AI Code Reviewer
 **Scope:** Full codebase (`src/` - 367 files, ~83K LOC)
 
@@ -337,3 +337,59 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 **Issue:** Two switch statement default branches used `cout << "..." << endl` to report errors (`dealBeRoCards()` and `beRoAnimation2()`). This bypasses the project's logging infrastructure (`LOG_ERROR` macro), meaning these errors only appear on stdout and are never captured by the client's log file. The same class of issue was already identified and fixed in `src/engine/log.cpp` (issue #18) and `src/gui/qt/gametable/log/guilog.cpp` (issue #24), but these two switch defaults in the game table UI were not similarly updated.
 
 **Fix:** Replaced both `cout << ... << endl` calls with `LOG_ERROR(...)`, matching the pattern used throughout the rest of the codebase. The file already includes `<core/loghelper.h>`.
+
+### 19. Float Exact Equality Comparison in calcMyOdds (Robustness)
+
+**File:** `src/engine/local_engine/localplayer.cpp`
+**Severity:** Low
+**Issue:** `calcMyOdds()` uses `myOdds == -1` to detect uninitialised values. `myOdds` is a `double`, and exact floating-point comparison is fragile — optimisation, rounding, or FPU differences across platforms could cause the check to fail silently, leaving `myOdds` at -1 which would produce nonsensical AI decisions.
+
+**Fix:** Replaced `myOdds == -1` with `myOdds < 0` which is robust against floating-point imprecision. Applied to both the preflop and flop code paths.
+
+### 20. Missing `[[nodiscard]]` on `checkMyAction()` and `checkIfINeedToShowCards()` (Code Quality)
+
+**Files:** `src/engine/playerinterface.h`, `src/engine/local_engine/localplayer.h`, `src/engine/network_engine/clientplayer.h`
+**Severity:** Low
+**Issue:** `checkMyAction()` returns an int (0 = valid action, 1 = invalid) and `checkIfINeedToShowCards()` returns bool. Both return values must be used by callers. Without `[[nodiscard]]`, a caller could accidentally discard the result, leading to unvalidated player actions.
+
+**Fix:** Added `[[nodiscard]]` to the pure virtual declarations in `PlayerInterface` and the override declarations in `LocalPlayer` and `ClientPlayer`.
+
+### 21. Potential Cash Underflow in setMySet (Bug Prevention)
+
+**File:** `src/engine/local_engine/localplayer.h`
+**Severity:** Medium
+**Issue:** `setMySet()` clamps `theValue` to `[0, myCash]` before adding, but the `mySet += theValue` accumulation has no upper bound check. In theory, if `setMySet()` is called in rapid succession without intermediate resets, the accumulated `mySet` could grow beyond what was deducted from `myCash`, leading to `myCash` going negative via `myCash -= theValue`.
+
+**Fix:** Added a `myCash < 0` guard after deduction: `if (myCash < 0) myCash = 0;`. This is a defensive safety net to prevent any state corruption.
+
+### 22. Range-based For Loop Modernization in getMyAggressive (Code Quality)
+
+**File:** `src/engine/local_engine/localplayer.h`
+**Severity:** Low
+**Issue:** `getMyAggressive()` used a C-style index loop to sum array elements. `setMyAggressive()` used an unnecessary declared-but-not-initialized loop variable.
+
+**Fix:** Replaced with range-based for loops using `const auto&` for iteration, consistent with C++23 standards.
+
+---
+
+## Observations (No Code Changes Needed)
+
+### A. Pot Distribution Edge Case Recovery
+
+**File:** `src/engine/local_engine/localboard.cpp`
+**Observation:** `distributePot()` already handles the edge case where pot > 0 after distribution by logging an error and awarding remaining chips to the first winner. This is correct defensive programming.
+
+### B. AI Engine Direct Field Access
+
+**File:** `src/engine/local_engine/localplayer.cpp`
+**Observation:** The AI engine functions (`flopEngine()`, `turnEngine()`, `riverEngine()`, and their `*3()` variants) directly set `mySet` and `myCash` instead of using `setMySet()`. This is intentional — they compute the absolute target bet, and `action()` computes `myLastRelativeSet = mySet - oldSet` afterward. The direct access is contained within the class implementation and is not a design issue.
+
+### C. Thread Safety of Thread-Local RNG
+
+**File:** `src/engine/local_engine/tools.cpp`
+**Observation:** The `thread_local std::mt19937` RNG is properly seeded with fallback entropy. This is correctly thread-safe and avoids mutex contention on the random number generator.
+
+### D. Network Packet Validation
+
+**File:** `src/net/netpacketvalidator.cpp`
+**Observation:** Comprehensive validation of all packet types with proper bounds checking. Chat messages filter control characters. Avatar sizes are bounded. Game parameters validated against sane ranges. No issues found.

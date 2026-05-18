@@ -127,7 +127,7 @@ public:
 	bool getSBluffStatus() const override;
 
 	void action() override;
-	int checkMyAction(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind) override;
+	[[nodiscard]] int checkMyAction(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind) override;
 
 	void preflopEngine() override;
 	void flopEngine() override;
@@ -154,7 +154,7 @@ public:
 	void setIsMuted(bool muted) override;
 	bool isMuted() const override;
 
-	bool checkIfINeedToShowCards() override;
+	[[nodiscard]] bool checkIfINeedToShowCards() override;
 
 	void markRemoteAction() override {}
 	unsigned getTimeSecSinceLastRemoteAction() const override

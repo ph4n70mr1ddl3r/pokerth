@@ -125,7 +125,7 @@ public:
 	[[nodiscard]] virtual bool getSBluffStatus() const =0;
 
 	virtual void action() =0;
-	virtual int checkMyAction(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind) = 0;
+	[[nodiscard]] virtual int checkMyAction(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind) = 0;
 
 	virtual void preflopEngine() =0;
 	virtual void flopEngine() =0;
@@ -139,7 +139,7 @@ public:
 	virtual void setIsMuted(bool muted) =0;
 	[[nodiscard]] virtual bool isMuted() const=0;
 
-	virtual bool checkIfINeedToShowCards() =0;
+	[[nodiscard]] virtual bool checkIfINeedToShowCards() =0;
 
 	virtual void markRemoteAction() =0;
 	virtual unsigned getTimeSecSinceLastRemoteAction() const =0;

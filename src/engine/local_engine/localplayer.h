@@ -131,6 +131,7 @@ public:
 		myLastRelativeSet = theValue;
 		mySet += theValue;
 		myCash -= theValue;
+		if (myCash < 0) myCash = 0; // Guard against underflow
 	}
 	void setMySetAbsolute(int theValue) override
 	{
@@ -290,17 +291,16 @@ public:
 
 	void setMyAggressive(bool theValue) override
 	{
-		int i;
-		for(i=0; i<6; i++) {
+		for(int i = 0; i < 6; i++) {
 			myAggressive[i] = myAggressive[i+1];
 		}
 		myAggressive[6] = theValue;
 	}
 	int getMyAggressive() const override
 	{
-		int i, sum = 0;
-		for(i=0; i<7; i++) {
-			sum += myAggressive[i];
+		int sum = 0;
+		for(const auto& val : myAggressive) {
+			sum += val;
 		}
 		return sum;
 	}
@@ -325,7 +325,7 @@ public:
 
 	void action() override;
 
-	int checkMyAction(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind) override;
+	[[nodiscard]] int checkMyAction(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind) override;
 
 	void preflopEngine() override;
 	void flopEngine() override;
@@ -351,7 +351,7 @@ public:
 	void setIsMuted(bool muted) override;
 	bool isMuted() const override;
 
-	bool checkIfINeedToShowCards() override;
+	[[nodiscard]] bool checkIfINeedToShowCards() override;
 
 	void markRemoteAction() override;
 	unsigned getTimeSecSinceLastRemoteAction() const override;

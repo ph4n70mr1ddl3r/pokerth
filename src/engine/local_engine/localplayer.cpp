@@ -3677,7 +3677,7 @@ void LocalPlayer::calcMyOdds()
 				break;
 			}
 		}
-		if (myOdds == -1) {
+		if (myOdds < 0) {
 			LOG_ERROR(__FILE__ << " (" << __LINE__ << "): ERROR myOdds - " << handCode);
 			myOdds = 50.0;
 		}
@@ -3716,9 +3716,9 @@ void LocalPlayer::calcMyOdds()
 					break;
 				}
 			}
-			if(myOdds == -1) {
+			if(myOdds < 0) {
 				ostringstream logger;
-				logger << "ERROR myOdds is -1: ";
+				logger << "ERROR myOdds negative: ";
 				for(i=0; i<5; i++) logger << tempArray[i] << " ";
 				LOG_ERROR(__FILE__ << " (" << __LINE__ << "): " << logger.str());
 				myOdds = 50.0;
