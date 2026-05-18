@@ -1266,7 +1266,8 @@ void gameLobbyDialogImpl::updateDialogBlinds(const GameData &gameData)
 		for(auto it1= gameData.manualBlindsList.begin(); it1 != gameData.manualBlindsList.end(); ++it1) {
 			blindsListString.append(QString("%L1").arg(*it1)).append(", ");
 		}
-		blindsListString.remove(blindsListString.length()-2,2);
+		if (blindsListString.length() >= 2)
+			blindsListString.remove(blindsListString.length()-2,2);
 		label_blindsList->setText(blindsListString);
 	}
 }

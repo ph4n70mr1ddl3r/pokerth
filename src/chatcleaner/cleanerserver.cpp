@@ -58,11 +58,11 @@ CleanerServer::CleanerServer(): config(nullptr), blockConnection(false), m_recvB
 
 	int listenPort = config->readConfigInt("DefaultListenPort");
 	if (listenPort < 0 || listenPort > 65535) {
-		qDebug() << "Invalid listen port:" << listenPort;
+		qWarning() << "Invalid listen port:" << listenPort;
 		return;
 	}
 	if (!tcpServer->listen(QHostAddress(QString::fromUtf8(config->readConfigString("HostAddress").c_str())), static_cast<quint16>(listenPort)) ) {
-		qDebug() << QString("Unable to start the server: %1.").arg(tcpServer->errorString());
+		qWarning() << QString("Unable to start the server: %1.").arg(tcpServer->errorString());
 		return;
 	}
 	qDebug() << QString("The server is running on port %1.").arg(tcpServer->serverPort());
@@ -105,7 +105,7 @@ void CleanerServer::newCon()
 void CleanerServer::onRead()
 {
 	if (m_recvBufUsed >= sizeof(m_recvBuf)) {
-		qDebug() << "Buffer overflow detected, closing connection";
+		qWarning() << "Buffer overflow detected, closing connection";
 		m_recvBufUsed = 0;
 		if (tcpSocket) {
 			tcpSocket->close();
@@ -114,7 +114,7 @@ void CleanerServer::onRead()
 	}
 	
 	if (!tcpSocket) {
-		qDebug() << "Cannot read from null socket";
+		qWarning() << "Cannot read from null socket";
 		return;
 	}
 	qint64 bytesRead = tcpSocket->read(reinterpret_cast<char *>(m_recvBuf) + m_recvBufUsed, sizeof(m_recvBuf) - m_recvBufUsed);
@@ -131,7 +131,7 @@ void CleanerServer::onRead()
 				size_t packetSize = qFromBigEndian(nativeVal);
 				if (packetSize == 0 || packetSize > MAX_CLEANER_PACKET_SIZE) {
 					m_recvBufUsed = 0;
-					qDebug() << "Invalid packet size: " << packetSize;
+					qWarning() << "Invalid packet size:" << packetSize;
 					error = true;
 				} else if (m_recvBufUsed >= packetSize + CLEANER_NET_HEADER_SIZE) {
 					try {
@@ -145,7 +145,7 @@ void CleanerServer::onRead()
 							valid = true;
 						} else {
 							m_recvBufUsed = 0;
-							qDebug() << "Failed to parse protobuf message";
+							qWarning() << "Failed to parse protobuf message";
 							error = true;
 						}
 					} catch (const exception &e) {
@@ -157,7 +157,7 @@ void CleanerServer::onRead()
 						} else {
 							m_recvBufUsed = 0;
 						}
-						qDebug() << "Exception while decoding packet: " << e.what();
+						qWarning() << "Exception while decoding packet:" << e.what();
 						error = true;
 					}
 				}
@@ -166,7 +166,7 @@ void CleanerServer::onRead()
 	}
 
 	if (error) {
-		qDebug() << "Error handling packets from client.";
+		qWarning() << "Error handling packets from client.";
 		blockConnection = false;
 		if (tcpSocket) {
 			tcpSocket->disconnect(this);
@@ -210,16 +210,16 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 				netAck->set_serverversion(CLEANER_PROTOCOL_VERSION);
 				sendMessageToClient(*tmpAck);
 			} else {
-				qDebug() << "Invalid client secret.";
+				qWarning() << "Invalid client secret.";
 				error = true;
 			}
 		} else {
-			qDebug() << "Invalid client version: " << netInit.requestedversion();
+			qWarning() << "Invalid client version:" << netInit.requestedversion();
 			error = true;
 		}
 	} else if (msg.messagetype() == ChatCleanerMessage::Type_CleanerChatRequestMessage) {
 		if (!m_authenticated) {
-			qDebug() << "Chat request received before authentication";
+			qWarning() << "Chat request received before authentication";
 			return true;
 		}
 		error = false;
@@ -260,7 +260,7 @@ bool CleanerServer::handleMessage(ChatCleanerMessage &msg)
 			sendMessageToClient(*tmpReply);
 		}
 	} else {
-		qDebug() << "Unknown message type received: " << msg.messagetype();
+		qWarning() << "Unknown message type received:" << msg.messagetype();
 	}
 	return error;
 }
@@ -295,16 +295,16 @@ void CleanerServer::refreshConfig()
 void CleanerServer::sendMessageToClient(ChatCleanerMessage &msg)
 {
 	if (!tcpSocket) {
-		qDebug() << "Cannot send message: socket is null";
+		qWarning() << "Cannot send message: socket is null";
 		return;
 	}
 	if (tcpSocket->state() != QAbstractSocket::ConnectedState) {
-		qDebug() << "Cannot send message: socket not connected";
+		qWarning() << "Cannot send message: socket not connected";
 		return;
 	}
 	size_t rawSize = msg.ByteSizeLong();
 	if (rawSize > MAX_CLEANER_PACKET_SIZE || rawSize > std::numeric_limits<uint32_t>::max()) {
-		qDebug() << "Chat cleaner send packet too large:" << rawSize;
+		qWarning() << "Chat cleaner send packet too large:" << rawSize;
 		return;
 	}
 	uint32_t packetSize = static_cast<uint32_t>(rawSize);
@@ -314,7 +314,7 @@ void CleanerServer::sendMessageToClient(ChatCleanerMessage &msg)
 	msg.SerializeWithCachedSizesToArray(buf.data() + CLEANER_NET_HEADER_SIZE);
 	qint64 written = tcpSocket->write(reinterpret_cast<const char*>(buf.data()), packetSize + CLEANER_NET_HEADER_SIZE);
 	if (written < 0) {
-		qDebug() << "Failed to write to socket:" << tcpSocket->errorString();
+		qWarning() << "Failed to write to socket:" << tcpSocket->errorString();
 	}
 }
 

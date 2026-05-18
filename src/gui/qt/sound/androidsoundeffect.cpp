@@ -52,7 +52,7 @@ bool AndroidSoundEffect::load()
 //    qDebug() << "opening:" << mPath;
 
 	if (!lSoundFile.open(QIODevice::ReadOnly)) {
-		qDebug() << "Could not open: " << mPath;
+		qWarning() << "Could not open:" << mPath;
 		return false;
 	}
 
@@ -61,12 +61,12 @@ bool AndroidSoundEffect::load()
 
 	char id[4];
 	if (lSoundFile.read(id, 4) != 4) {
-		qDebug() << "WAV read error - truncated header";
+		qWarning() << "WAV read error - truncated header";
 		lSoundFile.close();
 		return false;
 	}
 	if( strncmp(id, "RIFF", 4) != 0 ) {
-		qDebug() << "not a WAV file - header not RIFF";
+		qWarning() << "not a WAV file - header not RIFF";
 		lSoundFile.close();
 		return false;
 	}
@@ -76,12 +76,12 @@ bool AndroidSoundEffect::load()
 //    qDebug() << "    size:" << size;
 
 	if (lSoundFile.read(id, 4) != 4) {
-		qDebug() << "WAV read error - truncated WAVE header";
+		qWarning() << "WAV read error - truncated WAVE header";
 		lSoundFile.close();
 		return false;
 	}
 	if( strncmp(id, "WAVE", 4) != 0 ) {
-		qDebug() << "not a WAV file - header not WAVE";
+		qWarning() << "not a WAV file - header not WAVE";
 		lSoundFile.close();
 		return false;
 	}
@@ -115,7 +115,7 @@ bool AndroidSoundEffect::load()
 //    qDebug() << "    bits_per_sample:" << bits_per_sample;
 
 	if (lSoundFile.read(id, 4) != 4 || strncmp(id, "data", 4) != 0) {
-		qDebug() << "not a WAV file - didn't find data";
+		qWarning() << "not a WAV file - didn't find data";
 		lSoundFile.close();
 		return false;
 	}
@@ -123,7 +123,7 @@ bool AndroidSoundEffect::load()
 	{
 		qint32 dataLength = 0;
 		if (lSoundFile.read(reinterpret_cast<char *>(&dataLength), 4) != 4 || dataLength < 0) {
-			qDebug() << "WAV read error - invalid data length";
+			qWarning() << "WAV read error - invalid data length";
 			lSoundFile.close();
 			return false;
 		}
@@ -136,7 +136,7 @@ bool AndroidSoundEffect::load()
 
 	int dataRead = lSoundFile.read(mBuffer.data(), mLength);
 	if (dataRead != mLength) {
-		qDebug() << "didn't read correct amount of data' :" << mPath;
+		qWarning() << "didn't read correct amount of data:" << mPath;
 		lSoundFile.close();
 		mBuffer.clear();
 		return false;

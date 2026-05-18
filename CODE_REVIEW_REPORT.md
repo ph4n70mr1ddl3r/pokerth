@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-18
-**Revision:** 20
+**Revision:** 21
 **Reviewer:** AI Code Reviewer
 **Scope:** Full codebase (`src/` - 367 files, ~83K LOC)
 
@@ -416,3 +416,39 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 **Issue:** Three comparisons used `== true` on boolean values, e.g., `pm == true` and `getMyStayOnTableStatus() == true`. Comparing a `bool` to `true` is redundant and inconsistent with the rest of the codebase, which uses direct boolean expressions. While not a bug, it reduces readability.
 
 **Fix:** Replaced all three `== true` with direct boolean usage (e.g., `if(pm)` instead of `if(pm == true)`).
+
+---
+
+## Revision 21 Changes
+
+### 30. Empty String Guard for `blindsListString.remove()` (Bug Prevention) - NEW
+
+**File:** `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp`
+**Severity:** Medium
+**Issue:** `updateDialogBlinds()` called `blindsListString.remove(blindsListString.length()-2, 2)` without checking if the string was empty. `QString::length()` returns `qsizetype` (signed 64-bit on 64-bit platforms), so `0 - 2 = -2` which is a valid negative index. While Qt's `QString::remove()` with a negative position is a no-op, this is an unclear intent and could be fragile if the Qt behavior ever changes or if the code is ported to a different string type.
+
+**Fix:** Added a guard `if (blindsListString.length() >= 2)` before the `remove()` call.
+
+### 31. `qDebug()` Used for Error Paths in WAV Parser (Code Quality) - NEW
+
+**File:** `src/gui/qt/sound/androidsoundeffect.cpp`
+**Severity:** Low
+**Issue:** The Android WAV sound effect loader used `qDebug()` for 6 error conditions (file open failure, truncated header, invalid format, missing data chunk, invalid data length, data read mismatch). `qDebug()` is intended for debug/informational messages; `qWarning()` is the appropriate level for error conditions. Using the correct log level ensures that error messages are distinguishable from debug output and are treated appropriately by logging frameworks. This is the same class of issue as #23 (androidaudio.cpp Q_ASSERT replacement) — error conditions in the Android audio subsystem should be properly reported.
+
+**Fix:** Replaced all 6 `qDebug()` calls on error paths with `qWarning()`. Also fixed a stray single-quote typo in one message: `"didn't read correct amount of data' :" → `"didn't read correct amount of data:"`.
+
+### 32. `qDebug()` Used for Error Paths in Chat Cleaner Server (Code Quality) - NEW
+
+**File:** `src/chatcleaner/cleanerserver.cpp`
+**Severity:** Low
+**Issue:** The chat cleaner server used `qDebug()` for 16 error conditions (invalid port, server start failure, buffer overflow, null socket, invalid packet size, parse failure, exception handling, client errors, send failures). Since the chat cleaner is a standalone server process, it doesn't use the `LOG_ERROR` infrastructure but should still distinguish error messages from informational debug output. `qWarning()` is the appropriate Qt log level for error conditions.
+
+**Fix:** Replaced all 16 error-path `qDebug()` calls with `qWarning()`. The informational startup message `"The server is running on port %1."` and the debug socket state message were left as `qDebug()` since they are not error conditions.
+
+### 33. Narrowing `qsizetype` to `int` in `sqlite3_get_table` Wrapper (Correctness) - NEW
+
+**File:** `src/gui/qt/gametable/log/guilog.cpp`
+**Severity:** Low
+**Issue:** `sqlite3_get_table()` wrapper assigned `rows.size()` (returns `qsizetype`, 64-bit on 64-bit platforms) directly to `int nRow`. This is a narrowing conversion. While safe in practice (log files never have millions of rows), the explicit cast avoids compiler warnings and is consistent with the type safety standards applied in prior reviews.
+
+**Fix:** Changed `int nRow = rows.size()` to `int nRow = static_cast<int>(rows.size())`.

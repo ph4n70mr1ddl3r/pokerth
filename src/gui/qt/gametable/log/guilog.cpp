@@ -110,7 +110,7 @@ extern "C" int sqlite3_get_table(sqlite3 *pDb, const char *zSql, char ***pazResu
 		rows.append(row);
 	}
 
-	int nRow = rows.size();
+	int nRow = static_cast<int>(rows.size());
 	size_t total = static_cast<size_t>(nRow + 1) * static_cast<size_t>(nCol);
 	if (nCol > 0 && total / static_cast<size_t>(nCol) != static_cast<size_t>(nRow + 1)) {
 		// Overflow check for the multiplication.
