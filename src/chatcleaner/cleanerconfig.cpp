@@ -319,7 +319,7 @@ void CleanerConfig::writeBuffer() const
 	QFile file(QString::fromStdString(configFileName));
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 	{
-		qDebug("Failed to open file for writing.");
+		qWarning("Failed to open file for writing.");
 	}
 	else
 	{
@@ -370,7 +370,7 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 		QFile file(QString::fromStdString(configFileName));
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 		{
-			qDebug("Failed to open file for writing.");
+			qWarning("Failed to open file for writing.");
 		}
 		else
 		{
@@ -466,7 +466,7 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 			QFile file(QString::fromStdString(configFileName));
 			if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 			{
-				qDebug("Failed to open file for writing.");
+				qWarning("Failed to open file for writing.");
 			}
 			else
 			{
@@ -477,7 +477,7 @@ void CleanerConfig::updateConfig(ConfigState myConfigState)
 		}
 		else
 		{
-			qDebug("Cannot update config file: Unable to load configuration.");
+			qWarning("Cannot update config file: Unable to load configuration.");
 		}
 	}
 }

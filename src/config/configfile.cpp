@@ -65,14 +65,14 @@ static bool atomicWriteFile(const std::string &filePath, const QString &data)
 
 	QFile tempFile(tempPath);
 	if (!tempFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-		qDebug("Failed to open temp file for writing: %s", tempPath.toUtf8().constData());
+		qWarning("Failed to open temp file for writing: %s", tempPath.toUtf8().constData());
 		return false;
 	}
 	QTextStream stream(&tempFile);
 	stream << data;
 	stream.flush();
 	if (stream.status() != QTextStream::Ok) {
-		qDebug("Failed to write to temp file: %s", tempPath.toUtf8().constData());
+		qWarning("Failed to write to temp file: %s", tempPath.toUtf8().constData());
 		tempFile.close();
 		QFile::remove(tempPath);
 		return false;
@@ -83,7 +83,7 @@ static bool atomicWriteFile(const std::string &filePath, const QString &data)
 	// Avoid explicit remove() which creates a window where no config file exists.
 
 	if (!QFile::rename(tempPath, qPath)) {
-		qDebug("Failed to rename temp file to: %s", qPath.toUtf8().constData());
+		qWarning("Failed to rename temp file to: %s", qPath.toUtf8().constData());
 		QFile::remove(tempPath);
 		return false;
 	}

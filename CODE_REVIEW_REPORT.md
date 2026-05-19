@@ -1,9 +1,9 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-19
-**Revision:** 24
+**Revision:** 25
 **Reviewer:** AI Code Reviewer
-**Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 23
+**Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 24
 
 ---
 
@@ -581,3 +581,30 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 **Issue:** Four functions (`exec()`, `show()`, `writeConfig()`, `checkIfMesssageWillBeDisplayed()`) parsed the `IfInfoMessageShowList` config entries by calling `tmpString.split(",").at(1)` and `.at(0)` without checking that the split produced at least 2 elements. If a config file is corrupted or manually edited with a malformed entry (e.g., missing comma, empty string), `QString::split(",")` returns a list with fewer than 2 elements, and `.at(1)` throws a `QString::OutOfBoundsException` (Qt's out-of-range exception), crashing the application. This is the same class of issue as the `cleanerserver.cpp` `checkreturn.at()` calls, which already have proper size guards.
 
 **Fix:** Added `parts.size() >= 2` check before accessing `parts.at(1)` in all 4 locations. Split the result into a named `QStringList parts` variable to avoid calling `split()` twice per iteration. Also removed 2 unused includes (`<cstdlib>`, `<fstream>`).
+
+---
+
+## Revision 25 Changes
+
+### 47. `qDebug()` Used for File I/O Error Paths in Chat Cleaner Config (Code Quality) - NEW
+
+**File:** `src/chatcleaner/cleanerconfig.cpp`
+**Severity:** Low
+**Issue:** The chat cleaner config module used `qDebug()` for 4 error conditions: 3 file open failures ("Failed to open file for writing") and 1 config load failure ("Cannot update config file: Unable to load configuration."). These are error conditions where file I/O operations fail. `qWarning()` is the appropriate Qt log level for error conditions. This is the same class of issue as #31 (androidsoundeffect.cpp qDebug→qWarning), #32 (cleanerserver.cpp qDebug→qWarning), and #34-36 (settings/TLS/log qDebug→qWarning).
+
+**Fix:** Replaced all 4 error-path `qDebug()` calls with `qWarning()`.
+
+### 48. `qDebug()` Used for Atomic Config File Write Error Paths (Code Quality) - NEW
+
+**File:** `src/config/configfile.cpp`
+**Severity:** Low
+**Issue:** The atomic config file writer (`atomicWriteFile()`) used `qDebug()` for 3 error conditions: temp file open failure, temp file write failure, and temp file rename failure. These are error conditions where the application cannot save its configuration. `qWarning()` is the appropriate Qt log level for error conditions. This is the same class of issue as #47 (cleanerconfig.cpp qDebug→qWarning).
+
+**Fix:** Replaced all 3 error-path `qDebug()` calls with `qWarning()`.
+
+### Files Modified This Revision
+
+| File | Change | Revision |
+|------|--------|----------|
+| `src/chatcleaner/cleanerconfig.cpp` | Replace 4 error-path `qDebug()` with `qWarning()` | **NEW (Rev 25)** |
+| `src/config/configfile.cpp` | Replace 3 error-path `qDebug()` with `qWarning()` | **NEW (Rev 25)** |
