@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
-**Date:** 2026-05-18
-**Revision:** 22
+**Date:** 2026-05-19
+**Revision:** 23
 **Reviewer:** AI Code Reviewer
 **Scope:** Full codebase (`src/` - 367 files, ~83K LOC)
 
@@ -239,6 +239,13 @@ Issues were found and fixed in the following categories:
 | `src/net/netpacketvalidator.cpp` | Fix signed/unsigned comparison in `ValidateListIntRange()` | **NEW (Rev 22)** |
 | `src/engine/local_engine/localplayer.cpp` | Fix 4 narrowing `size_t` to `int` conversions | **NEW (Rev 22)** |
 | `src/gui/qt/gametable/myavatarlabel.cpp` | Replace 2 redundant `== true` with direct boolean | **NEW (Rev 20)** |
+| `src/net/clientthread.h` | Fix `std::accumulate` type mismatch: `0` → `0U` | **NEW (Rev 23)** |
+| `src/gui/qt/settingsdialog/selectavatardialog/selectavatardialogimpl.cpp` | Fix signed/unsigned comparison; remove unused variable | **NEW (Rev 23)** |
+| `src/gui/qt/logfiledialog/logfiledialog.cpp` | Fix signed/unsigned comparison in log file list iteration | **NEW (Rev 23)** |
+| `src/gui/qt/sound/sdlplayer.cpp` | Replace 2 error-path `qDebug()` with `qWarning()` | **NEW (Rev 23)** |
+| `src/pokerth.cpp` | Replace error-path `qDebug()` with `qWarning()` for missing translation | **NEW (Rev 23)** |
+| `src/gui/qt/sound/androidaudio.cpp` | Replace error-path `qDebug()` with `qWarning()` for missing sound | **NEW (Rev 23)** |
+| `src/net/clientthread.cpp` | Replace 2 error-path `qDebug()` with `qWarning()` for TLS handshake failures | **NEW (Rev 23)** |
 
 ### 18. `cout`/`endl` Replaced with `LOG_ERROR` in Log SQL Error Paths (Code Quality) - NEW
 
@@ -501,3 +508,63 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 **Issue:** Four places in the AI player engine assigned `currentHand->getActivePlayerList()->size()` (returns `size_t`) directly to `int players`. This is a narrowing conversion from unsigned to signed. While safe in practice (the active player list never exceeds `MAX_NUMBER_OF_PLAYERS` which fits in `int`), the explicit cast avoids compiler warnings and is consistent with the type safety standards applied throughout the codebase (e.g., issue #19, #20, #21, #25, #33).
 
 **Fix:** Changed all 4 instances to use `static_cast<int>(currentHand->getActivePlayerList()->size())`.
+
+---
+
+## Revision 23 Changes
+
+### 39. `std::accumulate` Type Mismatch in `AveragePing()` (Correctness) - NEW
+
+**File:** `src/net/clientthread.h`
+**Severity:** Low
+**Issue:** `AveragePing()` used `std::accumulate(pingValues.begin(), pingValues.end(), 0)` to compute the average of `std::list<unsigned>` ping values. The initial value `0` is `int`, which causes `std::accumulate` to use `int` as the accumulator type. If individual ping values are large (e.g., >1000ms) and there are 20 entries (SIZE_PING_BACKLOG), the sum could theoretically overflow `int`, causing undefined behavior. The subsequent division by `static_cast<unsigned>(pingValues.size())` would then operate on a corrupted value.
+
+**Fix:** Changed the initial value from `0` to `0U` so the accumulation occurs in `unsigned`, matching the element type.
+
+### 40. Signed/Unsigned Comparison in Avatar Dialog (Correctness) - NEW
+
+**File:** `src/gui/qt/settingsdialog/selectavatardialog/selectavatardialogimpl.cpp`
+**Severity:** Low
+**Issue:** `refreshAvatarView()` used `int i` compared with `QStringList::size()` which returns `qsizetype` (64-bit signed on 64-bit platforms). This is a signed/unsigned width mismatch. The separate declaration `int i = 0` before the loop was also unnecessary.
+
+**Fix:** Removed the separate `int i = 0` declaration, changed to inline `int i=0` in the for loop, and added `static_cast<int>(currentViewList.size())` for the comparison.
+
+### 41. Signed/Unsigned Comparison in Log File Dialog (Correctness) - NEW
+
+**File:** `src/gui/qt/logfiledialog/logfiledialog.cpp`
+**Severity:** Low
+**Issue:** The log file list iteration used `int i` compared with `QFileInfoList::size()` which returns `qsizetype`. This is the same class of signed/unsigned width mismatch as issue #40.
+
+**Fix:** Changed to `for (int i=0; i < static_cast<int>(dbFilesList.size()); i++)` and removed the unnecessary separate `int i = 0` declaration.
+
+### 42. `qDebug()` Used for SDL Audio Error Paths (Code Quality) - NEW
+
+**File:** `src/gui/qt/sound/sdlplayer.cpp`
+**Severity:** Low
+**Issue:** Two SDL audio error conditions used `qDebug()`: `Mix_OpenAudio()` failure and `Mix_SetPosition()` failure. These are error conditions where audio subsystem initialization or spatial positioning fails. `qWarning()` is the appropriate Qt log level for error conditions. This is the same class of issue as #23 (androidaudio.cpp Q_ASSERT replacement), #31 (androidsoundeffect.cpp qDebug→qWarning), and #34-36 (settings/TLS/log qDebug→qWarning).
+
+**Fix:** Replaced both error-path `qDebug()` calls with `qWarning()`.
+
+### 43. `qDebug()` Used for Missing Translation Warning (Code Quality) - NEW
+
+**File:** `src/pokerth.cpp`
+**Severity:** Low
+**Issue:** The application's main function used `qDebug()` to report that the locale translation file was not found. A missing translation means the UI will display in English rather than the user's preferred language. This is a warning condition, not informational debug output. `qWarning()` is the appropriate Qt log level.
+
+**Fix:** Replaced `qDebug()` with `qWarning()` for the missing translation message.
+
+### 44. `qDebug()` Used for Missing Sound Effect in Android Audio (Code Quality) - NEW
+
+**File:** `src/gui/qt/sound/androidaudio.cpp`
+**Severity:** Low
+**Issue:** `reallyPlaySound()` used `qDebug()` to report that a requested sound effect was not found in the sound map. This is an error condition (the sound cannot be played). `qWarning()` is the appropriate Qt log level.
+
+**Fix:** Replaced `qDebug()` with `qWarning()` for the missing sound message.
+
+### 45. `qDebug()` Used for TLS Handshake Failure in SSL Info Callback (Code Quality) - NEW
+
+**File:** `src/net/clientthread.cpp`
+**Severity:** Low
+**Issue:** The SSL info callback (`SslInfoCallback`) used `qDebug()` for TLS handshake exit failures (`ret == 0` and `ret < 0`). These indicate handshake failures - the same class of issue as #35 (TLS handshake failure in client state). The informational messages (loop progress, handshake start/done) were correctly left as `qDebug()`.
+
+**Fix:** Replaced the two error-path `qDebug()` calls in the `SSL_CB_EXIT` branch with `qWarning()`.

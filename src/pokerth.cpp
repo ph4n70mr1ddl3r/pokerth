@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 		// qDebug() << "Locale found!";
 		app.installTranslator(&translator);
 	} else {
-		qDebug() << "Locale not found in translations";
+		qWarning() << "Locale not found in translations";
 	}
 
     QQmlApplicationEngine engine;

@@ -287,7 +287,7 @@ void AndroidAudio::reallyPlaySound(const QString& name)
 	AndroidSoundEffect* sound = mSounds.value(name, nullptr);
 
 	if (!sound) {
-		qDebug() << "No such sound:" << name;
+		qWarning() << "No such sound:" << name;
 		return;
 	}
 	if (!mPlayerObject) return;

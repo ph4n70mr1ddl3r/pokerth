@@ -68,7 +68,7 @@ void SDLPlayer::initAudio()
 			Mix_QuerySpec(&audio_rate, &audio_format, &audio_channels);
 			audioEnabled = 1;
 		} else {
-			qDebug() << "Mix_OpenAudio() was not successfull, no sound possible :(";
+			qWarning() << "Mix_OpenAudio() was not successfull, no sound possible :(";
 		}
 	}
 }
@@ -152,7 +152,7 @@ void SDLPlayer::playSound(string audioString, int playerID)
 
 			// set 3d effect
 			if(!Mix_SetPosition(0, position, distance)) {
-				qDebug("Mix_SetPosition: %s", Mix_GetError());
+				qWarning("Mix_SetPosition: %s", Mix_GetError());
 			}
 			currentChannel = Mix_PlayChannel(-1, sound,0);
 		}

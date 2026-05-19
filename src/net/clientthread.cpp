@@ -1098,10 +1098,10 @@ ClientThread::SslInfoCallback(const SSL *ssl, int where, int ret)
     }
     else if (where & SSL_CB_EXIT) {
         if (ret == 0) {
-            qDebug() << "[TLS-HANDSHAKE] Exit failed in:" << (state ? state : "unknown");
+            qWarning() << "[TLS-HANDSHAKE] Exit failed in:" << (state ? state : "unknown");
         }
         else if (ret < 0) {
-            qDebug() << "[TLS-HANDSHAKE] Exit error in:" << (state ? state : "unknown") << "ret:" << ret;
+            qWarning() << "[TLS-HANDSHAKE] Exit error in:" << (state ? state : "unknown") << "ret:" << ret;
         }
     }
     else if (where & SSL_CB_HANDSHAKE_START) {

@@ -189,7 +189,6 @@ void selectAvatarDialogImpl::refreshAvatarView()
 
 	listWidget->clear();
 
-	int i = 0;
 	QStringList currentViewList;
 
 	switch(comboBox_avatarViewCategorie->currentIndex()) {
@@ -205,7 +204,7 @@ void selectAvatarDialogImpl::refreshAvatarView()
 	break;
 	}
 
-	for (i=0; i<currentViewList.size(); i++) {
+	for (int i=0; i<static_cast<int>(currentViewList.size()); i++) {
 
 		MyAvatarListItem *myItem = new MyAvatarListItem(listWidget);
 		myItem->setIcon(QIcon(QPixmap(currentViewList.at(i)).scaled(50,50,Qt::IgnoreAspectRatio,Qt::SmoothTransformation)));

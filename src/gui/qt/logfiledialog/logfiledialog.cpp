@@ -103,8 +103,7 @@ void LogFileDialog::refreshLogFileList()
 
 	ui->treeWidget_logFiles->blockSignals(true);
 	ui->treeWidget_logFiles->clear();
-	int i = 0;
-	for (i=0; i < dbFilesList.size(); i++) {
+	for (int i=0; i < static_cast<int>(dbFilesList.size()); i++) {
 
 		QTreeWidgetItem *item = new QTreeWidgetItem;
 #ifdef GUI_800x480
