@@ -32,8 +32,6 @@
 #include <QtCore>
 #include "configfile.h"
 #include <sstream>
-#include <cstdlib>
-#include <fstream>
 
 using namespace std;
 
@@ -66,10 +64,11 @@ int myMessageDialogImpl::exec(int messageId, QString msg, QString title, QPixmap
 	for(auto it1= currentMsgShowList.begin(); it1 != currentMsgShowList.end(); ++it1) {
 
 		QString tmpString = QString::fromUtf8(it1->c_str());
-		if(QString("%1").arg(messageId) ==  tmpString.split(",").at(1)) {
+		QStringList parts = tmpString.split(",");
+		if(parts.size() >= 2 && QString("%1").arg(messageId) == parts.at(1)) {
 
 			found = true;
-			show = tmpString.split(",").at(0).toInt();
+			show = parts.at(0).toInt();
 
 			break;
 		}
@@ -108,10 +107,11 @@ void myMessageDialogImpl::show(int messageId, QString msg, QString title, QPixma
 	for(auto it1= currentMsgShowList.begin(); it1 != currentMsgShowList.end(); ++it1) {
 
 		QString tmpString = QString::fromUtf8(it1->c_str());
-		if(QString("%1").arg(messageId) ==  tmpString.split(",").at(1)) {
+		QStringList parts = tmpString.split(",");
+		if(parts.size() >= 2 && QString("%1").arg(messageId) == parts.at(1)) {
 
 			found = true;
-			show = tmpString.split(",").at(0).toInt();
+			show = parts.at(0).toInt();
 
 			break;
 		}
@@ -154,7 +154,8 @@ void myMessageDialogImpl::writeConfig()
 		for(auto it1= currentMsgShowList.begin(); it1 != currentMsgShowList.end(); ++it1) {
 
 			QString tmpString = QString::fromUtf8(it1->c_str());
-			if(QString("%1").arg(currentMsgId) == tmpString.split(",").at(1)) {
+			QStringList parts = tmpString.split(",");
+			if(parts.size() >= 2 && QString("%1").arg(currentMsgId) == parts.at(1)) {
 
 				(*it1) = QString("0,%1").arg(currentMsgId).toUtf8().constData();
 				break;
@@ -175,10 +176,11 @@ bool myMessageDialogImpl::checkIfMesssageWillBeDisplayed(int id)
 	for(auto it1= currentMsgShowList.begin(); it1 != currentMsgShowList.end(); ++it1) {
 
 		QString tmpString = QString::fromUtf8(it1->c_str());
-		if(QString("%1").arg(id) ==  tmpString.split(",").at(1)) {
+		QStringList parts = tmpString.split(",");
+		if(parts.size() >= 2 && QString("%1").arg(id) == parts.at(1)) {
 
 			found = true;
-			show = tmpString.split(",").at(0).toInt();
+			show = parts.at(0).toInt();
 
 			break;
 		}

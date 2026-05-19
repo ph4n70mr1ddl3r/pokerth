@@ -1,9 +1,9 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-19
-**Revision:** 23
+**Revision:** 24
 **Reviewer:** AI Code Reviewer
-**Scope:** Full codebase (`src/` - 367 files, ~83K LOC)
+**Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 23
 
 ---
 
@@ -246,6 +246,7 @@ Issues were found and fixed in the following categories:
 | `src/pokerth.cpp` | Replace error-path `qDebug()` with `qWarning()` for missing translation | **NEW (Rev 23)** |
 | `src/gui/qt/sound/androidaudio.cpp` | Replace error-path `qDebug()` with `qWarning()` for missing sound | **NEW (Rev 23)** |
 | `src/net/clientthread.cpp` | Replace 2 error-path `qDebug()` with `qWarning()` for TLS handshake failures | **NEW (Rev 23)** |
+| `src/gui/qt/mymessagedialog/mymessagedialogimpl.cpp` | Add size check before `.at(1)` on split results; remove unused `#include <cstdlib>` and `#include <fstream>` | **NEW (Rev 24)** |
 
 ### 18. `cout`/`endl` Replaced with `LOG_ERROR` in Log SQL Error Paths (Code Quality) - NEW
 
@@ -568,3 +569,15 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 **Issue:** The SSL info callback (`SslInfoCallback`) used `qDebug()` for TLS handshake exit failures (`ret == 0` and `ret < 0`). These indicate handshake failures - the same class of issue as #35 (TLS handshake failure in client state). The informational messages (loop progress, handshake start/done) were correctly left as `qDebug()`.
 
 **Fix:** Replaced the two error-path `qDebug()` calls in the `SSL_CB_EXIT` branch with `qWarning()`.
+
+---
+
+## Revision 24 Changes
+
+### 46. Unsafe `.split(",").at(1)` Without Size Check in Message Dialog (Robustness) - NEW
+
+**File:** `src/gui/qt/mymessagedialog/mymessagedialogimpl.cpp`
+**Severity:** Medium
+**Issue:** Four functions (`exec()`, `show()`, `writeConfig()`, `checkIfMesssageWillBeDisplayed()`) parsed the `IfInfoMessageShowList` config entries by calling `tmpString.split(",").at(1)` and `.at(0)` without checking that the split produced at least 2 elements. If a config file is corrupted or manually edited with a malformed entry (e.g., missing comma, empty string), `QString::split(",")` returns a list with fewer than 2 elements, and `.at(1)` throws a `QString::OutOfBoundsException` (Qt's out-of-range exception), crashing the application. This is the same class of issue as the `cleanerserver.cpp` `checkreturn.at()` calls, which already have proper size guards.
+
+**Fix:** Added `parts.size() >= 2` check before accessing `parts.at(1)` in all 4 locations. Split the result into a named `QStringList parts` variable to avoid calling `split()` twice per iteration. Also removed 2 unused includes (`<cstdlib>`, `<fstream>`).
