@@ -602,7 +602,7 @@ void gameLobbyDialogImpl::updateGameItem(QList <QStandardItem*> itemList, unsign
 		itemList.at(1)->setData("totalfull", 16);
 	} else {
 		itemList.at(1)->setData("nonfull", 16);
-	}\
+	}
 
 	if (info.mode == GAME_MODE_STARTED) {
 		itemList.at(2)->setData(tr("running"), Qt::DisplayRole);
@@ -655,7 +655,7 @@ void gameLobbyDialogImpl::updateGameItem(QList <QStandardItem*> itemList, unsign
 	}
 	itemList.at(5)->setData(actionTimeOutString, 16);
 
-	treeView_GameList->sortByColumn(myConfig->readConfigInt("DlgGameLobbyGameListSortingSection"), (Qt::SortOrder)myConfig->readConfigInt("DlgGameLobbyGameListSortingOrder") );
+	treeView_GameList->sortByColumn(myConfig->readConfigInt("DlgGameLobbyGameListSortingSection"), static_cast<Qt::SortOrder>(myConfig->readConfigInt("DlgGameLobbyGameListSortingOrder")) );
 	refreshGameStats();
 }
 

@@ -1,9 +1,9 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-19
-**Revision:** 25
+**Revision:** 26
 **Reviewer:** AI Code Reviewer
-**Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 24
+**Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 25
 
 ---
 
@@ -608,3 +608,30 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 |------|--------|----------|
 | `src/chatcleaner/cleanerconfig.cpp` | Replace 4 error-path `qDebug()` with `qWarning()` | **NEW (Rev 25)** |
 | `src/config/configfile.cpp` | Replace 3 error-path `qDebug()` with `qWarning()` | **NEW (Rev 25)** |
+
+---
+
+## Revision 26 Changes
+
+### 49. Stray Backslash (Line Continuation) After Closing Brace (Bug) - NEW
+
+**File:** `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp`
+**Severity:** Medium
+**Issue:** Line 605 had a stray `\` (backslash) at the end of the closing brace of the `if/else` block in `updateGameItem()`. In C/C++, a backslash at the end of a line is a line continuation character that joins the current line with the next. In this case, the backslash joined `}` with the following blank line, which is benign (the preprocessor produces `}` + blank + `if`). However, if someone were to insert a statement on the next line, it would be silently joined to the closing brace, potentially causing unexpected behavior. The stray backslash was likely a typo.
+
+**Fix:** Removed the stray `\` from the end of line 605.
+
+### 50. C-Style Cast for Qt Sort Order (Code Quality) - NEW
+
+**File:** `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp`
+**Severity:** Low
+**Issue:** `updateGameItem()` used a C-style cast `(Qt::SortOrder)` to convert the integer config value to a `Qt::SortOrder` enum. C-style casts can silently perform dangerous conversions (like `const_cast` or `reinterpret_cast`). Per C++23 best practices, `static_cast` should be used instead for enum conversions.
+
+**Fix:** Replaced `(Qt::SortOrder)` with `static_cast<Qt::SortOrder>(...)`.
+
+### Files Modified This Revision
+
+| File | Change | Revision |
+|------|--------|----------|
+| `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp` | Remove stray backslash `\` at end of closing brace | **NEW (Rev 26)** |
+| `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp` | Replace C-style cast with `static_cast<Qt::SortOrder>` | **NEW (Rev 26)** |
