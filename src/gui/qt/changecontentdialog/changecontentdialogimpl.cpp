@@ -29,7 +29,7 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 #include "changecontentdialogimpl.h"
-// #include "session.h"
+
 #include "configfile.h"
 #include <QtGui>
 #include <QtCore>
@@ -143,7 +143,5 @@ bool changeContentDialogImpl::eventFilter(QObject *obj, QEvent *event)
 			return true;
 		}
 	}
-#else
-#endif
 	return QDialog::eventFilter(obj, event);
 }

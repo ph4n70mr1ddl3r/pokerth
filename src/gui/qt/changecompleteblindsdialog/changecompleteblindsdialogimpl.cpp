@@ -51,11 +51,6 @@ changeCompleteBlindsDialogImpl::changeCompleteBlindsDialogImpl(QWidget *parent, 
 	connect( spinBox_firstSmallBlind, SIGNAL( valueChanged(int) ), this, SLOT( updateSpinBoxInputMinimum(int) ) );
 }
 
-int changeCompleteBlindsDialogImpl::exec()
-{
-	return QDialog::exec();
-}
-
 void changeCompleteBlindsDialogImpl::updateSpinBoxInputMinimum(int value)
 {
 	spinBox_input->setMinimum(value+1);
@@ -76,32 +71,33 @@ void changeCompleteBlindsDialogImpl::addBlindValueToList()
 
 void changeCompleteBlindsDialogImpl::removeBlindFromList()
 {
-
-	listWidget_blinds->takeItem(listWidget_blinds->currentRow());
-	sortBlindsList();
+	int row = listWidget_blinds->currentRow();
+	if (row >= 0) {
+		listWidget_blinds->takeItem(row);
+		sortBlindsList();
+	}
 }
 
 void changeCompleteBlindsDialogImpl::sortBlindsList()
 {
-
 	int i = 0;
 	QList<int> tempIntList;
 	QStringList tempStringList;
-	bool ok = true;
 
 	for(i=0; i<listWidget_blinds->count(); i++) {
-// 		std::cout << listWidget_blinds->item(i)->text().toInt(&ok,10) << "\n";
-		tempIntList << listWidget_blinds->item(i)->text().toInt(&ok,10);
+		bool ok = false;
+		int val = listWidget_blinds->item(i)->text().toInt(&ok, 10);
+		if (ok) {
+			tempIntList << val;
+		}
 	}
 
 	std::stable_sort(tempIntList.begin(), tempIntList.end());
-//
+
 	for(i=0; i<tempIntList.count(); i++) {
-//
-// 		std::cout << tempIntList[i] << "\n";
-		tempStringList << QString::number(tempIntList[i],10);
+		tempStringList << QString::number(tempIntList[i], 10);
 	}
-//
+
 	listWidget_blinds->clear();
 	listWidget_blinds->addItems(tempStringList);
 }
@@ -136,7 +132,5 @@ bool changeCompleteBlindsDialogImpl::eventFilter(QObject *obj, QEvent *event)
 			return true;
 		}
 	}
-#else
-#endif
 	return QDialog::eventFilter(obj, event);
 }

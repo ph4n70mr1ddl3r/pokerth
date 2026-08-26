@@ -71,7 +71,7 @@ aboutPokerthImpl::aboutPokerthImpl(QWidget *parent, ConfigFile *c)
 #endif
 
 #ifdef ANDROID
-    int api = -2;
+    int api = -1;
     this->setWindowState(Qt::WindowFullScreen);
 #ifndef ANDROID_TEST
     // Qt6: Use QJniEnvironment for Android API access
@@ -83,7 +83,11 @@ aboutPokerthImpl::aboutPokerthImpl(QWidget *parent, ConfigFile *c)
         }
     }
 #endif
-    label_pokerthVersion->setText(QString(tr("PokerTH %1 for Android (API%2)").arg(POKERTH_BETA_RELEASE_STRING).arg(api)));
+    if (api >= 0) {
+        label_pokerthVersion->setText(QString(tr("PokerTH %1 for Android (API%2)").arg(POKERTH_BETA_RELEASE_STRING).arg(api)));
+    } else {
+        label_pokerthVersion->setText(QString(tr("PokerTH %1 for Android (API unknown)").arg(POKERTH_BETA_RELEASE_STRING)));
+    }
 #else
     label_pokerthVersion->setText(QString(tr("PokerTH %1").arg(POKERTH_BETA_RELEASE_STRING)));
 #endif

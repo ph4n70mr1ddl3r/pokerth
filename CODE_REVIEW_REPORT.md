@@ -1,9 +1,9 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-19
-**Revision:** 30
+**Revision:** 31
 **Reviewer:** AI Code Reviewer
-**Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 29
+**Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 30
 
 ---
 
@@ -752,3 +752,76 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 | `src/gui/qt/gametable/gametableimpl.cpp` | Remove dead Shift block and commented-out code in `keyPressEvent()` | **NEW (Rev 30)** |
 | `src/gui/qt/chattools/chattools.cpp` | Remove unreachable wrap-around check and debug comments | **NEW (Rev 30)** |
 | `src/gui/qt/serverlistdialog/serverlistdialogimpl.cpp` | Preserve user selection while server list is populated | **NEW (Rev 30)** |
+
+---
+
+## Revision 31
+
+### 61. Empty `#else/#endif` Blocks in Multiple Dialog Event Filters (Dead Code)
+
+**Files:** `src/gui/qt/changecompleteblindsdialog/changecompleteblindsdialogimpl.cpp`, `src/gui/qt/changecontentdialog/changecontentdialogimpl.cpp`
+**Severity:** Low
+**Issue:** Both dialog implementations contained empty `#else\n#endif` preprocessor blocks in their `eventFilter()` methods. These were leftover from `#ifdef ANDROID` guards where the non-Android branch had no code. They served no purpose and added visual noise.
+
+**Fix:** Removed the empty preprocessor blocks in both files.
+
+### 62. Pointless `exec()` Override in `changeCompleteBlindsDialogImpl` (Dead Code)
+
+**File:** `src/gui/qt/changecompleteblindsdialog/changecompleteblindsdialogimpl.cpp`
+**Severity:** Low
+**Issue:** The `exec()` method simply called `QDialog::exec()` and returned its result — an unnecessary override that added no functionality. This pattern was also present in other dialogs reviewed earlier.
+
+**Fix:** Removed the override entirely; the base class implementation is used automatically.
+
+### 63. Unchecked `toInt()` Conversion in `sortBlindsList()` (Robustness)
+
+**File:** `src/gui/qt/changecompleteblindsdialog/changecompleteblindsdialogimpl.cpp`
+**Severity:** Medium
+**Issue:** `sortBlindsList()` called `text().toInt(&ok, 10)` on each list item but never checked the `ok` output parameter. If an item somehow contained non-numeric text, `toInt()` would return 0 and silently corrupt the blind structure. The single `bool ok = true` was also declared outside the loop and never reset, so a single failure would incorrectly mark all subsequent conversions as failed.
+
+**Fix:** Moved `bool ok` inside the loop, initialized to `false`, and only append to the temporary list when `ok` is true. This makes the conversion explicitly checked and self-contained per iteration. Also removed commented-out debug `cout` statements.
+
+### 64. `removeBlindFromList()` Called `takeItem(-1)` on Empty Selection (Bug/Robustness)
+
+**File:** `src/gui/qt/changecompleteblindsdialog/changecompleteblindsdialogimpl.cpp`
+**Severity:** Medium
+**Issue:** `listWidget_blinds->currentRow()` returns `-1` when nothing is selected. Passing `-1` to `takeItem()` is documented to return `nullptr` but the subsequent `sortBlindsList()` call was still executed pointlessly. More importantly, it represented a logical error: attempting to remove a non-existent item.
+
+**Fix:** Check `currentRow() >= 0` before calling `takeItem()` and `sortBlindsList()`.
+
+### 65. Commented-Out `#include "session.h"` in `changeContentDialogImpl` (Dead Code)
+
+**File:** `src/gui/qt/changecontentdialog/changecontentdialogimpl.cpp`
+**Severity:** Low
+**Issue:** A commented-out include directive `#include "session.h"` remained at the top of the file, likely from a previous refactoring. Dead commented-out includes obscure the actual dependencies.
+
+**Fix:** Removed the commented-out include line.
+
+### 66. Dead Commented-Out Code in `GuiWrapper::setSession()` (Dead Code)
+
+**File:** `src/gui/qt/guiwrapper.cpp`
+**Severity:** Low
+**Issue:** The `setSession()` method contained a commented-out call `/*myStartWindow->setSession(session);*/` with the parameter also commented out in the signature. This dead code served no purpose and could mislead maintainers about the class's responsibilities.
+
+**Fix:** Replaced the commented-out body with an explicit comment explaining the intentional no-op.
+
+### 67. Negative Default API Level Shown as "API-2" in About Dialog (Robustness/Code Quality)
+
+**File:** `src/gui/qt/aboutpokerth/aboutpokerthimpl.cpp`
+**Severity:** Low
+**Issue:** The Android API level variable `api` defaulted to `-2`, and if JNI access failed (e.g., in test environments or unexpected edge cases), the dialog would display "PokerTH X for Android (API-2)" — a confusing negative version number.
+
+**Fix:** Changed the default to `-1` and added a conditional: if `api >= 0`, show the API number; otherwise show "API unknown".
+
+### Files Modified This Revision
+
+| File | Change | Revision |
+|------|--------|----------|
+| `src/gui/qt/changecompleteblindsdialog/changecompleteblindsdialogimpl.cpp` | Remove pointless `exec()` override | **NEW (Rev 31)** |
+| `src/gui/qt/changecompleteblindsdialog/changecompleteblindsdialogimpl.cpp` | Check `toInt()` result in `sortBlindsList()`, remove debug comments | **NEW (Rev 31)** |
+| `src/gui/qt/changecompleteblindsdialog/changecompleteblindsdialogimpl.cpp` | Guard `removeBlindFromList()` against -1 row | **NEW (Rev 31)** |
+| `src/gui/qt/changecompleteblindsdialog/changecompleteblindsdialogimpl.cpp` | Remove empty `#else/#endif` in event filter | **NEW (Rev 31)** |
+| `src/gui/qt/changecontentdialog/changecontentdialogimpl.cpp` | Remove commented-out `#include "session.h"` | **NEW (Rev 31)** |
+| `src/gui/qt/changecontentdialog/changecontentdialogimpl.cpp` | Remove empty `#else/#endif` in event filter | **NEW (Rev 31)** |
+| `src/gui/qt/guiwrapper.cpp` | Replace dead commented code in `setSession()` with explanatory comment | **NEW (Rev 31)** |
+| `src/gui/qt/aboutpokerth/aboutpokerthimpl.cpp` | Handle unknown Android API level gracefully | **NEW (Rev 31)** |

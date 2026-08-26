@@ -66,7 +66,7 @@ boost::shared_ptr<Session> GuiWrapper::getSession()
 }
 void GuiWrapper::setSession(boost::shared_ptr<Session> /*session*/)
 {
-	/*myStartWindow->setSession(session);*/
+	// Intentionally empty - session management is handled elsewhere
 }
 
 void GuiWrapper::refreshSet() const
