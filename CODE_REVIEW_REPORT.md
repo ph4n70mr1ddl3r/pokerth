@@ -1,9 +1,9 @@
 # PokerTH Code Review Report
 
-**Date:** 2026-05-19
-**Revision:** 31
+**Date:** 2026-08-26
+**Revision:** 32
 **Reviewer:** AI Code Reviewer
-**Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 30
+**Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 31
 
 ---
 
@@ -825,3 +825,88 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 | `src/gui/qt/changecontentdialog/changecontentdialogimpl.cpp` | Remove empty `#else/#endif` in event filter | **NEW (Rev 31)** |
 | `src/gui/qt/guiwrapper.cpp` | Replace dead commented code in `setSession()` with explanatory comment | **NEW (Rev 31)** |
 | `src/gui/qt/aboutpokerth/aboutpokerthimpl.cpp` | Handle unknown Android API level gracefully | **NEW (Rev 31)** |
+
+---
+
+## Revision 32
+
+### 68. Rev 31 Fixes Not Applied to Twin Dialog `manualBlindsOrderDialogImpl` (Consistency/Bug) - NEW
+
+**File:** `src/gui/qt/settingsdialog/manualblindsorderdialog/manualblindsorderdialogimpl.cpp`
+**Severity:** Medium
+**Issue:** This dialog is the functional twin of `changeCompleteBlindsDialogImpl` (same blinds-list UI, same slots), but three fixes applied there in revision 31 (issues #62-#64) were missing here:
+1. `removeBlindFromList()` called `takeItem(currentRow())` without checking that a row was selected — `currentRow()` returns `-1` when nothing is selected, and the subsequent unconditional `sortBlindsList()` operated on stale data.
+2. `sortBlindsList()` used an unchecked `toInt(&ok, 10)` with `bool ok` declared once outside the loop (never reset), so item text that failed to parse would silently insert `0` into the blind structure.
+3. A pointless `exec()` override that only forwarded to `QDialog::exec()`.
+
+**Fix:** Applied all three fixes identically to rev 31: guarded `removeBlindFromList()` with `row >= 0`; moved `bool ok` inside the loop, initialized to `false`, appending only on success; removed the pass-through `exec()` override from both `.cpp` and `.h`. Verified no string-based `SLOT(exec())` connections or direct calls rely on the removed override (the dialog is opened via a direct `->exec()` call, which resolves to `QDialog::exec()`). Also removed commented-out debug `cout` statements in `sortBlindsList()`.
+
+### 69. Leftover `int exec();` Declaration in `changeCompleteBlindsDialogImpl` Header (Dead Code/Consistency) - NEW
+
+**File:** `src/gui/qt/changecompleteblindsdialog/changecompleteblindsdialogimpl.h`
+**Severity:** Low
+**Issue:** Revision 31 (issue #62) removed the pass-through `exec()` definition from the `.cpp`, but the declaration `int exec();` was left in the header. A declared-but-never-defined member is dead code and contradicts the completed rev 31 change; if anyone ever called it, the build would fail at link time.
+
+**Fix:** Removed the leftover declaration, completing issue #62.
+
+### 70. `selectedRows().first()` Reachable With Empty Selection in Game List Context Menu (Robustness) - NEW
+
+**File:** `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp`
+**Severity:** Medium
+**Issue:** `showGameListContextMenu()` guarded its access to `selectedRows().first()` with `currentIndex().isValid()`. However, `leftGameDialogUpdate()` explicitly calls `treeView_GameList->clearSelection()`, which clears the selection while leaving the current index valid. Right-clicking the game list after leaving a game therefore passed the guard and called `QList::first()` on an empty list — undefined behavior (assertion in debug builds). The sibling handlers `reportBadGameName()`, `adminActionCloseGame()`, and `adminActionTotalKickBan()` all correctly use `hasSelection()`.
+
+**Fix:** Changed the guard to `hasSelection()`, matching the other selection-consuming handlers in this file. The admin "close game" action enable/disable logic now also correctly requires an actual selection rather than just a current index.
+
+### 71. Opaque `setFilterRole(QString().toInt())` in Lobby Filter Models (Code Quality) - NEW
+
+**File:** `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp`
+**Severity:** Low
+**Issue:** `changeGameListFilter()` and `changeNickListFilter()` set the filter role via `setFilterRole(QString().toInt())` — parsing an empty `QString` as an integer, which yields `0` (`Qt::DisplayRole`) plus a failed-conversion side effect on Qt's internal locale machinery. The intent (use the display role for filtering) was obscured by a pointless roundtrip through string-to-int conversion of a temporary.
+
+**Fix:** Replaced both occurrences with `setFilterRole(Qt::DisplayRole)`, which is the identical value expressed directly.
+
+### 72. Dead Break-Button Block, Duplicate `stop()`, Unused Metrics in `nextRoundCleanGui()` (Dead Code) - NEW
+
+**File:** `src/gui/qt/gametable/gametableimpl.cpp`
+**Severity:** Low
+**Issue:** Three related leftovers in `nextRoundCleanGui()`:
+1. The `PauseBetweenHands` branch had a fully commented-out body (press-break-button code behind `#ifdef GUI_800x480`), leaving an empty then-branch whose only live effect was the `else` branch resetting `breakAfterCurrentHand`.
+2. The break-button cleanup block called `blinkingStartButtonAnimationTimer->stop()` twice.
+3. A live `QFontMetrics tempMetrics` / `horizontalAdvance(tr("Stop"))` computation existed solely as arguments to commented-out `setMinimumSize()`/`setText()` calls.
+
+**Fix:** Removed all commented-out handler shells and the empty preprocessor regions. Rewrote the condition with De Morgan inversion so the single live statement (`breakAfterCurrentHand = false;`) executes under exactly the original condition (`!(PauseBetweenHands && GAME_TYPE_LOCAL)`), preserving short-circuit evaluation order. Removed the duplicate `stop()` and the unused metrics computation. Runtime behavior is unchanged.
+
+### 73. Server CLI Error Messages Printed to stdout (Correctness) - NEW
+
+**File:** `src/pokerth_server.cpp`
+**Severity:** Low
+**Issue:** Two error paths in `main()` printed to `std::cout`: the invalid `--log-level` diagnostic and the daemon startup failure. Error output belongs on `std::cerr` so it is not swallowed when stdout is redirected or piped (e.g., into monitoring tools); help and version output correctly remain on stdout.
+
+**Fix:** Changed both error-path outputs to `std::cerr`.
+
+### 74. Stray Semicolon After Include Guard in `serverlistdialogimpl.h` (Dead Code) - NEW
+
+**File:** `src/gui/qt/serverlistdialog/serverlistdialogimpl.h`
+**Severity:** Low
+**Issue:** A stray `;` at file scope followed the closing `#endif` of the include guard. Harmless (C++11 empty declaration), but noise — the same class of typo as rev 26's stray backslash (issue #49).
+
+**Fix:** Removed the stray semicolon.
+
+### Files Modified This Revision
+
+| File | Change | Revision |
+|------|--------|----------|
+| `src/gui/qt/settingsdialog/manualblindsorderdialog/manualblindsorderdialogimpl.cpp` | Guard `removeBlindFromList()` against -1 row; check `toInt()` result per iteration in `sortBlindsList()`; remove pointless `exec()` override and debug comments | **NEW (Rev 32)** |
+| `src/gui/qt/settingsdialog/manualblindsorderdialog/manualblindsorderdialogimpl.h` | Remove pointless `int exec();` slot-style declaration | **NEW (Rev 32)** |
+| `src/gui/qt/changecompleteblindsdialog/changecompleteblindsdialogimpl.h` | Remove leftover `int exec();` declaration (completes rev 31 #62) | **NEW (Rev 32)** |
+| `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp` | Use `hasSelection()` instead of `currentIndex().isValid()` before `selectedRows().first()`; replace `setFilterRole(QString().toInt())` with `Qt::DisplayRole` | **NEW (Rev 32)** |
+| `src/gui/qt/gametable/gametableimpl.cpp` | Remove dead break-button block, duplicate `stop()`, unused font metrics in `nextRoundCleanGui()`; behavior-preserving condition inversion | **NEW (Rev 32)** |
+| `src/pokerth_server.cpp` | Route invalid log-level and daemon failure messages to stderr | **NEW (Rev 32)** |
+| `src/gui/qt/serverlistdialog/serverlistdialogimpl.h` | Remove stray file-scope semicolon after include guard | **NEW (Rev 32)** |
+
+### Review Notes (Rev 32)
+
+- **Build environment:** This revision could not be compile-verified: no CMake/Ninja toolchain, Qt6, or Boost headers are present in the review environment. All edits were restricted to behavior-preserving transforms, and structural integrity (brace/string/comment balance relative to HEAD) was verified programmatically for every touched file. Manual client/server testing remains required per AGENTS.md.
+- **Verified safe patterns:** All remaining `front()/back()/first()/last()` call sites checked — every one is guarded by an emptiness check (`!empty()`, `hasSelection()`, `while (!q.empty())`, or construction guarantees such as `split(" ")` always yielding ≥1 element).
+- **Remaining `exec()` overrides audited:** `selectAvatarDialogImpl`, `connectToServerDialogImpl`, `internetGameLoginDialogImpl`, `gameLobbyDialogImpl`, and `LogFileDialog` all perform real work in their overrides and were left intact. `serverListDialogImpl::exec()` looks like a pure pass-through but must remain because it is bound via string-based `SLOT(exec())` (and `QDialog::exec()` is not a slot in Qt6).
+- **Unchecked `toInt()` sites reviewed:** Remaining unchecked conversions parse self-produced numeric strings (e.g., list items filled from `QString::number(int)`), engine-validated values, or have benign `0` fallbacks; no changes needed.

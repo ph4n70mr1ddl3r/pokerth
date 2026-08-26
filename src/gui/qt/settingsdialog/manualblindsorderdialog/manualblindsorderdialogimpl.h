@@ -48,9 +48,6 @@ class manualBlindsOrderDialogImpl: public QDialog, public Ui::manualBlindsOrderD
 public:
 	manualBlindsOrderDialogImpl(QWidget *parent = nullptr, ConfigFile *c = nullptr);
 
-	int exec();
-
-
 public slots:
 	bool getSettingsCorrect() const
 	{

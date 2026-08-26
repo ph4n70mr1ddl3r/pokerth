@@ -122,7 +122,7 @@ main(int argc, char *argv[])
 		if (vm.count("log-level")) {
 			logLevel = vm["log-level"].as<int>();
 			if (logLevel < 0 || logLevel > 2) {
-				cout << "Invalid log-level: \"" << logLevel << "\", allowed range 0-2." << endl;
+				cerr << "Invalid log-level: \"" << logLevel << "\", allowed range 0-2." << endl;
 				return 1;
 			}
 		}
@@ -137,7 +137,7 @@ main(int argc, char *argv[])
 #ifndef _WIN32
 #ifdef QT_NO_DEBUG
 	if (daemon(0, 0) != 0) {
-		cout << "Failed to start daemon." << endl;
+		cerr << "Failed to start daemon." << endl;
 		return 1;
 	}
 #endif

@@ -49,12 +49,6 @@ manualBlindsOrderDialogImpl::manualBlindsOrderDialogImpl(QWidget *parent, Config
 
 }
 
-int manualBlindsOrderDialogImpl::exec()
-{
-	return QDialog::exec();
-}
-
-
 void manualBlindsOrderDialogImpl::addBlindValueToList()
 {
 
@@ -70,32 +64,33 @@ void manualBlindsOrderDialogImpl::addBlindValueToList()
 
 void manualBlindsOrderDialogImpl::removeBlindFromList()
 {
-
-	listWidget_blinds->takeItem(listWidget_blinds->currentRow());
-	sortBlindsList();
+	int row = listWidget_blinds->currentRow();
+	if (row >= 0) {
+		listWidget_blinds->takeItem(row);
+		sortBlindsList();
+	}
 }
 
 void manualBlindsOrderDialogImpl::sortBlindsList()
 {
-
 	int i = 0;
 	QList<int> tempIntList;
 	QStringList tempStringList;
-	bool ok = true;
 
 	for(i=0; i<listWidget_blinds->count(); i++) {
-// 		std::cout << listWidget_blinds->item(i)->text().toInt(&ok,10) << "\n";
-		tempIntList << listWidget_blinds->item(i)->text().toInt(&ok,10);
+		bool ok = false;
+		int val = listWidget_blinds->item(i)->text().toInt(&ok, 10);
+		if (ok) {
+			tempIntList << val;
+		}
 	}
 
 	std::stable_sort(tempIntList.begin(), tempIntList.end());
-//
+
 	for(i=0; i<tempIntList.count(); i++) {
-//
-// 		std::cout << tempIntList[i] << "\n";
-		tempStringList << QString::number(tempIntList[i],10);
+		tempStringList << QString::number(tempIntList[i], 10);
 	}
-//
+
 	listWidget_blinds->clear();
 	listWidget_blinds->addItems(tempStringList);
 }

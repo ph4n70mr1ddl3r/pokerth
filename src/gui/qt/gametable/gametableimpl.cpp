@@ -2828,41 +2828,14 @@ void gameTableImpl::nextRoundCleanGui()
 
 	flipHolecardsAllInAlreadyDone = false;
 
-	//If pause between hands is configured, press the stop button!
-	if (myConfig->readConfigInt("PauseBetweenHands") /*&& blinkingStartButtonAnimationTimer->isActive() == false*/ && myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_LOCAL) {
-#ifdef GUI_800x480
-//		tabs.pushButton_break->click();
-#else
-//		pushButton_break->click();
-#endif
-	} else {
-		//FIX STRG+N Bug
-#ifdef GUI_800x480
-//		tabs.pushButton_break->setEnabled(true);
-#else
-//		pushButton_break->setEnabled(true);
-#endif
-		breakAfterCurrentHand=false;
+	//If no pause between hands is configured, reset the break flag.
+	if (!myConfig->readConfigInt("PauseBetweenHands") || myStartWindow->getSession()->getGameType() != Session::GAME_TYPE_LOCAL) {
+		breakAfterCurrentHand = false;
 	}
 
 	//Clean breakbutton
 	if(myStartWindow->getSession()->getGameType() == Session::GAME_TYPE_LOCAL) {
 		blinkingStartButtonAnimationTimer->stop();
-#ifdef GUI_800x480
-//		myGameTableStyle->setBreakButtonStyle(tabs.pushButton_break,0);
-#else
-//		myGameTableStyle->setBreakButtonStyle(pushButton_break,0);
-#endif
-		blinkingStartButtonAnimationTimer->stop();
-		QFontMetrics tempMetrics = this->fontMetrics();
-		int width = tempMetrics.horizontalAdvance(tr("Stop"));
-#ifdef GUI_800x480
-//		tabs.pushButton_break->setMinimumSize(width+10,20);
-//		tabs.pushButton_break->setText(tr("Stop"));
-#else
-//		pushButton_break->setMinimumSize(width+10,20);
-//		pushButton_break->setText(tr("Stop"));
-#endif
 	}
 	//Clear Statusbarmessage
 	// 	statusBar()->clearMessage();

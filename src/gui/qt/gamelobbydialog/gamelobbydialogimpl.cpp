@@ -1547,7 +1547,7 @@ void gameLobbyDialogImpl::changeGameListFilter(int index)
 	default:
 		;
 	}
-	myGameListSortFilterProxyModel->setFilterRole(QString().toInt());
+	myGameListSortFilterProxyModel->setFilterRole(Qt::DisplayRole);
 	myGameListSortFilterProxyModel->setFilterKeyColumn(0);
 
 	writeDialogSettings(1);
@@ -1576,7 +1576,7 @@ void gameLobbyDialogImpl::changeNickListFilter(int state)
 	myNickListSortFilterProxyModel->setFilterState(state);
 	myNickListModel->sort(0, Qt::DescendingOrder);
 
-	myNickListSortFilterProxyModel->setFilterRole(QString().toInt());
+	myNickListSortFilterProxyModel->setFilterRole(Qt::DisplayRole);
 	myNickListSortFilterProxyModel->setFilterKeyColumn(0);
 
 	lastNickListFilterState = state;
@@ -1657,7 +1657,7 @@ void gameLobbyDialogImpl::showNickListContextMenu(QPoint p)
 
 void gameLobbyDialogImpl::showGameListContextMenu(QPoint p)
 {
-	if(myGameListModel->rowCount() && myGameListSelectionModel->currentIndex().isValid()) {
+	if(myGameListModel->rowCount() && myGameListSelectionModel->hasSelection()) {
 
 		if (!mySession) {
 			LOG_ERROR("showGameListContextMenu - mySession is null");
