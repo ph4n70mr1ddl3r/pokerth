@@ -1092,7 +1092,7 @@ ClientThread::SslInfoCallback(const SSL *ssl, int where, int ret)
     }
     else if (where & SSL_CB_ALERT) {
         const char *alert_type = (where & SSL_CB_READ) ? "read" : "write";
-        qDebug() << "[TLS-HANDSHAKE] Alert" << alert_type << ":" 
+        qWarning() << "[TLS-HANDSHAKE] Alert" << alert_type << ":" 
                  << SSL_alert_type_string_long(ret) << "/"
                  << SSL_alert_desc_string_long(ret);
     }

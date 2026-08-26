@@ -216,8 +216,9 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 	this->show();
 
 	//update HACKS
-	if(!checkForFirstStartAfterUpdated().isEmpty()) {
-		qDebug() << checkForFirstStartAfterUpdated();
+	const QString updateHackMessage = checkForFirstStartAfterUpdated();
+	if(!updateHackMessage.isEmpty()) {
+		qDebug() << updateHackMessage;
 	}
 
 }
