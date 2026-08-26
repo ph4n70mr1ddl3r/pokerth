@@ -36,7 +36,6 @@
 #include <net/socket_msg.h>
 #include <core/loghelper.h>
 #include <QDebug>
-#include <cstring>
 
 using namespace std;
 

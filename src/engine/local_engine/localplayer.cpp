@@ -36,7 +36,6 @@
 #include <configfile.h>
 #include <core/loghelper.h>
 
-#include <fstream>
 #include <sstream>
 #include <vector>
 #include <climits>

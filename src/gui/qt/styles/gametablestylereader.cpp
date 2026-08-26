@@ -29,7 +29,6 @@
  * as that of the covered work.                                              *
  *****************************************************************************/
 #include "gametablestylereader.h"
-#include <cstdlib>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDebug>

@@ -34,7 +34,6 @@
 #define _WEBSENDBUFFER_H_
 
 #include <net/sendbuffer.h>
-#include <cstdlib>
 #include <atomic>
 
 class WebSendBuffer : public SendBuffer

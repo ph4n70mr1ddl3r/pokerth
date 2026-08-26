@@ -31,7 +31,6 @@
 #ifndef GUILOG_H
 #define GUILOG_H
 
-#include <fstream>
 #include <sstream>
 #include <memory>
 

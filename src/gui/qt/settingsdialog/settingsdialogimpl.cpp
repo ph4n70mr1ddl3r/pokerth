@@ -341,7 +341,7 @@ void settingsDialogImpl::prepareDialog()
 	currentGameTableStyle.readStyleFile(QString::fromUtf8(myConfig->readConfigString("CurrentGameTableStyle").c_str()));
 	if(currentGameTableStyle.getLoadedSuccessfull()) {
 		int i = 0;
-		bool currentGameTableFound(false);
+		bool currentGameTableFound = false;
 		for(i=0; i < treeWidget_gameTableStyles->topLevelItemCount(); i++) {
 			QTreeWidgetItem *item = treeWidget_gameTableStyles->topLevelItem(i);
 			if(item->data(0, 15) == currentGameTableStyle.getCurrentFileName()) {
@@ -441,7 +441,7 @@ void settingsDialogImpl::prepareDialog()
 	currentCardDeckStyle.readStyleFile(QString::fromUtf8(myConfig->readConfigString("CurrentCardDeckStyle").c_str()));
 	if(currentCardDeckStyle.getLoadedSuccessfull()) {
 		int j = 0;
-		bool currentCardDeckFound(false);
+		bool currentCardDeckFound = false;
 		for(j=0; j < treeWidget_cardDeckStyles->topLevelItemCount(); j++) {
 			QTreeWidgetItem *item = treeWidget_cardDeckStyles->topLevelItem(j);
 			if(item->data(0, 15) == currentCardDeckStyle.getCurrentFileName()) {
@@ -1003,7 +1003,7 @@ void settingsDialogImpl::addGameTableStyle()
 	if (!fileName.isEmpty()) {
 
 		int i = 0;
-		bool fileNameAlreadyFound(false);
+		bool fileNameAlreadyFound = false;
 		for(i=0; i < treeWidget_gameTableStyles->topLevelItemCount(); i++) {
 			QTreeWidgetItem *item = treeWidget_gameTableStyles->topLevelItem(i);
 			if(item->data(0, 15).toString() == fileName)
@@ -1129,7 +1129,7 @@ void settingsDialogImpl::addCardDeckStyle()
 	if (!fileName.isEmpty()) {
 
 		int i = 0;
-		bool fileNameAlreadyFound(false);
+		bool fileNameAlreadyFound = false;
 		for(i=0; i < treeWidget_cardDeckStyles->topLevelItemCount(); i++) {
 			QTreeWidgetItem *item = treeWidget_cardDeckStyles->topLevelItem(i);
 			if(item->data(0, 15).toString() == fileName)

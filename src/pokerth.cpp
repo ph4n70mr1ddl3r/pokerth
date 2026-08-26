@@ -30,7 +30,6 @@
  *****************************************************************************/
 #ifdef QML_CLIENT
 //START THE QML SWITCH HERE
-#include <cstdlib>
 #include <ctime>
 #include <QtCore>
 #include <QtQml>

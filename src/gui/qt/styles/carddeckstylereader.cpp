@@ -30,8 +30,6 @@
  *****************************************************************************/
 #include "carddeckstylereader.h"
 #include <sstream>
-#include <cstdlib>
-#include <fstream>
 #include "mymessagebox.h"
 #include "mymessagedialogimpl.h"
 #include "game_defs.h"

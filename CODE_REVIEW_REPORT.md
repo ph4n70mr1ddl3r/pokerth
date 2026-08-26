@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-19
-**Revision:** 26
+**Revision:** 27
 **Reviewer:** AI Code Reviewer
 **Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 25
 
@@ -635,3 +635,64 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 |------|--------|----------|
 | `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp` | Remove stray backslash `\` at end of closing brace | **NEW (Rev 26)** |
 | `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp` | Replace C-style cast with `static_cast<Qt::SortOrder>` | **NEW (Rev 26)** |
+
+---
+
+## Revision 27 Changes
+
+### 51. Unused `#include <cstdlib>` in 5 Files (Code Quality) - NEW
+
+**Files:** `src/net/websendbuffer.h`, `src/gui/qt/styles/gametablestylereader.cpp`, `src/gui/qt/styles/carddeckstylereader.cpp`, `src/chatcleaner/cleanerserver.cpp`, `src/pokerth.cpp`
+**Severity:** Low
+**Issue:** These 5 files included `<cstdlib>` but used none of its facilities (`malloc`, `atoi`, `getenv`, `exit`, `abs`, `rand`, etc.). This is the same class of issue as #10, #11, and #26 (unused `<cassert>`/`<iostream>`) — dead includes increase compilation time and create a false impression of dependencies. Note that in `src/pokerth.cpp` the include was inside the `QML_CLIENT` block.
+
+**Fix:** Removed the unused `#include <cstdlib>` from all 5 files. Verified that no dependent translation unit relies on these headers transitively (checked all includers of `websendbuffer.h` for C library usage).
+
+### 52. Unused `#include <fstream>` in 3 Files (Code Quality) - NEW
+
+**Files:** `src/gui/qt/styles/carddeckstylereader.cpp`, `src/gui/qt/gametable/log/guilog.h`, `src/engine/local_engine/localplayer.cpp`
+**Severity:** Low
+**Issue:** These files included `<fstream>` but used no stream types (`std::ifstream`, `std::ofstream`, `std::fstream`). Removing the include from the header `guilog.h` was verified safe: no file that includes `guilog.h` uses fstream types without including `<fstream>` itself.
+
+**Fix:** Removed the unused `#include <fstream>` from all 3 files.
+
+### 53. Unused `#include <cstring>` in 2 Files (Code Quality) - NEW
+
+**Files:** `src/net/ircthread.cpp`, `src/net/senderhelper.cpp`
+**Severity:** Low
+**Issue:** Both files included `<cstring>` but use no C string/memory functions (`memcpy`, `strlen`, `strdup`, etc.) — they only use `std::string` member functions like `substr()` and `c_str()`, which come from `<string>`.
+
+**Fix:** Removed the unused `#include <cstring>` from both files. Note: `guilog.cpp` also had this pattern flagged initially but legitimately uses `strdup()`, so its include was kept.
+
+### 54. Function-Style Boolean Initializations (Code Quality) - NEW
+
+**Files:** `src/gui/qt/settingsdialog/settingsdialogimpl.cpp` (4 locations), `src/chatcleaner/badwordcheck.cpp`
+**Severity:** Low
+**Issue:** Five boolean variables were initialized with function-style syntax, e.g. `bool badMessage(false);`. This is an old style that is inconsistent with the rest of the codebase; it can also be ambiguous with a function declaration in more complex cases. The codebase standard is copy initialization.
+
+**Fix:** Replaced all 5 occurrences with copy initialization (e.g., `bool badMessage = false;`), consistent with the bool literal modernization done in rev 24.
+
+### 55. Dead Commented-Out Code Block in `callRejoinPossibleDialog()` (Dead Code) - NEW
+
+**File:** `src/gui/qt/startwindow/startwindowimpl.cpp`
+**Severity:** Low
+**Issue:** A commented-out block containing an old `assert(mySession)` and a `GameInfo` query remained at the top of `callRejoinPossibleDialog()`. Dead commented-out code obscures intent (this is the same class of issue as #13, dead `SqliteDbRaii` class). The current implementation does not need either call — the session access happens later via `mySession->clientRejoinGame(gameId)`.
+
+**Fix:** Removed the dead comment block.
+
+### Files Modified This Revision
+
+| File | Change | Revision |
+|------|--------|----------|
+| `src/net/websendbuffer.h` | Remove unused `#include <cstdlib>` | **NEW (Rev 27)** |
+| `src/gui/qt/styles/gametablestylereader.cpp` | Remove unused `#include <cstdlib>` | **NEW (Rev 27)** |
+| `src/gui/qt/styles/carddeckstylereader.cpp` | Remove unused `#include <cstdlib>` and `#include <fstream>` | **NEW (Rev 27)** |
+| `src/chatcleaner/cleanerserver.cpp` | Remove unused `#include <cstdlib>` | **NEW (Rev 27)** |
+| `src/pokerth.cpp` | Remove unused `#include <cstdlib>` | **NEW (Rev 27)** |
+| `src/gui/qt/gametable/log/guilog.h` | Remove unused `#include <fstream>` | **NEW (Rev 27)** |
+| `src/engine/local_engine/localplayer.cpp` | Remove unused `#include <fstream>` | **NEW (Rev 27)** |
+| `src/net/ircthread.cpp` | Remove unused `#include <cstring>` | **NEW (Rev 27)** |
+| `src/net/senderhelper.cpp` | Remove unused `#include <cstring>` | **NEW (Rev 27)** |
+| `src/gui/qt/settingsdialog/settingsdialogimpl.cpp` | Replace 4 function-style bool initializations with copy init | **NEW (Rev 27)** |
+| `src/chatcleaner/badwordcheck.cpp` | Replace function-style bool init with copy init | **NEW (Rev 27)** |
+| `src/gui/qt/startwindow/startwindowimpl.cpp` | Remove dead commented-out code block | **NEW (Rev 27)** |

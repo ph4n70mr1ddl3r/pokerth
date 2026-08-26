@@ -34,7 +34,6 @@
 #include <QtCore>
 #include <QtEndian>
 #include <QCryptographicHash>
-#include <cstdlib>
 #include <limits>
 #include <string>
 #include <vector>

@@ -298,10 +298,6 @@ void startWindowImpl::callInternetGameLoginDialog()
 
 void startWindowImpl::callRejoinPossibleDialog(unsigned gameId)
 {
-	/*
-	assert(mySession);
-	GameInfo info(mySession->getClientGameInfo(gameId));*/
-
 	MyMessageBox msgBox;
 	msgBox.setIcon(QMessageBox::Question);
 	msgBox.setWindowTitle(tr("Rejoin possible!"));
