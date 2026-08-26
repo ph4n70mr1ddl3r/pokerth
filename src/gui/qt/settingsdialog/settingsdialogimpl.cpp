@@ -1057,10 +1057,11 @@ void settingsDialogImpl::removeGameTableStyle()
 		// if selected is activated --> switch activation to first default
 		if(!selectedItem->icon(0).isNull()) {
 			QTreeWidgetItem* firstItem = treeWidget_gameTableStyles->topLevelItem(0);
-			firstItem->setIcon(0, QIcon(QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str())+"/gfx/gui/misc/rating.png"));
+			if(firstItem) firstItem->setIcon(0, QIcon(QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str())+"/gfx/gui/misc/rating.png"));
 		}
 		//remove from List
-		delete treeWidget_gameTableStyles->takeTopLevelItem(treeWidget_gameTableStyles->currentIndex().row());
+		const int row = treeWidget_gameTableStyles->indexOfTopLevelItem(selectedItem);
+		if(row >= 0) delete treeWidget_gameTableStyles->takeTopLevelItem(row);
 
 	}
 }
@@ -1184,17 +1185,20 @@ void settingsDialogImpl::removeCardDeckStyle()
 		// if selected is activated --> switch activation to first default
 		if(!selectedItem->icon(0).isNull()) {
 			QTreeWidgetItem* firstItem = treeWidget_cardDeckStyles->topLevelItem(0);
-			firstItem->setIcon(0, QIcon(QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str())+"/gfx/gui/misc/rating.png"));
+			if(firstItem) firstItem->setIcon(0, QIcon(QString::fromUtf8(myConfig->readConfigString("AppDataDir").c_str())+"/gfx/gui/misc/rating.png"));
 		}
 		//remove from List
-		delete treeWidget_cardDeckStyles->takeTopLevelItem(treeWidget_cardDeckStyles->currentIndex().row());
+		const int row = treeWidget_cardDeckStyles->indexOfTopLevelItem(selectedItem);
+		if(row >= 0) delete treeWidget_cardDeckStyles->takeTopLevelItem(row);
 	}
 }
 
 void settingsDialogImpl::removePlayerFromIgnoredPlayersList()
 {
-	if(treeWidget_internetGameIgnoredPlayers->selectedItems().count()) {
-		delete treeWidget_internetGameIgnoredPlayers->takeTopLevelItem(treeWidget_internetGameIgnoredPlayers->currentIndex().row());
+	QList<QTreeWidgetItem*> selectedItems = treeWidget_internetGameIgnoredPlayers->selectedItems();
+	if(!selectedItems.isEmpty()) {
+		const int row = treeWidget_internetGameIgnoredPlayers->indexOfTopLevelItem(selectedItems.first());
+		if(row >= 0) delete treeWidget_internetGameIgnoredPlayers->takeTopLevelItem(row);
 	}
 }
 

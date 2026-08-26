@@ -230,7 +230,7 @@ QString selectAvatarDialogImpl::getAvatarLink() const
 	QList<QListWidgetItem *> myItemList = listWidget->selectedItems();
 
 	if(groupBox->isChecked()) {
-		if(myItemList.size() == 1) {
+		if(myItemList.size() == 1 && listWidget->currentItem()) {
 			return static_cast<MyAvatarListItem*>(listWidget->currentItem())->getMyLink();
 		} else return QString("");
 	}
