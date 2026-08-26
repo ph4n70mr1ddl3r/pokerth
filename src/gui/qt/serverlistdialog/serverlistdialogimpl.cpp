@@ -71,7 +71,11 @@ void serverListDialogImpl::addServerItem(unsigned serverId)
 	item->setData(1, Qt::DisplayRole, QString::fromUtf8(info.country.c_str()));
 
 	treeWidget_serverList->resizeColumnToContents(0);
-	treeWidget_serverList->setCurrentItem(treeWidget_serverList->topLevelItem(0));
+	// Only preselect the first server while nothing is selected,
+	// so the user's choice is not reset while further servers arrive.
+	if (!treeWidget_serverList->currentItem()) {
+		treeWidget_serverList->setCurrentItem(treeWidget_serverList->topLevelItem(0));
+	}
 }
 
 void serverListDialogImpl::connectToServer()

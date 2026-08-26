@@ -111,9 +111,13 @@ void createInternetGameDialogImpl::fillFormular(QString playerName)
 
 void createInternetGameDialogImpl::keyPressEvent ( QKeyEvent * event )
 {
-#ifndef ANDROID
-	if (event->key() == 16777220) {
-		pushButton_createGame->click();    //ENTER
+#ifdef ANDROID
+	QDialog::keyPressEvent(event);
+#else
+	if (event->key() == Qt::Key_Return) {
+		pushButton_createGame->click(); //ENTER
+	} else {
+		QDialog::keyPressEvent(event);
 	}
 #endif
 }
@@ -267,7 +271,5 @@ bool createInternetGameDialogImpl::eventFilter(QObject *obj, QEvent *event)
 			return false;
 		}
 	}
-#else
-#endif
 	return QDialog::eventFilter(obj, event);
 }

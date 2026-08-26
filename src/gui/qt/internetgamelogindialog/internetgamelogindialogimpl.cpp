@@ -46,10 +46,11 @@ namespace {
 						 QProcessEnvironment::systemEnvironment().value("USERNAME", "default"));
 		QString combined = machineId + ":" + userId + ":pokerth";
 		
+		const QByteArray combinedUtf8 = combined.toUtf8();
 		SHA1Buf hash;
 		CryptHelper::SHA1Hash(
-			reinterpret_cast<const unsigned char*>(combined.toUtf8().constData()),
-			combined.toUtf8().size(),
+			reinterpret_cast<const unsigned char*>(combinedUtf8.constData()),
+			static_cast<unsigned>(combinedUtf8.size()),
 			hash
 		);
 		
@@ -185,7 +186,6 @@ bool internetGameLoginDialogImpl::eventFilter(QObject *obj, QEvent *event)
 			return false;
 		}
 	}
-#else
 #endif
 	return QDialog::eventFilter(obj, event);
 }

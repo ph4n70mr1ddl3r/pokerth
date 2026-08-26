@@ -278,17 +278,11 @@ void ChatTools::nickAutoCompletition()
 
 		myChatStringList.removeLast();
 
-		// 		cout << nickAutoCompletitionCounter << endl;
-
 		if(nickAutoCompletitionCounter == 0) {
 			//first one
 			lastChatString = myChatStringList.join(" ");
 			lastMatchStringList = matchStringList;
 		}
-
-		if(nickAutoCompletitionCounter == lastMatchStringList.size()) nickAutoCompletitionCounter = 0;
-
-		// 		cout << nickAutoCompletitionCounter << "\n";
 
 		if(lastChatString == "") {
 			myLineEdit->setText(lastMatchStringList.at(nickAutoCompletitionCounter)+": ");

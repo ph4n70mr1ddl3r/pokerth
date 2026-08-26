@@ -1,9 +1,9 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-05-19
-**Revision:** 27
+**Revision:** 30
 **Reviewer:** AI Code Reviewer
-**Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 25
+**Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 29
 
 ---
 
@@ -696,3 +696,59 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 | `src/gui/qt/settingsdialog/settingsdialogimpl.cpp` | Replace 4 function-style bool initializations with copy init | **NEW (Rev 27)** |
 | `src/chatcleaner/badwordcheck.cpp` | Replace function-style bool init with copy init | **NEW (Rev 27)** |
 | `src/gui/qt/startwindow/startwindowimpl.cpp` | Remove dead commented-out code block | **NEW (Rev 27)** |
+
+---
+
+## Revision 30
+
+### 56. Swallowed Key Events and Magic Number in `createInternetGameDialogImpl::keyPressEvent()` (Bug/Code Quality)
+
+**File:** `src/gui/qt/createinternetgamedialog/createinternetgamedialogimpl.cpp`
+**Severity:** Medium
+**Issue:** The override compared against the raw magic number `16777220` instead of `Qt::Key_Return`, and it never forwarded unhandled key events to `QDialog::keyPressEvent()`. Because any key event that reaches this handler was implicitly accepted, Escape (dialog rejection) and keyboard navigation (Tab/arrows) silently stopped working in the dialog on non-Android platforms.
+
+**Fix:** Replaced the magic number with `Qt::Key_Return`, and forward all other key events to `QDialog::keyPressEvent()` so default Qt handling (Escape, focus traversal) is restored.
+
+### 57. Duplicate UTF-8 Temporary and Narrowing Conversion in `getEncryptionKey()` (Robustness/Code Quality)
+
+**File:** `src/gui/qt/internetgamelogindialog/internetgamelogindialogimpl.cpp`
+**Severity:** Low
+**Issue:** `combined.toUtf8()` was called twice inside the `SHA1Hash` call — once for the data pointer and once for the size — creating two redundant heap allocations of the same content. The size argument also passed a signed 64-bit `qsizetype` into an `unsigned` parameter without an explicit cast (implicit narrowing).
+
+**Fix:** Stored the result in a single `const QByteArray combinedUtf8` local and passed its pointer with an explicit `static_cast<unsigned>` for the size.
+
+### 58. Dead `Qt::Key_Shift` Block and Large Commented-Out Code in `gameTableImpl::keyPressEvent()` (Dead Code)
+
+**File:** `src/gui/qt/gametable/gametableimpl.cpp`
+**Severity:** Low
+**Issue:** The entire body of the `Qt::Key_Shift` branch was commented out, leaving only a pointless session lookup (`getSession()` + game-type check) whose result was unused. The surrounding block also contained ~30 lines of dead commented-out code (F6/F7/F8 handlers, Escape handler, chat-history arrow-key navigation), all guarded by an `#ifndef GUI_800x480` that no longer contained any live code.
+
+**Fix:** Removed the dead `Key_Shift` block, all commented-out handler stubs, and the now-empty preprocessor guard region. Live F1–F5 handling is unchanged.
+
+### 59. Unreachable Wrap-Around Check in `ChatTools::nickAutoCompletition()` (Dead Code)
+
+**File:** `src/gui/qt/chattools/chattools.cpp`
+**Severity:** Low
+**Issue:** The statement `if(nickAutoCompletitionCounter == lastMatchStringList.size()) nickAutoCompletitionCounter = 0;` could never fire: it is located after the outer guard `nickAutoCompletitionCounter < lastMatchStringList.size()`, so at that point the counter is always strictly less than the list size. Leftover commented-out debug `cout` statements were also present in the same function.
+
+**Fix:** Removed the unreachable wrap-around check and the debug comment lines. Completion behavior is unchanged (counter is reset via `setChatTextEdited()` when the user edits text).
+
+### 60. Server List Selection Reset on Every Incoming Server (Robustness)
+
+**File:** `src/gui/qt/serverlistdialog/serverlistdialogimpl.cpp`
+**Severity:** Low
+**Issue:** `addServerItem()` unconditionally called `setCurrentItem(topLevelItem(0))` after every insert. Since servers arrive asynchronously one by one, the selection was reset to the first row each time, discarding whatever entry the user had already highlighted (e.g. via arrow keys while the list was filling).
+
+**Fix:** Only preselect the first server when the tree currently has no selected item, so the user's choice persists as further servers arrive.
+
+### Files Modified This Revision
+
+| File | Change | Revision |
+|------|--------|----------|
+| `src/gui/qt/createinternetgamedialog/createinternetgamedialogimpl.cpp` | Replace magic Enter keycode with `Qt::Key_Return`, forward other keys to base class | **NEW (Rev 30)** |
+| `src/gui/qt/createinternetgamedialog/createinternetgamedialogimpl.cpp` | Remove empty `#else/#endif` block in event filter | **NEW (Rev 30)** |
+| `src/gui/qt/internetgamelogindialog/internetgamelogindialogimpl.cpp` | Deduplicate UTF-8 temporary in `getEncryptionKey()`, explicit narrowing cast | **NEW (Rev 30)** |
+| `src/gui/qt/internetgamelogindialog/internetgamelogindialogimpl.cpp` | Remove empty `#else/#endif` block in event filter | **NEW (Rev 30)** |
+| `src/gui/qt/gametable/gametableimpl.cpp` | Remove dead Shift block and commented-out code in `keyPressEvent()` | **NEW (Rev 30)** |
+| `src/gui/qt/chattools/chattools.cpp` | Remove unreachable wrap-around check and debug comments | **NEW (Rev 30)** |
+| `src/gui/qt/serverlistdialog/serverlistdialogimpl.cpp` | Preserve user selection while server list is populated | **NEW (Rev 30)** |

@@ -2989,44 +2989,6 @@ void gameTableImpl::keyPressEvent ( QKeyEvent * event )
 	if (event->key() == Qt::Key_F5) {
 		pushButton_showMyCards->click();
 	}
-
-#ifndef GUI_800x480
-//	if (event->key() == Qt::Key_F6) {
-//		radioButton_manualAction->click();
-//	}
-//	if (event->key() == Qt::Key_F7) {
-//		radioButton_autoCheckFold->click();
-//	}
-//	if (event->key() == Qt::Key_F8) {
-//		radioButton_autoCheckCallAny->click();
-//	}
-	if (event->key() == Qt::Key_Shift) {
-		{ boost::shared_ptr<Session> s = getSession(); if(s && s->getGameType() == Session::GAME_TYPE_LOCAL) {
-//			pushButton_break->click();
-			//ctrlPressed = true;
-		}
-	}
-	//    if (event->key() == Qt::Key_Escape && (myActionIsBet || myActionIsRaise)) {
-	//            meInAction();
-	//    }
-//	if (event->key() == Qt::Key_Up && lineEdit_ChatInput->hasFocus()) {
-//		if((keyUpDownChatCounter + 1) <= myChat->getChatLinesHistorySize()) {
-//			keyUpDownChatCounter++;
-//		}
-//		// 		std::cout << "Up keyUpDownChatCounter: " << keyUpDownChatCounter << "\n";
-//		myChat->showChatHistoryIndex(keyUpDownChatCounter);
-//	} else if(event->key() == Qt::Key_Down && lineEdit_ChatInput->hasFocus()) {
-//		if((keyUpDownChatCounter - 1) >= 0) {
-//			keyUpDownChatCounter--;
-//		}
-//		// 		std::cout << "Down keyUpDownChatCounter: " << keyUpDownChatCounter << "\n";
-//		myChat->showChatHistoryIndex(keyUpDownChatCounter);
-//	} else {
-//		keyUpDownChatCounter = 0;
-//	}
-
-#endif
-
 }
 
 void gameTableImpl::changePlayingMode()
