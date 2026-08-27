@@ -948,7 +948,7 @@ void gameTableImpl::refreshAction(int playerID, int playerAction)
 			actionLabelArray[playerID]->setPixmap(QPixmap::fromImage(QImage(myGameTableStyle->getActionPic(playerAction))));
 
 			//play sounds if exist
-			if(myConfig->readConfigInt("PlayGameActions") && playerAction >= 0 && playerAction < actionArray.size())
+			if(myConfig->readConfigInt("PlayGameActions") && playerAction >= 0 && playerAction < static_cast<int>(actionArray.size()))
 				mySoundEventHandler->playSound(actionArray[playerAction].toStdString(), playerID);
 		}
 
@@ -1618,7 +1618,7 @@ void gameTableImpl::provideMyActions(int mode)
 			changeSpinBoxBetValue(horizontalSlider_bet->value());
 
 			myActionIsBet = 1;
-		} else {}
+		}
 
 
 		//if value changed on bet/raise button --> uncheck to prevent unwanted actions
@@ -3055,8 +3055,6 @@ void gameTableImpl::networkGameModification()
 	//restore saved windows geometry
 	restoreGameTableGeometry();
 
-	registeredUserMode();
-
 	blinkingStartButtonAnimationTimer->stop();
 
 	//let the SoundEventHandler know that there is a new game
@@ -3628,10 +3626,6 @@ void gameTableImpl::netClientPlayerLeft(unsigned /*playerId*/)
 		refreshPlayerAvatar();
 		refreshPlayerName();
 	}
-}
-
-void gameTableImpl::registeredUserMode()
-{
 }
 
 void gameTableImpl::showShowMyCardsButton()

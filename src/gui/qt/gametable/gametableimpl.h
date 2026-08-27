@@ -358,7 +358,6 @@ public slots:
 	void restoreGameTableGeometry();
 
 	void netClientPlayerLeft(unsigned playerId);
-	void registeredUserMode();
 
 	void showShowMyCardsButton();
 	void sendShowMyCardsSignal();

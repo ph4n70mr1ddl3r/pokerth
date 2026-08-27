@@ -910,3 +910,56 @@ Additionally, `initAudio()` unconditionally set `audioEnabled = true` even if `c
 - **Verified safe patterns:** All remaining `front()/back()/first()/last()` call sites checked — every one is guarded by an emptiness check (`!empty()`, `hasSelection()`, `while (!q.empty())`, or construction guarantees such as `split(" ")` always yielding ≥1 element).
 - **Remaining `exec()` overrides audited:** `selectAvatarDialogImpl`, `connectToServerDialogImpl`, `internetGameLoginDialogImpl`, `gameLobbyDialogImpl`, and `LogFileDialog` all perform real work in their overrides and were left intact. `serverListDialogImpl::exec()` looks like a pure pass-through but must remain because it is bound via string-based `SLOT(exec())` (and `QDialog::exec()` is not a slot in Qt6).
 - **Unchecked `toInt()` sites reviewed:** Remaining unchecked conversions parse self-produced numeric strings (e.g., list items filled from `QString::number(int)`), engine-validated values, or have benign `0` fallbacks; no changes needed.
+
+---
+
+## Revision 33
+
+### 75. Signed/Unsigned Comparison in `ChatTools::showChatHistoryIndex()` (Correctness) - NEW
+
+**File:** `src/gui/qt/chattools/chattools.cpp`
+**Severity:** Low
+**Issue:** `showChatHistoryIndex()` compared `int index` directly with `chatLinesHistory.size()` (returns `qsizetype`/`size_t`) using `<=`. This is a signed/unsigned comparison that triggers `-Wsign-compare` warnings. While safe in practice (the history list never exceeds `int` range), the explicit cast makes the intent clear and eliminates the warning.
+**Fix:** Changed to `index <= static_cast<int>(chatLinesHistory.size())`.
+
+### 76. Signed/Unsigned Comparison in `ChatTools::nickAutoCompletition()` (Correctness) - NEW
+
+**File:** `src/gui/qt/chattools/chattools.cpp`
+**Severity:** Low
+**Issue:** `nickAutoCompletition()` compared `int nickAutoCompletitionCounter` directly with `lastMatchStringList.size()` (returns `qsizetype`/`size_t`) using `<`. Same signed/unsigned mismatch as #75.
+**Fix:** Changed to `nickAutoCompletitionCounter < static_cast<int>(lastMatchStringList.size())`.
+
+### 77. Signed/Unsigned Comparison in `gameTableImpl::refreshAction()` (Correctness) - NEW
+
+**File:** `src/gui/qt/gametable/gametableimpl.cpp`
+**Severity:** Low
+**Issue:** The action array bounds check compared `int playerAction` directly with `actionArray.size()` (returns `size_t`) using `<`. This is the same class of signed/unsigned comparison issue as #75 and #76.
+**Fix:** Changed to `playerAction < static_cast<int>(actionArray.size())`.
+
+### 78. Empty `else {}` Branch in `gameTableImpl::provideMyActions()` (Dead Code) - NEW
+
+**File:** `src/gui/qt/gametable/gametableimpl.cpp`
+**Severity:** Low
+**Issue:** An `else {}` branch with an empty body followed two non-empty branches in `provideMyActions()`. The empty else served no purpose and added visual noise.
+**Fix:** Removed the empty `else {}` block.
+
+### 79. Empty `registeredUserMode()` Method and Call Site (Dead Code) - NEW
+
+**File:** `src/gui/qt/gametable/gametableimpl.cpp`, `src/gui/qt/gametable/gametableimpl.h`
+**Severity:** Low
+**Issue:** `registeredUserMode()` was declared in the header, defined as an empty body in the `.cpp`, and called unconditionally from `networkGameModification()`. The method performed no operation and had no base-class counterpart — it was a leftover stub with no functional effect. Removing it is purely a code quality improvement.
+**Fix:** Removed the declaration from the header, the definition and call site from the `.cpp`.
+
+### Files Modified This Revision
+
+| File | Change | Revision |
+|------|--------|----------|
+| `src/gui/qt/chattools/chattools.cpp` | Fix 2 signed/unsigned comparisons with explicit `static_cast<int>` | **NEW (Rev 33)** |
+| `src/gui/qt/gametable/gametableimpl.cpp` | Fix 1 signed/unsigned comparison; remove empty `else {}`; remove empty `registeredUserMode()` method and call site | **NEW (Rev 33)** |
+| `src/gui/qt/gametable/gametableimpl.h` | Remove `registeredUserMode()` declaration | **NEW (Rev 33)** |
+
+### Review Notes (Rev 33)
+
+- **Build environment:** This revision could not be compile-verified: no CMake/Ninja toolchain, Qt6, or Boost headers are present in the review environment. All edits were restricted to behavior-preserving transforms, and structural integrity (brace/string/comment balance relative to HEAD) was verified programmatically for every touched file. Manual client/server testing remains required per AGENTS.md.
+- **`registeredUserMode()` audit:** Confirmed non-virtual method with no base-class declaration. No other translation units reference it. Removal is safe.
+- **Remaining raw `new`/`delete`:** 4 sites remain — all are Qt parent-owned widgets (`ui` in `LogFileDialog`, `myCreateInternetGameDialog` in `gameLobbyDialogImpl`) or C API objects (`sqlite3*` in `guilog.cpp`). Per AGENTS.md low-risk guidance, these are left as-is.

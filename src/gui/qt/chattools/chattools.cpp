@@ -224,7 +224,7 @@ void ChatTools::fillChatLinesHistory(QString fillString)
 void ChatTools::showChatHistoryIndex(int index)
 {
 
-	if(index <= chatLinesHistory.size()) {
+	if(index <= static_cast<int>(chatLinesHistory.size())) {
 
 		// 		cout << chatLinesHistory.size() << " : " <<  index << endl;
 		if(index > 0)
@@ -274,7 +274,7 @@ void ChatTools::nickAutoCompletition()
 		}
 	}
 
-	if(!lastMatchStringList.isEmpty() && nickAutoCompletitionCounter < lastMatchStringList.size()) {
+	if(!lastMatchStringList.isEmpty() && nickAutoCompletitionCounter < static_cast<int>(lastMatchStringList.size())) {
 
 		myChatStringList.removeLast();
 
