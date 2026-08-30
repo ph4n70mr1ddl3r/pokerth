@@ -110,7 +110,8 @@ int main(int argc, char *argv[])
 // START OF OLD QT-WIDGETS GUI SECTION
 
 
-#include <boost/shared_ptr.hpp>
+
+
 #include <memory>
 
 #include "session.h"

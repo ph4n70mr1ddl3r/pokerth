@@ -46,8 +46,7 @@ public:
 
 public slots:
 
-// 	void paintEvent(QPaintEvent *);
-	void setGameListBackgroundImage(QString pmString);
+ 	void setGameListBackgroundImage(QString pmString);
 	void scrollContentsBy ( int dx, int dy );
 
 private:

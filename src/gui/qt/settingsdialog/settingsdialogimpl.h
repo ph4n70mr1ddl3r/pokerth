@@ -102,11 +102,9 @@ public slots:
 		mySelectAvatarDialogImpl->exec();
 	}
 
-	void clearInternetGamePassword(bool);
+ 	void clearInternetGamePassword(bool);
 
-// 	void checkProperNetFirstSmallBlind(int);
-// 	void checkProperFirstSmallBlind(int);
-	void setFirstSmallBlindMargin() ;
+ 	void setFirstSmallBlindMargin() ;
 
 	void setLanguageChanged(int);
 

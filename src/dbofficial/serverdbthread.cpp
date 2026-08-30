@@ -50,7 +50,6 @@
 #include <ctime>
 #include <sstream>
 #include <memory>
-#include <dbofficial/mysqlpp_compat.h>
 
 #define QUERY_NICK_PREPARE				"nick_template"
 #define QUERY_LOGIN_PREPARE				"login_template"

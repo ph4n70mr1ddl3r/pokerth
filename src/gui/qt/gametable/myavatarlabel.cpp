@@ -448,14 +448,16 @@ void MyAvatarLabel::putPlayerOnIgnoreList()
 		list << QString::fromUtf8((*it_c)->getMyName().c_str());
 	}
 
-	if(!playerIsOnIgnoreList(list.at(myId))) {
-		myMessageDialogImpl dialog(myW->getMyConfig(), this);
-		if(dialog.exec(IGNORE_PLAYER_QUESTION, tr("You will no longer receive chat messages or game invitations from this user.<br>Do you really want to put player <b>%1</b> on ignore list?").arg(list.at(myId)), tr("PokerTH - Question"), QPixmap(":/gfx/im-ban-user_64.png"), QDialogButtonBox::Yes|QDialogButtonBox::No, false ) == QDialog::Accepted) {
-			std::list<std::string> playerIgnoreList = myW->getMyConfig()->readConfigStringList("PlayerIgnoreList");
-			playerIgnoreList.push_back(list.at(myId).toUtf8().constData());
-			myW->getMyConfig()->writeConfigStringList("PlayerIgnoreList", playerIgnoreList);
-			myW->getMyConfig()->writeBuffer();
-			if (myW->getMyChat()) myW->getMyChat()->refreshIgnoreList();
+	if(myId >= 0 && myId < static_cast<int>(list.size())) {
+		if(!playerIsOnIgnoreList(list.at(myId))) {
+			myMessageDialogImpl dialog(myW->getMyConfig(), this);
+			if(dialog.exec(IGNORE_PLAYER_QUESTION, tr("You will no longer receive chat messages or game invitations from this user.<br>Do you really want to put player <b>%1</b> on ignore list?").arg(list.at(myId)), tr("PokerTH - Question"), QPixmap(":/gfx/im-ban-user_64.png"), QDialogButtonBox::Yes|QDialogButtonBox::No, false ) == QDialog::Accepted) {
+				std::list<std::string> playerIgnoreList = myW->getMyConfig()->readConfigStringList("PlayerIgnoreList");
+				playerIgnoreList.push_back(list.at(myId).toUtf8().constData());
+				myW->getMyConfig()->writeConfigStringList("PlayerIgnoreList", playerIgnoreList);
+				myW->getMyConfig()->writeBuffer();
+				if (myW->getMyChat()) myW->getMyChat()->refreshIgnoreList();
+			}
 		}
 	}
 }
@@ -472,11 +474,12 @@ void MyAvatarLabel::removePlayerFromIgnoreList()
 		list << QString::fromUtf8((*it_c)->getMyName().c_str());
 	}
 
-	if(playerIsOnIgnoreList(list.at(myId))) {
-		myMessageDialogImpl dialog(myW->getMyConfig(), this);
-		if(dialog.exec(UNIGNORE_PLAYER_QUESTION, tr("You will receive chat messages and game invitations from this user again!<br>Do you really want to remove player <b>%1</b> from your ignore list?").arg(list.at(myId)), tr("PokerTH - Question"), QPixmap(":/gfx/dialog_ok_apply.png"), QDialogButtonBox::Yes|QDialogButtonBox::No, false ) == QDialog::Accepted) {
-			std::list<std::string> playerIgnoreList = myW->getMyConfig()->readConfigStringList("PlayerIgnoreList");
-			playerIgnoreList.remove(list.at(myId).toUtf8().constData());
+	if(myId >= 0 && myId < static_cast<int>(list.size())) {
+		if(playerIsOnIgnoreList(list.at(myId))) {
+			myMessageDialogImpl dialog(myW->getMyConfig(), this);
+			if(dialog.exec(UNIGNORE_PLAYER_QUESTION, tr("You will receive chat messages and game invitations from this user again!<br>Do you really want to remove player <b>%1</b> from your ignore list?").arg(list.at(myId)), tr("PokerTH - Question"), QPixmap(":/gfx/dialog_ok_apply.png"), QDialogButtonBox::Yes|QDialogButtonBox::No, false ) == QDialog::Accepted) {
+				std::list<std::string> playerIgnoreList = myW->getMyConfig()->readConfigStringList("PlayerIgnoreList");
+				playerIgnoreList.remove(list.at(myId).toUtf8().constData());
 			myW->getMyConfig()->writeConfigStringList("PlayerIgnoreList", playerIgnoreList);
 			myW->getMyConfig()->writeBuffer();
 			if (myW->getMyChat()) myW->getMyChat()->refreshIgnoreList();

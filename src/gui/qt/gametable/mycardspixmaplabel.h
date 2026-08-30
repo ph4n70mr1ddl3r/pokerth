@@ -93,11 +93,9 @@ public slots:
 	void nextFadeOutFrame();
 	void nextFlipCardsFrame();
 
-	void fastFlipCards(bool front);
+ 	void fastFlipCards(bool front);
 
-// 	void mouseMoveEvent ( QMouseEvent *);
-
-	void mousePressEvent ( QMouseEvent *);
+ 	void mousePressEvent ( QMouseEvent *);
 	void mouseReleaseEvent ( QMouseEvent *);
 
 	void setFront ( const QPixmap& theValue );

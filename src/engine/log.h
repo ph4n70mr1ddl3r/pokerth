@@ -54,7 +54,6 @@ public:
     void logPlayerSitsOut(PlayerList activePlayerList);
     void logAfterHand();
     void logAfterGame();
-//    void closeLogDbAtExit();
 
     void setCurrentRound(GameState theValue);
 

@@ -32,7 +32,7 @@
 #define MESSAGEFILTER_H
 
 #include <QtCore>
-#include <stdlib.h>
+#include <cstdlib>
 #ifndef Q_MOC_RUN
 #include <third_party/boost/timers.hpp>
 #endif
