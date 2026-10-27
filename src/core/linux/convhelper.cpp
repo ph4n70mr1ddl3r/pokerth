@@ -45,7 +45,7 @@
 #include <vector>
 
 #include <iconv.h>
-#include <errno.h>
+#include <cerrno>
 
 using namespace std;
 

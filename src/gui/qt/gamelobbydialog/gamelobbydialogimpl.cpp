@@ -1676,7 +1676,6 @@ void gameLobbyDialogImpl::showGameListContextMenu(QPoint p)
 		} else {
 			gameListAdminSubMenu->menuAction()->setVisible(true);
 		}
-		}
 
 		//popup a little more to the right to avaoid double click action
 		QPoint tempPoint = p;

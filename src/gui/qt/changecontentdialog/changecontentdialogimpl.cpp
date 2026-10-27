@@ -143,5 +143,6 @@ bool changeContentDialogImpl::eventFilter(QObject *obj, QEvent *event)
 			return true;
 		}
 	}
+#endif
 	return QDialog::eventFilter(obj, event);
 }

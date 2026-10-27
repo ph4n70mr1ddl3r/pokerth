@@ -271,5 +271,6 @@ bool createInternetGameDialogImpl::eventFilter(QObject *obj, QEvent *event)
 			return false;
 		}
 	}
+#endif
 	return QDialog::eventFilter(obj, event);
 }
