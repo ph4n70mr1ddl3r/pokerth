@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
 **Date:** 2026-10-27
-**Revision:** 36
+**Revision:** 37
 **Reviewer:** AI Code Reviewer
 **Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 35
 
@@ -1198,6 +1198,42 @@ These dead declarations add visual noise and could mislead maintainers about the
 - **Build environment:** This revision could not be compile-verified: no CMake/Ninja toolchain, Qt6, or Boost headers are present in the review environment. All edits were restricted to behavior-preserving transforms, and structural integrity (brace/string/comment balance relative to HEAD) was verified programmatically for every touched file. Manual client/server testing remains required per AGENTS.md.
 
 ---
+
+---
+
+## Revision 37 Changes
+
+### 98. Missing Null Guard in `MyAvatarLabel::reportBadAvatar()` (Robustness) - NEW
+
+**File:** `src/gui/qt/gametable/myavatarlabel.cpp`
+**Severity:** Low
+**Issue:** `reportBadAvatar()` dereferenced `myW` without first checking for null, unlike the other methods in the same class (`putPlayerOnIgnoreList()`, `removePlayerFromIgnoreList()`, `contextMenuEvent()`, etc.) which all guard `myW`. A null `myW` (e.g., during teardown) would crash.
+**Fix:** Added `if (!myW || ...)` guard at the top of the function, matching the pattern used by sibling methods.
+
+### 99. Unguarded `front()` on Seats List in `MyAvatarLabel::contextMenuEvent()` (Robustness) - NEW
+
+**File:** `src/gui/qt/gametable/myavatarlabel.cpp`
+**Severity:** Low
+**Issue:** `currentGame->getSeatsList()->front()` was called without verifying the seats list was non-empty. While normally populated for an active game, a corrupted/empty state could cause undefined behavior.
+**Fix:** Added an emptiness/null check for the seats list before calling `front()`.
+
+### 100. C-Style `<stdint.h>` Replaced with `<cstdint>` (Correctness) - NEW
+
+**File:** `src/net/socket_helper.h`
+**Severity:** Low
+**Issue:** The header used the C-style `<stdint.h>` instead of the C++ standard `<cstdint>`, inconsistent with modern C++ conventions (same class as rev 34 #83 `stdlib.h` → `cstdlib`, rev 36 #95 `errno.h` → `cerrno`).
+**Fix:** Replaced `#include <stdint.h>` with `#include <cstdint>`.
+
+### Files Modified This Revision
+
+| File | Change | Revision |
+|------|--------|----------|
+| `src/gui/qt/gametable/myavatarlabel.cpp` | Add null guard in `reportBadAvatar()`; guard empty seats list in `contextMenuEvent()` | **NEW (Rev 37)** |
+| `src/net/socket_helper.h` | Replace `#include <stdint.h>` with `#include <cstdint>` | **NEW (Rev 37)** |
+
+### Review Notes (Rev 37)
+
+- **Build environment:** This revision could not be compile-verified: no CMake/Ninja toolchain, Qt6, or Boost headers are present in the review environment. All edits were restricted to behavior-preserving transforms, and structural integrity (brace/string/comment balance) was verified programmatically for every touched file. Manual client/server testing remains required per AGENTS.md.
 
 ## Conclusion
 

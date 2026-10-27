@@ -34,7 +34,7 @@
 
 #ifdef _WIN32
 
-#include <stdint.h>
+#include <cstdint>
 typedef uint16_t					u_int16_t;
 typedef uint32_t					u_int32_t;
 #ifndef __GNUC__ /* ssize_t not defined in MSVC */

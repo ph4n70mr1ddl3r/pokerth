@@ -82,6 +82,10 @@ void MyAvatarLabel::contextMenuEvent ( QContextMenuEvent *event )
 		LOG_ERROR("MyAvatarLabel::contextMenuEvent - currentGame is null");
 		return;
 	}
+	if (!currentGame->getSeatsList() || currentGame->getSeatsList()->empty()) {
+		LOG_ERROR("MyAvatarLabel::contextMenuEvent - seats list is empty");
+		return;
+	}
 	if (myW->getSession()->isNetworkClientRunning()) {
 
 		boost::shared_ptr<PlayerInterface> humanPlayer = currentGame->getSeatsList()->front();
@@ -490,7 +494,7 @@ void MyAvatarLabel::removePlayerFromIgnoreList()
 
 void MyAvatarLabel::reportBadAvatar()
 {
-	if (!myW->getSession() || !myW->getSession()->getCurrentGame())
+	if (!myW || !myW->getSession() || !myW->getSession()->getCurrentGame())
 		return;
 
 	boost::shared_ptr<Game> currentGame = myW->getSession()->getCurrentGame();
