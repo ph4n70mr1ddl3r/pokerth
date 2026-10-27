@@ -33,7 +33,7 @@
 #include <net/senderhelper.h>
 #include <net/serverexception.h>
 #include <net/socket_msg.h>
-
+#include <core/loghelper.h>
 #include <ctime>
 
 using namespace std;

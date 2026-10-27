@@ -611,14 +611,14 @@ Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerI
 					setClause += QString("Seat_%1_Hand_text=?, Seat_%1_Hand_int=?")
 						.arg(seatId);
 					bindValues << QString::fromStdString(handName)
-						<< player->getMyCardsValueInt();
+						<< QString::number(player->getMyCardsValueInt());
 				}
 
 				if(!player->getLogHoleCardsDone()) {
 					if(!setClause.isEmpty()) setClause += ", ";
 					setClause += QString("Seat_%1_Card_1=?, Seat_%1_Card_2=?")
 						.arg(seatId);
-					bindValues << myCards[0] << myCards[1];
+					bindValues << QString::number(myCards[0]) << QString::number(myCards[1]);
 				}
 
 				if(setClause.isEmpty()) {
@@ -626,8 +626,8 @@ Log::logHoleCardsHandName(PlayerList activePlayerList, boost::shared_ptr<PlayerI
 				} else {
 					QString updateSql = QString("UPDATE Hand SET %1 WHERE UniqueGameID=? AND HandID=?")
 						.arg(setClause);
-					bindValues << static_cast<qulonglong>(uniqueGameID)
-						<< currentHandID;
+					bindValues << QString::number(static_cast<qulonglong>(uniqueGameID))
+						<< QString::number(currentHandID);
 
 					QSqlQuery holeCardsQuery(mySqliteLogDb);
 					holeCardsQuery.prepare(updateSql);

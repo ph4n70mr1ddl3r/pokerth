@@ -52,7 +52,7 @@ public:
 		return myOsErrorCode;
 	}
 
-	virtual const char *what() const override noexcept;
+	virtual const char *what() const noexcept override;
 
 private:
 	int myErrorId;

@@ -46,6 +46,7 @@
 
 #include <iconv.h>
 #include <cerrno>
+#include <cstdint>
 
 using namespace std;
 

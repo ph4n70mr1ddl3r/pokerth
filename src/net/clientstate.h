@@ -50,7 +50,7 @@ class DownloadHelper;
 class ClientState
 {
 public:
-	virtual ~ClientState() noexcept override;
+	virtual ~ClientState() noexcept;
 
 	virtual void Enter(boost::shared_ptr<ClientThread> client) = 0;
 	virtual void Exit(boost::shared_ptr<ClientThread> client) = 0;
