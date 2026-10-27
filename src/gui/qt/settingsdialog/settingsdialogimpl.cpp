@@ -134,9 +134,6 @@ settingsDialogImpl::settingsDialogImpl(QWidget *parent, ConfigFile *c, selectAva
 
 	connect( checkBox_UseInternetGamePassword, SIGNAL( toggled(bool) ), this, SLOT( clearInternetGamePassword(bool)) );
 
-	// 	connect( spinBox_netFirstSmallBlind, SIGNAL( valueChanged(int) ), this, SLOT ( checkProperNetFirstSmallBlind(int)));
-	// 	connect( spinBox_firstSmallBlind, SIGNAL( valueChanged(int) ), this, SLOT ( checkProperFirstSmallBlind(int)));
-
 	connect( radioButton_netManualBlindsOrder, SIGNAL( toggled(bool) ), this, SLOT( setFirstSmallBlindMargin() ));
 
 	connect( comboBox_switchLanguage, SIGNAL( currentIndexChanged (int) ), this, SLOT ( setLanguageChanged(int) ));
@@ -864,11 +861,13 @@ void settingsDialogImpl::callNetManualBlindsOrderDialog()
 	myManualBlindsOrderDialog->exec();
 	if(myManualBlindsOrderDialog->result() == QDialog::Accepted) {
 
-		bool ok = true;
-		int i = 0;
 		myNetManualBlindsList.clear();
-		for(i=0; i<myManualBlindsOrderDialog->listWidget_blinds->count(); i++) {
-			myNetManualBlindsList.push_back(myManualBlindsOrderDialog->listWidget_blinds->item(i)->text().toInt(&ok,10));
+		for(int i=0; i<myManualBlindsOrderDialog->listWidget_blinds->count(); i++) {
+			bool ok = false;
+			int val = myManualBlindsOrderDialog->listWidget_blinds->item(i)->text().toInt(&ok, 10);
+			if (ok) {
+				myNetManualBlindsList.push_back(val);
+			}
 		}
 
 		myNetAfterMBAlwaysDoubleBlinds = myManualBlindsOrderDialog->radioButton_alwaysDoubleBlinds->isChecked();
@@ -880,15 +879,6 @@ void settingsDialogImpl::callNetManualBlindsOrderDialog()
 	}
 }
 
-
-// void settingsDialogImpl::checkProperNetFirstSmallBlind(int currentSB) {
-//
-// }
-//
-//
-// void settingsDialogImpl::checkProperFirstSmallBlind(int currentSB) {
-//
-// }
 
 void settingsDialogImpl::setFirstSmallBlindMargin()
 {

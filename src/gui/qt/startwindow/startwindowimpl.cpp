@@ -943,7 +943,6 @@ bool startWindowImpl::eventFilter(QObject *obj, QEvent *event)
 {
 	if (event->type() == QEvent::Close) {
 		event->ignore();
-		//        mySession->getMyLog()->closeLogDbAtExit();
 		return true;
 	} else {
 		// pass the event on to the parent class

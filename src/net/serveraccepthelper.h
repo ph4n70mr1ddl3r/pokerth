@@ -40,7 +40,6 @@
 #include <core/loghelper.h>
 #include <game_defs.h>
 #include <gui/guiinterface.h>
-#include <core/loghelper.h>
 
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>

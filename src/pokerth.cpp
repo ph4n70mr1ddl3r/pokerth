@@ -113,6 +113,7 @@ int main(int argc, char *argv[])
 
 
 #include <memory>
+#include <boost/shared_ptr.hpp>
 
 #include "session.h"
 #include "startwindowimpl.h"

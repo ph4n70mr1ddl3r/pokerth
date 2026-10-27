@@ -36,7 +36,6 @@
 #ifndef Q_MOC_RUN
 #include <third_party/boost/timers.hpp>
 #endif
-#include <cstdlib>
 
 
 class TextFloodCheck: public QObject
