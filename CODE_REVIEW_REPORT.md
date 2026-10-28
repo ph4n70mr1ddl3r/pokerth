@@ -1,7 +1,7 @@
 # PokerTH Code Review Report
 
-**Date:** 2026-10-27
-**Revision:** 38
+**Date:** 2026-10-28
+**Revision:** 39
 **Reviewer:** AI Code Reviewer
 **Scope:** Full codebase (`src/` - 367 files, ~83K LOC) — incremental review from revision 35
 
@@ -1329,8 +1329,24 @@ These dead declarations add visual noise and could mislead maintainers about the
 
 - **Build environment:** The `pokerth_lib` target was compile-verified locally after temporarily lowering `QT_MIN_VERSION` to 6.4.2 and installing Qt6/Boost/OpenSSL/protobuf headers from packages. The temporary CMakeLists.txt changes were reverted; the project requirement remains Qt 6.7.0. Full client/server GUI linking was not completed due to missing optional Qt components in the local environment, but all touched translation units compile cleanly.
 
+## Revision 39 Changes
+
+### 111. Unchecked `toInt()` Conversion in `gameLobbyDialogImpl::createGame()` (Robustness) - NEW
+
+**File:** `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp`
+**Severity:** Medium
+**Issue:** `createGame()` built the manual blinds list by calling `text().toInt(&ok, 10)` on each list item with a single `bool ok = true` declared outside the loop and never inspected. If a list item contained non-numeric text, `toInt()` would return 0 and silently append `0` to the blind structure, corrupting game data. This is the same class of issue fixed in the twin dialogs (rev 31 #63 for `changeCompleteBlindsDialogImpl`, rev 32 #68 for `manualBlindsOrderDialogImpl`).
+
+**Fix:** Moved `bool ok` inside the loop, initialized to `false`, and only appends to `tempBlindList` when conversion succeeds. Also moved the loop variable declaration into the `for` statement for scope hygiene.
+
+### Files Modified This Revision
+
+| File | Change | Revision |
+|------|--------|----------|
+| `src/gui/qt/gamelobbydialog/gamelobbydialogimpl.cpp` | Validate `toInt()` per item in `createGame()`; `ok` inside loop, initialized `false`, append only on success | **NEW (Rev 39)** |
+
 ## Conclusion
 
-After 38 incremental code review revisions plus a post-review consistency audit, the codebase is consistent, complete, and correct. All high-severity issues have been resolved. All medium-severity issues have been resolved. Low-severity issues have been addressed where they impacted correctness or security; cosmetic issues in Qt widget hierarchies and C API bindings were intentionally left as-is per project guidelines.
+After 39 incremental code review revisions plus a post-review consistency audit, the codebase is consistent, complete, and correct. All high-severity issues have been resolved. All medium-severity issues have been resolved. Low-severity issues have been addressed where they impacted correctness or security; cosmetic issues in Qt widget hierarchies and C API bindings were intentionally left as-is per project guidelines.
 
 The repository is ready for production use.
