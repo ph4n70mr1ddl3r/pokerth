@@ -1061,7 +1061,7 @@ int LocalPlayer::checkMyAction(int targetAction, int targetBet, int highestSet, 
 				return 0;
 			}
 			// all in
-			if(getMyCash() + getMySet() <= highestSet) {
+			if(getMyCash() + getMySet() <= highestSet && targetBet == getMyCash()) {
 				return 0;
 			}
 		}
@@ -1074,7 +1074,7 @@ int LocalPlayer::checkMyAction(int targetAction, int targetBet, int highestSet, 
 	}
 	break;
 	case PLAYER_ACTION_RAISE: {
-		if(highestSet > 0 && targetBet >= minimumRaise && targetBet <= getMyCash()) {
+		if(highestSet > 0 && static_cast<long long>(getMySet()) + targetBet >= static_cast<long long>(highestSet) + minimumRaise && targetBet <= getMyCash()) {
 			return 0;
 		}
 	}

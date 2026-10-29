@@ -271,6 +271,11 @@ add_executable(pokerth_test_distribute_pot_fallback test_distribute_pot_fallback
 target_compile_options(pokerth_test_distribute_pot_fallback PRIVATE -Wall -Wextra)
 add_test(NAME distribute_pot_fallback COMMAND pokerth_test_distribute_pot_fallback)
 
+# Test: LocalPlayer::checkMyAction() raise and all-in call validation
+add_executable(pokerth_test_check_my_action test_check_my_action.cpp)
+target_compile_options(pokerth_test_check_my_action PRIVATE -Wall -Wextra)
+add_test(NAME check_my_action COMMAND pokerth_test_check_my_action)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
