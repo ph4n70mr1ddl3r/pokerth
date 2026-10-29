@@ -260,6 +260,12 @@ set_property(SOURCE src/third_party/protobuf/chatcleaner.pb.h PROPERTY SKIP_AUTO
 set_property(SOURCE src/third_party/protobuf/pokerth.pb.cc PROPERTY SKIP_AUTOGEN ON)
 set_property(SOURCE src/third_party/protobuf/pokerth.pb.h PROPERTY SKIP_AUTOGEN ON)
 
+# Test: calcMyOdds() turn-case river card enumeration bias
+enable_testing()
+add_executable(pokerth_test_calc_odds_turn_bias test_calc_odds_turn_bias.cpp)
+target_compile_options(pokerth_test_calc_odds_turn_bias PRIVATE -Wall -Wextra)
+add_test(NAME calc_odds_turn_bias COMMAND pokerth_test_calc_odds_turn_bias)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
