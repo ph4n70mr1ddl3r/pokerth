@@ -266,6 +266,11 @@ add_executable(pokerth_test_calc_odds_turn_bias test_calc_odds_turn_bias.cpp)
 target_compile_options(pokerth_test_calc_odds_turn_bias PRIVATE -Wall -Wextra)
 add_test(NAME calc_odds_turn_bias COMMAND pokerth_test_calc_odds_turn_bias)
 
+# Test: LocalBoard::distributePot() fallback side-pot level distribution
+add_executable(pokerth_test_distribute_pot_fallback test_distribute_pot_fallback.cpp)
+target_compile_options(pokerth_test_distribute_pot_fallback PRIVATE -Wall -Wextra)
+add_test(NAME distribute_pot_fallback COMMAND pokerth_test_distribute_pot_fallback)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
