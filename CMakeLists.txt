@@ -271,6 +271,11 @@ add_executable(pokerth_test_distribute_pot_fallback test_distribute_pot_fallback
 target_compile_options(pokerth_test_distribute_pot_fallback PRIVATE -Wall -Wextra)
 add_test(NAME distribute_pot_fallback COMMAND pokerth_test_distribute_pot_fallback)
 
+# Test: LocalBoard::distributePot() regression (main/side pots, fallback, carry-over, split)
+add_executable(pokerth_test_distribute_regression test_distribute_regression.cpp)
+target_compile_options(pokerth_test_distribute_regression PRIVATE -Wall -Wextra)
+add_test(NAME distribute_regression COMMAND pokerth_test_distribute_regression)
+
 # Test: LocalPlayer::checkMyAction() raise and all-in call validation
 add_executable(pokerth_test_check_my_action test_check_my_action.cpp)
 target_compile_options(pokerth_test_check_my_action PRIVATE -Wall -Wextra)
