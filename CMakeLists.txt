@@ -281,6 +281,11 @@ add_executable(pokerth_test_flop_odds test_flop_odds.cpp)
 target_compile_options(pokerth_test_flop_odds PRIVATE -Wall -Wextra)
 add_test(NAME flop_odds COMMAND pokerth_test_flop_odds)
 
+# Test: LocalBoard::determinePlayerNeedToShowCards() show-list completeness bug
+add_executable(pokerth_test_showcards test_showcards.cpp)
+target_compile_options(pokerth_test_showcards PRIVATE -Wall -Wextra)
+add_test(NAME showcards COMMAND pokerth_test_showcards)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)

@@ -380,12 +380,15 @@ void LocalBoard::determinePlayerNeedToShowCards()
 
 			if((*it_c)->getMyAction() != PLAYER_ACTION_FOLD) {
 
+				bool playerAdded = false;
+
 				for(level_it = level.begin(); level_it != level.end(); ++level_it) {
 					if((*it_c)->getMyCardsValueInt() > (*level_it).first) {
 						next_level_it = level_it;
 						++next_level_it;
 						if(next_level_it == level.end()) {
 							playerNeedToShowCards.push_back((*it_c)->getMyUniqueID());
+							playerAdded = true;
 							level_tmp.first = (*it_c)->getMyCardsValueInt();
 							level_tmp.second = std::max(0, (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash());
 							level.push_back(level_tmp);
@@ -398,6 +401,7 @@ void LocalBoard::determinePlayerNeedToShowCards()
 
 							if(next_level_it == level.end() || std::max(0, (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash()) > (*next_level_it).second) {
 								playerNeedToShowCards.push_back((*it_c)->getMyUniqueID());
+								playerAdded = true;
 								if(std::max(0, (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash()) > (*level_it).second) {
 									(*level_it).second = std::max(0, (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash());
 								}
@@ -406,6 +410,7 @@ void LocalBoard::determinePlayerNeedToShowCards()
 						} else {
 							if(std::max(0, (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash()) > (*level_it).second) {
 								playerNeedToShowCards.push_back((*it_c)->getMyUniqueID());
+								playerAdded = true;
 								level_tmp.first = (*it_c)->getMyCardsValueInt();
 								level_tmp.second = std::max(0, (*it_c)->getMyRoundStartCash()-(*it_c)->getMyCash());
 
@@ -415,6 +420,10 @@ void LocalBoard::determinePlayerNeedToShowCards()
 							}
 						}
 					}
+				}
+
+				if (!playerAdded) {
+					playerNeedToShowCards.push_back((*it_c)->getMyUniqueID());
 				}
 
 			}
