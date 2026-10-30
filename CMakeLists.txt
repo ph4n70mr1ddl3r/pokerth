@@ -276,6 +276,11 @@ add_executable(pokerth_test_check_my_action test_check_my_action.cpp)
 target_compile_options(pokerth_test_check_my_action PRIVATE -Wall -Wextra)
 add_test(NAME check_my_action COMMAND pokerth_test_check_my_action)
 
+# Test: LocalPlayer::calcMyOdds() flop-case odds calculation bug
+add_executable(pokerth_test_flop_odds test_flop_odds.cpp)
+target_compile_options(pokerth_test_flop_odds PRIVATE -Wall -Wextra)
+add_test(NAME flop_odds COMMAND pokerth_test_flop_odds)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)

@@ -36,7 +36,6 @@
 #include <configfile.h>
 #include <core/loghelper.h>
 
-#include <sstream>
 #include <vector>
 #include <climits>
 #include <algorithm>
@@ -3685,43 +3684,61 @@ void LocalPlayer::calcMyOdds()
 	break;
 	case 1: {
 
-		int tempArray[5];
-		std::array<int, 5> boardCards;
+		// Flop: enumerate turn, river and opponent hole cards to compute odds
+		int i = 0, j = 0, k = 0, l = 0;
+		std::array<int, 5> tempBoardCardsArray;
+		int tempMyCardsArray[7];
+		int tempOpponentCardsArray[7];
+		currentHand->getBoard()->getMyCards(tempBoardCardsArray);
 
-		int i = 0;
+		tempMyCardsArray[0] = myCards[0];
+		tempMyCardsArray[1] = myCards[1];
+		tempMyCardsArray[2] = tempBoardCardsArray[0];
+		tempMyCardsArray[3] = tempBoardCardsArray[1];
+		tempMyCardsArray[4] = tempBoardCardsArray[2];
 
-		for(i=0; i<2; i++) tempArray[i] = myCards[i];
-		currentHand->getBoard()->getMyCards(boardCards);
-		for(i=0; i<3; i++) tempArray[2+i] = boardCards[i];
+		tempOpponentCardsArray[2] = tempBoardCardsArray[0];
+		tempOpponentCardsArray[3] = tempBoardCardsArray[1];
+		tempOpponentCardsArray[4] = tempBoardCardsArray[2];
 
-		// 		cout << myID << ": ";
+		int tempMyCardsValue = 0;
+		int tempOpponentCardsValue = 0;
 
-		handCode = flopCardsValue(tempArray);
+		int countAll = 0;
+		int countMy = 0;
 
-		// 		cout << "\t" << handCode << endl;
+		for(i=0; i<52; i++) {
+			if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2]) {
+				tempMyCardsArray[5] = i;
+				tempOpponentCardsArray[5] = i;
+				for(j=0; j<52; j++) {
+					if(j != myCards[0] && j != myCards[1] && j != tempBoardCardsArray[0] && j != tempBoardCardsArray[1] && j != tempBoardCardsArray[2] && j != i) {
+						tempMyCardsArray[6] = j;
+						tempOpponentCardsArray[6] = j;
+						for(k=0; k<52; k++) {
+							if(k != myCards[0] && k != myCards[1] && k != tempBoardCardsArray[0] && k != tempBoardCardsArray[1] && k != tempBoardCardsArray[2] && k != i && k != j) {
+								tempOpponentCardsArray[0] = k;
+								for(l=k+1; l<52; l++) {
+									if(l != myCards[0] && l != myCards[1] && l != tempBoardCardsArray[0] && l != tempBoardCardsArray[1] && l != tempBoardCardsArray[2] && l != i && l != j && l != k) {
+										tempOpponentCardsArray[1] = l;
+										countAll++;
+										tempMyCardsValue = CardsValue::cardsValue(tempMyCardsArray, 0);
+										tempOpponentCardsValue = CardsValue::cardsValue(tempOpponentCardsArray, 0);
 
-		// Transition while preflopValue and flopValue are not yet adjusted
-		int players = static_cast<int>(currentHand->getActivePlayerList()->size());
-		if(players > 5) players = 5;
-		// paranoia
-		if(players < 2) players = 2;
-
-		if(handCode >= 60000) {
-			myOdds = 100;
-		} else {
-			for (unsigned val = 0; val < NUM_FLOP_VALUES; val++) {
-				if(handCode == FlopValues[val].hand) {
-					myOdds = 100.0*FlopValues[val].data[players - 2];
-					break;
+										if(tempMyCardsValue>=tempOpponentCardsValue) countMy++;
+									}
+								}
+							}
+						}
+					}
 				}
 			}
-			if(myOdds < 0) {
-				ostringstream logger;
-				logger << "ERROR myOdds negative: ";
-				for(i=0; i<5; i++) logger << tempArray[i] << " ";
-				LOG_ERROR(__FILE__ << " (" << __LINE__ << "): " << logger.str());
-				myOdds = 50.0;
-			}
+		}
+
+		if(countAll > 0) {
+			myOdds = 100.0*(countMy*1.0)/(countAll*1.0);
+		} else {
+			myOdds = 0;
 		}
 
 	}
