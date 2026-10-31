@@ -3706,6 +3706,7 @@ void LocalPlayer::calcMyOdds()
 
 		int countAll = 0;
 		int countMy = 0;
+		int countTie = 0;
 
 		for(i=0; i<52; i++) {
 			if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2]) {
@@ -3725,7 +3726,8 @@ void LocalPlayer::calcMyOdds()
 										tempMyCardsValue = CardsValue::cardsValue(tempMyCardsArray, 0);
 										tempOpponentCardsValue = CardsValue::cardsValue(tempOpponentCardsArray, 0);
 
-										if(tempMyCardsValue>=tempOpponentCardsValue) countMy++;
+										if(tempMyCardsValue > tempOpponentCardsValue) countMy++;
+										else if(tempMyCardsValue == tempOpponentCardsValue) countTie++;
 									}
 								}
 							}
@@ -3736,7 +3738,7 @@ void LocalPlayer::calcMyOdds()
 		}
 
 		if(countAll > 0) {
-			myOdds = 100.0*(countMy*1.0)/(countAll*1.0);
+			myOdds = 100.0*(countMy + 0.5*countTie)/(countAll*1.0);
 		} else {
 			myOdds = 0;
 		}
@@ -3770,6 +3772,7 @@ void LocalPlayer::calcMyOdds()
 
 		int countAll = 0;
 		int countMy = 0;
+		int countTie = 0;
 
 		for(i=0; i<52; i++) {
 			if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2] && i != tempBoardCardsArray[3]) {
@@ -3787,7 +3790,8 @@ void LocalPlayer::calcMyOdds()
 								tempMyCardsValue = CardsValue::cardsValue(tempMyCardsArray,0);
 								tempOpponentCardsValue = CardsValue::cardsValue(tempOpponentCardsArray,0);
 
-								if(tempMyCardsValue>=tempOpponentCardsValue) countMy++;
+								if(tempMyCardsValue > tempOpponentCardsValue) countMy++;
+								else if(tempMyCardsValue == tempOpponentCardsValue) countTie++;
 							}
 						}
 					}
@@ -3796,7 +3800,7 @@ void LocalPlayer::calcMyOdds()
 		}
 
 		if(countAll > 0) {
-			myOdds = 100.0*(countMy*1.0)/(countAll*1.0);
+			myOdds = 100.0*(countMy + 0.5*countTie)/(countAll*1.0);
 		} else {
 			myOdds = 0;
 		}
@@ -3832,6 +3836,7 @@ void LocalPlayer::calcMyOdds()
 
 		int countAll = 0;
 		int countMy = 0;
+		int countTie = 0;
 
 		for(i=0; i<52; i++) {
 			if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2] && i != tempBoardCardsArray[3] && i != tempBoardCardsArray[4]) {
@@ -3845,14 +3850,15 @@ void LocalPlayer::calcMyOdds()
 						tempMyCardsValue = CardsValue::cardsValue(tempMyCardsArray,0);
 						tempOpponentCardsValue = CardsValue::cardsValue(tempOpponentCardsArray,0);
 
-						if(tempMyCardsValue>=tempOpponentCardsValue) countMy++;
+						if(tempMyCardsValue > tempOpponentCardsValue) countMy++;
+						else if(tempMyCardsValue == tempOpponentCardsValue) countTie++;
 					}
 				}
 			}
 		}
 
 		if(countAll > 0) {
-			myOdds = 100.0*(countMy*1.0)/(countAll*1.0);
+			myOdds = 100.0*(countMy + 0.5*countTie)/(countAll*1.0);
 		} else {
 			myOdds = 0;
 		}

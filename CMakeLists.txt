@@ -301,6 +301,11 @@ add_executable(pokerth_test_calc_odds_river test_calc_odds_river.cpp)
 target_compile_options(pokerth_test_calc_odds_river PRIVATE -Wall -Wextra)
 add_test(NAME calc_odds_river COMMAND pokerth_test_calc_odds_river)
 
+# Test: LocalPlayer::calcMyOdds() river-case tie handling (ties as half-wins)
+add_executable(pokerth_test_calc_odds_river_tie test_calc_odds_river_tie.cpp)
+target_compile_options(pokerth_test_calc_odds_river_tie PRIVATE -Wall -Wextra)
+add_test(NAME calc_odds_river_tie COMMAND pokerth_test_calc_odds_river_tie)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
