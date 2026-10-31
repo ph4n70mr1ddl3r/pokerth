@@ -291,6 +291,11 @@ add_executable(pokerth_test_showcards test_showcards.cpp)
 target_compile_options(pokerth_test_showcards PRIVATE -Wall -Wextra)
 add_test(NAME showcards COMMAND pokerth_test_showcards)
 
+# Test: LocalPlayer::calcMyOdds() preflop table lookup and player-count clamping
+add_executable(pokerth_test_calc_odds_preflop test_calc_odds_preflop.cpp)
+target_compile_options(pokerth_test_calc_odds_preflop PRIVATE -Wall -Wextra)
+add_test(NAME calc_odds_preflop COMMAND pokerth_test_calc_odds_preflop)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
