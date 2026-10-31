@@ -296,6 +296,11 @@ add_executable(pokerth_test_calc_odds_preflop test_calc_odds_preflop.cpp)
 target_compile_options(pokerth_test_calc_odds_preflop PRIVATE -Wall -Wextra)
 add_test(NAME calc_odds_preflop COMMAND pokerth_test_calc_odds_preflop)
 
+# Test: LocalPlayer::calcMyOdds() river-case odds enumeration
+add_executable(pokerth_test_calc_odds_river test_calc_odds_river.cpp)
+target_compile_options(pokerth_test_calc_odds_river PRIVATE -Wall -Wextra)
+add_test(NAME calc_odds_river COMMAND pokerth_test_calc_odds_river)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
