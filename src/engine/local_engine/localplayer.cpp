@@ -4329,6 +4329,7 @@ void LocalPlayer::flopEngine3()
 
 		int countAll = 0;
 		int countMy = 0;
+		int countTie = 0;
 
 	// Enumerate all opponent hole card and future board card combinations
 	// independently to avoid the bias from constraining i<j<k<l which
@@ -4353,7 +4354,8 @@ void LocalPlayer::flopEngine3()
 									tempMyCardsValue = CardsValue::cardsValue(tempMyCardsArray,0);
 									tempOpponentCardsValue = CardsValue::cardsValue(tempOpponentCardsArray,0);
 
-									if(tempMyCardsValue>=tempOpponentCardsValue) countMy++;
+									if(tempMyCardsValue > tempOpponentCardsValue) countMy++;
+									else if(tempMyCardsValue == tempOpponentCardsValue) countTie++;
 
 								}
 							}
@@ -4364,7 +4366,7 @@ void LocalPlayer::flopEngine3()
 		}
 	}
 
-	double percent = (countAll > 0) ? (countMy*1.0)/(countAll*1.0) : 0.0;
+	double percent = (countAll > 0) ? (countMy + 0.5 * countTie) * 1.0 / (countAll * 1.0) : 0.0;
 	// 	cout << "Prozent: " << percent << endl;
 
 	// 	Bauchgefhl (zufï¿œlig)
@@ -4513,6 +4515,7 @@ void LocalPlayer::turnEngine3()
 
 	int countAll = 0;
 	int countMy = 0;
+	int countTie = 0;
 
 	// Enumerate opponent hole cards and future river card independently
 	// to avoid the bias from constraining i<j<k which systematically
@@ -4533,7 +4536,8 @@ void LocalPlayer::turnEngine3()
 							tempMyCardsValue = CardsValue::cardsValue(tempMyCardsArray,0);
 							tempOpponentCardsValue = CardsValue::cardsValue(tempOpponentCardsArray,0);
 
-							if(tempMyCardsValue>=tempOpponentCardsValue) countMy++;
+							if(tempMyCardsValue > tempOpponentCardsValue) countMy++;
+							else if(tempMyCardsValue == tempOpponentCardsValue) countTie++;
 						}
 					}
 				}
@@ -4541,7 +4545,7 @@ void LocalPlayer::turnEngine3()
 		}
 	}
 
-	double percent = (countAll > 0) ? (countMy*1.0)/(countAll*1.0) : 0.0;
+	double percent = (countAll > 0) ? (countMy + 0.5 * countTie) * 1.0 / (countAll * 1.0) : 0.0;
 	// 	cout << "Prozent: " << percent << endl;
 
 	// 	Bauchgefhl (zufÃ¯Â¿Ålig)
@@ -4691,6 +4695,7 @@ void LocalPlayer::riverEngine3()
 
 	int countAll = 0;
 	int countMy = 0;
+	int countTie = 0;
 
 	for(i=0; i<52; i++) {
 		if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2] && i != tempBoardCardsArray[3] && i != tempBoardCardsArray[4]) {
@@ -4704,13 +4709,14 @@ void LocalPlayer::riverEngine3()
 					tempMyCardsValue = CardsValue::cardsValue(tempMyCardsArray,0);
 					tempOpponentCardsValue = CardsValue::cardsValue(tempOpponentCardsArray,0);
 
-					if(tempMyCardsValue>=tempOpponentCardsValue) countMy++;
+					if(tempMyCardsValue > tempOpponentCardsValue) countMy++;
+					else if(tempMyCardsValue == tempOpponentCardsValue) countTie++;
 				}
 			}
 		}
 	}
 
-	double percent = (countAll > 0) ? (countMy*1.0)/(countAll*1.0) : 0.0;
+	double percent = (countAll > 0) ? (countMy + 0.5 * countTie) * 1.0 / (countAll * 1.0) : 0.0;
 	// 	cout << "Prozent: " << percent << endl;
 
 	// 	Bauchgefhl (zufÃ¯Â¿Ålig)

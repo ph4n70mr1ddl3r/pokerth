@@ -311,6 +311,11 @@ add_executable(pokerth_test_calc_cards_chance_flop test_calc_cards_chance_flop.c
 target_compile_options(pokerth_test_calc_cards_chance_flop PRIVATE -Wall -Wextra)
 add_test(NAME calc_cards_chance_flop COMMAND pokerth_test_calc_cards_chance_flop)
 
+# Test: LocalPlayer::flopEngine3()/turnEngine3()/riverEngine3() tie handling (ties as half-wins)
+add_executable(pokerth_test_flop_engine3_tie test_flop_engine3_tie.cpp)
+target_compile_options(pokerth_test_flop_engine3_tie PRIVATE -Wall -Wextra)
+add_test(NAME flop_engine3_tie COMMAND pokerth_test_flop_engine3_tie)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
