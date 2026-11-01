@@ -326,6 +326,11 @@ add_executable(pokerth_test_flop_engine3_tie test_flop_engine3_tie.cpp)
 target_compile_options(pokerth_test_flop_engine3_tie PRIVATE -Wall -Wextra)
 add_test(NAME flop_engine3_tie COMMAND pokerth_test_flop_engine3_tie)
 
+# Test: LocalBoard::allInCondition sticky flag never reset between hands
+add_executable(pokerth_test_allin_condition_reset test_allin_condition_reset.cpp)
+target_compile_options(pokerth_test_allin_condition_reset PRIVATE -Wall -Wextra)
+add_test(NAME allin_condition_reset COMMAND pokerth_test_allin_condition_reset)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)

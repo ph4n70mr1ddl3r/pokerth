@@ -161,6 +161,11 @@ void Game::initHand()
 	// calculate smallBlind
 	raiseBlinds();
 
+	// reset allInCondition flag from any previous hand (LocalBoard is shared
+	// across all hands in a Game session; setAllInCondition is only ever
+	// called with true, so it must be explicitly cleared here)
+	currentBoard->setAllInCondition(false);
+
 	// set player action none
 	for(it=seatsList->begin(); it!=seatsList->end(); ++it) {
 		(*it)->setMyAction(PLAYER_ACTION_NONE);
