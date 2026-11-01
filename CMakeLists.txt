@@ -331,6 +331,11 @@ add_executable(pokerth_test_allin_condition_reset test_allin_condition_reset.cpp
 target_compile_options(pokerth_test_allin_condition_reset PRIVATE -Wall -Wextra)
 add_test(NAME allin_condition_reset COMMAND pokerth_test_allin_condition_reset)
 
+# Test: LocalPlayer::preflopEngine() mySet/myCash update verification
+add_executable(pokerth_test_preflop_engine_set test_preflop_engine_set.cpp)
+target_compile_options(pokerth_test_preflop_engine_set PRIVATE -Wall -Wextra)
+add_test(NAME preflop_engine_set COMMAND pokerth_test_preflop_engine_set)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
