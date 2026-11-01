@@ -311,6 +311,11 @@ add_executable(pokerth_test_calc_cards_chance_flop test_calc_cards_chance_flop.c
 target_compile_options(pokerth_test_calc_cards_chance_flop PRIVATE -Wall -Wextra)
 add_test(NAME calc_cards_chance_flop COMMAND pokerth_test_calc_cards_chance_flop)
 
+# Test: CardsValue::cardsValue() hand classification vs independent evaluator
+add_executable(pokerth_test_cards_value_class test_cards_value_class.cpp)
+target_compile_options(pokerth_test_cards_value_class PRIVATE -Wall -Wextra)
+add_test(NAME cards_value_class COMMAND pokerth_test_cards_value_class)
+
 # Test: LocalPlayer::flopEngine3()/turnEngine3()/riverEngine3() tie handling (ties as half-wins)
 add_executable(pokerth_test_flop_engine3_tie test_flop_engine3_tie.cpp)
 target_compile_options(pokerth_test_flop_engine3_tie PRIVATE -Wall -Wextra)
