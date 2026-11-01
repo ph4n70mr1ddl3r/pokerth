@@ -3712,8 +3712,8 @@ void LocalPlayer::calcMyOdds()
 			if(i != myCards[0] && i != myCards[1] && i != tempBoardCardsArray[0] && i != tempBoardCardsArray[1] && i != tempBoardCardsArray[2]) {
 				tempMyCardsArray[5] = i;
 				tempOpponentCardsArray[5] = i;
-				for(j=0; j<52; j++) {
-					if(j != myCards[0] && j != myCards[1] && j != tempBoardCardsArray[0] && j != tempBoardCardsArray[1] && j != tempBoardCardsArray[2] && j != i) {
+				for(j=i + 1; j < 52; j++) {
+					if(j != myCards[0] && j != myCards[1] && j != tempBoardCardsArray[0] && j != tempBoardCardsArray[1] && j != tempBoardCardsArray[2]) {
 						tempMyCardsArray[6] = j;
 						tempOpponentCardsArray[6] = j;
 						for(k=0; k<52; k++) {

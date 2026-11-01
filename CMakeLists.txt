@@ -286,6 +286,11 @@ add_executable(pokerth_test_flop_odds test_flop_odds.cpp)
 target_compile_options(pokerth_test_flop_odds PRIVATE -Wall -Wextra)
 add_test(NAME flop_odds COMMAND pokerth_test_flop_odds)
 
+# Test: LocalPlayer::calcMyOdds() flop-case turn/river enumeration double-counting
+add_executable(pokerth_test_calc_odds_flop_enum test_calc_odds_flop_enum.cpp)
+target_compile_options(pokerth_test_calc_odds_flop_enum PRIVATE -Wall -Wextra)
+add_test(NAME calc_odds_flop_enum COMMAND pokerth_test_calc_odds_flop_enum)
+
 # Test: LocalBoard::determinePlayerNeedToShowCards() show-list completeness bug
 add_executable(pokerth_test_showcards test_showcards.cpp)
 target_compile_options(pokerth_test_showcards PRIVATE -Wall -Wextra)
