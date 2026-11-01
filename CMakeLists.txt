@@ -306,6 +306,11 @@ add_executable(pokerth_test_calc_odds_river_tie test_calc_odds_river_tie.cpp)
 target_compile_options(pokerth_test_calc_odds_river_tie PRIVATE -Wall -Wextra)
 add_test(NAME calc_odds_river_tie COMMAND pokerth_test_calc_odds_river_tie)
 
+# Test: CardsValue::calcCardsChance() flop enumeration exhaustiveness
+add_executable(pokerth_test_calc_cards_chance_flop test_calc_cards_chance_flop.cpp)
+target_compile_options(pokerth_test_calc_cards_chance_flop PRIVATE -Wall -Wextra)
+add_test(NAME calc_cards_chance_flop COMMAND pokerth_test_calc_cards_chance_flop)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)

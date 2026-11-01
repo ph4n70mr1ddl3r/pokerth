@@ -663,7 +663,7 @@ std::vector< std::vector<int> > CardsValue::calcCardsChance(GameState beRoID, in
 	break;
 	case GAME_STATE_FLOP: {
 
-		for(i=0; i<51; i++) {
+		for(i=0; i<52; i++) {
 			if(i!=cards[0] && i!=cards[1] && i!=cards[2] && i!=cards[3] && i!=cards[4]) {
 				for(j=i+1; j<52; j++) {
 					if(j!=cards[0] && j!=cards[1] && j!=cards[2] && j!=cards[3] && j!=cards[4]) {
