@@ -2171,8 +2171,8 @@ void gameTableImpl::myActionDone()
 	// to transfer the action to the server.
 	myStartWindow->getSession()->sendClientPlayerAction();
 
-	// TODO: Should not call in networking game.
-	disableMyButtons();
+	if (!myStartWindow->getSession()->isNetworkClientRunning())
+		disableMyButtons();
 
 	if (!myStartWindow->getSession()->isNetworkClientRunning())
 		nextPlayerAnimation();
