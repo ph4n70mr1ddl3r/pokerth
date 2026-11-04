@@ -290,23 +290,16 @@ Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned
 					exec_transaction();
 				}
 
-				// !! TODO !! Hack, because button rule is still wrong and dealerPosition sometimes has wrong ID (HeadsUp: dealerPosition=bigBlindPosition <-- wrong)
 				bool dealerButtonOnTable = false;
-				int countActivePlayer = 0;
 				for(it_c = seatsList->begin(); it_c!=seatsList->end(); ++it_c) {
 					if((*it_c)->getMyActiveStatus()) {
-						countActivePlayer++;
-						if((*it_c)->getMyButton()==BUTTON_DEALER && (*it_c)->getMyActiveStatus()) {
+						if((*it_c)->getMyButton()==BUTTON_DEALER) {
 							dealerButtonOnTable = true;
 						}
 					}
 				}
-				if(countActivePlayer==2) {
+				if(dealerButtonOnTable) {
 					logPlayerActionUnlocked(dealerPosition,LOG_ACTION_DEALER);
-				} else {
-					if(dealerButtonOnTable) {
-						logPlayerActionUnlocked(dealerPosition,LOG_ACTION_DEALER);
-					}
 				}
 
 				// log blinds
