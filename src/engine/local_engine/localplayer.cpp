@@ -1248,6 +1248,52 @@ void LocalPlayer::preflopEngine()
 		}
 	}
 
+	// Update mySet and myCash based on the chosen action
+	switch(myAction) {
+		case PLAYER_ACTION_CALL: {
+			int toCall = currentHand->getCurrentBeRo()->getHighestSet() - mySet;
+			if(toCall > 0) {
+				if(toCall > myCash) {
+					mySet += myCash;
+					myCash = 0;
+				} else {
+					myCash -= toCall;
+					mySet = currentHand->getCurrentBeRo()->getHighestSet();
+				}
+			}
+		}
+		break;
+		case PLAYER_ACTION_RAISE: {
+			int toCall = currentHand->getCurrentBeRo()->getHighestSet() - mySet;
+			int totalBet = toCall + raise;
+			if(totalBet > 0) {
+				if(totalBet > myCash) {
+					// All-in: can't cover full bet
+					mySet += myCash;
+					myCash = 0;
+				} else {
+					myCash -= totalBet;
+					mySet = currentHand->getCurrentBeRo()->getHighestSet() + raise;
+				}
+			}
+		}
+		break;
+		case PLAYER_ACTION_ALLIN: {
+			mySet += myCash;
+			myCash = 0;
+		}
+		break;
+		case PLAYER_ACTION_BET: {
+			myCash -= mySet;
+		}
+		break;
+		case PLAYER_ACTION_CHECK:
+		case PLAYER_ACTION_FOLD:
+		default:
+			break;
+	}
+	if(myCash < 0) myCash = 0;
+
 	// 	cout << mySBluff << endl;
 
 	// Test mySBluff --> raise instead of call or fold
