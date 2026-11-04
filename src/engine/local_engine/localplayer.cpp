@@ -1431,192 +1431,50 @@ void LocalPlayer::preflopEngine()
 
 
 	evaluation(bet, raise);
+
+
+
+	// Update mySet and myCash based on the chosen action.
+	switch(myAction) {
+        case PLAYER_ACTION_CALL: {
+            int toCall = currentHand->getCurrentBeRo()->getHighestSet() - oldMySet;
+            if(toCall > 0) {
+                myCash -= toCall;
+                mySet = currentHand->getCurrentBeRo()->getHighestSet();
+            }
+        }
+        break;
+        case PLAYER_ACTION_RAISE: {
+            int toCall = currentHand->getCurrentBeRo()->getHighestSet() - oldMySet;
+            int totalBet = toCall + raise;
+            if(totalBet > 0) {
+                if(totalBet > myCash) {
+                    mySet += myCash;
+                    myCash = 0;
+                } else {
+                    myCash -= totalBet;
+                    mySet = currentHand->getCurrentBeRo()->getHighestSet() + raise;
+                }
+            }
+        }
+        break;
+        case PLAYER_ACTION_ALLIN: {
+            mySet += myCash;
+            myCash = 0;
+        }
+        break;
+        case PLAYER_ACTION_BET: {
+            myCash -= oldMySet;
+        }
+        break;
+        case PLAYER_ACTION_CHECK:
+        case PLAYER_ACTION_FOLD:
+        default:
+            break;
+    }
+
 	myCash = std::max(0, myCash);
 	myLastRelativeSet = mySet - oldMySet;
-}
-
-
-void LocalPlayer::flopEngine()
-{
-
-	int raise = 0;
-	int bet = 0;
-	// 	int i;
-	int cBluff = 0;
-	int pBluff = 0;
-	int randVal = 0;
-	int oldMySet = mySet;
-	PlayerListConstIterator it_c;
-
-	// Temporary: preflopValue and flopValue not yet adjusted
-	int players = static_cast<int>(currentHand->getActivePlayerList()->size());
-	if(players > 5) players = 5;
-	// paranoia - ensure valid bounds for array access
-	if(players < 2) players = 2;
-
-	calcMyOdds();
-
-	// Set levels + Dude + number of opponents
-	// 1. Fold -- Call
-	myNiveau[0] = 53 + myDude4 - 6*(players - 2);
-	// 2. Check -- Bet
-	myNiveau[1] = 56 + myDude4 - 6*(players - 2);
-	// 3. Call -- Raise
-	myNiveau[2] = 69 + myDude4 - 7*(players - 2);
-
-	// Own possible highestSet
-	int individualHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
-	if(individualHighestSet > myCash) individualHighestSet = myCash;
-
-
-	// count number of active human players
-	size_t countHumanPlayers = 0;
-	for(it_c=currentHand->getActivePlayerList()->begin(); it_c!=currentHand->getActivePlayerList()->end(); ++it_c) {
-		if((*it_c)->getMyType() == PLAYER_TYPE_HUMAN) {
-			countHumanPlayers++;
-		}
-	}
-	if(countHumanPlayers) {
-		// local or network game and only one human player is active --> set aggValue
-		if(countHumanPlayers == 1) {
-
-			for(it_c=currentHand->getActivePlayerList()->begin(); it_c!=currentHand->getActivePlayerList()->end(); ++it_c) {
-				if((*it_c)->getMyType() == PLAYER_TYPE_HUMAN &&  (*it_c)->getMyAction() != PLAYER_ACTION_FOLD) {
-					int aggValue = static_cast<int>((( (*it_c)->getMyAggressive()*1.0)/7.0 - 1.0/currentHand->getActivePlayerList()->size())*21.0);
-					myNiveau[0] -= aggValue;
-					myNiveau[1] -= aggValue;
-					myNiveau[2] -= aggValue;
-				}
-			}
-			// network game
-		} else {
-			myNiveau[0] -= 3;
-			myNiveau[1] -= 3;
-			myNiveau[2] -= 3;
-		}
-	}
-
-
-	// Generate Check-Bluff
-	Tools::GetRand(1, 100, 1, &cBluff);
-
-	// Active or passive?
-	if(currentHand->getCurrentBeRo()->getHighestSet() > 0 && individualHighestSet > 0) {
-
-		// Ratio Set / Cash for call
-		if(myCash/individualHighestSet >= 25) {
-			myNiveau[0] += (25-myCash/individualHighestSet)/20;
-		} else {
-			myNiveau[0] += (25-myCash/individualHighestSet)/2;
-		}
-
-		// Ratio Set / Cash for raise
-		if(myCash/individualHighestSet < 11) {
-			myNiveau[2] += (21-myCash/individualHighestSet)/2;
-		}
-
-		// raise (at high level)
-		if(myOdds >= myNiveau[2]) {
-
-			// Prevent raise-loop -> i.e. either call or all-in with a super hand
-			if(currentHand->getCurrentBeRo()->getHighestSet() >= 12*currentHand->getSmallBlind()) {
-				// all in
-				if(myOdds >= myNiveau[2] + 15) {
-					raise = myCash;
-					myAction = PLAYER_ACTION_RAISE;
-				}
-				// just call
-				else {
-					// all in on close call
-					if(myCash-currentHand->getCurrentBeRo()->getHighestSet() <= (myCash*1)/5) {
-						raise = myCash;
-						myAction = PLAYER_ACTION_RAISE;
-					} else {
-						myAction = PLAYER_ACTION_CALL;
-					}
-				}
-
-				// Standard-Raise-Routine
-			} else {
-				// Determine raise amount
-				raise = ((static_cast<int>(myOdds)-myNiveau[2])/5)*2*currentHand->getSmallBlind();
-				// All-in with few chips or close raise
-				if(myCash/(2*currentHand->getSmallBlind()) <= 6 || raise >= (myCash*4.0)/5.0) {
-					raise = myCash;
-				}
-				myAction = PLAYER_ACTION_RAISE;
-			}
-
-			// Test cBluff --> call instead of raise
-			if(cBluff > 90) myAction = PLAYER_ACTION_CALL;
-			if(cBluff > 80 && myOdds >= myNiveau[2] + 4) myAction = PLAYER_ACTION_CALL;
-			if(cBluff > 70 && myOdds >= myNiveau[2] + 8) myAction = PLAYER_ACTION_CALL;
-			if(cBluff > 60 && myOdds >= myNiveau[2] + 12) myAction = PLAYER_ACTION_CALL;
-
-		} else {
-			// call -> above niveau0, already bet in flop, already bet overall
-			if(myOdds >= myNiveau[0] || (mySet >= currentHand->getCurrentBeRo()->getHighestSet()/2 && myOdds >= myNiveau[0]-5) || (myRoundStartCash-myCash > individualHighestSet && myOdds >= myNiveau[0]-3)) {
-				// all in on close call
-				if(currentHand->getCurrentBeRo()->getHighestSet() > (myCash*3.0)/4.0) {
-					raise = myCash;
-					myAction = PLAYER_ACTION_RAISE;
-				} else myAction = PLAYER_ACTION_CALL;
-			}
-			// fold
-			else {
-				myAction = PLAYER_ACTION_FOLD;
-			}
-		}
-	} else {
-		// bet
-		if(myOdds >= myNiveau[1]) {
-			bet = ((static_cast<int>(myOdds)-myNiveau[1])/8)*2*currentHand->getSmallBlind();
-			// bet too small
-			if(bet == 0) {
-				bet = 2*currentHand->getSmallBlind();
-			}
-			// All-in with few chips
-			if(myCash/(2*currentHand->getSmallBlind()) <= 6) {
-				bet = myCash;
-			}
-			// All-in on close bet
-			if(bet > (myCash*4.0)/5.0) {
-				bet = myCash;
-			}
-			myAction = PLAYER_ACTION_BET;
-
-			// Test cBluff --> check instead of bet
-			if(cBluff > 80) myAction = PLAYER_ACTION_CHECK;
-			if(cBluff > 70 && myOdds >= myNiveau[1] + 4) myAction = PLAYER_ACTION_CHECK;
-			if(cBluff > 60 && myOdds >= myNiveau[1] + 8) myAction = PLAYER_ACTION_CHECK;
-			if(cBluff > 50 && myOdds >= myNiveau[1] + 12) myAction = PLAYER_ACTION_CHECK;
-		}
-		// check
-		else {
-			myAction = PLAYER_ACTION_CHECK;
-			// Position
-			if(myButton == 1) {
-				// Generate Position-Bluff
-				Tools::GetRand(1, 100, 1, &pBluff);
-				if(pBluff <= 16) {
-					bet = (pBluff/4)*2*currentHand->getSmallBlind();
-					// bet too small
-					if(bet == 0) {
-						bet = 2*currentHand->getSmallBlind();
-					}
-					// All-in with few chips
-					if(myCash/(2*currentHand->getSmallBlind()) <= 6) {
-						bet = myCash;
-					}
-					// All-in on close bet
-					if(bet > (myCash*4.0)/5.0) {
-						bet = myCash;
-					}
-					myAction = PLAYER_ACTION_BET;
-				}
-			}
-		}
-
 	}
 
 	// auf mySBluffStatus testen --> raise statt call und bet statt check
@@ -3649,53 +3507,7 @@ int LocalPlayer::flopCardsValue(int* cards)
 
 	} else {
 		return tempValue;
-}
-
-
-
-	// Update mySet and myCash based on the chosen action.
-	switch(myAction) {
-        case PLAYER_ACTION_CALL: {
-            int toCall = currentHand->getCurrentBeRo()->getHighestSet() - oldMySet;
-            if(toCall > 0) {
-                myCash -= toCall;
-                mySet = currentHand->getCurrentBeRo()->getHighestSet();
-            }
-        }
-        break;
-        case PLAYER_ACTION_RAISE: {
-            int toCall = currentHand->getCurrentBeRo()->getHighestSet() - oldMySet;
-            int totalBet = toCall + raise;
-            if(totalBet > 0) {
-                if(totalBet > myCash) {
-                    mySet += myCash;
-                    myCash = 0;
-                } else {
-                    myCash -= totalBet;
-                    mySet = currentHand->getCurrentBeRo()->getHighestSet() + raise;
-                }
-            }
-        }
-        break;
-        case PLAYER_ACTION_ALLIN: {
-            mySet += myCash;
-            myCash = 0;
-        }
-        break;
-        case PLAYER_ACTION_BET: {
-            myCash -= oldMySet;
-        }
-        break;
-        case PLAYER_ACTION_CHECK:
-        case PLAYER_ACTION_FOLD:
-        default:
-            break;
-    }
-
-	myCash = std::max(0, myCash);
-	myLastRelativeSet = mySet - oldMySet;
-
-
+	}
 }
 
 void LocalPlayer::calcMyOdds()

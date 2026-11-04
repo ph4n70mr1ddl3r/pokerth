@@ -108,12 +108,10 @@ LocalHand::LocalHand(boost::shared_ptr<EngineFactory> f, GuiInterface *g, boost:
 			}
 		}
 
-		// set sBluff for all players --> TODO for ai-player in internet
-		if((*it)->getMyID() != 0) {
-			Tools::GetRand(1, 100, 1, &sBluff);
-			(*it)->setSBluff(sBluff);
-			(*it)->setSBluffStatus(false);
-		}
+		// set sBluff for all players
+		Tools::GetRand(1, 100, 1, &sBluff);
+		(*it)->setSBluff(sBluff);
+		(*it)->setSBluffStatus(false);
 	}
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!   DEBUGGER   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
