@@ -302,7 +302,7 @@ Log::logNewHandMsg(int handID, unsigned dealerPosition, int smallBlind, unsigned
 					}
 				}
 				if(countActivePlayer==2) {
-					logPlayerActionUnlocked(smallBlindPosition,LOG_ACTION_DEALER);
+					logPlayerActionUnlocked(dealerPosition,LOG_ACTION_DEALER);
 				} else {
 					if(dealerButtonOnTable) {
 						logPlayerActionUnlocked(dealerPosition,LOG_ACTION_DEALER);

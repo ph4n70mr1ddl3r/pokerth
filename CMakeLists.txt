@@ -336,6 +336,10 @@ add_executable(pokerth_test_preflop_engine_set test_preflop_engine_set.cpp)
 target_compile_options(pokerth_test_preflop_engine_set PRIVATE -Wall -Wextra)
 add_test(NAME preflop_engine_set COMMAND pokerth_test_preflop_engine_set)
 
+add_executable(pokerth_test_log_button_bug test_log_button_bug.cpp)
+target_compile_options(pokerth_test_log_button_bug PRIVATE -Wall -Wextra)
+add_test(NAME log_button_bug COMMAND pokerth_test_log_button_bug)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
