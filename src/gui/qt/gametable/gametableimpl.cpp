@@ -932,10 +932,8 @@ void gameTableImpl::refreshAction(int playerID, int playerAction)
 
 			if ((*it_c)->getMyAction()==1) {
 
-				if((*it_c)->getMyID() != 0) {
-					holeCardsArray[(*it_c)->getMyID()][0]->setPixmap(onePix, false);
-					holeCardsArray[(*it_c)->getMyID()][1]->setPixmap(onePix, false);
-				}
+				holeCardsArray[(*it_c)->getMyID()][0]->setPixmap(onePix, false);
+				holeCardsArray[(*it_c)->getMyID()][1]->setPixmap(onePix, false);
 			}
 		}
 	} else {
