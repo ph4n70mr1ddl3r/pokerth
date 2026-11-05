@@ -2817,7 +2817,8 @@ void gameTableImpl::nextRoundCleanGui()
 
 	// for startNewGame during human player is active
 	if(myStartWindow->getSession()->getCurrentGame()->getCurrentHand()->getSeatsList()->front()->getMyActiveStatus() == 1) {
-		disableMyButtons();
+		if (!myStartWindow->getSession()->isNetworkClientRunning())
+			disableMyButtons();
 	}
 
 	// textLabel_handLabel->setText("");
