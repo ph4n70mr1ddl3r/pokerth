@@ -344,6 +344,10 @@ add_executable(pokerth_test_disable_mybuttons_networking_bug test_disable_mybutt
 target_compile_options(pokerth_test_disable_mybuttons_networking_bug PRIVATE -Wall -Wextra)
 add_test(NAME disable_mybuttons_networking_bug COMMAND pokerth_test_disable_mybuttons_networking_bug)
 
+add_executable(pokerth_test_disable_mybuttons_clientstate_bug test_disable_mybuttons_clientstate_bug.cpp)
+target_compile_options(pokerth_test_disable_mybuttons_clientstate_bug PRIVATE -Wall -Wextra)
+add_test(NAME disable_mybuttons_clientstate_bug COMMAND pokerth_test_disable_mybuttons_clientstate_bug)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)

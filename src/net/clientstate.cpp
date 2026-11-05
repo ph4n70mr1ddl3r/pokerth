@@ -1804,7 +1804,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		client->GetGui().refreshGroupbox(tmpPlayer->getMyID(), 3);
 
 		// Refresh GUI
-		if (tmpPlayer->getMyID() == 0)
+		if (tmpPlayer->getMyID() == 0 && !client->GetGui().getSession()->isNetworkClientRunning())
 			client->GetGui().disableMyButtons();
 		client->GetGui().refreshAction(tmpPlayer->getMyID(), tmpPlayer->getMyAction());
 		client->GetGui().refreshPot();
