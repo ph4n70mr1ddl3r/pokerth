@@ -969,7 +969,11 @@ void LocalPlayer::action()
 			preflopEngine3();
 			myLastRelativeSet = mySet - oldSet;
 		}
-		else preflopEngine();
+		else {
+			int oldSet = mySet;
+			preflopEngine();
+			myLastRelativeSet = mySet - oldSet;
+		}
 
 		currentHand->getBoard()->collectSets();
 		currentHand->getGuiInterface()->refreshPot();
@@ -983,7 +987,11 @@ void LocalPlayer::action()
 			flopEngine3();
 			myLastRelativeSet = mySet - oldSet;
 		}
-		else flopEngine();
+		else {
+			int oldSet = mySet;
+			flopEngine();
+			myLastRelativeSet = mySet - oldSet;
+		}
 
 		currentHand->getBoard()->collectSets();
 		currentHand->getGuiInterface()->refreshPot();
@@ -997,7 +1005,11 @@ void LocalPlayer::action()
 			turnEngine3();
 			myLastRelativeSet = mySet - oldSet;
 		}
-		else turnEngine();
+		else {
+			int oldSet = mySet;
+			turnEngine();
+			myLastRelativeSet = mySet - oldSet;
+		}
 
 		currentHand->getBoard()->collectSets();
 		currentHand->getGuiInterface()->refreshPot();
@@ -1011,7 +1023,11 @@ void LocalPlayer::action()
 			riverEngine3();
 			myLastRelativeSet = mySet - oldSet;
 		}
-		else riverEngine();
+		else {
+			int oldSet = mySet;
+			riverEngine();
+			myLastRelativeSet = mySet - oldSet;
+		}
 
 		currentHand->getBoard()->collectSets();
 		currentHand->getGuiInterface()->refreshPot();
