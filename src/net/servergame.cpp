@@ -38,6 +38,7 @@
 #include <core/loghelper.h>
 #include <db/serverdbinterface.h>
 #include <db/serverdbnoaction.h>
+#include <db/serverdbgeneric.h>
 #include <game.h>
 #include <localenginefactory.h>
 #include <tools.h>
@@ -328,8 +329,11 @@ ServerGame::InternalStartGame()
 	if (playerData.size() >= 2) {
 		// Set DB Backend.
 		// @TODO: check for wec or bbc game with bbcbot as creator
+		// FIX: check for bbcbot creator and use ServerDBGeneric in that case
 		if (GetGameData().gameType == GAME_TYPE_RANKING)
 			m_database = GetLobbyThread().GetDatabase();
+		else if (m_creatorPlayerDBId != 0)
+			m_database = boost::make_shared<ServerDBGeneric>(*GetLobbyThread()->GetInternalServerCallback(), GetLobbyThread()->GetIOService());
 		else
 			m_database = boost::make_shared<ServerDBNoAction>();
 
