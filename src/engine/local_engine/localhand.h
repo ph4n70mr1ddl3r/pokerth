@@ -92,10 +92,10 @@ public:
 	}
 	boost::shared_ptr<BeRoInterface> getCurrentBeRo() const override
 	{
-		if (currentRound >= myBeRo.size()) {
-			throw LocalException(__FILE__, __LINE__, ERR_BERO_NOT_FOUND);
-		}
-		return myBeRo[currentRound];
+^Iif (currentRound < 0 || static_cast<size_t>(currentRound) >= myBeRo.size()) {
+		throw LocalException(__FILE__, __LINE__, ERR_BERO_NOT_FOUND);
+	}
+	return myBeRo[currentRound];
 	}
 
 	Log* getLog() const override
