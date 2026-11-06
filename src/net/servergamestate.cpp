@@ -786,8 +786,8 @@ ServerGameStateStartGame::TimerTimeout(const boost::system::error_code &ec, boos
 	if (!ec && server->IsCurrentState(this)) {
 		// On timeout: start anyway.
 		server->GetSessionManager().ResetAllReadyFlags();
-		// TODO report successful start! -> new callback?!
-		//retVal = MSG_SOCK_INIT_DONE;
+		// Report successful start via callback (replaces old retVal = MSG_SOCK_INIT_DONE)
+		server->GetCallback().SignalNetServerSuccess(1);
 		DoStart(server);
 	}
 }
