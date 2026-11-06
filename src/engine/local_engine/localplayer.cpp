@@ -1079,7 +1079,7 @@ int LocalPlayer::checkMyAction(int targetAction, int targetBet, int highestSet, 
 	}
 	break;
 	case PLAYER_ACTION_ALLIN: {
-		if(targetBet == getMyCash()) {
+		if(targetBet == getMyCash() && getMyCash() > 0) {
 			return 0;
 		}
 	}
