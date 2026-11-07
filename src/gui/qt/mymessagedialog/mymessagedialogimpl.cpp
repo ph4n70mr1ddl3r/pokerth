@@ -116,7 +116,12 @@ void myMessageDialogImpl::show(int messageId, QString msg, QString title, QPixma
 		if(parts.size() >= 2 && QString("%1").arg(messageId) == parts.at(1)) {
 
 			found = true;
-			show = parts.at(0).toInt();
+			bool ok = false;
+			show = parts.at(0).toInt(&ok);
+
+			if (!ok) {
+				show = 1;
+			}
 
 			break;
 		}
@@ -185,7 +190,12 @@ bool myMessageDialogImpl::checkIfMesssageWillBeDisplayed(int id)
 		if(parts.size() >= 2 && QString("%1").arg(id) == parts.at(1)) {
 
 			found = true;
-			show = parts.at(0).toInt();
+			bool ok = false;
+			show = parts.at(0).toInt(&ok);
+
+			if (!ok) {
+				show = 1;
+			}
 
 			break;
 		}
