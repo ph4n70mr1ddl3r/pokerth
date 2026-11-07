@@ -1077,7 +1077,7 @@ int LocalPlayer::checkMyAction(int targetAction, int targetBet, int highestSet, 
 				return 0;
 			}
 		}
-		else if(targetBet <= getMyCash()) {
+		else if(getMyCash() > 0 && targetBet <= getMyCash()) {
 			// not all in
 			if(getMyCash() + getMySet() >= highestSet && targetBet == highestSet - getMySet()) {
 				return 0;
