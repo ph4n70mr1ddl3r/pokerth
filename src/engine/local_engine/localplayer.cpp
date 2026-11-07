@@ -1064,7 +1064,7 @@ int LocalPlayer::checkMyAction(int targetAction, int targetBet, int highestSet, 
 	}
 	break;
 	case PLAYER_ACTION_CHECK: {
-		if(getMySet() == highestSet) {
+		if(getMySet() >= highestSet) {
 			return 0;
 		}
 	}
