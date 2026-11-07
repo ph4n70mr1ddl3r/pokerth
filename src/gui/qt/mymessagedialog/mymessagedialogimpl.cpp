@@ -68,7 +68,12 @@ int myMessageDialogImpl::exec(int messageId, QString msg, QString title, QPixmap
 		if(parts.size() >= 2 && QString("%1").arg(messageId) == parts.at(1)) {
 
 			found = true;
-			show = parts.at(0).toInt();
+			bool ok = false;
+			show = parts.at(0).toInt(&ok);
+
+			if (!ok) {
+				show = 1;
+			}
 
 			break;
 		}

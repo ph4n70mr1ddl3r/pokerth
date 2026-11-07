@@ -280,6 +280,9 @@ add_test(NAME distribute_regression COMMAND pokerth_test_distribute_regression)
 add_executable(pokerth_test_check_my_action test_check_my_action.cpp)
 target_compile_options(pokerth_test_check_my_action PRIVATE -Wall -Wextra)
 add_test(NAME check_my_action COMMAND pokerth_test_check_my_action)
+add_executable(pokerth_test_mymessage_toint_bug test_mymessage_toint_bug.cpp)
+target_compile_options(pokerth_test_mymessage_toint_bug PRIVATE -Wall -Wextra)
+add_test(NAME mymessage_toint_bug COMMAND pokerth_test_mymessage_toint_bug)
 
 # Test: LocalPlayer::calcMyOdds() flop-case odds calculation bug
 add_executable(pokerth_test_flop_odds test_flop_odds.cpp)
