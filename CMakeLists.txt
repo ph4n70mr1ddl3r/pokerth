@@ -344,6 +344,11 @@ add_executable(pokerth_test_signed_unsigned_bug test_signed_unsigned_bug.cpp)
 target_compile_options(pokerth_test_signed_unsigned_bug PRIVATE -Wall -Wextra)
 add_test(NAME signed_unsigned_bug COMMAND pokerth_test_signed_unsigned_bug)
 
+# Test: NetPacketValidator::ValidateListIntRange() signed/unsigned comparison bug
+add_executable(pokerth_test_netpacketvalidator_bug test_netpacketvalidator_bug.cpp)
+target_compile_options(pokerth_test_netpacketvalidator_bug PRIVATE -Wall -Wextra)
+add_test(NAME netpacketvalidator_bug COMMAND pokerth_test_netpacketvalidator_bug)
+
 add_executable(pokerth_test_log_button_bug test_log_button_bug.cpp)
 target_compile_options(pokerth_test_log_button_bug PRIVATE -Wall -Wextra)
 add_test(NAME log_button_bug COMMAND pokerth_test_log_button_bug)
