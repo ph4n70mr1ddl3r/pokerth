@@ -1101,7 +1101,13 @@ int LocalPlayer::checkMyAction(int targetAction, int targetBet, int highestSet, 
 	}
 	break;
 	case PLAYER_ACTION_ALLIN: {
-		if(targetBet == getMyCash() && getMyCash() > 0) {
+		if(getMySet() >= highestSet) {
+			// Player has already put in enough chips (mySet >= highestSet).
+			// All-in is valid because no additional chips need to be put in.
+			// targetBet is irrelevant when mySet >= highestSet.
+			return 0;
+		}
+		else if(targetBet == getMyCash() && getMyCash() > 0) {
 			return 0;
 		}
 	}
