@@ -1587,7 +1587,7 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		// Retrieve state for each seat (not based on player id).
 		unsigned numPlayers = netHandStart.seatstates_size();
 		// Request player info for players if needed.
-		for (int i = 0; i < static_cast<int>(numPlayers); i++) {
+		for (size_t i = 0; i < numPlayers; i++) {
 			NetPlayerState seatState = netHandStart.seatstates(i);
 			int numberDiff = client->GetStartData().numberOfPlayers - client->GetOrigGuiPlayerNum();
 			int totalPlayers = client->GetStartData().numberOfPlayers;
