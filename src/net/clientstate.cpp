@@ -767,7 +767,7 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 		GameInfo tmpInfo;
 		list<unsigned> requestList;
 		// All players.
-		for (int i = 0; i < netListNew.playerids_size(); i++) {
+		for (size_t i = 0; i < netListNew.playerids_size(); i++) {
 			PlayerInfo info;
 			unsigned playerId = netListNew.playerids(i);
 			if (!client->GetCachedPlayerInfo(playerId, info)) {
