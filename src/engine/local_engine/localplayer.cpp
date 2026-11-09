@@ -1096,7 +1096,7 @@ int LocalPlayer::checkMyAction(int targetAction, int targetBet, int highestSet, 
 	}
 	break;
 	case PLAYER_ACTION_BET: {
-		if(highestSet == 0 && targetBet <= getMyCash() && targetBet >= 2*smallBlind) {
+		if(highestSet == 0 && targetBet <= getMyCash() && targetBet >= 2*smallBlind && smallBlind > 0) {
 			return 0;
 		}
 		return 1;
