@@ -1067,6 +1067,7 @@ int LocalPlayer::checkMyAction(int targetAction, int targetBet, int highestSet, 
 		if(getMySet() >= highestSet) {
 			return 0;
 		}
+		return 1;
 	}
 	break;
 	case PLAYER_ACTION_CALL: {
@@ -1086,18 +1087,26 @@ int LocalPlayer::checkMyAction(int targetAction, int targetBet, int highestSet, 
 				return 0;
 			}
 		}
+		else if(getMyCash() <= 0) {
+			// No cash to call with
+			return 1;
+		}
+		// Invalid call case
+		return 1;
 	}
 	break;
 	case PLAYER_ACTION_BET: {
 		if(highestSet == 0 && targetBet <= getMyCash() && targetBet >= 2*smallBlind) {
 			return 0;
 		}
+		return 1;
 	}
 	break;
 	case PLAYER_ACTION_RAISE: {
 		if(highestSet > 0 && static_cast<long long>(getMySet()) + targetBet >= static_cast<long long>(highestSet) + minimumRaise && targetBet <= getMyCash()) {
 			return 0;
 		}
+		return 1;
 	}
 	break;
 	case PLAYER_ACTION_ALLIN: {
