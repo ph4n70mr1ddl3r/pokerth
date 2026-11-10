@@ -1553,7 +1553,7 @@ void LocalPlayer::preflopEngine()
         }
         break;
         case PLAYER_ACTION_BET: {
-            myCash -= oldMySet;
+            if(bet > 0) { myCash -= bet; mySet += bet; }
         }
         break;
         case PLAYER_ACTION_CHECK:
