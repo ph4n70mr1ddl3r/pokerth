@@ -103,20 +103,18 @@ int main() {
         int highestSet1 = 80;
         int targetBet1 = 0;
 
-        // Buggy: should NOT return 0 (BUG: requires cash > 0 unnecessarily)
-        // With buggy code, the first if fails because myCash > 0 is false,
-        // and the else if also fails because myCash > 0 is false.
-        // So the call is incorrectly rejected.
+        // Buggy: should return -1 (call rejected because myCash > 0 check fails)
+        // This confirms the bug: myCash > 0 is unnecessarily required
         int result1_buggy = checkMyAction_Buggy(1, targetBet1, highestSet1, 0, 0, &player1);
-        if (result1_buggy == 0) {
+        if (result1_buggy == -1) {
+            printf("  Buggy: returned -1 (ALLIN REJECTED - BUG CONFIRMED: myCash > 0 unnecessarily required)\n");
+        } else if (result1_buggy == 0) {
             printf("  Buggy: returned 0 (CALL ALLOWED - unexpected, bug not present)\n");
-        } else {
-            printf("  Buggy: returned -1 (CALL REJECTED - BUG CONFIRMED: myCash > 0 unnecessarily required)\n");
             allPassed = false;
             failures++;
         }
 
-        // Fixed: should return 0 (call allowed because mySet >= highestSet)
+// Fixed: should return 0 (all-in allowed because mySet >= highestSet)
         int result1_fixed = checkMyAction_Fixed(1, targetBet1, highestSet1, 0, 0, &player1);
         if (result1_fixed == 0) {
             printf("  Fixed: returned 0 (CALL ALLOWED - correct)\n");
@@ -144,7 +142,7 @@ int main() {
             failures++;
         }
 
-        // Fixed: should also return 0
+// Fixed: should also return 0
         int result2_fixed = checkMyAction_Fixed(1, targetBet2, highestSet2, 0, 0, &player2);
         if (result2_fixed == 0) {
             printf("  Fixed: returned 0 (CALL ALLOWED - correct)\n");
@@ -172,7 +170,7 @@ int main() {
             failures++;
         }
 
-        // Fixed: should also return -1 (call rejected - not enough chips)
+// Fixed: should also return -1 (call rejected - not enough chips)
         int result3_fixed = checkMyAction_Fixed(1, targetBet3, highestSet3, 0, 0, &player3);
         if (result3_fixed == -1) {
             printf("  Fixed: returned -1 (CALL REJECTED - correct)\n");
@@ -200,7 +198,7 @@ int main() {
             failures++;
         }
 
-        // Fixed: should also return -1 (call rejected - not enough total chips)
+// Fixed: should also return -1 (call rejected - not enough total chips)
         int result4_fixed = checkMyAction_Fixed(1, targetBet4, highestSet4, 0, 0, &player4);
         if (result4_fixed == -1) {
             printf("  Fixed: returned -1 (CALL REJECTED - correct)\n");
