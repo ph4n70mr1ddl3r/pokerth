@@ -1322,14 +1322,7 @@ void LocalPlayer::preflopEngine()
 			myCash = 0;
 		}
 		break;
-		case PLAYER_ACTION_BET: {
-			myCash -= mySet;
-			if (mySet < currentHand->getCurrentBeRo()->getSmallBlind()) {
-				mySet = currentHand->getCurrentBeRo()->getSmallBlind();
-			}
-		}
-		break;
-		case PLAYER_ACTION_CHECK:
+case PLAYER_ACTION_CHECK:
 		case PLAYER_ACTION_FOLD:
 		default:
 			break;
