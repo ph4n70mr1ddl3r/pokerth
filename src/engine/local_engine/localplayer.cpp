@@ -4449,7 +4449,7 @@ void LocalPlayer::flopEngine3()
         }
         break;
         case PLAYER_ACTION_BET: {
-            if(bet > 0) { myCash -= bet; }
+            if(mySet > 0) { myCash -= mySet; }
         }
         break;
         case PLAYER_ACTION_CHECK:
