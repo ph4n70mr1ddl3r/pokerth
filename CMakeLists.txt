@@ -375,6 +375,10 @@ add_executable(pokerth_test_bet_bug test_bet_bug.cpp)
 target_compile_options(pokerth_test_bet_bug PRIVATE -Wall -Wextra)
 add_test(NAME bet_bug COMMAND pokerth_test_bet_bug)
 
+add_executable(pokerth_test_double_subtraction_bug test_double_subtraction_bug.cpp)
+target_compile_options(pokerth_test_double_subtraction_bug PRIVATE -Wall -Wextra)
+add_test(NAME double_subtraction_bug COMMAND pokerth_test_double_subtraction_bug)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)

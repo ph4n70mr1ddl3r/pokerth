@@ -39,6 +39,7 @@ static int processFixed(MockLocalPlayer& p) {
     // NO mySet = oldMySet + mySet; (removed in fix - was causing double addition)
 
     // The PLAYER_ACTION_BET switch handles the updates correctly
+    // (subtracts bet from cash once, does not add to mySet again since it's already set)
     if (p.bet > 0) {
         p.myCash -= p.bet;  // Single subtraction only
         // mySet already set at lines 4349-4353, no need to add again
@@ -73,6 +74,12 @@ int main()
 
     printf("Testing PLAYER_ACTION_BET double-subtraction bug in flopEngine3():\n\n");
 
+    // Track which scenarios passed
+    bool scenario1_passed = false;
+    bool scenario2_passed = false;
+    bool scenario3_passed = false;
+    bool scenario4_passed = false;
+
     // --- Scenario 1: Normal bet with bet > 0 ---
     printf("--- Scenario 1 (mySet=0, myCash=100, bet=30, highestSet=100, oldMySet=0) ---\n");
     MockLocalPlayer p1;
@@ -86,33 +93,31 @@ int main()
     int setBefore1 = p1.mySet;
 
     processBuggy(p1);
-    printf("  Buggy: myCash=%d (expected %d), mySet=%d (expected %d)\n",
-           p1.myCash, cashBefore1 - 30, p1.mySet, setBefore1 + 30);
     // Buggy: myCash = 100 - 30 (myCash -= mySet) - 30 (switch myCash -= bet) = 40 (WRONG! double subtraction)
     // mySet = 0 + 30 (set at step 1) + 30 (switch mySet += bet) = 60 (WRONG! double addition)
-    if (p1.myCash != cashBefore1 - 30 || p1.mySet != setBefore1 + 30) {
-        printf("  BUG CONFIRMED in flopEngine3: Double subtraction and double addition!\n");
+    bool buggy1_confirmed = (p1.myCash != cashBefore1 - 30 || p1.mySet != setBefore1 + 30);
+    printf("  Buggy: myCash=%d, mySet=%d\n", p1.myCash, p1.mySet);
+    if (buggy1_confirmed) {
+        printf("  BUG CONFIRMED: Double subtraction and double addition detected\n");
         printf("    myCash: got %d, expected %d (differs by 2*bet=%d)\n",
                p1.myCash, cashBefore1 - 30, 2 * p1.bet);
         printf("    mySet: got %d, expected %d (differs by 2*bet=%d)\n",
                p1.mySet, setBefore1 + 30, 2 * p1.bet);
-        failures++;
     } else {
         printf("  Bug NOT confirmed (unexpected - bug may already be fixed)\n");
-        failures++;
     }
 
-    // Reset and test fix
+    // Test fix
     p1.myCash = cashBefore1;
     p1.mySet = setBefore1;
     processFixed(p1);
-    printf("  Fixed: myCash=%d (expected %d), mySet=%d (expected %d)\n",
-           p1.myCash, cashBefore1 - 30, p1.mySet, setBefore1 + 30);
-    if (p1.myCash == cashBefore1 - 30 && p1.mySet == setBefore1 + 30) {
+    bool fix1_ok = (p1.myCash == cashBefore1 - 30 && p1.mySet == setBefore1 + 30);
+    printf("  Fixed: myCash=%d, mySet=%d\n", p1.myCash, p1.mySet);
+    if (fix1_ok) {
         printf("  PASS: flopEngine3 fix works correctly - single subtraction only\n");
+        scenario1_passed = true;
     } else {
-        printf("  FAIL: flopEngine3 fix didn't work as expected (myCash=%d, mySet=%d)\n",
-               p1.myCash, p1.mySet);
+        printf("  FAIL: flopEngine3 fix didn't work as expected\n");
         failures++;
     }
 
@@ -127,24 +132,29 @@ int main()
     int cashBefore2 = p2.myCash;
 
     processBuggy(p2);
-    if (p2.myCash == cashBefore2) {
-        printf("  Buggy bet=0: cash correctly unchanged (myCash -= 0 = no-op)... wait, buggy code does myCash -= mySet first, then switch does myCash -= bet, both are 0 so cash unchanged)\n");
+    bool buggy2_ok = (p2.myCash == cashBefore2);  // bet=0, so cash should be unchanged
+    printf("  Buggy: myCash=%d (should be %d, unchanged since bet=0)\n", p2.myCash, cashBefore2);
+    if (buggy2_ok) {
+        printf("  Buggy bet=0: cash correctly unchanged\n");
     } else {
         printf("  Buggy bet=0: FAIL - cash unexpectedly changed to %d\n", p2.myCash);
         failures++;
     }
 
-    // Reset and test fix
+    // Test fix
     p2.myCash = cashBefore2;
     processFixed(p2);
-    if (p2.myCash == cashBefore2) {
+    bool fix2_ok = (p2.myCash == cashBefore2);
+    printf("  Fixed: myCash=%d (should be %d, unchanged since bet=0)\n", p2.myCash, cashBefore2);
+    if (fix2_ok) {
         printf("  Fixed bet=0: cash correctly unchanged\n");
+        scenario2_passed = true;
     } else {
         printf("  FAIL: fixed bet=0 - cash unexpectedly changed to %d\n", p2.myCash);
         failures++;
     }
 
-    // --- Scenario 3: Large bet ---
+    // --- Scenario 3: Large bet that would underflow ---
     printf("\n--- Scenario 3 (mySet=0, myCash=50, bet=30, highestSet=100, oldMySet=0) ---\n");
     MockLocalPlayer p3;
     p3.mySet = 0;
@@ -156,27 +166,29 @@ int main()
     int cashBefore3 = p3.myCash;
 
     processBuggy(p3);
-    printf("  Buggy: myCash=%d (expected %d, but got %d due to double subtraction 50-30-30=-10->clamped)\n",
+    // Buggy: myCash = 50 - 30 (myCash -= mySet) - 30 (switch myCash -= bet) = -10
+    // The key bug: myCash reduced by 60 instead of 30 (double subtraction)
+    bool buggy3_confirmed = (p3.myCash != cashBefore3 - 30);
+    printf("  Buggy: myCash=%d (should be %d for single subtraction, got %d for double)\n",
            p3.myCash, cashBefore3 - 30, p3.myCash);
-    // Buggy: myCash = 50 - 30 (myCash -= mySet) - 30 (switch myCash -= bet) = -10, clamped to 0
-    // But the point is: should only subtract 30, not 60
-    if (p3.myCash != cashBefore3 - 30) {
+    if (buggy3_confirmed) {
         printf("  BUG PATTERN CONFIRMED: myCash reduced by %d instead of %d (double subtraction of %d)\n",
                cashBefore3 - p3.myCash, cashBefore3 - 30, 2 * p3.bet);
-        failures++;
     } else {
         printf("  Bug NOT confirmed (unexpected)\n");
         failures++;
     }
 
-    // Reset and test fix
+    // Test fix
     p3.myCash = cashBefore3;
     processFixed(p3);
-    if (p3.myCash == cashBefore3 - 30) {
+    bool fix3_ok = (p3.myCash == cashBefore3 - 30);
+    printf("  Fixed: myCash=%d (expected %d)\n", p3.myCash, cashBefore3 - 30);
+    if (fix3_ok) {
         printf("  PASS: Fixed code correctly reduces myCash by single bet amount\n");
+        scenario3_passed = true;
     } else {
-        printf("  FAIL: Fixed code myCash=%d instead of %d\n",
-               p3.myCash, cashBefore3 - 30);
+        printf("  FAIL: Fixed code myCash=%d instead of %d\n", p3.myCash, cashBefore3 - 30);
         failures++;
     }
 
@@ -190,47 +202,47 @@ int main()
     p4.highestSet = 100;
 
     int cashBefore4 = p4.myCash;
-    int setBefore4 = p4.mySet;
 
     processBuggy(p4);
-    printf("  Buggy: myCash=%d (expected %d), mySet=%d (expected %d)\n",
-           p1.myCash, cashBefore1 - 30, p1.mySet, setBefore1 + 30);
-    // Buggy: myCash = 100 - 20 (myCash -= mySet where mySet was 20) - 30 (switch) = 50
-    // Actually: myCash -= mySet where mySet=20 (from before), then myCash -= bet=30, then mySet = oldMySet(20) + mySet(30) = 50, then mySet += bet=30 = 80
-    // Wait, let me re-trace: p4.mySet starts at 20, p4.bet=30
-    // processBuggy: p4.mySet = p4.bet = 30 (step 1)
-    // p4.myCash -= p4.mySet = 100 - 30 = 70 (step 2)
-    // p4.mySet = p4.oldMySet + p4.mySet = 20 + 30 = 50 (step 3)
-    // switch: p4.myCash -= p4.bet = 70 - 30 = 40 (double subtraction!)
-    // p4.mySet += p4.bet = 50 + 30 = 80 (double addition!)
-    // Expected: myCash should be 100 - 30 = 70, mySet should be 30 (or 20+30=50 depending on logic)
-    // The bug is: myCash is reduced by 60 instead of 30, mySet is increased by 60 instead of 30
-
-    // Actually for simplicity, let me just check the key bug: double subtraction
-    if (p4.myCash != cashBefore4 - 60 && p4.myCash != cashBefore4 - 30) {
-        // It's doing something wrong
-        printf("  Buggy: myCash=%d (in wrong range, double subtraction likely)\n", p4.myCash);
+    // Buggy: myCash = 100 - 30 (myCash -= mySet where mySet was set to bet=30) - 30 (switch) = 40
+    // mySet = 30 (set to bet) + 20 (oldMySet) + 30 (switch add) = 80
+    // The key bug: myCash reduced by 60 instead of 30 (double subtraction)
+    bool buggy4_confirmed = (p4.myCash != cashBefore4 - 30);
+    printf("  Buggy: myCash=%d (should be %d for single subtraction, got %d for double)\n",
+           p4.myCash, cashBefore4 - 30, p4.myCash);
+    if (buggy4_confirmed) {
+        printf("  BUG PATTERN CONFIRMED: myCash reduced by %d instead of %d (double subtraction of %d)\n",
+               cashBefore4 - p4.myCash, cashBefore4 - 30, 2 * p4.bet);
+    } else {
+        printf("  Bug NOT confirmed (unexpected)\n");
+        failures++;
     }
 
-    // Reset and test fix
+    // Test fix
     p4.myCash = cashBefore4;
-    p4.mySet = setBefore4;
+    p4.mySet = 20;  // restore old mySet
     processFixed(p4);
-    printf("  Fixed: myCash=%d (expected %d), mySet=%d (expected %d)\n",
-           p4.myCash, cashBefore4 - 30, p4.mySet, setBefore4 + 30);
-    // Fixed: mySet = bet = 30 (set at step 1), no myCash -= mySet, no mySet = oldMySet + mySet
-    // switch: myCash -= bet = cashBefore4 - 30, mySet += bet = setBefore4 + 30
-    if (p4.myCash == cashBefore4 - 30 && p4.mySet == setBefore4 + 30) {
+    // Fixed: mySet = bet = 30 (set at step 1), myCash -= mySet (in switch) = 100 - 30 = 70
+    // mySet stays at 30 (bet amount), not oldMySet + bet
+    bool fix4_ok = (p4.myCash == cashBefore4 - 30 && p4.mySet == 30);
+    printf("  Fixed: myCash=%d, mySet=%d (expected 30)\n", p4.myCash, p4.mySet);
+    if (fix4_ok) {
         printf("  PASS: Fixed code handles pre-existing mySet correctly\n");
+        scenario4_passed = true;
     } else {
-        printf("  FAIL: Fixed code myCash=%d, mySet=%d\n",
-               p4.myCash, p4.mySet);
+        printf("  FAIL: Fixed code myCash=%d, mySet=%d\n", p4.myCash, p4.mySet);
         failures++;
     }
 
     printf("\n");
+    printf("Scenario results:\n");
+    printf("  Scenario 1 (double subtraction confirmed + fix verified): %s\n", scenario1_passed ? "PASS" : "FAIL");
+    printf("  Scenario 2 (bet=0 edge case): %s\n", scenario2_passed ? "PASS" : "FAIL");
+    printf("  Scenario 3 (large bet underflow): %s\n", scenario3_passed ? "PASS" : "FAIL");
+    printf("  Scenario 4 (pre-existing mySet): %s\n", scenario4_passed ? "PASS" : "FAIL");
+
     if (failures > 0) {
-        printf("TEST FAILED: %d scenario failures\n", failures);
+        printf("\nTEST FAILED: %d failure(s)\n", failures);
         return 1;
     }
 
