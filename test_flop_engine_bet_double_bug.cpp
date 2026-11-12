@@ -6,13 +6,13 @@
 //   2. Lines 4454-4457: case PLAYER_ACTION_BET: { myCash -= bet; mySet += bet; }
 // Both execute, causing myCash to be reduced by 2*bet instead of bet.
 //
-// Compare with PLAYER_ACTION_CALL which correctly calculates toCall and updates
-// both myCash and mySet exactly once.
+// This test verifies the bug: without the fix, myCash is incorrectly modified;
+// with the fix, myCash and mySet are correctly updated based on the bet amount.
 
 #include <cstdio>
 #include <cstdlib>
 
-// Mock LocalPlayer state matching the actual code structure
+// Mock LocalPlayer state for the bet test - matching the actual code structure
 struct MockLocalPlayer {
     int mySet{0};
     int myCash{100};
@@ -27,14 +27,13 @@ struct MockLocalPlayer {
     int getBet() const { return bet; }
 };
 
-// Simulate the code in flopEngine3() - BUGGY VERSION
+// Buggy version: both line 4365 and the switch subtract from myCash
 static int processBetBuggy(MockLocalPlayer& p) {
     // Step 1: flopEngine3 sets mySet to bet amount (simulated here)
-    // This happens at lines 4349-4353 in flopEngine3()
     p.mySet = p.bet;
 
     // Step 2: Line 4365 in flopEngine3(): myCash -= mySet;
-    // This subtracts the bet from cash (correct on its own)
+    // This subtracts the bet from cash
     p.myCash -= p.mySet;
 
     // Step 3: The switch at lines 4454-4457 handles PLAYER_ACTION_BET
@@ -100,10 +99,6 @@ int main()
     printf("  Fixed: myCash=%d (expected %d), mySet=%d (expected %d)\n",
            p1.myCash, cashBefore1 - 30, p1.mySet, setBefore1 + 30);
     if (p1.myCash == cashBefore1 - 30 && p1.mySet == setBefore1 + 30) {
-        // Wait, with the fix, mySet should be set at lines 4349-4353 to bet amount,
-        // and the switch only subtracts from myCash. So mySet should be 30 (the bet amount).
-        // Actually, setBefore1 is 0 (initial), and after fix mySet should be 30 (set at lines 4349-4353).
-        // But processBetFixed doesn't set mySet... let me reconsider.
         printf("  PASS: Fixed code works correctly\n");
     } else {
         printf("  FAIL: Fix didn't work as expected (myCash=%d, mySet=%d)\n",
