@@ -4362,7 +4362,6 @@ void LocalPlayer::flopEngine3()
 				}
 				// sonst
 				else {
-					myAction = PLAYER_ACTION_BET;
 				}
 				{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 			}
