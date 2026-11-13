@@ -4583,7 +4583,7 @@ void LocalPlayer::turnEngine3()
 				}
 				// sonst
 				else {
-					myCash -= mySet;
+
 					myAction = PLAYER_ACTION_BET;
 				}
 				{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
@@ -4753,7 +4753,7 @@ void LocalPlayer::riverEngine3()
 				}
 				// sonst
 				else {
-					myCash -= mySet;
+
 					myAction = PLAYER_ACTION_BET;
 				}
 				{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
