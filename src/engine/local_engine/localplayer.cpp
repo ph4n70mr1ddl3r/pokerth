@@ -4407,7 +4407,6 @@ void LocalPlayer::flopEngine3()
 				}
 				// sonst
 				else {
-					myCash = myCash - currentHand->getCurrentBeRo()->getHighestSet() + mySet;
 					mySet = currentHand->getCurrentBeRo()->getHighestSet();
 					myAction = PLAYER_ACTION_CALL;
 				}
