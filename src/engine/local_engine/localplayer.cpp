@@ -4628,7 +4628,6 @@ void LocalPlayer::turnEngine3()
 				}
 				// sonst
 				else {
-					myCash = myCash - currentHand->getCurrentBeRo()->getHighestSet() + mySet;
 					mySet = currentHand->getCurrentBeRo()->getHighestSet();
 					myAction = PLAYER_ACTION_CALL;
 				}
@@ -4799,7 +4798,6 @@ void LocalPlayer::riverEngine3()
 				}
 				// sonst
 				else {
-					myCash = myCash - currentHand->getCurrentBeRo()->getHighestSet() + mySet;
 					mySet = currentHand->getCurrentBeRo()->getHighestSet();
 					myAction = PLAYER_ACTION_CALL;
 				}
