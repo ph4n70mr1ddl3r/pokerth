@@ -1073,9 +1073,11 @@ int LocalPlayer::checkMyAction(int targetAction, int targetBet, int highestSet, 
 	case PLAYER_ACTION_CALL: {
 		if(getMySet() >= highestSet) {
 			// Player has already put in enough chips (mySet >= highestSet).
-			// Call is valid because no additional chips need to be put in.
-			// targetBet and myCash are irrelevant when mySet >= highestSet.
-			return 0;
+			// Call is valid only if targetBet is within cash (or targetBet == 0, no additional chips needed).
+			if(targetBet == 0 || (getMyCash() > 0 && targetBet <= getMyCash())) {
+				return 0;
+			}
+			return 1;
 		}
 		else if(getMyCash() > 0 && targetBet <= getMyCash()) {
 			// not all in
