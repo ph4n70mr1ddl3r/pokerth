@@ -67,9 +67,6 @@ int main()
     } else {
         printf("  FAIL: cash unexpectedly changed\n");
         failures++;
-    } else {
-        printf("  FAIL: fixed code didn't work as expected\n");
-        failures++;
     }
 
     // Test buggy code

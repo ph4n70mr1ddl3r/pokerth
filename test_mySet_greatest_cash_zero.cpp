@@ -99,7 +99,6 @@ int main()
             printf("  Fixed: returned -1 (CALL REJECTED - BUG: myCash > 0 unnecessarily required)\n");
             allPassed = false;
             failures++;
-        } else {
             printf("  Fixed: returned 0 (CALL ALLOWED - correct)\n");
         }
 
