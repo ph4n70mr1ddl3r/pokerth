@@ -40,7 +40,6 @@
 #include <boost/program_options.hpp>
 #include <filesystem>
 
-#include <iostream>
 #include <fstream>
 #include <csignal>
 #include <atomic>
