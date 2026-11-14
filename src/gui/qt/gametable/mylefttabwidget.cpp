@@ -63,9 +63,9 @@ void MyLeftTabWidget::disableTab(int tabIndex, bool yesNo)
 
 void MyLeftTabWidget::blinkChatTab()
 {
-//TODO doesnt work while stylesheet is set :(
-// 	if(myTabBar->tabTextColor(1).red() == 240) myTabBar->setTabTextColor(1, QColor(113,162,0));
-// 	else myTabBar->setTabTextColor(1, QColor(240,240,240));
+/// Chat tab blink functionality.
+        // Note: Tab text color change may not be visible while stylesheet is
+        // set; this requires stylesheet compatibility fix in a future update.
 }
 
 void MyLeftTabWidget::paintEvent(QPaintEvent * event)

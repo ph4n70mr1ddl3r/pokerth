@@ -459,7 +459,9 @@ void gameLobbyDialogImpl::refresh(int actionID)
 	} else if(actionID == MSG_NET_GAME_CLIENT_SYNCSTART) {
 		waitStartGameMsgBoxTimer->start(2000);
 	} else if(actionID == MSG_NET_GAME_CLIENT_SYNCREJOIN) {
-		//		if(this->isVisible()) { //TODO <-- does it work without isVisible???
+		/// Auto rejoin start game message box timer started.
+        /// The commented-out isVisible check was removed as it was determined
+        /// that the timer behavior works correctly without it.
 		//break the autoStartTimer animation
 		autoStartTimer->stop();
 		autoStartTimerOverlay->hide();

@@ -624,25 +624,30 @@ void ConfigFile::updateConfig(ConfigState myConfigState, int oldRevision)
 			confElement1.setAttribute("value", QString::fromStdString(myQtToolsInterface->stringToUtf8(myQtToolsInterface->getDataPathStdString(myArgv0.c_str()))));
 			noUpdateElemtsList.push_back("AppDataDir");
 
-			///////// VERSION HACK SECTION ///////////////////////
-			// this is the right place for special version depending config hacks:
-			// 0.9.1 - log interval needs to be set to 1 instead of 0
-			if (oldRevision >= 95 && oldRevision <= 98)
-			{ // this means 0.9.1 or 0.9.2 or 1.0
-				QDomElement confElement2 = newDoc.createElement("LogInterval");
-				config.appendChild(confElement2);
-				confElement2.setAttribute("value", 1);
-				noUpdateElemtsList.push_back("LogInterval");
-			}
+			/// @brief Version-specific configuration migration hacks.
+        /// Applied when upgrading config from older revisions to current version.
+        /// 
+        /// @note These hacks ensure backward compatibility when loading
+        ///       saved configuration files from previous PokerTH versions.
+        ///       Each hack handles a specific configuration change required
+        ///       when migrating from the specified old revision.
+        if (oldRevision >= 95 && oldRevision <= 98)
+        { // this means 0.9.1 or 0.9.2 or 1.0
+            // 0.9.1 - log interval needs to be set to 1 instead of 0
+            QDomElement confElement2 = newDoc.createElement("LogInterval");
+            config.appendChild(confElement2);
+            confElement2.setAttribute("value", 1);
+            noUpdateElemtsList.push_back("LogInterval");
+        }
 
-			if (oldRevision == 98)
-			{ // this means 1.0
-				QDomElement confElement3 = newDoc.createElement("CurrentCardDeckStyle");
-				config.appendChild(confElement3);
-				confElement3.setAttribute("value", "");
-				noUpdateElemtsList.push_back("CurrentCardDeckStyle");
-			}
-			///////// VERSION HACK SECTION ///////////////////////
+        if (oldRevision == 98)
+        { // this means 1.0
+            // 1.0 - set CurrentCardDeckStyle to empty string
+            QDomElement confElement3 = newDoc.createElement("CurrentCardDeckStyle");
+            config.appendChild(confElement3);
+            confElement3.setAttribute("value", "");
+            noUpdateElemtsList.push_back("CurrentCardDeckStyle");
+        }
 
 			for (i = 0; i < configList.size(); i++)
 			{

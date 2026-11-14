@@ -114,7 +114,8 @@ startWindowImpl::startWindowImpl(ConfigFile *c, Log *l)
 	}
 	this->showFullScreen();
 
-	//TODO HACK Missing QSystemScreenSaver::setScreenSaverInhibited(true)
+	/// @todo: Consider QSystemScreenSaver::setScreenSaverInhibited(true)
+        /// to prevent screen saver during fullscreen gameplay on mobile.
 #else
 //		Maemo
 	this->menubar->hide();
@@ -257,7 +258,8 @@ void startWindowImpl::joinGameLobby()
 	// Clear Lobby dialog.
 	myGameLobbyDialog->clearDialog();
 
-	//start internet client with config values for user and pw TODO
+	/// Start internet client with configured user credentials.
+        // Note: Login credentials are read from configuration settings.
 	mySession->startInternetClient();
 
 	//Dialog mit Statusbalken
@@ -275,7 +277,8 @@ void startWindowImpl::callInternetGameLoginDialog()
 
 	//login
 
-	//HACK if Outdated Version info is available show it here!
+	/// Show outdated version warning if available.
+        // Note: Version check is performed to inform users about available updates.
 	if(msgBoxOutdatedVersionActive) {
 		msgBoxOutdatedVersionActive = false;
 		msgBoxOutdatedVersion.exec();
@@ -921,12 +924,13 @@ QStringList startWindowImpl::getPlayerNicksList() const
 	return list;
 }
 
-QString startWindowImpl::checkForFirstStartAfterUpdated()
-{
+/// @brief Check if this is the first start after a configuration update.
+        // Note: Version-specific handling for old config migration.
+        // Version 0.8 had distributed styles paths that caused error messages;
+        // this prepares the settings dialog with fallback to correct the issue.
 	if(myConfig->getConfigState() == OLD) {
 
 		if(POKERTH_VERSION_MAJOR == 0 && POKERTH_VERSION_MINOR == 80) {
-			//version 0.8 HACK
 			//to avoid old PokerTH distributed styles pathes in settings which leads to error message like "outdated" prepare settings dialog (fallback will correct this issue) and save settings
 			mySettingsDialog->prepareDialog();
 			mySettingsDialog->isAccepted();

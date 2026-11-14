@@ -115,7 +115,6 @@ public:
 	[[nodiscard]] int GetStartCash() const;
 	void SetStartCash(int cash);
 
-	// TODO: last_games here
 	void AddPlayerLastGame(long long last_games);
 	void SetPlayerLastGames(std::vector<long long> last_games);
 	[[nodiscard]] std::vector<long long> GetPlayerLastGames() const;

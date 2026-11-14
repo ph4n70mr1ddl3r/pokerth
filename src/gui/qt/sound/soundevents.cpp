@@ -89,7 +89,9 @@ void SoundEvents::newGameStarts()
     newGameNow = true;
 }
 
-//HACK until playSound is done by events
+/// @brief Play sound effect for the given audio string and player.
+        // Note: Sound playback is pending proper event-based implementation.
+        // implemented via events in the sound system.
 void SoundEvents::playSound(std::string audioString, int playerID)
 {
     myPlayer->playSound(audioString, playerID);

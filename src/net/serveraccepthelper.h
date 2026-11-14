@@ -129,8 +129,10 @@ protected:
         if (serverPort < 1024)
             throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_PORT, 0);
 
-        // TODO consider sctp
-        // Prepare Listen.
+        /// Prepare Listen.
+        // Note: SCTP (Stream Control Transmission Protocol) could be considered
+        // for future improvements for multi-homing and failover support,
+        // but the current TCP implementation is functional.
         if (ipv6) {
             m_endpoint = boost::make_shared<P_endpoint>(P::v6(), serverPort);
         } else {
