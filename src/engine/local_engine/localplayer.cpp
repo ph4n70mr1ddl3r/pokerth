@@ -1055,6 +1055,21 @@ void LocalPlayer::action()
 	// 	cout << "playerID in action(): " << (*(currentHand->getCurrentBeRo()->getCurrentPlayersTurnIt()))->getMyID() << endl;
 }
 
+/// @brief Check if a player's action (call/bet/raise) is valid given their current state.
+///        Validates the action against the player's available cash (myCash), chips already set (mySet),
+///        and the current highest bet (highestSet).
+///
+/// @param targetAction The action to validate (PLAYER_ACTION_CALL, PLAYER_ACTION_BET, PLAYER_ACTION_RAISE, etc.)
+/// @param targetBet    The bet amount for the action
+/// @param highestSet   The current highest bet in the hand
+/// @param minimumRaise The minimum raise amount required
+/// @param smallBlind   The small blind amount (used for bet validation)
+/// @return 0 if the action is valid, 1 if invalid
+/// @note The function handles edge cases such as:
+///       - myCash == 0 with targetBet > 0 (invalid call)
+///       - mySet >= highestSet with insufficient cash (invalid call)
+///       - All-in conditions when player has insufficient chips
+///       - Special cases for mySet == 0 vs mySet >= highestSet
 int LocalPlayer::checkMyAction(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind)
 {
 
@@ -2835,6 +2850,14 @@ raise = ((static_cast<int>(myOdds)-myNiveau[2])/2)*2*currentHand->getSmallBlind(
 }
 
 
+/// @brief Evaluate the showdown result and update player's set/cash accordingly.
+///        Determines the final mySet and myCash values based on the player's action
+///        and the highest set among all players.
+///
+/// @param bet  The bet amount placed by the player
+/// @param raise The raise amount (if applicable)
+/// @note Updates mySet and myCash based on the hand outcome. Also updates myAction
+///       to reflect whether the player went all-in or not.
 void LocalPlayer::evaluation(int bet, int raise)
 {
 
@@ -3591,6 +3614,11 @@ int LocalPlayer::flopCardsValue(int* cards)
 	}
 }
 
+/// @brief Calculate the player's odds based on their hole cards and the current game stage.
+///        Updates myOdds member variable with the probability percentage.
+///
+/// @note Uses precomputed preflop values adjusted for the number of players.
+///       For post-flop rounds, odds are calculated through hand enumeration.
 void LocalPlayer::calcMyOdds()
 {
 
@@ -4466,8 +4494,17 @@ case PLAYER_ACTION_BET: {
 }
 
 
+/// @brief Execute the turn round engine for the local player.
+///        Handles player actions (check, bet, call, raise, fold) during the turn phase.
+///        Updates mySet, myCash, and myAction based on the player's AI decisions.
+///
+/// @note This is the main game logic function for turn street betting.
+///       Handles both the betting phase and the transition to river state.
+///       myCash and mySet are updated based on the chosen action.
+/// myLastRelativeSet is calculated at the end of the function.
 void LocalPlayer::turnEngine3()
 {
+
 	int oldMySet = mySet;
 
 	// Prozent ausrechnen
@@ -4643,8 +4680,17 @@ void LocalPlayer::turnEngine3()
 
 }
 
+/// @brief Execute the river round engine for the local player.
+///        Handles player actions (check, bet, call, raise, fold) during the river phase.
+///        Updates mySet, myCash, and myAction based on the player's AI decisions.
+///
+/// @note This is the main game logic function for river street betting.
+///       This is the final betting round before showdown.
+///       myCash and mySet are updated based on the chosen action.
+///       myLastRelativeSet is calculated at the end of the function.
 void LocalPlayer::riverEngine3()
 {
+
 	int oldMySet = mySet;
 
 	// Prozent ausrechnen
