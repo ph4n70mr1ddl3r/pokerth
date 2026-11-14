@@ -984,7 +984,7 @@ void gameTableImpl::refreshCash()
 		}
 		break;
 		case SEAT_AUTOFOLD: {
-//			qDebug() << (*it_c)->getMyID() << "CASH AUTOFOLD"; //TODO transparent
+//			qDebug() << (*it_c)->getMyID() << "CASH AUTOFOLD";
 			cashLabelArray[(*it_c)->getMyID()]->setText("$"+QString("%L1").arg((*it_c)->getMyCash()), transparent);
 		}
 		break;
@@ -2444,8 +2444,8 @@ void gameTableImpl::postRiverRunAnimation3()
 			//Show "Winner" label
 			actionLabelArray[(*it_c)->getMyID()]->setPixmap(QPixmap::fromImage(QImage(myGameTableStyle->getActionPic(7))));
 
-			//show winnercards if more than one player is active TODO
-			if ( nonfoldPlayerCounter != 1 && myConfig->readConfigInt("ShowFadeOutCardsAnimation")) {
+			//show winnercards if more than one player is active
+			if ( nonfoldPlayerCounter > 1 && myConfig->readConfigInt("ShowFadeOutCardsAnimation")) {
 
 				int bestHandPos[5];
 				(*it_c)->getMyBestHandPosition(bestHandPos);
@@ -2543,7 +2543,6 @@ void gameTableImpl::postRiverRunAnimation3()
 		}
 	}
 
-	// log side pot winners -> TODO
 	for(auto it_c=activePlayerList->begin(); it_c!=activePlayerList->end(); ++it_c) {
 		if((*it_c)->getMyAction() != PLAYER_ACTION_FOLD && (*it_c)->getMyCardsValueInt() != currentHand->getCurrentBeRo()->getHighestCardsValue() ) {
 
@@ -2631,7 +2630,6 @@ void gameTableImpl::postRiverRunAnimation6()
 	refreshCash();
 	refreshPot();
 
-	// TODO HACK
 	// Check for network client, do not start new hand if client is running.
 	if (myStartWindow->getSession()->isNetworkClientRunning())
 		return;

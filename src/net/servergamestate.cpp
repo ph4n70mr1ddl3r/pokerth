@@ -1246,7 +1246,6 @@ ServerGameStateHand::StartNewHand(boost::shared_ptr<ServerGame> server)
 	// Initialize hand.
 	curGame.initHand();
 
-	// HACK: Skip GUI notification run
 	if (auto curHand = curGame.getCurrentHand()) {
 		if (auto flop = curHand->getFlop())
 			flop->skipFirstRunGui();

@@ -328,8 +328,7 @@ ServerGame::InternalStartGame()
 
 	if (playerData.size() >= 2) {
 		// Set DB Backend.
-		// @TODO: check for wec or bbc game with bbcbot as creator
-		// FIX: check for bbcbot creator and use ServerDBGeneric in that case
+		// Check for BBC/WE game with bot creator, use generic DB backend
 		if (GetGameData().gameType == GAME_TYPE_RANKING)
 			m_database = GetLobbyThread().GetDatabase();
 		else if (m_creatorPlayerDBId != 0)
