@@ -35,6 +35,7 @@
 #include "cardsvalue.h"
 #include <configfile.h>
 #include <core/loghelper.h>
+#include "game_defs.h"
 
 #include <vector>
 #include <climits>
@@ -961,6 +962,8 @@ void LocalPlayer::action()
 	// 	int oldMinimumRaise = currentHand->getCurrentBeRo()->getMinimumRaise();
 	// 	int myOldSet = mySet;
 
+	static const int BIG_BLIND_BUTTON = BUTTON_BIG_BLIND; // myButton value for big blind position
+
 	switch(currentHand->getCurrentRound()) {
 	case 0: {
 
@@ -1261,29 +1264,29 @@ void LocalPlayer::preflopEngine()
 		if(cBluff > 90) {
 			myAction = PLAYER_ACTION_CALL;
 			// bigBlind --> check
-			if(myButton == 3 && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
+			if(myButton == BIG_BLIND_BUTTON && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
 		}
 		if(cBluff > 80 && myOdds >= myNiveau[2] + 4) {
 			myAction = PLAYER_ACTION_CALL;
 			// bigBlind --> check
-			if(myButton == 3 && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
+			if(myButton == BIG_BLIND_BUTTON && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
 		}
 		if(cBluff > 70 && myOdds >= myNiveau[2] + 8) {
 			myAction = PLAYER_ACTION_CALL;
 			// bigBlind --> check
-			if(myButton == 3 && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
+			if(myButton == BIG_BLIND_BUTTON && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
 		}
 		if(cBluff > 60 && myOdds >= myNiveau[2] + 12) {
 			myAction = PLAYER_ACTION_CALL;
 			// bigBlind --> check
-			if(myButton == 3 && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
+			if(myButton == BIG_BLIND_BUTTON && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
 		}
 
 	} else {
 		// call
 		if(myOdds >= myNiveau[0] || (mySet >= currentHand->getCurrentBeRo()->getHighestSet()/2 && myOdds >= myNiveau[0]-8)) {
 			// bigBlind --> check
-			if(myButton == 3 && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
+			if(myButton == BIG_BLIND_BUTTON && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
 			else {
 				// all in on close call
 				if(myCash-currentHand->getCurrentBeRo()->getHighestSet() <= (myCash*1)/5) {
@@ -1297,7 +1300,7 @@ void LocalPlayer::preflopEngine()
 		// fold
 		else {
 			// bigBlind -> check
-			if(myButton == 3 && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
+			if(myButton == BIG_BLIND_BUTTON && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
 			else myAction = PLAYER_ACTION_FOLD;
 		}
 	}
@@ -1363,7 +1366,7 @@ case PLAYER_ACTION_CHECK:
 			} else {
 				myAction = PLAYER_ACTION_CALL;
 				// bigBlind --> check
-				if(myButton == 3 && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
+				if(myButton == BIG_BLIND_BUTTON && mySet == currentHand->getCurrentBeRo()->getHighestSet()) myAction = PLAYER_ACTION_CHECK;
 			}
 		}
 		// Standard-Raise-Routine
