@@ -960,7 +960,7 @@ void LocalPlayer::action()
 	// 	int myOldCash = myCash;
 	// 	int oldHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 	// 	int oldMinimumRaise = currentHand->getCurrentBeRo()->getMinimumRaise();
-	// 	int myOldSet = mySet;
+	int oldMySet = mySet;
 
 	static const int BIG_BLIND_BUTTON = BUTTON_BIG_BLIND; // myButton value for big blind position
 
@@ -1520,7 +1520,10 @@ void LocalPlayer::preflopEngine()
         }
         break;
         case PLAYER_ACTION_BET: {
-            if(bet > 0) { myCash -= bet; mySet += bet; }
+            if(mySet > 0) {
+                myCash -= mySet;
+                mySet = oldMySet + mySet;
+            }
         }
         break;
         case PLAYER_ACTION_CHECK:
