@@ -1,6 +1,6 @@
 // Test for LocalPlayer::flopEngine3() PLAYER_ACTION_BET mySet update bug.
 //
-// Bug: In LocalPlayer::flopEngine3(), the PLAYER_ACTION_BET case at line 4451 does
+// Bug: In LocalPlayer::flopEngine3(), the PLAYER_ACTION_BET case at line 4480 does
 // `myCash -= mySet;` but does NOT update mySet = oldMySet + mySet. This is inconsistent
 // with the fixed code in turnEngine3()/riverEngine3() and the other engine functions.
 //
@@ -47,7 +47,7 @@ int main()
 {
     int failures = 0;
 
-    printf("Testing flopEngine3() PLAYER_ACTION_BET mySet update bug\n\n");
+    printf("Testing flopEngine3() PLAYER_ACTION_BET myCash/mySet bug\n\n");
 
     // --- Scenario 1: Normal bet with oldMySet > 0 ---
     printf("--- Scenario 1 (mySet=50, myCash=100, oldMySet=30) ---\n");
