@@ -1021,7 +1021,7 @@ void settingsDialogImpl::addGameTableStyle()
 				treeWidget_gameTableStyles->setCurrentItem(newItem);
 				treeWidget_gameTableStyles->sortItems(0, Qt::AscendingOrder);
 
-				qDebug() << "settings: " << newStyle.getStyleDescription() << newStyle.getState();
+				qWarning() << "settings: " << newStyle.getStyleDescription() << newStyle.getState();
 				if(newStyle.getState() != GT_STYLE_OK) newStyle.showErrorMessage();
 			} else {
 				MyMessageBox::warning(this, tr("Game Table Style File Error"),
@@ -1145,7 +1145,7 @@ void settingsDialogImpl::addCardDeckStyle()
 				if(newStyle.getState() != CD_STYLE_OK) newItem->setIcon(2, QIcon(":/gfx/emblem-important.png"));
 				else newItem->setIcon(2, QIcon(":/gfx/dialog-ok-apply.png"));
 
-				qDebug() << "settings: " << newStyle.getStyleDescription() << newStyle.getState();
+				qWarning() << "settings: " << newStyle.getStyleDescription() << newStyle.getState();
 				if(newStyle.getState() != CD_STYLE_OK) newStyle.showErrorMessage();
 
 				treeWidget_cardDeckStyles->addTopLevelItem(newItem);
