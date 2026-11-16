@@ -4440,9 +4440,9 @@ void LocalPlayer::flopEngine3()
         }
         break;
 case PLAYER_ACTION_BET: {
-            if(mySet > 0) {
-                myCash -= mySet;
-                mySet = oldMySet + mySet;
+            if(bet > 0) {
+                myCash -= bet;
+                mySet = oldMySet + bet;
             }
         }
         break;
@@ -4469,6 +4469,7 @@ void LocalPlayer::turnEngine3()
 {
 
 	int oldMySet = mySet;
+	int bet = mySet;
 
 	// Prozent ausrechnen
 
