@@ -1519,10 +1519,10 @@ void LocalPlayer::preflopEngine()
             myCash = 0;
         }
         break;
-        case PLAYER_ACTION_BET: {
-            if(mySet > 0) {
-                myCash -= mySet;
-                mySet = oldMySet + mySet;
+case PLAYER_ACTION_BET: {
+            if(mySet > oldMySet) {
+                int betAmount = mySet - oldMySet;
+                myCash -= betAmount;
             }
         }
         break;
