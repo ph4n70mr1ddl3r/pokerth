@@ -4587,6 +4587,8 @@ void LocalPlayer::turnEngine3()
 
 					myAction = PLAYER_ACTION_BET;
 				}
+				// Update bet to reflect the actual bet amount after mySet is set
+				bet = mySet;
 				{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 			}
 
