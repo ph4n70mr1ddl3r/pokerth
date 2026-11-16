@@ -32,17 +32,18 @@ struct MockLocalPlayer {
 };
 
 // Simulate the BUGGY PLAYER_ACTION_BET case from localplayer.cpp (lines 1522-1528)
-// Does myCash -= mySet and mySet = oldMySet + mySet (uses mySet instead of bet)
+// Does myCash -= mySet - oldMySet (conditionally) and does NOT update mySet
 static int action_buggy(MockLocalPlayer& p) {
-    if (p.mySet > 0) {
-        p.myCash -= p.mySet;
-        p.mySet = p.oldMySet + p.mySet;
+    if (p.mySet > p.oldMySet) {
+        int betAmount = p.mySet - p.oldMySet;
+        p.myCash -= betAmount;
+        // BUG: mySet is NOT updated to oldMySet + bet
     }
     return 0;
 }
 
 // Simulate the FIXED PLAYER_ACTION_BET case
-// Does myCash -= bet and mySet = oldMySet + bet (uses bet instead of mySet)
+// Does myCash -= bet and mySet = oldMySet + bet
 static int action_fixed(MockLocalPlayer& p) {
     if (p.bet > 0) {
         p.myCash -= p.bet;
@@ -96,7 +97,7 @@ int main()
     int cashBefore1 = p1.myCash;
 
     runBuggyTest("Buggy", p1, cashBefore1, cashBefore1 - 20, 20);
-    // Buggy: myCash = 100 - 50 = 50 (wrong - subtracts mySet instead of bet=20),
+    // Buggy: myCash = 100 - 20 = 80 (correct by coincidence since mySet-oldMySet=20=bet),
     //         mySet stays 50 (missing oldMySet + bet update)
 
     runFixedTest("Fixed", p1, cashBefore1, cashBefore1 - 20, 50);
@@ -113,7 +114,7 @@ int main()
     int cashBefore2 = p2.myCash;
 
     runBuggyTest("Buggy", p2, cashBefore2, cashBefore2 - 25, 25);
-    // Buggy: myCash = 100 - 30 = 70 (wrong - subtracts mySet instead of bet=25),
+    // Buggy: myCash = 100 - 25 = 75 (correct by coincidence), mySet stays 30
 
     runFixedTest("Fixed", p2, cashBefore2, cashBefore2 - 25, 25);
     // Fixed: myCash = 100 - 25 = 75, mySet stays 25 (oldMySet + bet = 0 + 25 = 25)
@@ -122,14 +123,15 @@ int main()
     printf("  Result: %s\n\n", fix2_ok ? "PASS" : "FAIL");
     if (fix2_ok) scenario2_passed = true;
 
-    // --- Scenario 3: Larger bet with oldMySet > 0 ---
+    // --- Scenario 3: Larger bet where mySet - oldMySet != bet ---
     printf("--- Scenario 3 (mySet=40, myCash=200, oldMySet=25, bet=35) ---\n");
     MockLocalPlayer p3;
     resetPlayer(p3, 40, 200, 25, 35);
     int cashBefore3 = p3.myCash;
 
     runBuggyTest("Buggy", p3, cashBefore3, cashBefore3 - 35, 35);
-    // Buggy: myCash = 200 - 40 = 160 (wrong - subtracts mySet instead of bet=35),
+    // Buggy: myCash = 200 - 15 = 185 (WRONG - mySet-oldMySet=15, not bet=35),
+    //         mySet stays 40
 
     runFixedTest("Fixed", p3, cashBefore3, cashBefore3 - 35, 60);
     // Fixed: myCash = 200 - 35 = 165, mySet = 25 + 35 = 60
@@ -145,7 +147,7 @@ int main()
     int cashBefore4 = p4.myCash;
 
     runBuggyTest("Buggy", p4, cashBefore4, cashBefore4, 0);  // bet=0, nothing happens
-    // Buggy: bet > 0 is false, so myCash unchanged = 100
+    // Buggy: mySet(0) > oldMySet(10) is false, so myCash unchanged = 100
 
     runFixedTest("Fixed", p4, cashBefore4, cashBefore4, 0);  // bet=0, nothing happens
 
@@ -156,7 +158,7 @@ int main()
     printf("Scenario results:\n");
     printf("  Scenario 1 (oldMySet > 0 bug): %s\n", scenario1_passed ? "PASS" : "FAIL");
     printf("  Scenario 2 (fresh bet edge case): %s\n", scenario2_passed ? "PASS" : "FAIL");
-    printf("  Scenario 3 (larger mySet): %s\n", scenario3_passed ? "PASS" : "FAIL");
+    printf("  Scenario 3 (larger mySet bug): %s\n", scenario3_passed ? "PASS" : "FAIL");
     printf("  Scenario 4 (bet=0 edge case): %s\n", scenario4_passed ? "PASS" : "FAIL");
 
     if (!scenario1_passed || !scenario2_passed || !scenario3_passed) {
