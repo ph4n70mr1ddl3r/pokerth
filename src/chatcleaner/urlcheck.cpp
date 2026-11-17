@@ -41,21 +41,34 @@ bool UrlCheck::run(QString msg)
 	QMutexLocker locker(&m_mutex);
 	msg = msg.toLower();
 
-	QStringListIterator it1(urlStrings);
+	// Remove whitelisted URLs from the message before looking for URL patterns.
+	// The whole whitespace-delimited token is removed so that a prefix
+	// exception such as "http://www.esl." also covers the trailing TLD.
+	// Testing an exception against the entire original message (instead of the
+	// specific URL it is meant to allow) would let a single whitelisted token
+	// disable the filter for every other URL in the same message.
+	for (const QString &exception : urlExceptionStrings) {
+		if (exception.isEmpty()) {
+			continue;
+		}
+		int exPos = msg.indexOf(exception);
+		while (exPos != -1) {
+			int start = exPos;
+			while (start > 0 && !msg.at(start - 1).isSpace()) {
+				--start;
+			}
+			int end = exPos + exception.length();
+			while (end < msg.length() && !msg.at(end).isSpace()) {
+				++end;
+			}
+			msg.remove(start, end - start);
+			exPos = msg.indexOf(exception, start);
+		}
+	}
 
-	while (it1.hasNext()) {
-		if(msg.contains(it1.next())) {
-			QStringListIterator it2(urlExceptionStrings);
-			bool exception = false;
-			while (it2.hasNext()) {
-				if(msg.contains(it2.next())) {
-					exception = true;
-					break;
-				}
-			}
-			if(!exception) {
-				return true;
-			}
+	for (const QString &url : urlStrings) {
+		if (!url.isEmpty() && msg.contains(url)) {
+			return true;
 		}
 	}
 	return false;
