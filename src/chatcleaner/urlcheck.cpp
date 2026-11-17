@@ -36,39 +36,76 @@ UrlCheck::UrlCheck()
 {
 }
 
+// A token is whitelisted only when an exception is anchored to a domain
+// boundary inside it: at the start of the token, directly after a '.' (e.g.
+// "www.pokerth.net"), or directly after an http(s) scheme. The text following
+// the exception may only be empty, a single TLD-like label (".com", "com",
+// ".de") or a path/query on the whitelisted host, so that hosts merely
+// containing an exception (e.g. "pokerth.net.evil.com") are not mistaken for
+// the whitelisted site.
+static bool isWhitelistedToken(const QString &token, const QStringList &exceptions)
+{
+	for (const QString &exception : exceptions) {
+		if (exception.isEmpty()) {
+			continue;
+		}
+		int exPos = token.indexOf(exception);
+		while (exPos != -1) {
+			const QString prefix = token.left(exPos);
+			const bool domainBoundary = prefix.isEmpty()
+					|| prefix.endsWith(QLatin1Char('.'))
+					|| prefix == QLatin1String("http://")
+					|| prefix == QLatin1String("https://");
+
+			const QString suffix = token.mid(exPos + exception.length());
+			bool validSuffix = true;
+			if (!suffix.isEmpty()) {
+				const QChar first = suffix.at(0);
+				if (first == QLatin1Char('/') || first == QLatin1Char('?') || first == QLatin1Char('#')) {
+					validSuffix = true;
+				} else {
+					int i = (first == QLatin1Char('.')) ? 1 : 0;
+					if (i == suffix.length()) {
+						validSuffix = false;
+					} else {
+						for (; i < suffix.length(); ++i) {
+							if (!suffix.at(i).isLetterOrNumber()) {
+								validSuffix = false;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			if (domainBoundary && validSuffix) {
+				return true;
+			}
+			exPos = token.indexOf(exception, exPos + 1);
+		}
+	}
+	return false;
+}
+
 bool UrlCheck::run(QString msg)
 {
 	QMutexLocker locker(&m_mutex);
 	msg = msg.toLower();
 
-	// Remove whitelisted URLs from the message before looking for URL patterns.
-	// The whole whitespace-delimited token is removed so that a prefix
-	// exception such as "http://www.esl." also covers the trailing TLD.
-	// Testing an exception against the entire original message (instead of the
-	// specific URL it is meant to allow) would let a single whitelisted token
-	// disable the filter for every other URL in the same message.
-	for (const QString &exception : urlExceptionStrings) {
-		if (exception.isEmpty()) {
+	// Inspect each whitespace-delimited token separately. Testing an exception
+	// against the entire message would let one whitelisted token disable the
+	// filter for every other URL in the same message. A token is skipped only
+	// when it actually is a whitelisted URL, not when it merely contains an
+	// exception string as a substring.
+	const QStringList tokens = msg.split(QRegularExpression(QStringLiteral("\\s+")), Qt::SkipEmptyParts);
+	for (const QString &token : tokens) {
+		if (isWhitelistedToken(token, urlExceptionStrings)) {
 			continue;
 		}
-		int exPos = msg.indexOf(exception);
-		while (exPos != -1) {
-			int start = exPos;
-			while (start > 0 && !msg.at(start - 1).isSpace()) {
-				--start;
+		for (const QString &url : urlStrings) {
+			if (!url.isEmpty() && token.contains(url)) {
+				return true;
 			}
-			int end = exPos + exception.length();
-			while (end < msg.length() && !msg.at(end).isSpace()) {
-				++end;
-			}
-			msg.remove(start, end - start);
-			exPos = msg.indexOf(exception, start);
-		}
-	}
-
-	for (const QString &url : urlStrings) {
-		if (!url.isEmpty() && msg.contains(url)) {
-			return true;
 		}
 	}
 	return false;
