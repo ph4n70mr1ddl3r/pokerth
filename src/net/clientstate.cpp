@@ -1830,7 +1830,7 @@ ClientStateRunHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client,
 		}
 
 		// Next player's turn.
-		{ auto bero = curGame->getCurrentHand()->getCurrentBeRo(); if (bero) bero->setCurrentPlayersTurnId(tmpPlayer->getMyID()); }
+		{ auto bero = curGame->getCurrentHand()->getCurrentBeRo(); if (bero) bero->setCurrentPlayersTurnId(tmpPlayer->getMyUniqueID()); }
 
 		// Mark current player in GUI.
 		int guiStatus = 2;
