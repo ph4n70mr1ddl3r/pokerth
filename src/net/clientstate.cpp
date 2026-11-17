@@ -1658,7 +1658,7 @@ ClientStateWaitHand::InternalHandlePacket(boost::shared_ptr<ClientThread> client
 		for (int num = 0; num < 5; num++) {
 			bestHandPos[num] = (num < r.besthandposition_size()) ? r.besthandposition(num) : 0;
 		}
-		if (r.cardsvalue()) {
+		if (r.has_cardsvalue()) {
 			tmpPlayer->setMyCardsValueInt(r.cardsvalue());
 		}
 		tmpPlayer->setMyBestHandPosition(bestHandPos);
