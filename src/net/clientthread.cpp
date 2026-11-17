@@ -1658,14 +1658,9 @@ ClientThread::UpdateStatData(const ServerStats &stats)
 	ServerStats curStats;
 	{
 		boost::mutex::scoped_lock lock(m_curStatsMutex);
-		if (stats.numberOfPlayersOnServer)
-			m_curStats.numberOfPlayersOnServer = stats.numberOfPlayersOnServer;
-
-		if (stats.totalPlayersEverLoggedIn)
-			m_curStats.totalPlayersEverLoggedIn = stats.totalPlayersEverLoggedIn;
-
-		if (stats.totalGamesEverCreated)
-			m_curStats.totalGamesEverCreated = stats.totalGamesEverCreated;
+		m_curStats.numberOfPlayersOnServer = stats.numberOfPlayersOnServer;
+		m_curStats.totalPlayersEverLoggedIn = stats.totalPlayersEverLoggedIn;
+		m_curStats.totalGamesEverCreated = stats.totalGamesEverCreated;
 
 		curStats = m_curStats;
 	}
