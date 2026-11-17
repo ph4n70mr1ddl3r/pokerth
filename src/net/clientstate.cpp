@@ -1408,7 +1408,8 @@ ClientStateSynchronizeStart::TimerLoop(const boost::system::error_code& ec, boos
 void
 ClientStateSynchronizeStart::InternalHandlePacket(boost::shared_ptr<ClientThread> client, boost::shared_ptr<NetPacket> tmpPacket)
 {
-	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_GameStartInitialMessage) {
+	if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_GameStartInitialMessage
+			|| tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_GameStartRejoinMessage) {
 		// Try to start anyway. Terminating here is very bad because rejoin is not possible then.
 		// Unsubscribe lobby messages.
 		client->UnsubscribeLobbyMsg();
