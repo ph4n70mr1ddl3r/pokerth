@@ -714,6 +714,25 @@ AbstractClientStateReceiving::HandlePacket(boost::shared_ptr<ClientThread> clien
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_TimeoutWarningMessage) {
 		const TimeoutWarningMessage &tmpTimeout = tmpPacket->GetMsg()->timeoutwarningmessage();
 		client->GetCallback().SignalNetClientShowTimeoutDialog(static_cast<NetTimeoutReason>(tmpTimeout.timeoutreason()), tmpTimeout.remainingseconds());
+	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_YourActionRejectedMessage) {
+		// The server refused our action, so no PlayersActionDoneMessage will follow
+		// for it. Close the ping opened by SendPlayerAction() and tell the user
+		// why the action was rejected instead of silently dropping the message.
+		client->EndPing();
+		string reason;
+		switch (tmpPacket->GetMsg()->youractionrejectedmessage().rejectionreason()) {
+		case YourActionRejectedMessage::rejectedNotYourTurn:
+			reason = "not your turn";
+			break;
+		case YourActionRejectedMessage::rejectedActionNotAllowed:
+			reason = "action not allowed";
+			break;
+		case YourActionRejectedMessage::rejectedInvalidGameState:
+		default:
+			reason = "invalid game state";
+			break;
+		}
+		client->GetCallback().SignalNetClientGameChatMsg("(notice)", "Action rejected: " + reason);
 	} else if (tmpPacket->GetMsg()->messagetype() == PokerTHMessage::Type_ChatMessage) {
 		// Chat message - display it in the GUI.
 		const ChatMessage &netMessage = tmpPacket->GetMsg()->chatmessage();
