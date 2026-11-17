@@ -1560,9 +1560,12 @@ ServerGameStateWaitPlayerAction::InternalProcessPacket(boost::shared_ptr<ServerG
 			return;
 		}
 
-		// Check whether this is the correct round.
+		// Check whether this is the correct round and hand. Reject actions that
+		// belong to a previous hand (e.g. delayed or replayed packets), otherwise
+		// they would be applied to the current hand with the wrong stack/cards.
 		PlayerActionCode code = ACTION_CODE_VALID;
-		if (currentHand->getCurrentRound() != static_cast<GameState>(netMyAction->gamestate()))
+		if (currentHand->getCurrentRound() != static_cast<GameState>(netMyAction->gamestate())
+				|| netMyAction->handnum() != static_cast<unsigned>(curGame.getCurrentHandID()))
 			code = ACTION_CODE_INVALID_STATE;
 
 		// Check whether this is the correct player.
