@@ -441,9 +441,7 @@ void ConfigFile::fillBuffer()
 
 						list<std::string> tempStringList2;
 
-						QDomElement confList = xmlDoc.documentElement().firstChildElement("Configuration").firstChildElement(QString::fromStdString(configList[i].name)).firstChildElement();
-
-						for (QDomElement n = confList.firstChildElement(); !n.isNull(); n = n.nextSiblingElement())
+						for (QDomElement n = conf.firstChildElement(); !n.isNull(); n = n.nextSiblingElement())
 						{
 							tempStringList2.push_back(n.attribute("value").toStdString());
 						}
