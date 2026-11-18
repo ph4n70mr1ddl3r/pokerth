@@ -39,10 +39,11 @@ UrlCheck::UrlCheck()
 // A token is whitelisted only when an exception is anchored to a domain
 // boundary inside it: at the start of the token, directly after a '.' (e.g.
 // "www.pokerth.net"), or directly after an http(s) scheme. The text following
-// the exception may only be empty, a single TLD-like label (".com", "com",
-// ".de") or a path/query on the whitelisted host, so that hosts merely
-// containing an exception (e.g. "pokerth.net.evil.com") are not mistaken for
-// the whitelisted site.
+// the exception may only be empty, a path/query on the whitelisted host, or --
+// for a prefix exception ending in '.' such as "http://www.esl." -- a single
+// TLD-like label completing the host. An exception that already ends in a TLD
+// (e.g. "pokerth.net") must not accept an extra label: "pokerth.net.xyz" is a
+// different host, not the whitelisted site.
 static bool isWhitelistedToken(const QString &token, const QStringList &exceptions)
 {
 	for (const QString &exception : exceptions) {
@@ -63,7 +64,9 @@ static bool isWhitelistedToken(const QString &token, const QStringList &exceptio
 				const QChar first = suffix.at(0);
 				if (first == QLatin1Char('/') || first == QLatin1Char('?') || first == QLatin1Char('#')) {
 					validSuffix = true;
-				} else {
+				} else if (exception.endsWith(QLatin1Char('.'))) {
+					// Only an incomplete prefix exception such as
+					// "http://www.esl." needs a TLD label to complete it.
 					int i = (first == QLatin1Char('.')) ? 1 : 0;
 					if (i == suffix.length()) {
 						validSuffix = false;
@@ -75,6 +78,8 @@ static bool isWhitelistedToken(const QString &token, const QStringList &exceptio
 							}
 						}
 					}
+				} else {
+					validSuffix = false;
 				}
 			}
 
