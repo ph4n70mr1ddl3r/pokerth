@@ -41,6 +41,13 @@ bool BadWordCheck::run(QString msg)
 	QMutexLocker locker(&m_mutex);
 	msg = msg.toLower();
 
+	// Some configured bad words carry a leading and trailing space to restrict
+	// the match to a standalone word (e.g. " dick " must not match "dickinson").
+	// Pad both ends so such a word is still detected at the start or end of a
+	// message, where the required surrounding space would otherwise be absent.
+	msg.prepend(QLatin1Char(' '));
+	msg.append(QLatin1Char(' '));
+
 	// Remove whitelisted phrases before scanning for bad words. An exception
 	// allows only the bad word inside that phrase; testing it against the whole
 	// message would let one allowed phrase (e.g. "all-in-idiot") exempt every
