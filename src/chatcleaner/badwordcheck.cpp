@@ -40,27 +40,29 @@ bool BadWordCheck::run(QString msg)
 {
 	QMutexLocker locker(&m_mutex);
 	msg = msg.toLower();
-	bool badMessage = false;
 
-	QStringListIterator it(badWords);
-	while (it.hasNext()) {
-		QString bw = it.next();
-		if(msg.contains(bw)) {
-			bool thisWordHasException = false;
-			QStringListIterator it2(badWordsException);
-			while (it2.hasNext()) {
-				QString bwe = it2.next();
-				if(bwe.contains(bw) && msg.contains(bwe)) {
-					thisWordHasException = true;
-					break;
-				}
-			}
-			if(!thisWordHasException) {
-				badMessage = true;
-				break;
-			}
+	// Remove whitelisted phrases before scanning for bad words. An exception
+	// allows only the bad word inside that phrase; testing it against the whole
+	// message would let one allowed phrase (e.g. "all-in-idiot") exempt every
+	// other occurrence of the bad word in the same message. Replacing each
+	// occurrence with a space keeps text on either side from joining into a new
+	// bad word across the removed phrase.
+	for (const QString &exception : badWordsException) {
+		if (exception.isEmpty()) {
+			continue;
+		}
+		int exPos = msg.indexOf(exception);
+		while (exPos != -1) {
+			msg.replace(exPos, exception.length(), QStringLiteral(" "));
+			exPos = msg.indexOf(exception, exPos + 1);
 		}
 	}
 
-	return badMessage;
+	for (const QString &bw : badWords) {
+		if (!bw.isEmpty() && msg.contains(bw)) {
+			return true;
+		}
+	}
+
+	return false;
 }
