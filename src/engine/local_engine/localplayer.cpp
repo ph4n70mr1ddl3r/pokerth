@@ -4309,6 +4309,7 @@ void LocalPlayer::flopEngine3()
 				}
 // sonst
 		else {
+			myCash -= mySet;
 			myAction = PLAYER_ACTION_BET;
 			{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 		}
@@ -4357,56 +4358,13 @@ void LocalPlayer::flopEngine3()
 				}
 				// sonst
 				else {
+					myCash = myCash - currentHand->getCurrentBeRo()->getHighestSet() + mySet;
 					mySet = currentHand->getCurrentBeRo()->getHighestSet();
 					myAction = PLAYER_ACTION_CALL;
 				}
 			}
 		}
-}
-
-	evaluation(bet, raise);
-
-	// Update mySet and myCash based on the chosen action.
-	switch(myAction) {
-        case PLAYER_ACTION_CALL: {
-            int toCall = currentHand->getCurrentBeRo()->getHighestSet() - oldMySet;
-            if(toCall > 0) {
-                myCash -= toCall;
-                mySet = currentHand->getCurrentBeRo()->getHighestSet();
-            }
-        }
-        break;
-        case PLAYER_ACTION_RAISE: {
-            int toCall = currentHand->getCurrentBeRo()->getHighestSet() - oldMySet;
-            int totalBet = toCall + raise;
-            if(totalBet > 0) {
-                if(totalBet > myCash) {
-                    mySet += myCash;
-                    myCash = 0;
-                } else {
-                    myCash -= totalBet;
-                    mySet = currentHand->getCurrentBeRo()->getHighestSet() + raise;
-                }
-            }
-        }
-        break;
-        case PLAYER_ACTION_ALLIN: {
-            mySet += myCash;
-            myCash = 0;
-        }
-        break;
-case PLAYER_ACTION_BET: {
-            if(bet > 0) {
-                myCash -= bet;
-                mySet = oldMySet + bet;
-            }
-        }
-        break;
-        case PLAYER_ACTION_CHECK:
-        case PLAYER_ACTION_FOLD:
-        default:
-            break;
-    }
+	}
 
 	myCash = std::max(0, myCash);
 	myLastRelativeSet = mySet - oldMySet;
