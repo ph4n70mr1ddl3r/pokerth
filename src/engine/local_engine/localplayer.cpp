@@ -4307,12 +4307,12 @@ void LocalPlayer::flopEngine3()
 					myAction = PLAYER_ACTION_ALLIN;
 
 				}
-// sonst
-		else {
-			myCash -= mySet;
-			myAction = PLAYER_ACTION_BET;
-			{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
-		}
+				// sonst
+				else {
+					myCash -= mySet;
+					myAction = PLAYER_ACTION_BET;
+				}
+				{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 
 		}
 		// CALL und RAISE --> wenn bereits gesetzt wurde
