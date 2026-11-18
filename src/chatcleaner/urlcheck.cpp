@@ -67,16 +67,21 @@ static bool isWhitelistedToken(const QString &token, const QStringList &exceptio
 				} else if (exception.endsWith(QLatin1Char('.'))) {
 					// Only an incomplete prefix exception such as
 					// "http://www.esl." needs a TLD label to complete it.
-					int i = (first == QLatin1Char('.')) ? 1 : 0;
-					if (i == suffix.length()) {
+					// Consume just that one label; a path/query/fragment may
+					// follow it on the whitelisted host, while another dot
+					// would introduce a different host and stay rejected.
+					const int labelStart = (first == QLatin1Char('.')) ? 1 : 0;
+					int i = labelStart;
+					while (i < suffix.length() && suffix.at(i).isLetterOrNumber()) {
+						++i;
+					}
+					if (i == labelStart) {
 						validSuffix = false;
-					} else {
-						for (; i < suffix.length(); ++i) {
-							if (!suffix.at(i).isLetterOrNumber()) {
-								validSuffix = false;
-								break;
-							}
-						}
+					} else if (i < suffix.length()
+							&& suffix.at(i) != QLatin1Char('/')
+							&& suffix.at(i) != QLatin1Char('?')
+							&& suffix.at(i) != QLatin1Char('#')) {
+						validSuffix = false;
 					}
 				} else {
 					validSuffix = false;
