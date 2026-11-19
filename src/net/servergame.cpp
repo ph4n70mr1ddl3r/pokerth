@@ -1130,7 +1130,7 @@ bool
 ServerGame::IsValidPlayer(unsigned playerId) const
 {
 	bool retVal = false;
-	const PlayerIdList list(GetPlayerIdList());
+	const PlayerIdList list(GetSessionManager().GetPlayerIdList(SessionData::Game));
 	if (find(list.begin(), list.end(), playerId) != list.end())
 		retVal = true;
 	return retVal;
