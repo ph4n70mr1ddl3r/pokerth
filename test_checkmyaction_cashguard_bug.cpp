@@ -1,11 +1,24 @@
-// Regression test: checkMyAction() PLAYER_ACTION_CALL mySet >= highestSet with myCash == 0
+// Regression test: checkMyAction() PLAYER_ACTION_CALL mySet >= highestSet with myCash == 0 edge case
 //
 // Verifies that when mySet >= highestSet and myCash == 0, the call is correctly
-// rejected because the player has no chips to contribute, even though their set
-// already covers the highest bet.
+// accepted because the player's set chips already cover the highest bet, and no
+// additional chips need to be put in.
 //
-// This is a regression test for the fix that added myCash > 0 check when
-// mySet >= highestSet in checkMyAction().
+// This test verifies the bug: in localplayer.cpp line 1092, the check
+// `getMySet() >= highestSet && myCash > 0` requires positive cash even when
+// the player's set already covers the highest set. The call should be valid
+// because no additional chips need to be put in.
+//
+// Bug: The check `getMySet() >= highestSet && myCash > 0` incorrectly rejects
+// calls when mySet >= highestSet but myCash == 0, even though no additional
+// chips need to be put in.
+//
+// Fix: Remove the myCash > 0 requirement from the first condition, since set
+// chips alone should determine whether a call is valid when mySet >= highestSet.
+//
+// Compile:
+//   g++ -O2 -std=c++23 -o /tmp/test_checkmyaction_cashguard_bug test_checkmyaction_cashguard_bug.cpp
+//   /tmp/test_checkmyaction_cashguard_bug
 
 #include <cstdio>
 #include <cstdlib>
@@ -21,14 +34,15 @@ struct MockPlayer {
     int getMyCash() const { return myCash; }
 };
 
-// checkMyAction PLAYER_ACTION_CALL from localplayer.cpp
-int checkMyActionCall(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind, MockPlayer* player) {
+// BUGGY checkMyAction: requires myCash > 0 when mySet >= highestSet
+// This is the buggy code found in localplayer.cpp line 1092
+int checkMyActionCallBuggy(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind, MockPlayer* player) {
     if (targetAction == 2) { // PLAYER_ACTION_CALL
-        if (player->getMySet() >= highestSet) {
+        if (player->getMySet() >= highestSet && player->getMyCash() > 0) {
+            // BUG: requires myCash > 0 even though set chips cover highestSet
             // Player has already put in enough chips (mySet >= highestSet).
             // Call is valid because no additional chips need to be put in.
-            // targetBet is irrelevant when mySet >= highestSet.
-            // NOTE: Original buggy code did NOT check myCash > 0 here
+            // BUG: targetBet is irrelevant when mySet >= highestSet and player has cash.
             return 0;
         }
         else if(player->getMyCash() > 0 && targetBet <= player->getMyCash()) {
@@ -41,21 +55,24 @@ int checkMyActionCall(int targetAction, int targetBet, int highestSet, int minim
                 return 0;
             }
         }
+        else if(player->getMyCash() <= 0) {
+            // No cash to call with
+            return 1;
+        }
     }
     return 1;
 }
 
-// Fixed checkMyAction: requires myCash > 0 when mySet >= highestSet
+// FIXED checkMyAction: does NOT require myCash > 0 when mySet >= highestSet
+// The fix: remove the myCash > 0 requirement from the first condition
 int checkMyActionCallFixed(int targetAction, int targetBet, int highestSet, int minimumRaise, int smallBlind, MockPlayer* player) {
     if (targetAction == 2) { // PLAYER_ACTION_CALL
         if (player->getMySet() >= highestSet) {
             // Player has already put in enough chips (mySet >= highestSet).
-            // Call is valid ONLY if the player has cash to contribute.
-            // myCash > 0 is required even though set chips cover highestSet.
-            if (player->getMyCash() > 0) {
-                return 0;
-            }
-            return 1; // Reject: no cash to call with
+            // Call is valid because no additional chips need to be put in.
+            // myCash > 0 is NOT required when set chips cover highestSet.
+            // FIX: removed the myCash > 0 requirement
+            return 0;
         }
         else if(player->getMyCash() > 0 && targetBet <= player->getMyCash()) {
             // not all in
@@ -79,37 +96,74 @@ int main()
 {
     int failures = 0;
 
-    // Test that fixed code rejects call when myCash == 0
-    printf("Regression test: checkMyAction mySet>=highestSet myCash==0 edge case\n");
+    printf("Regression test: checkMyAction mySet>=highestSet myCash==0 edge case\n\n");
     
-    // Scenario: mySet >= highestSet, myCash == 0, targetBet == 0
-    // Fixed code should reject; original buggy code would accept
-    MockPlayer player(100, 0);
-    int highestSet = 100;
-    int targetBet = 0;
-    int result = checkMyActionCallFixed(2, targetBet, highestSet, 0, 0, &player);
+    // Scenario 1: mySet >= highestSet, myCash == 0, targetBet == 0
+    // Expected: call should be ALLOWED (0) since no additional chips needed
+    printf("Scenario 1: mySet >= highestSet, myCash == 0, targetBet == 0\n");
+    MockPlayer player1(100, 0);
+    int highestSet1 = 100;
+    int targetBet1 = 0;
+    int result_buggy1 = checkMyActionCallBuggy(2, targetBet1, highestSet1, 0, 0, &player1);
+    int result_fixed1 = checkMyActionCallFixed(2, targetBet1, highestSet1, 0, 0, &player1);
     
-    if (result == 1) {
-        printf("  PASS: Fixed code correctly rejects call when myCash == 0\n");
+    if (result_fixed1 == 0) {
+        printf("  PASS: Fixed code accepts call (myCash == 0, mySet >= highestSet)\n");
     } else {
-        printf("  FAIL: Fixed code should reject but got %d\n", result);
+        printf("  FAIL: Fixed code should accept call, got %d\n", result_fixed1);
         failures++;
     }
-
-    // Also verify the original code behavior (should also reject due to the fix)
-    result = checkMyActionCall(2, targetBet, highestSet, 0, 0, &player);
-    // Original code doesn't check myCash > 0, so it would accept
-    // This demonstrates the bug that was fixed
-    if (result == 0) {
-        printf("  INFO: Original code accepts call when myCash == 0 (this was the bug)\n");
+    
+    if (result_buggy1 == 1) {
+        printf("  BUG CONFIRMED: Buggy code rejects call even though mySet >= highestSet\n");
+        printf("  (myCash > 0 check unnecessarily rejects valid call)\n");
     } else {
-        printf("  INFO: Original code rejects call when myCash == 0\n");
+        printf("  INFO: Buggy code also accepts call\n");
     }
 
+    // Scenario 2: mySet >= highestSet, myCash > 0, targetBet == 0 (should still work)
+    printf("\nScenario 2: mySet >= highestSet, myCash > 0, targetBet == 0\n");
+    MockPlayer player2(100, 50);
+    int highestSet2 = 100;
+    int targetBet2 = 0;
+    int result_buggy2 = checkMyActionCallBuggy(2, targetBet2, highestSet2, 0, 0, &player2);
+    int result_fixed2 = checkMyActionCallFixed(2, targetBet2, highestSet2, 0, 0, &player2);
+    
+    if (result_fixed2 == 0) {
+        printf("  PASS: Fixed code accepts call (myCash > 0, mySet >= highestSet)\n");
+    } else {
+        printf("  FAIL: Fixed code should accept call, got %d\n", result_fixed2);
+        failures++;
+    }
+    
+    if (result_buggy2 == 0) {
+        printf("  INFO: Buggy code also accepts call (myCash > 0, mySet >= highestSet)\n");
+    }
+
+    // Scenario 3: mySet < highestSet, myCash == 0, targetBet == 0 (should reject)
+    printf("\nScenario 3: mySet < highestSet, myCash == 0, targetBet == 0\n");
+    MockPlayer player3(50, 0);
+    int highestSet3 = 100;
+    int targetBet3 = 0;
+    int result_buggy3 = checkMyActionCallBuggy(2, targetBet3, highestSet3, 0, 0, &player3);
+    int result_fixed3 = checkMyActionCallFixed(2, targetBet3, highestSet3, 0, 0, &player3);
+    
+    if (result_fixed3 == 1) {
+        printf("  PASS: Fixed code rejects call (mySet < highestSet, myCash == 0)\n");
+    } else {
+        printf("  FAIL: Fixed code should reject call, got %d\n", result_fixed3);
+        failures++;
+    }
+    
+    if (result_buggy3 == 1) {
+        printf("  INFO: Buggy code also rejects call\n");
+    }
+
+    printf("\n");
     if (failures > 0) {
         printf("TEST FAILED: %d scenario failures\n", failures);
         return 1;
     }
-    printf("REGRESSION TEST PASSED\n");
+    printf("REGRESSION TEST PASSED: checkMyAction mySet>=highestSet myCash==0 edge case verified\n");
     return 0;
 }
