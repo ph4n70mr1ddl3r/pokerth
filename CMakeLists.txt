@@ -393,6 +393,11 @@ add_executable(pokerth_test_turn_engine3_dead_bet_assignment_bug test_turn_engin
 target_compile_options(pokerth_test_turn_engine3_dead_bet_assignment_bug PRIVATE -Wall -Wextra)
 add_test(NAME turn_engine3_dead_bet_assignment_bug COMMAND pokerth_test_turn_engine3_dead_bet_assignment_bug)
 
+# Test: vote-kick eligible voters must be human-only, not humans + computer players
+add_executable(pokerth_test_vote_kick_bot_voter_bug test_vote_kick_bot_voter_bug.cpp)
+target_compile_options(pokerth_test_vote_kick_bot_voter_bug PRIVATE -Wall -Wextra)
+add_test(NAME vote_kick_bot_voter_bug COMMAND pokerth_test_vote_kick_bot_voter_bug)
+
 add_executable(pokerth_test_river_engine3_call_bug test_river_engine3_call_double_bug.cpp)
 target_compile_options(pokerth_test_river_engine3_call_bug PRIVATE -Wall -Wextra)
 add_test(NAME river_engine3_call_bug COMMAND pokerth_test_river_engine3_call_bug)

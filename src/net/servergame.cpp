@@ -256,7 +256,7 @@ ServerGame::TimerVoteKick(const boost::system::error_code &ec)
 		
 		if (hasActivePetition) {
 			// Prepare some values.
-			const PlayerIdList playerIds(GetPlayerIdList());
+			const PlayerIdList playerIds(GetSessionManager().GetPlayerIdList(SessionData::Game));
 			int votesRequiredToKick = numVotesToKick - numVotesInFavourOfKicking;
 			int playersAllowedToVote = 0;
 			// We need to count the number of players which are still allowed to vote.
