@@ -415,6 +415,12 @@ add_executable(pokerth_test_configfile_int_whitespace_bug test_configfile_int_wh
 target_compile_options(pokerth_test_configfile_int_whitespace_bug PRIVATE -Wall -Wextra)
 add_test(NAME configfile_int_whitespace_bug COMMAND pokerth_test_configfile_int_whitespace_bug)
 
+# Test: CleanerConfig::readConfigInt() must reject trailing garbage, not just
+# parse a numeric prefix (sibling of the ConfigFile::readConfigInt() fix)
+add_executable(pokerth_test_cleanerconfig_int_garbage_bug test_cleanerconfig_int_garbage_bug.cpp)
+target_compile_options(pokerth_test_cleanerconfig_int_garbage_bug PRIVATE -Wall -Wextra)
+add_test(NAME cleanerconfig_int_garbage_bug COMMAND pokerth_test_cleanerconfig_int_garbage_bug)
+
 add_executable(pokerth_test_river_engine3_call_bug test_river_engine3_call_double_bug.cpp)
 target_compile_options(pokerth_test_river_engine3_call_bug PRIVATE -Wall -Wextra)
 add_test(NAME river_engine3_call_bug COMMAND pokerth_test_river_engine3_call_bug)

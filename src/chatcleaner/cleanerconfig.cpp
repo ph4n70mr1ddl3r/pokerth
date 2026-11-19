@@ -521,9 +521,17 @@ int CleanerConfig::readConfigInt(string varName) const
 		return 0;
 	}
 
-	istringstream isst;
-	isst.str(tempString);
-	if (!(isst >> tempInt)) {
+	istringstream isst(tempString);
+	isst >> tempInt;
+	if (isst.fail()) {
+		LOG_ERROR("CleanerConfig::readConfigInt: failed to parse integer for: " << varName << " value: " << tempString);
+		return 0;
+	}
+	// operator>> stops at the first non-digit, so trailing garbage ("2junk")
+	// leaves eof() unset. Skip trailing whitespace before requiring eof(); this
+	// accepts a valid padded value ("2 ") while rejecting real garbage.
+	isst >> ws;
+	if (!isst.eof()) {
 		LOG_ERROR("CleanerConfig::readConfigInt: failed to parse integer for: " << varName << " value: " << tempString);
 		return 0;
 	}
