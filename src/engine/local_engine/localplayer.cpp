@@ -4398,7 +4398,6 @@ void LocalPlayer::turnEngine3()
 {
 
 	int oldMySet = mySet;
-	int bet = mySet;
 
 	// Prozent ausrechnen
 
@@ -4516,12 +4515,11 @@ void LocalPlayer::turnEngine3()
 				}
 				// sonst
 				else {
+					int bet = mySet;
 					myCash -= bet;
 					mySet = oldMySet + bet;
 					myAction = PLAYER_ACTION_BET;
 				}
-				// Update bet to reflect the actual bet amount after mySet is set
-				bet = mySet;
 				{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
 			}
 
