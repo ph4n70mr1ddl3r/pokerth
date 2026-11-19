@@ -149,7 +149,7 @@ void
 AsioSendBuffer::InternalStorePacket(boost::shared_ptr<SessionData> /*session*/, boost::shared_ptr<NetPacket> packet)
 {
 	size_t rawSize = packet->GetMsg()->ByteSizeLong();
-	if (rawSize > MAX_SEND_BUF_SIZE || rawSize > std::numeric_limits<uint32_t>::max()) {
+	if (rawSize > MAX_SEND_BUF_SIZE - NET_HEADER_SIZE || rawSize > std::numeric_limits<uint32_t>::max()) {
 		return;
 	}
 	uint32_t packetSize = static_cast<uint32_t>(rawSize);

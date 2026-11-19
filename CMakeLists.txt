@@ -398,6 +398,11 @@ add_executable(pokerth_test_vote_kick_bot_voter_bug test_vote_kick_bot_voter_bug
 target_compile_options(pokerth_test_vote_kick_bot_voter_bug PRIVATE -Wall -Wextra)
 add_test(NAME vote_kick_bot_voter_bug COMMAND pokerth_test_vote_kick_bot_voter_bug)
 
+# Test: send-packet size guard must reserve room for the network header
+add_executable(pokerth_test_asiosendbuffer_header_size_bug test_asiosendbuffer_header_size_bug.cpp)
+target_compile_options(pokerth_test_asiosendbuffer_header_size_bug PRIVATE -Wall -Wextra)
+add_test(NAME asiosendbuffer_header_size_bug COMMAND pokerth_test_asiosendbuffer_header_size_bug)
+
 add_executable(pokerth_test_river_engine3_call_bug test_river_engine3_call_double_bug.cpp)
 target_compile_options(pokerth_test_river_engine3_call_bug PRIVATE -Wall -Wextra)
 add_test(NAME river_engine3_call_bug COMMAND pokerth_test_river_engine3_call_bug)
