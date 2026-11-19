@@ -100,7 +100,7 @@ QStringList MessageFilter::check(unsigned gameId, unsigned playerId, QString nic
 			myClientWarnLevelList.insert(playerId, tmpInfos);
 			action = WARN;
 		} else {
-			if(i.value().warnLevel == warnLevelToKick || i.value().lastWarnType == offence) {
+			if(i.value().warnLevel >= warnLevelToKick || i.value().lastWarnType == offence) {
 				if(gameId) {
 					//check for ingame to do not kick but mute
 					action = MUTE;
@@ -123,7 +123,7 @@ QStringList MessageFilter::check(unsigned gameId, unsigned playerId, QString nic
 						myClientKickCounterList.insert(nick, tmpInfos);
 					} else {
 						//pleayer is already on the list: either raise kickNumber or kickban when kickNumerToBan is reached
-						if(j.value().kickNumber == kickNumberToBan) {
+						if(j.value().kickNumber >= kickNumberToBan) {
 							action = KICKBAN;
 							//remove player from kickCounterList
 							myClientKickCounterList.remove(j.key());

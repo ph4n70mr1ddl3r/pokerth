@@ -64,7 +64,7 @@ bool TextFloodCheck::run(unsigned playerId)
 	} else {
 		TextFloodInfos tmpInfos2;
 		if(timer.elapsed().total_seconds()-i.value().timeStamp <= 1) {
-			if(i.value().floodLevel == textFloodLevelToTrigger) {
+			if(i.value().floodLevel >= textFloodLevelToTrigger) {
 				TextFloodInfos tmpInfos3;
 				tmpInfos3.floodLevel = 0;
 				tmpInfos3.timeStamp = timer.elapsed().total_seconds();

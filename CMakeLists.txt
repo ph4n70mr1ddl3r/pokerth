@@ -403,6 +403,12 @@ add_executable(pokerth_test_asiosendbuffer_header_size_bug test_asiosendbuffer_h
 target_compile_options(pokerth_test_asiosendbuffer_header_size_bug PRIVATE -Wall -Wextra)
 add_test(NAME asiosendbuffer_header_size_bug COMMAND pokerth_test_asiosendbuffer_header_size_bug)
 
+# Test: chat-cleaner escalation thresholds must use >= so lowering a
+# runtime-reloadable threshold still escalates already-tracked players
+add_executable(pokerth_test_flood_threshold_ge_bug test_flood_threshold_ge_bug.cpp)
+target_compile_options(pokerth_test_flood_threshold_ge_bug PRIVATE -Wall -Wextra)
+add_test(NAME flood_threshold_ge_bug COMMAND pokerth_test_flood_threshold_ge_bug)
+
 add_executable(pokerth_test_river_engine3_call_bug test_river_engine3_call_double_bug.cpp)
 target_compile_options(pokerth_test_river_engine3_call_bug PRIVATE -Wall -Wextra)
 add_test(NAME river_engine3_call_bug COMMAND pokerth_test_river_engine3_call_bug)
