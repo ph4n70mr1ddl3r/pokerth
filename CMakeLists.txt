@@ -409,6 +409,12 @@ add_executable(pokerth_test_flood_threshold_ge_bug test_flood_threshold_ge_bug.c
 target_compile_options(pokerth_test_flood_threshold_ge_bug PRIVATE -Wall -Wextra)
 add_test(NAME flood_threshold_ge_bug COMMAND pokerth_test_flood_threshold_ge_bug)
 
+# Test: ConfigFile::readConfigInt() must accept valid integers with trailing
+# whitespace (XML attribute values are not trimmed) while rejecting garbage
+add_executable(pokerth_test_configfile_int_whitespace_bug test_configfile_int_whitespace_bug.cpp)
+target_compile_options(pokerth_test_configfile_int_whitespace_bug PRIVATE -Wall -Wextra)
+add_test(NAME configfile_int_whitespace_bug COMMAND pokerth_test_configfile_int_whitespace_bug)
+
 add_executable(pokerth_test_river_engine3_call_bug test_river_engine3_call_double_bug.cpp)
 target_compile_options(pokerth_test_river_engine3_call_bug PRIVATE -Wall -Wextra)
 add_test(NAME river_engine3_call_bug COMMAND pokerth_test_river_engine3_call_bug)

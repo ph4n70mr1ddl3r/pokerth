@@ -766,7 +766,15 @@ int ConfigFile::readConfigInt(string varName) const
 
 	istringstream isst(tempString);
 	isst >> tempInt;
-	if (isst.fail() || !isst.eof()) {
+	if (isst.fail()) {
+		LOG_ERROR("Config parse error for: " << varName << " value: \"" << tempString << "\"");
+		return 0;
+	}
+	// operator>> stops at the first non-digit, so trailing whitespace leaves
+	// eof() unset. Skip it before requiring eof(); this accepts a valid value
+	// such as "7234 " while still rejecting real trailing garbage ("7234abc").
+	isst >> ws;
+	if (!isst.eof()) {
 		LOG_ERROR("Config parse error for: " << varName << " value: \"" << tempString << "\"");
 		return 0;
 	}
