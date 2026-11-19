@@ -205,7 +205,7 @@ ServerBanManager::IsPlayerBanned(const std::string &name) const
 	while (i != end) {
 		// Use regex only if name not set.
 		if ((*i).second.nameStr.empty()) {
-			if (regex_match(name, (*i).second.nameRegex)) {
+			if (regex_search(name, (*i).second.nameRegex)) {
 				retVal = true;
 				break;
 			}
@@ -259,7 +259,7 @@ ServerBanManager::IsBadGameName(const std::string &name) const
 	bool retVal = false;
 	boost::mutex::scoped_lock lock(m_banMutex);
 	for (const auto &regex : m_gameNameBadWordFilter) {
-		if (regex_match(name, regex)) {
+		if (regex_search(name, regex)) {
 			retVal = true;
 			break;
 		}

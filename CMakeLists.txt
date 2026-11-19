@@ -354,6 +354,11 @@ add_executable(pokerth_test_netpacketvalidator_bug test_netpacketvalidator_bug.c
 target_compile_options(pokerth_test_netpacketvalidator_bug PRIVATE -Wall -Wextra)
 add_test(NAME netpacketvalidator_bug COMMAND pokerth_test_netpacketvalidator_bug)
 
+# Test: ServerBanManager name checks must use regex_search, not regex_match
+add_executable(pokerth_test_badgamename_regex_match_bug test_badgamename_regex_match_bug.cpp)
+target_compile_options(pokerth_test_badgamename_regex_match_bug PRIVATE -Wall -Wextra)
+add_test(NAME badgamename_regex_match_bug COMMAND pokerth_test_badgamename_regex_match_bug)
+
 # Test: clientstate.cpp signed/unsigned comparison bug
 add_executable(pokerth_test_clientstate_bug test_clientstate_bug.cpp)
 target_compile_options(pokerth_test_clientstate_bug PRIVATE -Wall -Wextra)
