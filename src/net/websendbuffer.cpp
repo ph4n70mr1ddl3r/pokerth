@@ -60,7 +60,7 @@ WebSendBuffer::HandleWrite(boost::shared_ptr<boost::asio::ip::tcp::socket> /*soc
 void
 WebSendBuffer::AsyncSendNextPacket(boost::shared_ptr<SessionData> session)
 {
-	if (closeAfterSend) {
+	if (closeAfterSend.exchange(false)) {
 		boost::shared_ptr<WebSocketData> webData = session->GetWebData();
 		if (!webData)
 			return;

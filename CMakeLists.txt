@@ -403,6 +403,12 @@ add_executable(pokerth_test_asiosendbuffer_header_size_bug test_asiosendbuffer_h
 target_compile_options(pokerth_test_asiosendbuffer_header_size_bug PRIVATE -Wall -Wextra)
 add_test(NAME asiosendbuffer_header_size_bug COMMAND pokerth_test_asiosendbuffer_header_size_bug)
 
+# Test: WebSendBuffer's one-shot closeAfterSend flag must be consumed after
+# triggering close, mirroring the AsioSendBuffer fix (no repeated/stale closes)
+add_executable(pokerth_test_websendbuffer_close_flag_bug test_websendbuffer_close_flag_bug.cpp)
+target_compile_options(pokerth_test_websendbuffer_close_flag_bug PRIVATE -Wall -Wextra)
+add_test(NAME websendbuffer_close_flag_bug COMMAND pokerth_test_websendbuffer_close_flag_bug)
+
 # Test: chat-cleaner escalation thresholds must use >= so lowering a
 # runtime-reloadable threshold still escalates already-tracked players
 add_executable(pokerth_test_flood_threshold_ge_bug test_flood_threshold_ge_bug.cpp)
