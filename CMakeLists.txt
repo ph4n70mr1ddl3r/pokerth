@@ -453,6 +453,11 @@ add_executable(pokerth_test_eval_bet_double_debit_bug test_eval_bet_double_debit
 target_compile_options(pokerth_test_eval_bet_double_debit_bug PRIVATE -Wall -Wextra)
 add_test(NAME eval_bet_double_debit_bug COMMAND pokerth_test_eval_bet_double_debit_bug)
 
+# Test: LetterRepeatingCheck must only flag repeated letters, not punctuation/digits
+add_executable(pokerth_test_letter_repeating_nonletter_bug test_letter_repeating_nonletter_bug.cpp)
+target_compile_options(pokerth_test_letter_repeating_nonletter_bug PRIVATE -Wall -Wextra)
+add_test(NAME letter_repeating_nonletter_bug COMMAND pokerth_test_letter_repeating_nonletter_bug)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)

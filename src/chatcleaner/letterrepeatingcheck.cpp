@@ -44,7 +44,7 @@ bool LetterRepeatingCheck::run(QString msg)
 		return false;
 	}
 	msg = msg.simplified().remove(" ");
-	QRegularExpression e(QString(".*(.)\\1{%1,}.*").arg(letterNumberToTrigger-1));
+	QRegularExpression e(QString(".*(\\p{L})\\1{%1,}.*").arg(letterNumberToTrigger-1));
 	if(e.isValid()) {
 		if(e.match(msg).hasMatch() ) {
 			return true;
