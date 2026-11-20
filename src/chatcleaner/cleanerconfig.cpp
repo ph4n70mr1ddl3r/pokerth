@@ -574,12 +574,25 @@ list<int> CleanerConfig::readConfigIntList(string varName) const
 	}
 
 	istringstream isst;
-	int tempInt = 0;
 	for (auto it = tempStringList.begin(); it != tempStringList.end(); ++it)
 	{
-
+		int tempInt = 0;
 		isst.str(*it);
 		isst >> tempInt;
+		// operator>> stops at the first non-digit. Check fail() before
+		// skipping whitespace (at eof(), ">> ws" sets failbit), then require
+		// eof() so a padded value stays valid but real garbage ("2junk")
+		// is rejected -- mirrors readConfigInt() above.
+		if (isst.fail()) {
+			LOG_ERROR("CleanerConfig::readConfigIntList: parse error for: " << varName << " value: " << *it);
+			tempInt = 0;
+		} else {
+			isst >> ws;
+			if (!isst.eof()) {
+				LOG_ERROR("CleanerConfig::readConfigIntList: parse error for: " << varName << " value: " << *it);
+				tempInt = 0;
+			}
+		}
 		tempIntList.push_back(tempInt);
 		isst.str("");
 		isst.clear();

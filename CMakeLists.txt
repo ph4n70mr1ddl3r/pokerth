@@ -421,6 +421,12 @@ add_executable(pokerth_test_cleanerconfig_int_garbage_bug test_cleanerconfig_int
 target_compile_options(pokerth_test_cleanerconfig_int_garbage_bug PRIVATE -Wall -Wextra)
 add_test(NAME cleanerconfig_int_garbage_bug COMMAND pokerth_test_cleanerconfig_int_garbage_bug)
 
+# Test: ConfigFile/CleanerConfig::readConfigIntList() must reject list entries
+# with trailing garbage ("200junk"), mirroring the scalar readConfigInt() fix
+add_executable(pokerth_test_configfile_intlist_garbage_bug test_configfile_intlist_garbage_bug.cpp)
+target_compile_options(pokerth_test_configfile_intlist_garbage_bug PRIVATE -Wall -Wextra)
+add_test(NAME configfile_intlist_garbage_bug COMMAND pokerth_test_configfile_intlist_garbage_bug)
+
 # Test: UrlCheck must not flag whitelisted URLs followed by sentence punctuation
 add_executable(pokerth_test_urlcheck_trailing_punctuation_bug test_urlcheck_trailing_punctuation_bug.cpp)
 target_compile_options(pokerth_test_urlcheck_trailing_punctuation_bug PRIVATE -Wall -Wextra)

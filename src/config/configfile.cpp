@@ -800,6 +800,20 @@ list<int> ConfigFile::readConfigIntList(string varName) const
 		int tempInt = 0;
 		isst.str(*it2);
 		isst >> tempInt;
+		// operator>> stops at the first non-digit. Check fail() before
+		// skipping whitespace (at eof(), ">> ws" sets failbit), then require
+		// eof() so a padded value stays valid but real garbage ("200junk")
+		// is rejected -- mirrors readConfigInt() above.
+		if (isst.fail()) {
+			LOG_ERROR("Config parse error in list for: " << varName << " value: \"" << *it2 << "\"");
+			tempInt = 0;
+		} else {
+			isst >> ws;
+			if (!isst.eof()) {
+				LOG_ERROR("Config parse error in list for: " << varName << " value: \"" << *it2 << "\"");
+				tempInt = 0;
+			}
+		}
 		tempIntList.push_back(tempInt);
 		isst.str("");
 		isst.clear();
