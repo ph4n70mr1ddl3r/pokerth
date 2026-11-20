@@ -32,6 +32,8 @@
 
 #include <QtCore>
 
+#include <algorithm>
+
 UrlCheck::UrlCheck()
 {
 }
@@ -44,8 +46,17 @@ static bool isSentencePunctuation(QChar c)
 			|| c == QLatin1Char('\'') || c == QLatin1Char('"');
 }
 
+// Matching opening delimiters that may wrap a whitelisted URL at the start of
+// a token, mirroring the closing characters accepted by isSentencePunctuation().
+static bool isLeadingPunctuation(QChar c)
+{
+	return c == QLatin1Char('(') || c == QLatin1Char('[') || c == QLatin1Char('{')
+			|| c == QLatin1Char('\'') || c == QLatin1Char('"');
+}
+
 // A token is whitelisted only when an exception is anchored to a domain
-// boundary inside it: at the start of the token, directly after a '.' (e.g.
+// boundary inside it: at the start of the token (optionally wrapped in opening
+// punctuation such as "(pokerth.net)"), directly after a '.' (e.g.
 // "www.pokerth.net"), or directly after an http(s) scheme. The text following
 // the exception may only be empty, a path/query on the whitelisted host,
 // trailing sentence punctuation (e.g. "pokerth.net." at the end of a sentence),
@@ -65,7 +76,8 @@ static bool isWhitelistedToken(const QString &token, const QStringList &exceptio
 			const bool domainBoundary = prefix.isEmpty()
 					|| prefix.endsWith(QLatin1Char('.'))
 					|| prefix == QLatin1String("http://")
-					|| prefix == QLatin1String("https://");
+					|| prefix == QLatin1String("https://")
+					|| std::all_of(prefix.cbegin(), prefix.cend(), isLeadingPunctuation);
 
 			const QString suffix = token.mid(exPos + exception.length());
 			bool validSuffix = true;
