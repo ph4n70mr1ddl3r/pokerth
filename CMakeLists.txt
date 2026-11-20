@@ -415,6 +415,12 @@ add_executable(pokerth_test_irc_notify_player_list_bug test_irc_notify_player_li
 target_compile_options(pokerth_test_irc_notify_player_list_bug PRIVATE -Wall -Wextra)
 add_test(NAME irc_notify_player_list_bug COMMAND pokerth_test_irc_notify_player_list_bug)
 
+# Test: irc_auto_rename_nick() must honor IRC_MAX_RENAME_TRIES exactly
+# ("<= MAX" performs MAX+1 renames because the counter starts at 0)
+add_executable(pokerth_test_irc_rename_tries_offbyone_bug test_irc_rename_tries_offbyone_bug.cpp)
+target_compile_options(pokerth_test_irc_rename_tries_offbyone_bug PRIVATE -Wall -Wextra)
+add_test(NAME irc_rename_tries_offbyone_bug COMMAND pokerth_test_irc_rename_tries_offbyone_bug)
+
 # Test: chat-cleaner escalation thresholds must use >= so lowering a
 # runtime-reloadable threshold still escalates already-tracked players
 add_executable(pokerth_test_flood_threshold_ge_bug test_flood_threshold_ge_bug.cpp)

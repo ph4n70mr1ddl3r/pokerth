@@ -111,7 +111,7 @@ void irc_auto_rename_nick(irc_session_t *session)
 	if (!context)
 		return;
 
-	if (context->renameTries <= IRC_MAX_RENAME_TRIES) { // Limit number of rename tries.
+	if (context->renameTries < IRC_MAX_RENAME_TRIES) { // Limit number of rename tries.
 		// Automatically rename the nick on collision.
 		// First: Try to append the string "Lobby".
 		if (context->nick.find(IRC_RENAME_ATTACH) == string::npos) {
