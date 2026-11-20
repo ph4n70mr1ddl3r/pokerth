@@ -147,10 +147,8 @@ void irc_notify_player_list(irc_session_t *session, const char *players)
 
 	istringstream input(players);
 	string name;
-	input >> name;
-	while (!input.fail() && !input.eof()) {
+	while (input >> name) {
 		context->ircThread.GetCallback().SignalIrcPlayerJoined(name);
-		input >> name;
 	}
 }
 

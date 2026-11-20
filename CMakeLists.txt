@@ -409,6 +409,12 @@ add_executable(pokerth_test_websendbuffer_close_flag_bug test_websendbuffer_clos
 target_compile_options(pokerth_test_websendbuffer_close_flag_bug PRIVATE -Wall -Wextra)
 add_test(NAME websendbuffer_close_flag_bug COMMAND pokerth_test_websendbuffer_close_flag_bug)
 
+# Test: irc_notify_player_list() must report every nickname in a RPL_NAMREPLY
+# list (the "read-ahead + while(!eof())" loop drops the final nick)
+add_executable(pokerth_test_irc_notify_player_list_bug test_irc_notify_player_list_bug.cpp)
+target_compile_options(pokerth_test_irc_notify_player_list_bug PRIVATE -Wall -Wextra)
+add_test(NAME irc_notify_player_list_bug COMMAND pokerth_test_irc_notify_player_list_bug)
+
 # Test: chat-cleaner escalation thresholds must use >= so lowering a
 # runtime-reloadable threshold still escalates already-tracked players
 add_executable(pokerth_test_flood_threshold_ge_bug test_flood_threshold_ge_bug.cpp)
