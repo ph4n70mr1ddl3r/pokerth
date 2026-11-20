@@ -36,14 +36,23 @@ UrlCheck::UrlCheck()
 {
 }
 
+static bool isSentencePunctuation(QChar c)
+{
+	return c == QLatin1Char('.') || c == QLatin1Char(',') || c == QLatin1Char(';')
+			|| c == QLatin1Char(':') || c == QLatin1Char('!') || c == QLatin1Char('?')
+			|| c == QLatin1Char(')') || c == QLatin1Char(']') || c == QLatin1Char('}')
+			|| c == QLatin1Char('\'') || c == QLatin1Char('"');
+}
+
 // A token is whitelisted only when an exception is anchored to a domain
 // boundary inside it: at the start of the token, directly after a '.' (e.g.
 // "www.pokerth.net"), or directly after an http(s) scheme. The text following
-// the exception may only be empty, a path/query on the whitelisted host, or --
-// for a prefix exception ending in '.' such as "http://www.esl." -- a single
-// TLD-like label completing the host. An exception that already ends in a TLD
-// (e.g. "pokerth.net") must not accept an extra label: "pokerth.net.xyz" is a
-// different host, not the whitelisted site.
+// the exception may only be empty, a path/query on the whitelisted host,
+// trailing sentence punctuation (e.g. "pokerth.net." at the end of a sentence),
+// or -- for a prefix exception ending in '.' such as "http://www.esl." -- a
+// single TLD-like label completing the host. An exception that already ends in
+// a TLD (e.g. "pokerth.net") must not accept an extra label: "pokerth.net.xyz"
+// is a different host, not the whitelisted site.
 static bool isWhitelistedToken(const QString &token, const QStringList &exceptions)
 {
 	for (const QString &exception : exceptions) {
@@ -77,14 +86,27 @@ static bool isWhitelistedToken(const QString &token, const QStringList &exceptio
 					}
 					if (i == labelStart) {
 						validSuffix = false;
-					} else if (i < suffix.length()
-							&& suffix.at(i) != QLatin1Char('/')
-							&& suffix.at(i) != QLatin1Char('?')
-							&& suffix.at(i) != QLatin1Char('#')) {
-						validSuffix = false;
+					} else {
+						validSuffix = true;
+						for (int j = i; j < suffix.length(); ++j) {
+							const QChar c = suffix.at(j);
+							if (c == QLatin1Char('/') || c == QLatin1Char('?') || c == QLatin1Char('#')) {
+								break;
+							}
+							if (!isSentencePunctuation(c)) {
+								validSuffix = false;
+								break;
+							}
+						}
 					}
 				} else {
-					validSuffix = false;
+					validSuffix = true;
+					for (int j = 0; j < suffix.length(); ++j) {
+						if (!isSentencePunctuation(suffix.at(j))) {
+							validSuffix = false;
+							break;
+						}
+					}
 				}
 			}
 
