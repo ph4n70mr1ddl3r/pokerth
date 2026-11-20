@@ -448,6 +448,11 @@ add_executable(pokerth_test_river_engine3_call_bug test_river_engine3_call_doubl
 target_compile_options(pokerth_test_river_engine3_call_bug PRIVATE -Wall -Wextra)
 add_test(NAME river_engine3_call_bug COMMAND pokerth_test_river_engine3_call_bug)
 
+# Test: evaluation() PLAYER_ACTION_BET must not double-debit cash (setMySet already debits it)
+add_executable(pokerth_test_eval_bet_double_debit_bug test_eval_bet_double_debit_bug.cpp)
+target_compile_options(pokerth_test_eval_bet_double_debit_bug PRIVATE -Wall -Wextra)
+add_test(NAME eval_bet_double_debit_bug COMMAND pokerth_test_eval_bet_double_debit_bug)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
