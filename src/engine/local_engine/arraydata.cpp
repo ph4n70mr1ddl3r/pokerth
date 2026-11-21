@@ -1036,7 +1036,7 @@ void ArrayData::getHandChancePreflop(int handCode, int** values)
 			check = 1;
 			for(int i=0; i<10; i++) {
 				for(int j=0; j<2; j++) {
-					values[i][j] = handChancePreflop[val].data[i][j];
+					values[j][i] = handChancePreflop[val].data[i][j];
 				}
 			}
 			break;

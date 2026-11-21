@@ -442,6 +442,13 @@ add_executable(pokerth_test_irc_rename_maxlen_noop_bug test_irc_rename_maxlen_no
 target_compile_options(pokerth_test_irc_rename_maxlen_noop_bug PRIVATE -Wall -Wextra)
 add_test(NAME irc_rename_maxlen_noop_bug COMMAND pokerth_test_irc_rename_maxlen_noop_bug)
 
+# Test: ArrayData::getHandChancePreflop(int, int**) must transpose into the
+# 2x10 chance[field][class] layout like the vector overload (buggy version
+# writes values[i][j] and overruns the 2-row buffer)
+add_executable(pokerth_test_arraydata_handchance_transpose_bug test_arraydata_handchance_transpose_bug.cpp)
+target_compile_options(pokerth_test_arraydata_handchance_transpose_bug PRIVATE -Wall -Wextra)
+add_test(NAME arraydata_handchance_transpose_bug COMMAND pokerth_test_arraydata_handchance_transpose_bug)
+
 # Test: chat-cleaner escalation thresholds must use >= so lowering a
 # runtime-reloadable threshold still escalates already-tracked players
 add_executable(pokerth_test_flood_threshold_ge_bug test_flood_threshold_ge_bug.cpp)
