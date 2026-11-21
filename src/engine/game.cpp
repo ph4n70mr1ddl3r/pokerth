@@ -38,6 +38,8 @@
 #include "localexception.h"
 #include "engine_msg.h"
 
+#include <algorithm>
+
 
 using namespace std;
 
@@ -180,6 +182,29 @@ void Game::initHand()
 			it = activePlayerList->erase(it);
 		} else {
 			++it;
+		}
+	}
+
+	// The dealer for this hand was picked at the end of the previous hand. If
+	// that player has since bust out, the stored dealerPosition still points at
+	// them and assignButtons() would anchor the button and both blinds on an
+	// empty seat (reversing the blinds in heads-up). Move the button to the next
+	// active seat before creating the hand.
+	if (std::none_of(activePlayerList->begin(), activePlayerList->end(),
+		[this](const boost::shared_ptr<PlayerInterface> &p) { return p->getMyUniqueID() == dealerPosition; })) {
+		auto dealerSeatIt = std::find_if(seatsList->begin(), seatsList->end(),
+			[this](const boost::shared_ptr<PlayerInterface> &p) { return p->getMyUniqueID() == dealerPosition; });
+		if (dealerSeatIt != seatsList->end()) {
+			for (size_t s = 0; s < seatsList->size(); ++s) {
+				++dealerSeatIt;
+				if (dealerSeatIt == seatsList->end()) dealerSeatIt = seatsList->begin();
+				const unsigned candidateId = (*dealerSeatIt)->getMyUniqueID();
+				if (std::any_of(activePlayerList->begin(), activePlayerList->end(),
+					[candidateId](const boost::shared_ptr<PlayerInterface> &p) { return p->getMyUniqueID() == candidateId; })) {
+					dealerPosition = candidateId;
+					break;
+				}
+			}
 		}
 	}
 
