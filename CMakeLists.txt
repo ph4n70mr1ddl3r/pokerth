@@ -497,6 +497,13 @@ add_executable(pokerth_test_letter_repeating_nonletter_bug test_letter_repeating
 target_compile_options(pokerth_test_letter_repeating_nonletter_bug PRIVATE -Wall -Wextra)
 add_test(NAME letter_repeating_nonletter_bug COMMAND pokerth_test_letter_repeating_nonletter_bug)
 
+# Test: AvatarManager::RemoveOldAvatarCacheEntries() must keep cached avatars
+# when CacheDir has a trailing separator (the shipped default), while still
+# rejecting paths outside the cache dir
+add_executable(pokerth_test_avatar_cache_trailing_slash_bug test_avatar_cache_trailing_slash_bug.cpp)
+target_compile_options(pokerth_test_avatar_cache_trailing_slash_bug PRIVATE -Wall -Wextra)
+add_test(NAME avatar_cache_trailing_slash_bug COMMAND pokerth_test_avatar_cache_trailing_slash_bug)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)

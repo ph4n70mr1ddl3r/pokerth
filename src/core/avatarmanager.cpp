@@ -472,6 +472,8 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 	try {
 		fs::path cachePath(cacheDir);
 		cacheDir = cachePath.string();
+		while (!cacheDir.empty() && (cacheDir.back() == '/' || cacheDir.back() == '\\'))
+			cacheDir.pop_back();
 		// Never delete anything if we do not have a special cache dir set.
 		if (!cacheDir.empty()) {
 			AvatarList removeList;
@@ -491,7 +493,7 @@ AvatarManager::RemoveOldAvatarCacheEntries()
 						fs::path filePath(i->second);
 						string fileString(filePath.string());
 						// Only consider files which are definitely in the cache dir.
-						if (fileString.size() > cacheDir.size() && fileString.compare(0, cacheDir.size(), cacheDir) == 0 && fileString[cacheDir.size()] == '/') {
+						if (fileString.size() > cacheDir.size() && fileString.compare(0, cacheDir.size(), cacheDir) == 0 && (fileString[cacheDir.size()] == '/' || fileString[cacheDir.size()] == '\\')) {
 							// Only consider files with MD5 as file name.
 							MD5Buf tmpBuf;
 							if (fs::exists(filePath) && tmpBuf.FromString(filePath.stem().string())) {
