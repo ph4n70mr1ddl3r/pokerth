@@ -185,7 +185,7 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 						boost::posix_time::time_duration timeDiff(boost::posix_time::second_clock::local_time() - GetLobbyThread().GetStartTime());
 						ostringstream statStream;
 						statStream
-								<< "Server uptime................ " << timeDiff.hours() / 24 << " days " << timeDiff.hours() % 24 << " hours " << timeDiff.minutes() << " minutes " << timeDiff.seconds() << " seconds";
+								<< "Server uptime................ " << timeDiff.hours() / 24 << " days " << timeDiff.hours() % 24 << " hours " << timeDiff.minutes() % 60 << " minutes " << timeDiff.seconds() % 60 << " seconds";
 						m_ircAdminThread->SendChatMessage(statStream.str());
 					}
 					{
