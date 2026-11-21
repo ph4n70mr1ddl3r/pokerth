@@ -436,6 +436,12 @@ add_executable(pokerth_test_irc_rename_tries_offbyone_bug test_irc_rename_tries_
 target_compile_options(pokerth_test_irc_rename_tries_offbyone_bug PRIVATE -Wall -Wextra)
 add_test(NAME irc_rename_tries_offbyone_bug COMMAND pokerth_test_irc_rename_tries_offbyone_bug)
 
+# Test: irc_auto_rename_nick() must keep generating a *different* nick when a
+# collision happens at IRC_MAX_NICK_LEN (truncate to make room for the suffix)
+add_executable(pokerth_test_irc_rename_maxlen_noop_bug test_irc_rename_maxlen_noop_bug.cpp)
+target_compile_options(pokerth_test_irc_rename_maxlen_noop_bug PRIVATE -Wall -Wextra)
+add_test(NAME irc_rename_maxlen_noop_bug COMMAND pokerth_test_irc_rename_maxlen_noop_bug)
+
 # Test: chat-cleaner escalation thresholds must use >= so lowering a
 # runtime-reloadable threshold still escalates already-tracked players
 add_executable(pokerth_test_flood_threshold_ge_bug test_flood_threshold_ge_bug.cpp)

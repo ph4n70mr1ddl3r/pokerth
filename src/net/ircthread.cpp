@@ -120,17 +120,22 @@ void irc_auto_rename_nick(irc_session_t *session)
 			context->nick = context->nick + IRC_RENAME_ATTACH;
 		} else {
 			// This didn't work out. Append a number or increment it.
+			// Make room for the suffix when the nick is already at the maximum
+			// length, otherwise the rename is a no-op and the same colliding
+			// nick is sent again until the bot gives up.
 			string::reverse_iterator end = context->nick.rbegin();
 			if (!context->nick.empty() && isdigit(*end)) {
 				if (*end != '9')
 					*end = (*end) + 1;
 				else {
-					if (context->nick.length() < IRC_MAX_NICK_LEN)
-						context->nick = context->nick + "0";
+					if (context->nick.length() >= IRC_MAX_NICK_LEN)
+						context->nick = context->nick.substr(0, IRC_MAX_NICK_LEN - 1);
+					context->nick = context->nick + "0";
 				}
 			} else {
-				if (context->nick.length() < IRC_MAX_NICK_LEN)
-					context->nick = context->nick + "1";
+				if (context->nick.length() >= IRC_MAX_NICK_LEN)
+					context->nick = context->nick.substr(0, IRC_MAX_NICK_LEN - 1);
+				context->nick = context->nick + "1";
 			}
 		}
 		irc_cmd_nick(session, context->nick.c_str());
