@@ -348,7 +348,7 @@ CryptHelper::AES128Encrypt(const unsigned char *keyData, unsigned keySize, const
 {
 	bool retVal = false;
 	unsigned plainSize = static_cast<unsigned>(plainStr.size());
-	if (keySize >= AES_BLOCK_SIZE && plainSize && plainSize <= UINT_MAX - 15) {
+	if (keySize > 0 && plainSize && plainSize <= UINT_MAX - 15) {
 		unsigned char key[AES_BLOCK_SIZE];
 		unsigned char iv[AES_BLOCK_SIZE];
 		BytesToKey(keyData, keySize, key, iv);
@@ -427,7 +427,7 @@ bool
 CryptHelper::AES128Decrypt(const unsigned char *keyData, unsigned keySize, const unsigned char *cipher, unsigned cipherSize, string &outPlain)
 {
 	bool retVal = false;
-	if (keySize >= AES_BLOCK_SIZE && cipherSize && (cipherSize % AES_BLOCK_SIZE == 0)) {
+	if (keySize > 0 && cipherSize && (cipherSize % AES_BLOCK_SIZE == 0)) {
 		unsigned char key[AES_BLOCK_SIZE];
 		unsigned char iv[AES_BLOCK_SIZE];
 		BytesToKey(keyData, keySize, key, iv);
