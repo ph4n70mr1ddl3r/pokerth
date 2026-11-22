@@ -40,6 +40,8 @@
 
 #include <filesystem>
 #include <algorithm>
+#include <charconv>
+#include <system_error>
 #include <boost/algorithm/string/predicate.hpp>
 
 #define SERVER_RESTART_IRC_BOT_INTERVAL_SEC			86400	// 1 day
@@ -148,8 +150,17 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 					msgStream >> ipAddress;
 					while (msgStream.peek() == ' ')
 						msgStream.get();
-					if (!msgStream.eof())
-						msgStream >> durationHours;
+					if (!msgStream.eof()) {
+						string durationToken;
+						if (msgStream >> durationToken) {
+							unsigned parsedDurationHours = 0;
+							const char *begin = durationToken.data();
+							const char *end = begin + durationToken.size();
+							auto [ptr, ec] = std::from_chars(begin, end, parsedDurationHours);
+							if (ec == std::errc() && ptr == end)
+								durationHours = parsedDurationHours;
+						}
+					}
 					if (!ipAddress.empty()) {
 						ostringstream durationStr;
 						durationStr << durationHours;

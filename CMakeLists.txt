@@ -504,6 +504,12 @@ add_executable(pokerth_test_avatar_cache_trailing_slash_bug test_avatar_cache_tr
 target_compile_options(pokerth_test_avatar_cache_trailing_slash_bug PRIVATE -Wall -Wextra)
 add_test(NAME avatar_cache_trailing_slash_bug COMMAND pokerth_test_avatar_cache_trailing_slash_bug)
 
+# Test: a malformed optional duration in the IRC admin "banip" command must
+# keep the 12-hour default instead of parsing to 0 (which means a permanent ban)
+add_executable(pokerth_test_banip_invalid_duration_bug test_banip_invalid_duration_bug.cpp)
+target_compile_options(pokerth_test_banip_invalid_duration_bug PRIVATE -Wall -Wextra)
+add_test(NAME banip_invalid_duration_bug COMMAND pokerth_test_banip_invalid_duration_bug)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
