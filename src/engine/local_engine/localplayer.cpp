@@ -4321,7 +4321,7 @@ void LocalPlayer::flopEngine3()
 				}
 				// sonst
 				else {
-					int bet = mySet;
+					int bet = currentHand->getCurrentBeRo()->getSmallBlind() * 2;
 					myCash -= bet;
 					mySet = oldMySet + bet;
 					myAction = PLAYER_ACTION_BET;
@@ -4519,7 +4519,7 @@ void LocalPlayer::turnEngine3()
 				}
 				// sonst
 				else {
-					int bet = mySet;
+					int bet = currentHand->getCurrentBeRo()->getSmallBlind() * 2;
 					myCash -= bet;
 					mySet = oldMySet + bet;
 					myAction = PLAYER_ACTION_BET;
@@ -4709,7 +4709,7 @@ void LocalPlayer::riverEngine3()
 				}
 				// sonst
 				else {
-					int bet = mySet;
+					int bet = currentHand->getCurrentBeRo()->getSmallBlind() * 2;
 					myCash -= bet;
 					mySet = oldMySet + bet;
 					myAction = PLAYER_ACTION_BET;
