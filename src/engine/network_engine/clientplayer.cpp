@@ -39,7 +39,7 @@ ClientPlayer::ClientPlayer(ConfigFile *c, int id, unsigned uniqueId, PlayerType 
 	: PlayerInterface(), myConfig(c), currentHand(0), myID(id), myUniqueID(uniqueId), myType(type),
 	  myName(name), myAvatar(avatar), myDude(0), myDude4(0), myCardsValueInt(0), myOdds(-1.0), logHoleCardsDone(false), myCash(sC), mySet(0), myLastRelativeSet(0),
 	  myAction(PLAYER_ACTION_NONE), myButton(mB), myActiveStatus(aS), myStayOnTableStatus(sotS), myTurn(false), myCardsFlip(false), myRoundStartCash(0),
-	  myLastMoneyWon(0), mySBluff(0), mySBluffStatus(false), myIsSessionActive(false), myIsKicked(false), myIsMuted(false)
+	  myLastMoneyWon(0), mySBluff(0), mySBluffStatus(false), myIsSessionActive(false), myIsKicked(false), myIsMuted(false), myAverageSetsCount(0)
 {
 	myBestHandPosition[0] = myBestHandPosition[1] = myBestHandPosition[2] = myBestHandPosition[3] = myBestHandPosition[4] = 0;
 	myNiveau[0] = myNiveau[1] = myNiveau[2] = 0;
@@ -399,13 +399,14 @@ ClientPlayer::setMyAverageSets(int theValue)
 	myAverageSets[1] = myAverageSets[2];
 	myAverageSets[2] = myAverageSets[3];
 	myAverageSets[3] = theValue;
+	if (myAverageSetsCount < 4) ++myAverageSetsCount;
 }
 
 int
 ClientPlayer::getMyAverageSets() const
 {
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
-	return (myAverageSets[0]+myAverageSets[1]+myAverageSets[2]+myAverageSets[3])/4;
+	return (myAverageSets[0]+myAverageSets[1]+myAverageSets[2]+myAverageSets[3])/(myAverageSetsCount > 0 ? myAverageSetsCount : 4);
 }
 
 void

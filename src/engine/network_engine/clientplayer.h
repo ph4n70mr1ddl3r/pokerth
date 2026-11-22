@@ -200,6 +200,7 @@ private:
 	int myLastMoneyWon;
 
 	std::array<int, 4> myAverageSets;
+	int myAverageSetsCount;
 	std::array<bool, 7> myAggressive;
 
 	int mySBluff;
