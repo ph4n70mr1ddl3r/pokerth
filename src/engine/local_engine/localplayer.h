@@ -286,7 +286,7 @@ public:
 	}
 	int getMyAverageSets() const override
 	{
-		return (myAverageSets[0]+myAverageSets[1]+myAverageSets[2]+myAverageSets[3])/(myAverageSetsCount > 0 ? myAverageSetsCount : 1);
+		return (myAverageSets[0]+myAverageSets[1]+myAverageSets[2]+myAverageSets[3])/(myAverageSetsCount > 0 ? myAverageSetsCount : 4);
 	}
 
 	void setMyAggressive(bool theValue) override
