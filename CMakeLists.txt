@@ -379,6 +379,11 @@ add_executable(pokerth_test_badgamename_regex_match_bug test_badgamename_regex_m
 target_compile_options(pokerth_test_badgamename_regex_match_bug PRIVATE -Wall -Wextra)
 add_test(NAME badgamename_regex_match_bug COMMAND pokerth_test_badgamename_regex_match_bug)
 
+# Test: empty GameNameBadWordList entry must not reject every game name
+add_executable(pokerth_test_badgamename_empty_regex_bug test_badgamename_empty_regex_bug.cpp)
+target_compile_options(pokerth_test_badgamename_empty_regex_bug PRIVATE -Wall -Wextra)
+add_test(NAME badgamename_empty_regex_bug COMMAND pokerth_test_badgamename_empty_regex_bug)
+
 # Test: clientstate.cpp signed/unsigned comparison bug
 add_executable(pokerth_test_clientstate_bug test_clientstate_bug.cpp)
 target_compile_options(pokerth_test_clientstate_bug PRIVATE -Wall -Wextra)

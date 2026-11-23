@@ -245,6 +245,10 @@ ServerBanManager::InitGameNameBadWordList(const std::list<string> &badWordList)
 	boost::mutex::scoped_lock lock(m_banMutex);
 	m_gameNameBadWordFilter.clear();
 	for (const auto &word : badWordList) {
+		// An empty pattern is a valid regex that regex_search() matches against
+		// every name, which would reject all game names. It carries no filtering intent.
+		if (word.empty())
+			continue;
 		try {
 			m_gameNameBadWordFilter.push_back(boost::regex(word, boost::regex::extended | boost::regex::icase));
 		} catch (const boost::regex_error &e) {
