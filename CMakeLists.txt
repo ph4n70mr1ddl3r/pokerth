@@ -538,6 +538,12 @@ add_executable(pokerth_test_engine3_bet_amount_discarded_bug test_engine3_bet_am
 target_compile_options(pokerth_test_engine3_bet_amount_discarded_bug PRIVATE -Wall -Wextra)
 add_test(NAME engine3_bet_amount_discarded_bug COMMAND pokerth_test_engine3_bet_amount_discarded_bug)
 
+# Test: InternalListen() must reject ports above 65535; otherwise the value
+# silently wraps to 16 bits and the server binds an unintended port
+add_executable(pokerth_test_server_port_upper_bound_bug test_server_port_upper_bound_bug.cpp)
+target_compile_options(pokerth_test_server_port_upper_bound_bug PRIVATE -Wall -Wextra)
+add_test(NAME server_port_upper_bound_bug COMMAND pokerth_test_server_port_upper_bound_bug)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)

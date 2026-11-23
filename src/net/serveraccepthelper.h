@@ -126,7 +126,7 @@ protected:
 
     void InternalListen(unsigned serverPort, bool ipv6)
     {
-        if (serverPort < 1024)
+        if (serverPort < 1024 || serverPort > 65535)
             throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_PORT, 0);
 
         /// Prepare Listen.
