@@ -526,6 +526,12 @@ add_executable(pokerth_test_notify_restart_negative_params_bug test_notify_resta
 target_compile_options(pokerth_test_notify_restart_negative_params_bug PRIVATE -Wall -Wextra)
 add_test(NAME notify_restart_negative_params_bug COMMAND pokerth_test_notify_restart_negative_params_bug)
 
+# Test: GetBanList() under-reports remaining ban hours by one because
+# duration_cast<hours> truncates N hours minus a small delta to N-1
+add_executable(pokerth_test_ban_duration_display_offbyone test_ban_duration_display_offbyone.cpp)
+target_compile_options(pokerth_test_ban_duration_display_offbyone PRIVATE -Wall -Wextra)
+add_test(NAME ban_duration_display_offbyone COMMAND pokerth_test_ban_duration_display_offbyone)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)

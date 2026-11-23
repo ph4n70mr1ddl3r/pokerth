@@ -43,6 +43,21 @@ using namespace std::chrono;
 using namespace boost::chrono;
 #endif
 
+namespace {
+
+// Round up to the nearest whole TargetDuration (duration_cast truncates).
+template <typename TargetDuration, typename Duration>
+TargetDuration durationCastCeil(Duration d)
+{
+	TargetDuration result = duration_cast<TargetDuration>(d);
+	if (result < d) {
+		++result;
+	}
+	return result;
+}
+
+} // namespace
+
 ServerBanManager::ServerBanManager(boost::shared_ptr<boost::asio::io_context> ioService)
 	: m_ioService(ioService), m_curBanId(0)
 {
@@ -142,7 +157,7 @@ ServerBanManager::GetBanList(list<string> &list) const
 			auto expiry = (*i_nick).second.timer->expiry();
 			auto now = steady_clock::now();
 			if (expiry > now)
-				banText << " duration: " << duration_cast<hours>(expiry - now).count() << "h";
+				banText << " duration: " << durationCastCeil<hours>(expiry - now).count() << "h";
 			else
 				banText << " (expired)";
 		}
@@ -158,7 +173,7 @@ ServerBanManager::GetBanList(list<string> &list) const
 			auto expiry = (*i_ip).second.timer->expiry();
 			auto now = steady_clock::now();
 			if (expiry > now)
-				banText << " duration: " << duration_cast<hours>(expiry - now).count() << "h";
+				banText << " duration: " << durationCastCeil<hours>(expiry - now).count() << "h";
 			else
 				banText << " (expired)";
 		}
