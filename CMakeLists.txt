@@ -532,6 +532,12 @@ add_executable(pokerth_test_ban_duration_display_offbyone test_ban_duration_disp
 target_compile_options(pokerth_test_ban_duration_display_offbyone PRIVATE -Wall -Wextra)
 add_test(NAME ban_duration_display_offbyone COMMAND pokerth_test_ban_duration_display_offbyone)
 
+# Test: flopEngine3/turnEngine3/riverEngine3 discard the AI-computed bet and
+# always wager 2*smallBlind, so hand-strength-based bet sizing is lost
+add_executable(pokerth_test_engine3_bet_amount_discarded_bug test_engine3_bet_amount_discarded_bug.cpp)
+target_compile_options(pokerth_test_engine3_bet_amount_discarded_bug PRIVATE -Wall -Wextra)
+add_test(NAME engine3_bet_amount_discarded_bug COMMAND pokerth_test_engine3_bet_amount_discarded_bug)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)
