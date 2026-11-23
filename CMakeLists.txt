@@ -304,6 +304,11 @@ add_executable(pokerth_test_mymessage_toint_bug test_mymessage_toint_bug.cpp)
 target_compile_options(pokerth_test_mymessage_toint_bug PRIVATE -Wall -Wextra)
 add_test(NAME mymessage_toint_bug COMMAND pokerth_test_mymessage_toint_bug)
 
+# Test: CapsFloodCheck false positive caused by removing all spaces before matching caps runs
+add_executable(pokerth_test_capsflood_word_boundary test_capsflood_word_boundary.cpp)
+target_compile_options(pokerth_test_capsflood_word_boundary PRIVATE -Wall -Wextra)
+add_test(NAME capsflood_word_boundary COMMAND pokerth_test_capsflood_word_boundary)
+
 # Test: LocalPlayer::calcMyOdds() flop-case odds calculation bug
 add_executable(pokerth_test_flop_odds test_flop_odds.cpp)
 target_compile_options(pokerth_test_flop_odds PRIVATE -Wall -Wextra)

@@ -32,6 +32,25 @@
 
 #include <QtCore>
 
+#include <algorithm>
+
+namespace {
+
+bool isUpper(QChar c)
+{
+	return c >= QChar::fromLatin1('A') && c <= QChar::fromLatin1('Z');
+}
+
+bool isPunctuation(QChar c)
+{
+	return c == QLatin1Char('.') || c == QLatin1Char(',') || c == QLatin1Char(';')
+			|| c == QLatin1Char(':') || c == QLatin1Char('!') || c == QLatin1Char('?')
+			|| c == QLatin1Char(')') || c == QLatin1Char(']') || c == QLatin1Char('}')
+			|| c == QLatin1Char('\'') || c == QLatin1Char('"');
+}
+
+} // namespace
+
 CapsFloodCheck::CapsFloodCheck()
 	: capsNumberToTrigger(0)
 {
@@ -43,12 +62,40 @@ bool CapsFloodCheck::run(QString msg)
 	if (capsNumberToTrigger < 1) {
 		return false;
 	}
-	msg = msg.simplified().remove(" ");
-	QRegularExpression e(QString("[A-Z]{%1,}").arg(capsNumberToTrigger));
-	if(e.isValid()) {
-		if(e.match(msg).hasMatch()) return true;
-		else return false;
-	} else {
-		return false;
+
+	// Count consecutive capitals within each whitespace-delimited token.
+	// Stripping all spaces first (the old behaviour) merged separate short
+	// words such as "NASA ESA CNN" into one long run and produced false
+	// positives. Consecutive single-letter uppercase tokens are counted as a
+	// single run as well, so the spaced-out caps evasion ("H E L L O") is
+	// still detected.
+	const QStringList tokens = msg.simplified().split(QLatin1Char(' '), Qt::SkipEmptyParts);
+	int maxRun = 0;
+	int singleLetterRun = 0;
+	for (const QString &token : tokens) {
+		int run = 0;
+		int upperCount = 0;
+		bool onlyUpperOrPunctuation = true;
+		for (int i = 0; i < token.length(); ++i) {
+			const QChar c = token.at(i);
+			if (isUpper(c)) {
+				++run;
+				++upperCount;
+				maxRun = std::max(maxRun, run);
+			} else if (isPunctuation(c)) {
+				run = 0;
+			} else {
+				run = 0;
+				onlyUpperOrPunctuation = false;
+			}
+		}
+		if (upperCount == 1 && onlyUpperOrPunctuation) {
+			++singleLetterRun;
+			maxRun = std::max(maxRun, singleLetterRun);
+		} else {
+			singleLetterRun = 0;
+		}
 	}
+
+	return maxRun >= capsNumberToTrigger;
 }
