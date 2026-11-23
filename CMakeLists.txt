@@ -520,6 +520,12 @@ add_executable(pokerth_test_banip_invalid_duration_bug test_banip_invalid_durati
 target_compile_options(pokerth_test_banip_invalid_duration_bug PRIVATE -Wall -Wextra)
 add_test(NAME banip_invalid_duration_bug COMMAND pokerth_test_banip_invalid_duration_bug)
 
+# Test: negative "notify-restart" parameters must be rejected, otherwise the
+# notify loop emits a false "The server will be restarted NOW." broadcast
+add_executable(pokerth_test_notify_restart_negative_params_bug test_notify_restart_negative_params_bug.cpp)
+target_compile_options(pokerth_test_notify_restart_negative_params_bug PRIVATE -Wall -Wextra)
+add_test(NAME notify_restart_negative_params_bug COMMAND pokerth_test_notify_restart_negative_params_bug)
+
 add_subdirectory(src)
 add_subdirectory(src/chatcleaner)
 add_subdirectory(src/dbofficial)

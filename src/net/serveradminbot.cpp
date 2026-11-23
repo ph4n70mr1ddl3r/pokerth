@@ -248,7 +248,7 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 					int intervalMinutes = 0;
 					msgStream >> timeoutMinutes;
 					msgStream >> intervalMinutes;
-					if (timeoutMinutes && intervalMinutes) {
+					if (timeoutMinutes > 0 && intervalMinutes > 0) {
 						ostringstream ack;
 						ack << nickName << ": Restart planned in " << timeoutMinutes << " minutes, notifying every " << intervalMinutes << " minutes.";
 						m_ircAdminThread->SendChatMessage(ack.str());
