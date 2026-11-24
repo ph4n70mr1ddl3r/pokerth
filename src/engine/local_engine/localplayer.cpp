@@ -4322,8 +4322,10 @@ void LocalPlayer::flopEngine3()
 				// sonst
 				else {
 					int bet = mySet;
-					myCash -= bet;
-					mySet = oldMySet + bet;
+					if (bet > 0) {
+						myCash -= bet;
+						mySet = oldMySet + bet;
+					}
 					myAction = PLAYER_ACTION_BET;
 				}
 				{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
@@ -4520,8 +4522,10 @@ void LocalPlayer::turnEngine3()
 				// sonst
 				else {
 					int bet = mySet;
-					myCash -= bet;
-					mySet = oldMySet + bet;
+					if (bet > 0) {
+						myCash -= bet;
+						mySet = oldMySet + bet;
+					}
 					myAction = PLAYER_ACTION_BET;
 				}
 				{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
@@ -4710,8 +4714,10 @@ void LocalPlayer::riverEngine3()
 				// sonst
 				else {
 					int bet = mySet;
-					myCash -= bet;
-					mySet = oldMySet + bet;
+					if (bet > 0) {
+						myCash -= bet;
+						mySet = oldMySet + bet;
+					}
 					myAction = PLAYER_ACTION_BET;
 				}
 				{ int _oldHS = currentHand->getCurrentBeRo()->getHighestSet(); currentHand->getCurrentBeRo()->setHighestSet(mySet); if(mySet > _oldHS) currentHand->getCurrentBeRo()->setMinimumRaise(mySet - _oldHS); }
