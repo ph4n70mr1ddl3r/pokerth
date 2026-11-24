@@ -1953,7 +1953,6 @@ void gameTableImpl::mySet()
 			}
 		} else {
 			humanPlayer->setMySet(betValue);
-			humanPlayer->setMyCash(tempCash - betValue);
 		}
 
 		if(myActionIsRaise) {
