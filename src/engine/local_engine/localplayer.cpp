@@ -1093,11 +1093,7 @@ int LocalPlayer::checkMyAction(int targetAction, int targetBet, int highestSet, 
 			// Player has already put in enough chips (mySet >= highestSet).
 			// Call is valid because no additional chips need to be put in.
 			// targetBet is irrelevant when mySet >= highestSet.
-			// If highestSet > 0, the bet has been made so call is valid even with myCash == 0.
-			// If highestSet == 0, player is posting blind, requires myCash > 0.
-			if (highestSet > 0 || getMyCash() > 0) {
-				return 0;
-			}
+			return 0;
 		}
 		else if(getMyCash() > 0 && targetBet <= getMyCash()) {
 			// not all in
