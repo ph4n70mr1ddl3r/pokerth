@@ -1,12 +1,11 @@
-// Test for LocalPlayer::checkMyAction() PLAYER_ACTION_BET smallBlind edge case.
+// Test for checkMyAction() PLAYER_ACTION_BET smallBlind edge case.
 //
 // Bug hunt: Verify PLAYER_ACTION_BET correctly validates minimum bet
 // using smallBlind. The fix ensures targetBet >= 2*smallBlind and
 // smallBlind > 0 is checked.
 //
-// Compile:
-//   g++ -O2 -std=c++23 -o /tmp/test_checkmyaction_bet_smallblind test_checkmyaction_bet_smallblind.cpp
-//   /tmp/test_checkmyaction_bet_smallblind
+// Compile: g++ -O2 -std=c++23 -o /tmp/test_checkmyaction_bet_smallblind test_checkmyaction_bet_smallblind.cpp && /tmp/test_checkmyaction_bet_smallblind
+#
 
 #include <cstdio>
 #include <cstdlib>
@@ -23,7 +22,7 @@ struct MockPlayer {
     int getSmallBlind() const { return smallBlind; }
 };
 
-// The CORRECT implementation from checkMyAction (with smallBlind check and smallBlind > 0 guard)
+// The CORRECT implementation from checkMyAction (with smallBlind > 0 guard and 2*smallBlind check)
 static int checkMyActionBetCorrect(MockPlayer& p, int highestSet, int targetBet) {
     if (highestSet == 0 && targetBet <= p.getMyCash() && targetBet >= 2 * p.getSmallBlind() && p.getSmallBlind() > 0) {
         return 0;  // valid bet
@@ -31,15 +30,15 @@ static int checkMyActionBetCorrect(MockPlayer& p, int highestSet, int targetBet)
     return 1;  // invalid bet
 }
 
-// A version WITHOUT the smallBlind > 0 guard (the buggy pattern)
+// A BUGGY version MISSING the smallBlind > 0 guard
 static int checkMyActionBetBuggy(MockPlayer& p, int highestSet, int targetBet) {
     if (highestSet == 0 && targetBet <= p.getMyCash() && targetBet >= 2 * p.getSmallBlind()) {
-        return 0;  // BUG: missing smallBlind > 0 check - allows bet when smallBlind=0
+        return 0;  // BUG: missing smallBlind > 0 check
     }
     return 1;
 }
 
-// A version WITHOUT the smallBlind check entirely (another buggy pattern)
+// A BUGGY version MISSING the smallBlind check entirely
 static int checkMyActionBetBuggyNoCheck(MockPlayer& p, int highestSet, int targetBet) {
     if (highestSet == 0 && targetBet <= p.getMyCash()) {
         return 0;  // BUG: missing targetBet >= 2*smallBlind check
@@ -80,47 +79,58 @@ int main()
         printf("  BUG CONFIRMED: Buggy code accepts bet when smallBlind=0\n");
         printf("  Fixed code correctly rejects: PASS\n");
     } else {
-        printf("  UNEXPECTED: correct=%d, buggy=%d\n", correct2, buggy2);
+        printf("  Unexpected results: FAIL\n");
         failures++;
     }
 
-    // --- Scenario 3: Invalid bet when targetBet < 2*smallBlind ---
-    printf("\n--- Scenario 3: smallBlind=10, targetBet=15 (should reject, 15 < 20) ---\n");
+    // --- Scenario 3: Valid bet with smallBlind=0 and targetBet=0 ---
+    printf("\n--- Scenario 3: smallBlind=0, targetBet=0 (should reject since smallBlind<=0) ---\n");
     MockPlayer p3;
-    p3.smallBlind = 10;
-    int correct3 = checkMyActionBetCorrect(p3, 0, 15);
-    int buggy3 = checkMyActionBetBuggy(p3, 0, 15);
-    printf("  Correct (with smallBlind check): %d (expected 1, reject)\n", correct3);
-    printf("  Buggy (missing smallBlind check): %d\n", buggy3);
-    if (correct3 == 1 && buggy3 == 0) {
-        printf("  BUG CONFIRMED: Buggy code accepts bet 15 < 2*10=20\n");
-        printf("  Fixed code correctly rejects: PASS\n");
+    p3.smallBlind = 0;
+    int correct3 = checkMyActionBetCorrect(p3, 0, 0);
+    printf("  Correct (with smallBlind > 0 guard): %d (expected 1, reject because smallBlind<=0)\n", correct3);
+    if (correct3 == 1) {
+        printf("  PASS: Correct code rejects bet when smallBlind=0\n");
     } else {
-        printf("  UNEXPECTED: correct=%d, buggy=%d\n", correct3, buggy3);
+        printf("  FAIL: Unexpected results\n");
         failures++;
     }
 
-    // --- Scenario 4: Valid bet at minimum 2*smallBlind ---
-    printf("\n--- Scenario 4: Valid bet at minimum (targetBet=20, smallBlind=10) ---\n");
+    // --- Scenario 4: Buggy version missing smallBlind check ---
+    printf("\n--- Scenario 4: Buggy code missing 2*smallBlind check ---\n");
     MockPlayer p4;
     p4.smallBlind = 10;
-    int correct4 = checkMyActionBetCorrect(p4, 0, 20);
-    int buggy4 = checkMyActionBetBuggy(p4, 0, 20);
-    printf("  Correct (with smallBlind check): %d (expected 0)\n", correct4);
-    printf("  Buggy (missing smallBlind check): %d\n", buggy4);
-    if (correct4 == 0 && buggy4 == 0) {
-        printf("  PASS: Both accept minimum valid bet 20 >= 2*10=20\n");
+    int correct4 = checkMyActionBetCorrect(p4, 0, 5);   // targetBet < 2*smallBlind
+    int buggy4 = checkMyActionBetBuggyNoCheck(p4, 0, 5);
+    printf("  Correct (with smallBlind check): %d (expected 1, reject 5 < 20)\n", correct4);
+    printf("  Buggy (missing smallBlind check): %d (BUG: accepts!)\n", buggy4);
+    if (correct4 == 1 && buggy4 == 0) {
+        printf("  BUG CONFIRMED: Buggy code accepts bet 5 < 2*10=20\n");
+        printf("  Fixed code correctly rejects: PASS\n");
+    } else {
+        printf("  Unexpected results: FAIL\n");
+        failures++;
+    }
+
+    // --- Scenario 5: Edge case exact 2*smallBlind ---
+    printf("\n--- Scenario 5: Edge case exact 2*smallBlind (targetBet=20, smallBlind=10) ---\n");
+    MockPlayer p5;
+    p5.smallBlind = 10;
+    int correct5 = checkMyActionBetCorrect(p5, 0, 20);
+    printf("  Correct (with smallBlind check): %d (expected 0, exact 2*smallBlind should be valid)\n", correct5);
+    if (correct5 == 0) {
+        printf("  PASS: Exact 2*smallBlind accepted\n");
     } else {
         printf("  FAIL: Unexpected results\n");
         failures++;
     }
 
     printf("\n");
-    if (failures == 0) {
-        printf("ALL TESTS PASSED\n");
-        return 0;
-    } else {
-        printf("TESTS FAILED: %d failures\n", failures);
+    if (failures > 0) {
+        printf("TEST FAILED: %d scenario failures\n", failures);
         return 1;
     }
+
+    printf("TEST PASSED: PLAYER_ACTION_BET smallBlind edge case test complete\n");
+    return 0;
 }
