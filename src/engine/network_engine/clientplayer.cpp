@@ -175,7 +175,12 @@ void
 ClientPlayer::setMySet(int theValue)
 {
 	boost::recursive_mutex::scoped_lock lock(m_syncMutex);
+	if (theValue > myCash) theValue = myCash;
+	if (theValue < 0) theValue = 0;
 	myLastRelativeSet = theValue;
+	mySet += theValue;
+	myCash -= theValue;
+	if (myCash < 0) myCash = 0;
 }
 
 void
