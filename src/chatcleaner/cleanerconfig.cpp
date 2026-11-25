@@ -267,10 +267,13 @@ void CleanerConfig::fillBuffer()
 				if (!tmpStr2.empty() && tmpStr2 == "list") {
 					list<string> tempStringList2;
 
-					for (QDomElement n = conf.firstChildElement(); !n.isNull(); n = n.nextSiblingElement())
-					{
-						tempStringList2.push_back(n.attribute("value").toStdString());
-					}
+					QDomNode n = conf.firstChild();
+	while (!n.isNull()) {
+		if (n.isElement()) {
+			tempStringList2.push_back(n.toElement().attribute("value").toStdString());
+		}
+		n = n.nextSibling();
+	}
 
 					configBufferList[i].defaultListValue = tempStringList2;
 				}
