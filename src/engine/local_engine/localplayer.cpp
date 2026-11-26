@@ -1527,8 +1527,14 @@ evaluation(bet, raise);
 	case PLAYER_ACTION_BET: {
 		// Subtract bet amount from myCash and add to mySet
 		if (bet > 0) {
-			myCash -= bet;
-			mySet += bet;
+			if(bet > myCash) {
+				// All-in: can't cover full bet
+				mySet += myCash;
+				myCash = 0;
+			} else {
+				myCash -= bet;
+				mySet += bet;
+			}
 		}
 	}
 	break;
