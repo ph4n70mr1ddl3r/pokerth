@@ -1493,8 +1493,14 @@ evaluation(bet, raise);
 	case PLAYER_ACTION_CALL: {
 		int toCall = currentHand->getCurrentBeRo()->getHighestSet() - mySet;
 		if(toCall > 0) {
-			myCash -= toCall;
-			mySet = currentHand->getCurrentBeRo()->getHighestSet();
+			if(toCall > myCash) {
+				// All-in: can't cover full call
+				mySet += myCash;
+				myCash = 0;
+			} else {
+				myCash -= toCall;
+				mySet = currentHand->getCurrentBeRo()->getHighestSet();
+			}
 		}
 	}
 	break;

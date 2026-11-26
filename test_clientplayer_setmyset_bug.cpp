@@ -56,7 +56,7 @@ int main()
     // Buggy implementation
     p1.setMySet_buggy(20);
     printf("  Buggy: myCash=%d (expected %d, bug: not deducted), mySet=%d (expected %d=%d+20), myLastRelativeSet=%d\n",
-           p1.myCash, cashBefore1 - 20, p1.mySet, 30 + 20, p1.mySet - 30, p1.myLastRelativeSet);
+           p1.myCash, cashBefore1 - 20, p1.mySet, 30 + 20, p1.mySet - p1.myLastRelativeSet, p1.myLastRelativeSet);
     if (p1.myCash == cashBefore1 && p1.mySet == 30) {
         printf("  BUG CONFIRMED: Buggy code doesn't update myCash or mySet\n");
     } else {
@@ -137,6 +137,26 @@ int main()
         printf("  PASS: Fixed code correctly handles zero bet\n");
     } else {
         printf("  FAIL: Fix didn't work correctly\n");
+        failures++;
+    }
+
+    // --- Scenario 4: Bet larger than myCash (should cap at myCash) ---
+    printf("\n--- Scenario 4 (theValue=200, myCash=50, mySet=10) ---\n");
+    ClientPlayer p4;
+    p4.mySet = 10;
+    p4.myCash = 50;
+    
+    int cashBefore4 = p4.myCash;
+
+    // Fixed implementation (with capping)
+    p4.setMySet_fixed(200);
+    printf("  Fixed: myCash=%d (expected 0, capped at myCash), mySet=%d (expected %d=%d+50)\n",
+           p4.myCash, p4.mySet, p4.mySet - p4.myLastRelativeSet + 50, p4.mySet - p4.myLastRelativeSet);
+    // With capping: theValue becomes myCash=50, so mySet += 50 = 10+50=60, myCash = 50-50=0
+    if (p4.myCash == 0 && p4.mySet == 60) {
+        printf("  PASS: Fixed code correctly caps at myCash\n");
+    } else {
+        printf("  FAIL: myCash=%d, mySet=%d (expected myCash=0, mySet=60)\n", p4.myCash, p4.mySet);
         failures++;
     }
 
