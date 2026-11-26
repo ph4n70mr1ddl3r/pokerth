@@ -280,6 +280,9 @@ add_test(NAME distribute_regression COMMAND pokerth_test_distribute_regression)
 add_executable(pokerth_test_check_my_action test_check_my_action.cpp)
 target_compile_options(pokerth_test_check_my_action PRIVATE -Wall -Wextra)
 add_test(NAME check_my_action COMMAND pokerth_test_check_my_action)
+add_executable(pokerth_test_checkmyaction_smallblind_fix test_checkmyaction_smallblind_fix.cpp)
+target_compile_options(pokerth_test_checkmyaction_smallblind_fix PRIVATE -Wall -Wextra)
+add_test(NAME checkmyaction_smallblind_fix COMMAND pokerth_test_checkmyaction_smallblind_fix)
 
 # Test: LocalPlayer::checkMyAction() PLAYER_ACTION_CALL missing return bug
 add_executable(pokerth_test_check_myaction_call_bug test_check_myaction_call_bug.cpp)

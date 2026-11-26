@@ -1,8 +1,10 @@
-// Regression test: LocalPlayer::checkMyAction() PLAYER_ACTION_BET smallBlind guard.
+// Regression test: LocalPlayer::checkMyAction() PLAYER_ACTION_BET smallBlind==0 edge case.
 //
-// The fix changes the condition from
+// The fix changed the condition from
 // (smallBlind == 0 || targetBet >= 2*smallBlind) to (smallBlind > 0 && targetBet >= 2*smallBlind).
-// This test verifies the fixed behavior and also tests additional edge cases.
+// This test verifies the fixed behavior.
+//
+// Adapted from test/checkmyaction_bet_smallblind_edge.cpp
 
 #include <cstdio>
 #include <cstdlib>
@@ -19,8 +21,7 @@ struct MockPlayer {
     int getSmallBlind() const { return smallBlind; }
 };
 
-// The CORRECT implementation from checkMyAction (with smallBlind > 0 guard)
-// Matches the fixed code at src/engine/local_engine/localplayer.cpp:1121
+// The FIXED implementation from checkMyAction (with smallBlind > 0 guard)
 static int checkMyActionBetFixed(MockPlayer& p, int highestSet, int targetBet) {
     if (highestSet == 0 && targetBet <= p.getMyCash() && (p.getSmallBlind() > 0 && targetBet >= 2 * p.getSmallBlind())) {
         return 0;  // valid bet
@@ -28,7 +29,7 @@ static int checkMyActionBetFixed(MockPlayer& p, int highestSet, int targetBet) {
     return 1;  // invalid bet
 }
 
-// A version WITHOUT the smallBlind > 0 guard (the OLD buggy pattern)
+// The OLD buggy implementation (with smallBlind == 0 guard)
 static int checkMyActionBetOldBuggy(MockPlayer& p, int highestSet, int targetBet) {
     if (highestSet == 0 && targetBet <= p.getMyCash() && (p.getSmallBlind() == 0 || targetBet >= 2 * p.getSmallBlind())) {
         return 0;  // OLD BUG: allows bet when smallBlind=0
@@ -40,7 +41,7 @@ int main()
 {
     int failures = 0;
 
-    printf("PLAYER_ACTION_BET smallBlind guard test\n\n");
+    printf("PLAYER_ACTION_BET smallBlind edge case test (post-fix verification)\n\n");
 
     // --- Scenario 1: Valid bet with normal smallBlind ---
     printf("--- Scenario 1: Valid bet (targetBet=20, smallBlind=10, cash=1000) ---\n");
@@ -73,17 +74,16 @@ int main()
         failures++;
     }
 
-    // --- Scenario 3: Invalid bet when targetBet < 2*smallBlind ---
-    printf("\n--- Scenario 3: smallBlind=10, targetBet=15 (should reject, 15 < 20) ---\n");
+    // --- Scenario 3: Invalid bet when targetBet < 2*smallBlind (both should reject) ---
+    printf("\n--- Scenario 3: smallBlind=10, targetBet=15 (15 < 2*10=20, should reject) ---\n");
     MockPlayer p3;
     p3.smallBlind = 10;
     int fixed3 = checkMyActionBetFixed(p3, 0, 15);
     int old3 = checkMyActionBetOldBuggy(p3, 0, 15);
     printf("  Fixed implementation: %d (expected 1, reject)\n", fixed3);
-    printf("  Old buggy implementation: %d\n", old3);
-    if (fixed3 == 1 && old3 == 0) {
-        printf("  BUG CONFIRMED: Old code accepts bet 15 < 2*10=20\n");
-        printf("  Fixed code correctly rejects: PASS\n");
+    printf("  Old buggy implementation: %d (expected 1, reject)\n", old3);
+    if (fixed3 == 1 && old3 == 1) {
+        printf("  PASS: Both correctly reject bet 15 < 2*10=20\n");
     } else {
         printf("  UNEXPECTED: correct=%d, old=%d\n", fixed3, old3);
         failures++;
@@ -120,17 +120,16 @@ int main()
     }
 
     // --- Scenario 6: Edge case - targetBet > myCash (should reject) ---
-    printf("\n--- Scenario 6: targetBet > myCash (should reject) ---\n");
+    printf("\n--- Scenario 6: targetBet > myCash (100 > 50, should reject) ---\n");
     MockPlayer p6;
     p6.smallBlind = 10;
     p6.myCash = 50;
     int fixed6 = checkMyActionBetFixed(p6, 0, 100);  // targetBet=100 > myCash=50
     int old6 = checkMyActionBetOldBuggy(p6, 0, 100);
     printf("  Fixed implementation: %d (expected 1, reject)\n", fixed6);
-    printf("  Old buggy implementation: %d\n", old6);
-    if (fixed6 == 1 && old6 == 0) {
-        printf("  BUG CONFIRMED: Old code accepts bet when targetBet > myCash\n");
-        printf("  Fixed code correctly rejects: PASS\n");
+    printf("  Old buggy implementation: %d (expected 1, reject)\n", old6);
+    if (fixed6 == 1 && old6 == 1) {
+        printf("  PASS: Both correctly reject bet when targetBet > myCash\n");
     } else {
         printf("  UNEXPECTED: correct=%d, old=%d\n", fixed6, old6);
         failures++;
@@ -140,7 +139,8 @@ int main()
     if (failures == 0) {
         printf("ALL TESTS PASSED\n");
         return 0;
+    } else {
+        printf("TESTS FAILED: %d failure(s)\n", failures);
+        return 1;
     }
-    printf("TESTS FAILED: %d failure(s)\n", failures);
-    return 1;
 }
