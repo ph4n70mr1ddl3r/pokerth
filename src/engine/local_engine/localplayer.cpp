@@ -1519,8 +1519,11 @@ evaluation(bet, raise);
 	}
 	break;
 	case PLAYER_ACTION_BET: {
-		// Bet when highestSet == 0 (preflop): subtract mySet from myCash
-		myCash -= mySet;
+		// Subtract bet amount from myCash and add to mySet
+		if (bet > 0) {
+			myCash -= bet;
+			mySet += bet;
+		}
 	}
 	break;
 	case PLAYER_ACTION_CHECK:
