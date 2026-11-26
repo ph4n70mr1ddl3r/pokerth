@@ -1533,7 +1533,7 @@ evaluation(bet, raise);
 				myCash = 0;
 			} else {
 				myCash -= bet;
-				mySet += bet;
+				mySet = oldMySet + bet;
 			}
 		}
 	}
