@@ -1,13 +1,13 @@
 // Test for LocalPlayer::checkMyAction() PLAYER_ACTION_CALL bug when mySet >= highestSet but myCash == 0.
 //
-// Bug: In localplayer.cpp line 1095, the check `getMyCash() > 0` requires positive cash even when
-// the player's set already covers the highest set. The call should be valid when mySet >= highestSet
-// because no additional chips need to be put in, similar to the PLAYER_ACTION_CHECK fix.
+// Bug: In localplayer.cpp line 1096, the condition `(getMyCash() > 0 || targetBet == 0)` requires
+// positive cash even when the player's set already covers the highest set. The call should be valid
+// when mySet >= highestSet because no additional chips need to be put in, similar to the PLAYER_CHECK fix.
 //
 // Fix: Allow call when mySet >= highestSet regardless of myCash value, since the set chips alone
-// should determine whether call is valid.
+// should determine whether call is valid. Remove the getMyCash() > 0 requirement.
 //
-// Compile: g++ -O2 -std=c++23 -o /tmp/test_call_mySet_greater_cash_zero_bug test_call_mySet_greater_cash_zero_bug.cpp && /tmp/test_call_mySet_greater_cash_zero_bug
+// Compile: g++ -O2 -std=c++23 -o test_call_mySet_greater_cash_zero_bug test_call_mySet_greater_cash_zero_bug.cpp && ./test_call_mySet_greater_cash_zero_bug
 
 #include <cstdio>
 #include <cstdlib>
@@ -40,25 +40,22 @@ private:
 // Simulates the old checkMyAction logic for PLAYER_ACTION_CALL
 int checkMyAction_Call_Buggy(int targetAction, int targetBet, int highestSet, LocalPlayer* player) {
     if (targetAction == 1) { // PLAYER_ACTION_CALL
-        if (player->getMySet() >= highestSet) {
+        if (player->getMySet() >= highestSet && targetBet <= player->getMyCash() && (player->getMyCash() > 0 || targetBet == 0)) {
             // Player has already put in enough chips (mySet >= highestSet).
             // Bug: requires getMyCash() > 0 even though no additional chips needed.
-            if (player->getMyCash() > 0 && targetBet <= player->getMyCash()) {
-                return 0;
-            }
-            return 1;
+            return 0;
         }
-        else if (player->getMyCash() > 0 && targetBet <= player->getMyCash()) {
+        else if(player->getMyCash() > 0 && targetBet <= player->getMyCash()) {
             // not all in
-            if (player->getMyCash() + player->getMySet() >= highestSet && targetBet == highestSet - player->getMySet()) {
+            if(player->getMyCash() + player->getMySet() >= highestSet && targetBet == highestSet - player->getMySet()) {
                 return 0;
             }
             // all in
-            if (targetBet == player->getMyCash()) {
+            if(targetBet == player->getMyCash()) {
                 return 0;
             }
         }
-        else if (player->getMyCash() <= 0) {
+        else if(player->getMyCash() <= 0) {
             // No cash to call with
             return 1;
         }
@@ -74,25 +71,23 @@ int checkMyAction_Call_Fixed(int targetAction, int targetBet, int highestSet, Lo
         if (player->getMySet() >= highestSet) {
             // Player has already put in enough chips (mySet >= highestSet).
             // Call is valid regardless of myCash since no additional chips need to be put in.
-            // targetBet must still be checked but cash is irrelevant when mySet >= highestSet.
-            if (targetBet <= player->getMyCash() + player->getMySet() - highestSet + player->getMyCash()) {
-                // Simplified: just check targetBet is reasonable when mySet >= highestSet
-                // The key fix: no require getMyCash() > 0
+            // targetBet must be within cash if positive, but targetBet == 0 is always allowed.
+            if (targetBet == 0 || targetBet <= player->getMyCash()) {
                 return 0;
             }
             return 1;
         }
-        else if (player->getMyCash() > 0 && targetBet <= player->getMyCash()) {
+        else if(player->getMyCash() > 0 && targetBet <= player->getMyCash()) {
             // not all in
-            if (player->getMyCash() + player->getMySet() >= highestSet && targetBet == highestSet - player->getMySet()) {
+            if(player->getMyCash() + player->getMySet() >= highestSet && targetBet == highestSet - player->getMySet()) {
                 return 0;
             }
             // all in
-            if (targetBet == player->getMyCash()) {
+            if(targetBet == player->getMyCash()) {
                 return 0;
             }
         }
-        else if (player->getMyCash() <= 0) {
+        else if(player->getMyCash() <= 0) {
             // No cash to call with
             return 1;
         }
@@ -115,11 +110,12 @@ int main()
         LocalPlayer player1(100, 0);  // mySet=100, myCash=0
         int highestSet1 = 80;
 
-        // Buggy: should return -1 (call rejected because myCash > 0 check fails)
+        // Buggy: should return 0 (call allowed) but currently returns -1 (call rejected because myCash > 0 check fails)
         // This confirms the bug: myCash > 0 is unnecessarily required when mySet >= highestSet
         int result1_buggy = checkMyAction_Call_Buggy(1, 0, highestSet1, &player1);
         if (result1_buggy == -1) {
             printf("  Buggy: returned -1 (CALL REJECTED - BUG CONFIRMED: myCash > 0 unnecessarily required)\n");
+            // Expected: bug is present, so this is correct behavior for buggy code
         } else {
             printf("  Buggy: returned 0 (CALL ALLOWED - unexpected, bug not present)\n");
             allPassed = false;
