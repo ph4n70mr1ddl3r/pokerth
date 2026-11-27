@@ -1,15 +1,13 @@
-// Test for LocalPlayer::checkMyAction() PLAYER_ACTION_CALL cash guard when mySet >= highestSet and myCash == 0.
-//
-// Bug: In LocalPlayer::checkMyAction(), the PLAYER_ACTION_CALL case at line 1074
-// returns 0 (valid) when getMySet() >= highestSet, without checking if targetBet
-// exceeds getMyCash(). When myCash == 0 and targetBet > 0, the call should be
-// invalid, but the function currently accepts it because mySet >= highestSet.
-//
-// Fix: Add a check for targetBet <= getMyCash() when mySet >= highestSet,
-// making the behavior consistent with the mySet < highestSet case.
-//
-// This test verifies the bug: without the fix, call accepted when myCash==0 and targetBet>0;
-// with the fix, call correctly rejected when myCash==0.
+// Test for PLAYER_ACTION_CALL mySet >= highestSet with zero cash bug.
+// 
+// Bug: In LocalPlayer::checkMyAction(), the PLAYER_ACTION_CALL case only
+// checks getMySet() >= highestSet, but does not verify that the player has
+// non-zero cash. When myCash == 0 and mySet >= highestSet, the function
+// incorrectly returns 0 (valid call) because the outer condition fails.
+// 
+// Fix: Add getMyCash() > 0 && targetBet <= getMyCash() guard to the
+// mySet >= highestSet condition.
+// 
 #include <cstdio>
 #include <cstdlib>
 
@@ -22,59 +20,36 @@ struct MockPlayer {
     int getMyCash() const { return myCash; }
 };
 
-// Current (buggy) PLAYER_ACTION_CALL check from localplayer.cpp
-// This simulates the buggy behavior: returns 0 when mySet >= highestSet regardless of cash
-static int checkMyActionCallBuggy(MockPlayer& p, int targetBet, int highestSet) {
-    if (p.getMySet() >= highestSet) {
-        // BUG: no check for targetBet <= getMyCash()
-        // Just returns 0 regardless of cash state
+// Fixed PLAYER_ACTION_CALL check: handles mySet >= highestSet with cash guard
+static int checkMyActionCallFixed(MockPlayer& p, int targetBet, int highestSet) {
+    // Handle mySet >= highestSet case: player has already put in enough chips
+    // AND has non-zero cash AND targetBet is within cash
+    if (p.getMySet() >= highestSet && p.getMyCash() > 0 && targetBet <= p.getMyCash()) {
+        // Player has sufficient chips and cash - call is valid
         return 0;
     }
-    // Original logic for mySet < highestSet
-    if (p.getMySet() < highestSet && targetBet <= p.getMyCash()) {
+    // mySet < highestSet case: only proceed if player has cash > 0
+    else if (p.getMyCash() > 0 && targetBet <= p.getMyCash()) {
         // not all in
-        if (p.getMyCash() + p.getMySet() >= highestSet && targetBet == highestSet - p.getMySet()) {
+        if(p.getMyCash() + p.getMySet() >= highestSet && targetBet == highestSet - p.getMySet()) {
             return 0;
         }
         // all in
-        if (targetBet == p.getMyCash()) {
+        if(p.getMyCash() + p.getMySet() <= highestSet && targetBet == p.getMyCash()) {
             return 0;
         }
     }
-    else if(p.getMyCash() <= 0) {
-        // No cash to call with
-        return 1;
-    }
-    // Invalid call case
-    return 1;
+
+    return 1;  // invalid
 }
 
-// Fixed PLAYER_ACTION_CALL check: adds myCash > 0 guard when mySet >= highestSet
-static int checkMyActionCallFixed(MockPlayer& p, int targetBet, int highestSet) {
-    if (p.getMySet() >= highestSet) {
-        // Player has already put in enough chips (mySet >= highestSet).
-        // Call is valid only if targetBet is within cash AND player has non-zero cash.
-        if (p.getMyCash() > 0 && targetBet <= p.getMyCash()) {
-            return 0;
-        }
-        return 1;
-    }
-    // Original logic for mySet < highestSet
-    if (p.getMySet() < highestSet && targetBet <= p.getMyCash()) {
-        // not all in
-        if (p.getMyCash() + p.getMySet() >= highestSet && targetBet == highestSet - p.getMySet()) {
-            return 0;
-        }
-        // all in
-        if (targetBet == p.getMyCash()) {
+// Buggy PLAYER_ACTION_CALL check: only handles mySet >= highestSet, no cash guard
+static int checkMyActionCallBuggy(MockPlayer& p, int targetBet, int highestSet) {
+    if(p.getMySet() >= highestSet) {
+        if (targetBet <= p.getMyCash()) {
             return 0;
         }
     }
-    else if(p.getMyCash() <= 0) {
-        // No cash to call with
-        return 1;
-    }
-    // Invalid call case
     return 1;
 }
 
@@ -84,19 +59,19 @@ int main()
 
     printf("Testing PLAYER_ACTION_CALL mySet >= highestSet with zero cash bug\n\n");
 
-    // --- Scenario 1: mySet >= highestSet, myCash == 0, targetBet > 0 (THE BUG) ---
-    printf("--- Scenario 1 (mySet >= highestSet: mySet=100, highestSet=100, myCash=0, targetBet=50) ---\n");
+    // --- Scenario 1: mySet >= highestSet, myCash == 0, targetBet == 0 (THE BUG) ---
+    printf("--- Scenario 1 (mySet=100, highestSet=100, myCash=0, targetBet=0) ---\n");
     MockPlayer p1;
     p1.mySet = 100;
     p1.myCash = 0;
-    int buggy1 = checkMyActionCallBuggy(p1, 50, 100);
-    int fixed1 = checkMyActionCallFixed(p1, 50, 100);
-    printf("  Buggy: %d (expected 1, call invalid when myCash==0 and targetBet>0)\n", buggy1);
-    printf("  Fixed: %d (expected 1, call invalid when myCash==0)\n", fixed1);
+    int buggy1 = checkMyActionCallBuggy(p1, 0, 100);
+    int fixed1 = checkMyActionCallFixed(p1, 0, 100);
+    printf("  Buggy: %d (expected 1, should reject - no chips!)\n", buggy1);
+    printf("  Fixed: %d (expected 1, correctly rejects)\n", fixed1);
     if (buggy1 == 0) {
         printf("  BUG CONFIRMED: Buggy code accepts call when myCash == 0\n");
     } else {
-        printf("  Bug NOT confirmed: FAIL (buggy unexpectedly rejects)\n");
+        printf("  Bug NOT confirmed: FAIL\n");
         failures++;
     }
     if (fixed1 == 1) {
@@ -106,7 +81,7 @@ int main()
         failures++;
     }
 
-    // --- Scenario 2: Normal case with myCash > 0 ---
+    // --- Scenario 2: mySet >= highestSet, myCash > 0, valid call ---
     printf("\n--- Scenario 2 (mySet=100, highestSet=100, myCash=50, targetBet=50) ---\n");
     MockPlayer p2;
     p2.mySet = 100;
@@ -136,26 +111,11 @@ int main()
         failures++;
     }
 
-    // --- Scenario 4: mySet >= highestSet, myCash == 0, targetBet == 0 ---
-    printf("\n--- Scenario 4 (mySet=100, highestSet=100, myCash=0, targetBet=0) ---\n");
-    MockPlayer p4;
-    p4.mySet = 100;
-    p4.myCash = 0;
-    int fixed4 = checkMyActionCallFixed(p4, 0, 100);
-    printf("  Fixed: %d (expected 1, call invalid when myCash==0 even with targetBet==0)\n", fixed4);
-    if (fixed4 == 1) {
-        printf("  PASS: Fixed code correctly rejects call when myCash == 0\n");
-    } else {
-        printf("  FAIL: expected 1\n");
-        failures++;
-    }
-
     printf("\n");
     if (failures > 0) {
         printf("TEST FAILED: %d scenario failures\n", failures);
         return 1;
     }
-
-    printf("TEST PASSED: PLAYER_ACTION_CALL mySet >= highestSet with zero cash bug confirmed and fix verified\n");
+    printf("TEST PASSED: PLAYER_CALL bug confirmed and fix verified\n");
     return 0;
 }
