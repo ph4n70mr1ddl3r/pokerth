@@ -1500,7 +1500,7 @@ evaluation(bet, raise);
 		if(toCall > 0) {
 			if(toCall > myCash) {
 				// All-in: can't cover full call
-				mySet += myCash;
+				mySet = oldMySet + myCash;
 				myCash = 0;
 			} else {
 				myCash -= toCall;
