@@ -2880,7 +2880,6 @@ void LocalPlayer::evaluation(int bet, int raise)
 		// sonst
 		else {
 			currentHand->getCurrentBeRo()->setMinimumRaise(bet);
-			setMySet(bet);
 			highestSet = mySet;
 
 		}
