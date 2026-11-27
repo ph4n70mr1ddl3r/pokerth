@@ -129,7 +129,7 @@ public:
 		if (theValue > myCash) theValue = myCash;
 		if (theValue < 0) theValue = 0;
 		myLastRelativeSet = theValue;
-		mySet += theValue;
+		mySet = theValue;
 		myCash -= theValue;
 		if (myCash < 0) myCash = 0; // Guard against underflow
 	}

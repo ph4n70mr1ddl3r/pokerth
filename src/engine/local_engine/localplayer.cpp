@@ -1525,7 +1525,7 @@ evaluation(bet, raise);
 	}
 	break;
 	case PLAYER_ACTION_ALLIN: {
-		mySet += myCash;
+		mySet = oldMySet + myCash;
 		myCash = 0;
 	}
 	break;
@@ -2842,6 +2842,7 @@ void LocalPlayer::evaluation(int bet, int raise)
 {
 
 	int highestSet = currentHand->getCurrentBeRo()->getHighestSet();
+	int oldMySet = mySet;
 
 	switch(myAction) {
 	// none
@@ -4124,7 +4125,7 @@ void LocalPlayer::preflopEngine3()
 					if(bluff >= 98) {
 						if(currentHand->getCurrentBeRo()->getHighestSet() >= myCash + mySet) {
 
-							mySet += myCash;
+							mySet = oldMySet + myCash;
 							myCash = 0;
 							myAction = PLAYER_ACTION_ALLIN;
 
@@ -4139,7 +4140,7 @@ void LocalPlayer::preflopEngine3()
 
 							if(currentHand->getCurrentBeRo()->getHighestSet() >= myCash + mySet) {
 
-								mySet += myCash;
+								mySet = oldMySet + myCash;
 								myCash = 0;
 								myAction = PLAYER_ACTION_ALLIN;
 
@@ -4166,7 +4167,7 @@ void LocalPlayer::preflopEngine3()
 						// All In
 						if(currentHand->getCurrentBeRo()->getHighestSet() >= myCash + mySet) {
 
-							mySet += myCash;
+							mySet = oldMySet + myCash;
 							myCash = 0;
 							myAction = PLAYER_ACTION_ALLIN;
 
@@ -4184,7 +4185,7 @@ void LocalPlayer::preflopEngine3()
 							// All In
 							if(currentHand->getCurrentBeRo()->getHighestSet() >= myCash + mySet) {
 
-								mySet += myCash;
+								mySet = oldMySet + myCash;
 								myCash = 0;
 								myAction = PLAYER_ACTION_ALLIN;
 
@@ -4206,7 +4207,7 @@ void LocalPlayer::preflopEngine3()
 					const int oldHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 					const int oldMinimumRaise = currentHand->getCurrentBeRo()->getMinimumRaise();
 
-					mySet += myCash;
+					mySet = oldMySet + myCash;
 					myCash = 0;
 					myAction = PLAYER_ACTION_ALLIN;
 					if(mySet > oldHighestSet && mySet - oldHighestSet < oldMinimumRaise) {
@@ -4236,7 +4237,7 @@ void LocalPlayer::preflopEngine3()
 				// All In
 				if(currentHand->getCurrentBeRo()->getHighestSet() >= myCash + mySet) {
 
-					mySet += myCash;
+					mySet = oldMySet + myCash;
 					myCash = 0;
 					myAction = PLAYER_ACTION_ALLIN;
 
@@ -4404,7 +4405,7 @@ void LocalPlayer::flopEngine3()
 					const int oldHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 					const int oldMinimumRaise = currentHand->getCurrentBeRo()->getMinimumRaise();
 
-					mySet += myCash;
+					mySet = oldMySet + myCash;
 					myCash = 0;
 					myAction = PLAYER_ACTION_ALLIN;
 					if(mySet > oldHighestSet && mySet - oldHighestSet < oldMinimumRaise) {
@@ -4428,7 +4429,7 @@ void LocalPlayer::flopEngine3()
 				// All In
 				if(currentHand->getCurrentBeRo()->getHighestSet() >= myCash + mySet) {
 
-					mySet += myCash;
+					mySet = oldMySet + myCash;
 					myCash = 0;
 					myAction = PLAYER_ACTION_ALLIN;
 
@@ -4605,7 +4606,7 @@ void LocalPlayer::turnEngine3()
 					const int oldHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 					const int oldMinimumRaise = currentHand->getCurrentBeRo()->getMinimumRaise();
 
-					mySet += myCash;
+					mySet = oldMySet + myCash;
 					myCash = 0;
 					myAction = PLAYER_ACTION_ALLIN;
 					if(mySet > oldHighestSet && mySet - oldHighestSet < oldMinimumRaise) {
@@ -4628,7 +4629,7 @@ void LocalPlayer::turnEngine3()
 				// All In
 				if(currentHand->getCurrentBeRo()->getHighestSet() >= myCash + mySet) {
 
-					mySet += myCash;
+					mySet = oldMySet + myCash;
 					myCash = 0;
 					myAction = PLAYER_ACTION_ALLIN;
 
@@ -4797,7 +4798,7 @@ void LocalPlayer::riverEngine3()
 					const int oldHighestSet = currentHand->getCurrentBeRo()->getHighestSet();
 					const int oldMinimumRaise = currentHand->getCurrentBeRo()->getMinimumRaise();
 
-					mySet += myCash;
+					mySet = oldMySet + myCash;
 					myCash = 0;
 					myAction = PLAYER_ACTION_ALLIN;
 					if(mySet > oldHighestSet && mySet - oldHighestSet < oldMinimumRaise) {
@@ -4820,7 +4821,7 @@ void LocalPlayer::riverEngine3()
 				// All In
 				if(currentHand->getCurrentBeRo()->getHighestSet() >= myCash + mySet) {
 
-					mySet += myCash;
+					mySet = oldMySet + myCash;
 					myCash = 0;
 					myAction = PLAYER_ACTION_ALLIN;
 
