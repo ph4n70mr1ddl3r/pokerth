@@ -1488,6 +1488,11 @@ void LocalPlayer::preflopEngine()
 
 evaluation(bet, raise);
 
+	// Set bet to mySet when AI decides to bet, mirroring flopEngine3/turnEngine3/riverEngine3
+	if (myAction == PLAYER_ACTION_BET) {
+		bet = mySet;
+	}
+
 	// Update mySet and myCash based on the chosen action.
 	switch(myAction) {
 	case PLAYER_ACTION_CALL: {
