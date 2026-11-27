@@ -1534,7 +1534,7 @@ evaluation(bet, raise);
 		if (bet > 0) {
 			if(bet > myCash) {
 				// All-in: can't cover full bet
-				mySet += myCash;
+				mySet = oldMySet + myCash;
 				myCash = 0;
 			} else {
 				myCash -= bet;
