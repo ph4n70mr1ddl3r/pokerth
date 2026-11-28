@@ -91,16 +91,16 @@ static bool isWhitelistedToken(const QString &token, const QStringList &exceptio
 					// Consume just that one label; a path/query/fragment may
 					// follow it on the whitelisted host, while another dot
 					// would introduce a different host and stay rejected.
-					const int labelStart = (first == QLatin1Char('.')) ? 1 : 0;
-					int i = labelStart;
-					while (i < suffix.length() && suffix.at(i).isLetterOrNumber()) {
+					const size_t labelStart = (first == QLatin1Char('.')) ? 1 : 0;
+					size_t i = labelStart;
+					while (i < suffix.size() && suffix.at(i).isLetterOrNumber()) {
 						++i;
 					}
 					if (i == labelStart) {
 						validSuffix = false;
 					} else {
 						validSuffix = true;
-						for (int j = i; j < suffix.length(); ++j) {
+						for (size_t j = i; j < suffix.size(); ++j) {
 							const QChar c = suffix.at(j);
 							if (c == QLatin1Char('/') || c == QLatin1Char('?') || c == QLatin1Char('#')) {
 								break;
@@ -113,7 +113,7 @@ static bool isWhitelistedToken(const QString &token, const QStringList &exceptio
 					}
 				} else {
 					validSuffix = true;
-					for (int j = 0; j < suffix.length(); ++j) {
+					for (size_t j = 0; j < suffix.size(); ++j) {
 						if (!isSentencePunctuation(suffix.at(j))) {
 							validSuffix = false;
 							break;
