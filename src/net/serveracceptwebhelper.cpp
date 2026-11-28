@@ -31,6 +31,8 @@
 
 #include <net/serveracceptwebhelper.h>
 #include <net/sessiondata.h>
+#include <net/serverexception.h>
+#include <net/socket_msg.h>
 #include <net/webreceivebuffer.h>
 #include <net/websocketdata.h>
 #include <core/loghelper.h>
@@ -54,6 +56,11 @@ ServerAcceptWebHelper::ServerAcceptWebHelper(ServerCallback &serverCallback, boo
 void
 ServerAcceptWebHelper::Listen(unsigned serverPort, bool /*ipv6*/, const std::string &/*logDir*/, boost::shared_ptr<ServerLobbyThread> lobbyThread)
 {
+	if (serverPort < 1024 || serverPort > 65535)
+		throw ServerException(__FILE__, __LINE__, ERR_SOCK_INVALID_PORT, 0);
+
+	const unsigned short port = static_cast<unsigned short>(serverPort);
+
 	m_lobbyThread = lobbyThread;
 
 
@@ -73,7 +80,7 @@ ServerAcceptWebHelper::Listen(unsigned serverPort, bool /*ipv6*/, const std::str
 		m_webSocketTlsServer->set_message_handler([this](auto && conn_hdl, auto && msg_ptr) { on_message(conn_hdl, msg_ptr); });
 		m_webSocketTlsServer->set_tls_init_handler([this](auto && conn_hdl) { return on_tls_init(conn_hdl); });
 
-		m_webSocketTlsServer->listen(serverPort);
+		m_webSocketTlsServer->listen(port);
 		m_webSocketTlsServer->start_accept();
 	}else{
 		// Set logging settings
@@ -90,7 +97,7 @@ ServerAcceptWebHelper::Listen(unsigned serverPort, bool /*ipv6*/, const std::str
 		m_webSocketServer->set_close_handler([this](auto && conn_hdl) { on_close(conn_hdl); });
 		m_webSocketServer->set_message_handler([this](auto && conn_hdl, auto && msg_ptr) { on_message(conn_hdl, msg_ptr); });
 
-		m_webSocketServer->listen(serverPort);
+		m_webSocketServer->listen(port);
 		m_webSocketServer->start_accept();
 	}
 
