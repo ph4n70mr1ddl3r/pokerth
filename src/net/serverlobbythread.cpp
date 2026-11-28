@@ -1569,7 +1569,7 @@ ServerLobbyThread::HandleNetPacketChatRequest(boost::shared_ptr<SessionData> ses
 		if (chatMsg.empty()) {
 			return;
 		}
-		if (chatMsg.size() >= MAX_CHAT_TEXT_SIZE) {
+		if (chatMsg.size() > MAX_CHAT_TEXT_SIZE) {
 			auto rejectPkt = boost::make_shared<NetPacket>();
 			rejectPkt->GetMsg()->set_messagetype(PokerTHMessage::Type_ChatRejectMessage);
 			rejectPkt->GetMsg()->mutable_chatrejectmessage()->set_chattext(chatMsg);

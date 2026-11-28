@@ -229,7 +229,7 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 					while (msgStream.peek() == ' ')
 						msgStream.get();
 					string chat(msgStream.str().substr(static_cast<size_t>(std::max(std::streampos(0), msgStream.tellg()))));
-					if (!chat.empty() && chat.size() < MAX_CHAT_TEXT_SIZE) {
+					if (!chat.empty() && chat.size() <= MAX_CHAT_TEXT_SIZE) {
 						GetLobbyThread().SendGlobalChat(chat);
 						m_ircAdminThread->SendChatMessage(nickName + ": Global chat message sent.");
 					} else
@@ -238,7 +238,7 @@ ServerAdminBot::SignalIrcChatMsg(const std::string &nickName, const std::string 
 					while (msgStream.peek() == ' ')
 						msgStream.get();
 					string message(msgStream.str().substr(static_cast<size_t>(std::max(std::streampos(0), msgStream.tellg()))));
-					if (!message.empty() && message.size() < MAX_CHAT_TEXT_SIZE) {
+					if (!message.empty() && message.size() <= MAX_CHAT_TEXT_SIZE) {
 						GetLobbyThread().SendGlobalMsgBox(message);
 						m_ircAdminThread->SendChatMessage(nickName + ": Global message box sent.");
 					} else
