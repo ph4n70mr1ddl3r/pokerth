@@ -40,6 +40,8 @@
 #include <QSysInfo>
 #include <core/loghelper.h>
 
+#include <algorithm>
+
 using namespace std;
 
 MyAvatarLabel::MyAvatarLabel(QGroupBox* parent)
@@ -287,7 +289,7 @@ int MyAvatarLabel::getPlayerRating(QString playerName)
 			break;
 		}
 	}
-	return result.toInt();
+	return std::clamp(result.toInt(), 0, 5);
 }
 
 
