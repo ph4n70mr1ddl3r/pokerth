@@ -104,7 +104,7 @@ ClientStateInit::Enter(boost::shared_ptr<ClientThread> client)
 	if (context.GetServerAddr().empty())
 		throw ClientException(__FILE__, __LINE__, ERR_SOCK_SERVERADDR_NOT_SET, 0);
 
-	if (context.GetServerPort() < 1024)
+	if (context.GetServerPort() < 1024 || context.GetServerPort() > 65535)
 		throw ClientException(__FILE__, __LINE__, ERR_SOCK_INVALID_PORT, 0);
 
 	client->CreateContextSession();
