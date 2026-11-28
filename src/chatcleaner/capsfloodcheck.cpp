@@ -76,7 +76,7 @@ bool CapsFloodCheck::run(QString msg)
 		int run = 0;
 		int upperCount = 0;
 		bool onlyUpperOrPunctuation = true;
-		for (int i = 0; i < token.length(); ++i) {
+		for (int i = 0; i < static_cast<int>(token.length()); ++i) {
 			const QChar c = token.at(i);
 			if (isUpper(c)) {
 				++run;
